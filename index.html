@@ -294,6 +294,11 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .mode.rush { background: #2B2433; color: #fff; background-image: radial-gradient(circle at 90% 0, rgba(255,107,107,.45), transparent 50%); }
 .mode.rush .muted { color: #D8CFE8; }
 .mode h3 { font-size: 1.15rem; }
+.mode.practice { background: var(--yellow); }
+.rushhead.prhead { background-image: radial-gradient(circle at 90% 0, rgba(160,196,255,.45), transparent 50%); }
+.prdots { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.prdots i { width: 16px; height: 16px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; }
+.prdots i.on { background: var(--pink); }
 .coinpill { background: #F2D7AE; }
 /* Rush */
 .rushhead { background: var(--night); color: #fff; border: var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
@@ -1596,7 +1601,7 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
-function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0 }; }
+function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0 }; }
 function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null }; }
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function freshState() {
@@ -1607,7 +1612,7 @@ function freshState() {
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
     coins: 0, owned: [], equip: { hat: null, face: null, ribbon: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, player_id: newId(), lb_last: 0
+    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -1618,7 +1623,7 @@ function normalise(obj) {
   // older saves used roomX-N for the 5 core puzzles
   s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
   s.equip = Object.assign({ hat: null, face: null, ribbon: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
-  s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
+  s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.practice = Object.assign({ best: 0, lastDay: null }, s.practice); s.mistakes = [...(s.mistakes || [])]; s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
   s.room_progress = Object.assign({}, s.room_progress);
@@ -1943,7 +1948,7 @@ function refreshPlayer() {
 const LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbytWsgXOUM8oYgMgczy8zPCkKqx91f76Muc0tMJbDWKWHVH6EhoYh3iRp2RPPCMGaER3A/exec";
 function dedication() {
   const t = Object.keys(S.trophies || {}).length;
-  return S.stats.days * 10 + S.stats.correct + S.stats.rushRounds * 5 + S.completed_rooms.length * 10 + t * 25;
+  return S.stats.days * 10 + S.stats.correct + S.stats.rushRounds * 5 + S.stats.practiceRuns * 5 + S.completed_rooms.length * 10 + t * 25;
 }
 function lbPayload() {
   return { id: S.player_id, name: String(S.player_name || "Student").slice(0, 16), score: dedication(), days: S.stats.days, streak: S.longest_streak, trophies: Object.keys(S.trophies || {}).length };
@@ -2074,7 +2079,7 @@ const MC_POOL = () => ROOMS.flatMap(r => r.pool.filter(p => p.type === "mc" && !
 const RUSH_MAKERS = [
   { w: 2, label: "Multiple choice", make() { const p = pick(MC_POOL()); const order = shuffle(p.choices.map((_, i) => i));
       return { prompt: p.q, render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(p.choices[i])}</button>`).join("")}</div>`;
-        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === p.answer; b.classList.add(ok ? "ok" : "no"); if (!ok) el.querySelector(`[data-i="${p.answer}"]`).classList.add("ok"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, p.choices[p.answer]); }); } }; } },
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === p.answer; b.classList.add(ok ? "ok" : "no"); if (!ok) { el.querySelector(`[data-i="${p.answer}"]`).classList.add("ok"); const rm = ROOMS.find(r => r.pool.includes(p)); if (rm) { addMistake(`${rm.id}:${p.id}`); save(); } } el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, p.choices[p.answer]); }); } }; } },
   { w: 3, label: "True or false", make() { const [t, v, why] = pick(TF_BANK);
       return { prompt: t, render: (el, done) => { el.innerHTML = `<div class="tf"><button class="rbtn" data-v="1">✅ ${L("True", "正確")}</button><button class="rbtn" data-v="0">❌ ${L("False", "錯誤")}</button></div>`;
         el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = (b.dataset.v === "1") === v; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `${v ? L("True", "正確") : L("False", "錯誤")}. ${why}`); }); } }; } },
@@ -2125,7 +2130,7 @@ function rushIntro() {
   document.getElementById("rushShop").onclick = () => { SFX.tap(); openShop(); };
 }
 function startRush() {
-  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush();
+  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice();
   MUSIC.setMode("rush"); renderTools();
   RU = { score: 0, combo: 0, correct: 0, total: 0, end: Date.now() + RUSH_SECONDS * 1000, lock: false, last: -1 };
   $app.innerHTML = `
@@ -2191,6 +2196,157 @@ function rushEnd() {
 }
 
 /* ============================================================
+   6e. Practice mode: loops the questions you got wrong until 15 correct in a row
+   ============================================================ */
+const PRACTICE_GOAL = 15;
+let PR = null;
+const pidRoom = pid => ROOMS[roomIndex(pid.split(":")[0])];
+const pidQ = pid => { const r = pidRoom(pid); return r && r.pool.find(p => p.id === pid.split(":")[1]); };
+const practiceable = p => p && (p.type === "mc" || p.type === "dial");
+function addMistake(pid) {
+  if (!practiceable(pidQ(pid))) return;
+  S.mistakes = S.mistakes.filter(m => m !== pid).concat(pid).slice(-80);
+}
+function mistakeCount() { return S.mistakes.filter(m => practiceable(pidQ(m))).length; }
+function stopPractice() { if (PR) clearTimeout(PR.nextT); PR = null; }
+function practiceIntro() {
+  const n = mistakeCount(), bonus = S.practice.lastDay !== today();
+  openModal(`<span class="kicker">🔁 ${L("Practice mode", "練習模式")}</span><h2>${L(`Get ${PRACTICE_GOAL} right in a row!`, `連續答對 ${PRACTICE_GOAL} 題！`)}</h2>
+    ${say("hachiware", n ? L(`You have <b>${n}</b> question${n === 1 ? "" : "s"} to fix. Let's turn mistakes into mastery! 🌱`, `你有 <b>${n}</b> 題要修正。一起把錯誤變成實力吧！🌱`) : L("No mistakes saved yet, so I'll pick questions from the rooms you've opened. 🌱", "暫時未有錯題，我會從你已開啟的房間抽題目。🌱"), "normal", "hint")}
+    <div class="rules">${L(`<ul><li>Questions you got wrong come first. If there aren't enough, random questions fill the gap.</li>
+      <li>Get one wrong? It <b>comes back</b> a few questions later, and your streak restarts.</li>
+      <li>No timer and no penalties. Take your time and read carefully.</li>
+      <li>Finish = +10 🌰. ${bonus ? "<b>Today's first finish pays double!</b>" : ""}</li></ul>`,
+      `<ul><li>先練習你答錯過的題目；不夠的話會隨機補上題目。</li>
+      <li>答錯了？那題會在幾題之後<b>再出現</b>，連續紀錄重新計算。</li>
+      <li>沒有計時，沒有懲罰。慢慢來，細心閱讀。</li>
+      <li>完成 = +10 🌰。${bonus ? "<b>今天第一次完成雙倍獎勵！</b>" : ""}</li></ul>`)}</div>
+    <p class="small muted">${L("Finished", "已完成")}: ${S.stats.practiceRuns} · ${L("Best streak", "最佳連續")}: ${S.practice.best}</p>
+    <div class="row"><button class="btn big" id="prGo">🔁 ${L("Start practice", "開始練習")}</button></div>`);
+  document.getElementById("prGo").onclick = () => { SFX.init(); SFX.tap(); startPractice(); };
+}
+function startPractice() {
+  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice();
+  MUSIC.setMode("room"); renderTools();
+  const fresh = shuffle(S.mistakes.filter(m => practiceable(pidQ(m))));
+  PR = { fresh, pending: [], recent: [], streak: 0, best: 0, served: 0, wrong: 0, fixed: 0, cur: null, lock: false, retry: false };
+  practiceScreen(); practiceNext();
+}
+function practiceScreen() {
+  $app.innerHTML = `
+    <section class="rushhead prhead">
+      <div class="status"><div class="av ${frameCls()}" id="prAv">${avatar("chiikawa", "normal")}</div><div><div class="rtopic" style="color:var(--yellow)">🔁 ${L("Practice mode", "練習模式")}</div><div class="big" id="prStreak"></div></div></div>
+      <div style="display:grid;justify-items:end;gap:6px"><span class="combo" id="prLeft"></span></div>
+    </section>
+    <div class="prdots" id="prDots" aria-hidden="true"></div>
+    <section class="card rq"><span class="rtype" id="prType"></span><p class="q" id="prQ"></p><div id="prDia"></div><div id="prBody"></div>
+      <div class="row"><button class="btn blue" id="prHint">💡 ${L("Hint", "提示")}</button></div><div id="prFb"></div></section>
+    <div class="row"><button class="btn plain" id="prQuit">✕ ${L("Stop practice", "停止練習")}</button></div>`;
+  document.getElementById("prQuit").onclick = () => { SFX.tap(); practiceQuit(); };
+}
+function practicePick() {
+  const n = PR.served;
+  const due = PR.pending.filter(x => x.due <= n).sort((a, b) => a.due - b.due)[0];
+  if (due) { PR.pending = PR.pending.filter(x => x !== due); return [due.pid, true]; }
+  while (PR.fresh.length) { const pid = PR.fresh.shift(); if (!PR.pending.some(x => x.pid === pid)) return [pid, false]; }
+  const rooms = ROOMS.filter((r, i) => isUnlocked(i));
+  const all = rooms.flatMap(r => r.pool.filter(practiceable).map(p => `${r.id}:${p.id}`));
+  const cands = all.filter(pid => !PR.recent.includes(pid) && !PR.pending.some(x => x.pid === pid));
+  return [pick(cands.length ? cands : all), false];
+}
+function practiceStatus() {
+  document.getElementById("prStreak").textContent = L(`${PR.streak} / ${PRACTICE_GOAL} in a row`, `連續 ${PR.streak} / ${PRACTICE_GOAL} 題`);
+  const left = PR.fresh.length + PR.pending.length;
+  document.getElementById("prLeft").textContent = left ? L(`🔁 ${left} to fix`, `🔁 尚餘 ${left} 題要修正`) : L("✨ Mistakes cleared", "✨ 錯題已清");
+  document.getElementById("prDots").innerHTML = Array.from({ length: PRACTICE_GOAL }, (_, i) => `<i class="${i < PR.streak ? "on" : ""}"></i>`).join("");
+}
+function practiceNext() {
+  if (!PR) return;
+  const [pid, retry] = practicePick();
+  PR.cur = pid; PR.retry = retry; PR.hinted = false; PR.lock = false; PR.served++;
+  PR.recent = PR.recent.concat(pid).slice(-12);
+  practiceShow();
+}
+function practiceShow() {
+  const pid = PR.cur, p = pidQ(pid), room = pidRoom(pid);
+  document.getElementById("prType").textContent = `${PR.retry ? L("🔁 Try again · ", "🔁 再試一次 · ") : ""}${topicNo(room.topicNo)} · ${tTopic(room)} · 🧠 ${BLOOM[p.b][LANG === "zh" ? 1 : 0]}`;
+  document.getElementById("prQ").textContent = p.q;
+  document.getElementById("prDia").innerHTML = p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : "";
+  document.getElementById("prFb").innerHTML = "";
+  const hb = document.getElementById("prHint"); hb.hidden = false;
+  hb.onclick = () => { SFX.hint(); PR.hinted = true; document.getElementById("prFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
+  const body = document.getElementById("prBody"); body.innerHTML = answerUi(p);
+  if (p.type === "mc") {
+    body.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+      if (PR.lock) return; const ok = Number(b.dataset.i) === p.answer;
+      b.classList.add(ok ? "right" : "wrong"); if (!ok) body.querySelector(`.choice[data-i="${p.answer}"]`).classList.add("right");
+      body.querySelectorAll(".choice").forEach(x => (x.disabled = true)); practiceAnswer(ok);
+    });
+  } else {
+    const pos = p.dials.map(() => 0);
+    const show = (d, v) => { const f = body.querySelector("#face" + d); if (f) f.textContent = p.dials[d][v]; };
+    body.querySelectorAll(".arr").forEach(b => b.onclick = () => { if (PR.lock) return; const d = Number(b.dataset.d), n = p.dials[d].length; pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click(); show(d, pos[d]); });
+    body.querySelector("#dok").onclick = () => {
+      if (PR.lock) return; const ok = pos.every((x, i) => x === p.answer[i]);
+      body.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true));
+      if (!ok) p.answer.forEach((a, d) => show(d, a));
+      practiceAnswer(ok);
+    };
+  }
+  practiceStatus();
+}
+function practiceAnswer(ok) {
+  if (!PR || PR.lock) return; PR.lock = true;
+  const pid = PR.cur, p = pidQ(pid), av = document.getElementById("prAv");
+  document.getElementById("prHint").hidden = true;
+  if (ok) {
+    PR.streak++; PR.best = Math.max(PR.best, PR.streak);
+    if (S.mistakes.includes(pid)) { S.mistakes = S.mistakes.filter(m => m !== pid); PR.fixed++; }
+    if (!PR.hinted && !PR.retry && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); }
+    SFX.right(); if (av) av.innerHTML = avatar("chiikawa", "happy");
+    const d = document.createElement("div"); d.className = "plus"; d.textContent = `${PR.streak}/${PRACTICE_GOAL}`; document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+  } else {
+    PR.streak = 0; PR.wrong++; addMistake(pid);
+    // the missed question comes back 2–5 questions later
+    PR.pending.push({ pid, due: PR.served + 2 + Math.floor(Math.random() * 4) });
+    SFX.wrong(); if (av) av.innerHTML = avatar("chiikawa", "cry");
+  }
+  save(); practiceStatus();
+  if (ok && PR.streak >= PRACTICE_GOAL) { PR.nextT = setTimeout(practiceDone, 700); return; }
+  const answerText = p.type === "mc" ? p.choices[p.answer] : p.dials.map((o, d) => `${p.labels ? p.labels[d] + ": " : ""}${o[p.answer[d]]}`).join(" · ");
+  document.getElementById("prFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
+    ${ok ? say("usagi", `<b>${L("Yaha!", "呀哈！")}</b> ${PR.retry ? L("You fixed it! ✨", "你修正了！✨") : L("Correct!", "答對了！")}`, "happy")
+      : say("chiikawa", L("Wah... 😭 This one will come back soon. Let's remember it!", "哇……😭 這題很快會再出現，記住它吧！"), "cry")}
+    ${ok ? "" : `<p><b>${L("Answer", "答案")}:</b> ${esc(answerText)}</p>`}
+    <p>${esc(p.explain)}</p>${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
+    <div class="row"><button class="btn big" id="prNext">${L("Next ➜", "下一題 ➜")}</button></div></div>`;
+  const nb = document.getElementById("prNext"); nb.focus({ preventScroll: true });
+  nb.onclick = () => { SFX.tap(); if (av) av.innerHTML = avatar("chiikawa", "normal"); practiceNext(); };
+  document.getElementById("prFb").scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "nearest" });
+}
+function practiceDone() {
+  if (!PR) return;
+  const r = PR; stopPractice();
+  const bonus = S.practice.lastDay !== today(); const coins = bonus ? 20 : 10;
+  S.practice.lastDay = today(); S.practice.best = Math.max(S.practice.best, r.best); S.stats.practiceRuns += 1;
+  S.coins += coins; save(true); checkTrophies(); lbSubmit(true);
+  SFX.fanfare(); yaha(); confetti(160);
+  openModal(`<span class="kicker">🔁 ${L("Practice complete", "練習完成")}</span><h2>${L(`🎉 ${PRACTICE_GOAL} in a row!`, `🎉 連續答對 ${PRACTICE_GOAL} 題！`)}</h2>
+    <div class="row" style="justify-content:center;gap:18px;font-size:1.1rem"><span>✅ ${L("Questions", "題數")}: ${r.served}</span><span>✨ ${L("Mistakes fixed", "修正錯題")}: ${r.fixed}</span><span class="pill coinpill">+${coins} 🌰${bonus ? L(" (×2 today)", "（今天雙倍）") : ""}</span></div>
+    ${say("usagi", L("YAHA!!! Mistakes are just practice in disguise! 🐰🎊", "呀哈！！！錯誤只是化了裝的練習！🐰🎊"), "happy")}
+    <p class="small muted">${mistakeCount() ? L(`${mistakeCount()} saved mistake(s) still waiting for next time.`, `還有 ${mistakeCount()} 題錯題留待下次。`) : L("Your mistake list is empty. Amazing! 🌟", "你的錯題清單已清空，太棒了！🌟")}</p>
+    <div class="row"><button class="btn big" id="prAgain">🔁 ${L("Practise again", "再練習")}</button><button class="btn plain" id="prMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
+  document.getElementById("prAgain").onclick = () => { SFX.tap(); startPractice(); };
+  document.getElementById("prMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
+}
+function practiceQuit() {
+  if (!PR) { renderMap(); return; }
+  const fixed = PR.fixed; stopPractice();
+  if (fixed) toast(L(`✨ ${fixed} mistake(s) fixed. Saved!`, `✨ 修正了 ${fixed} 題錯題，已儲存！`));
+  renderMap();
+}
+
+/* ============================================================
    6f. Switching language: copies English or Chinese text into the live data
    ============================================================ */
 const EN = JSON.parse(JSON.stringify({ rooms: ROOMS, hotspots: HOTSPOTS, tf: TF_BANK, pair: PAIR_BANK, odd: ODD_BANK, cloze: CLOZE_BANK, mix: MIX_BANK,
@@ -2245,6 +2401,7 @@ function setLang(l) {
   LANG = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
   applyLang(); $journal.innerHTML = "";
   if (RU) { renderTools(); return; }
+  if (PR) { renderTools(); closeModal(); practiceScreen(); if (PR.lock) practiceNext(); else practiceShow(); return; }
   closeModal();
   if (R) { R.qs = runQs(R.room); renderRoom(); } else if (S) renderMap(); else renderWelcome();
 }
@@ -2470,7 +2627,7 @@ function renderWelcome() {
 }
 
 function renderMap() {
-  stopRush(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
+  stopRush(); stopPractice(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
@@ -2491,6 +2648,7 @@ function renderMap() {
       <h2>🎮 ${L("Game modes", "遊戲模式")}</h2>
       <div class="modes">
         <button class="mode rush" id="mRush"><h3>⚡ ${L("Light Rush", "光速挑戰")}</h3><span class="muted small">${L("60 seconds of mixed quick questions. Earn 🌰 chestnuts for outfits and power-ups.", "60 秒混合快問快答。賺取 🌰 栗子換服飾和道具。")}</span><span class="small">${L("Best", "最高分")}: <b>${S.rush.best}</b> ${L("pts", "分")} ${S.rush.lastDay !== today() ? L("· <b>×2 today!</b>", "· <b>今天雙倍！</b>") : ""}</span></button>
+        <button class="mode practice" id="mPrac"><h3>🔁 ${L("Practice mode", "練習模式")}</h3><span class="muted small">${L(`Loops the questions you got wrong until you get ${PRACTICE_GOAL} right in a row.`, `重溫你答錯的題目，直至連續答對 ${PRACTICE_GOAL} 題。`)}</span><span class="small">${mistakeCount() ? L(`🔁 <b>${mistakeCount()}</b> mistake(s) to fix`, `🔁 <b>${mistakeCount()}</b> 題錯題待修正`) : L("✨ No mistakes saved", "✨ 暫無錯題")}</span></button>
         <button class="mode" id="mShop"><h3>👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</h3><span class="muted small">${L("Dress up Chiikawa and buy power-ups for the escape rooms.", "為吉伊卡哇打扮，並購買密室道具。")}</span><span class="small">🌰 <b>${S.coins}</b> ${L("chestnuts", "栗子")}</span></button>
         <button class="mode" id="mLb"><h3>🏅 ${L("Leaderboard", "排行榜")}</h3><span class="muted small">${L("The 10 most dedicated players.", "最努力的十位玩家。")}</span><span class="small">${L("Your points", "你的分數")}: <b>${dedication()}</b></span></button>
       </div>
@@ -2522,6 +2680,7 @@ function renderMap() {
     </section>`;
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
   document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
+  document.getElementById("mPrac").onclick = () => { SFX.init(); SFX.tap(); practiceIntro(); };
   document.getElementById("mShop").onclick = () => { SFX.init(); SFX.tap(); openShop(); };
   document.getElementById("mLb").onclick = () => { SFX.init(); SFX.tap(); openLeaderboard(); };
   const c = document.getElementById("chest");
@@ -2604,7 +2763,7 @@ const runQs = room => S.room_run[room.id].qids.map(id => room.pool.find(p => p.i
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
 function enterRoom(id) {
-  stopRush();
+  stopRush(); stopPractice();
   const room = ROOMS[roomIndex(id)];
   const replay = S.completed_rooms.includes(room.id);
   if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
@@ -2808,7 +2967,7 @@ function startJam(i, secs, reason) {
   ans.inert = true; ans.classList.add("jammed");
   const p = R.qs[i];
   const tick = () => {
-    if (R.cur !== i || !document.getElementById("jamBox")) return;
+    if (!R || R.cur !== i || !document.getElementById("jamBox")) return;
     const left = Math.ceil((R.jam[i] - Date.now()) / 1000);
     if (left <= 0) { ans.inert = false; ans.classList.remove("jammed"); jb.innerHTML = ""; SFX.click(); return; }
     jb.innerHTML = `<div class="jam" role="status"><b>🔒 ${esc(reason || R.jamReason || L("Lock jammed!", "鎖卡住了！"))}</b><span class="jt">${left}s</span>
@@ -2864,7 +3023,7 @@ function wireAnswer(p, box) {
 }
 function miss(box) {
   const i = R.cur, id = R.room.id, now = Date.now(), p = R.qs[i], run = S.room_run[id];
-  R.att[i] = (R.att[i] || 0) + 1; S.stats.run = 0;
+  R.att[i] = (R.att[i] || 0) + 1; S.stats.run = 0; addMistake(`${id}:${p.id}`);
   box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
   // Guard charm: blocks every penalty for this one wrong answer
   if (R.guard) {

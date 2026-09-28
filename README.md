@@ -43,6 +43,7 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 
 ## ⚡ Light Rush, 👗 Wardrobe and 🏅 Leaderboard
 
+- **🔁 Practice mode:** loops the questions you got wrong (in rooms or Light Rush). Get **15 right in a row** to finish; a wrong answer comes back 2–5 questions later and resets the streak. If there aren't enough saved mistakes, random questions from unlocked rooms fill in. Finishing gives +10 🌰 (double on the first finish each day).
 - **Light Rush:** 60 seconds of mixed quick questions (multiple choice, true/false, matching, put in order, odd one out, fill the gap, colour mixer). Combos give ×2 / ×3 points; a wrong answer costs 3 seconds. Every 10 points = 1 🌰 chestnut; the first round each day pays double.
 - **Wardrobe & Shop:** spend chestnuts on hats, glasses, hair clips and frames for Chiikawa, or on power-ups for the escape rooms: 🔦 Torch (removes a wrong answer / fixes a dial), ⏳ Time crystal (+60 s), 🛡️ Guard charm (blocks one wrong answer's penalties).
 - **Leaderboard:** top 10 by dedication points (10 per day played + 1 per lock + 10 per room + 5 per rush round + 25 per trophy). It needs a free Google Sheet: see [`leaderboard/SETUP.md`](leaderboard/SETUP.md), then put the web-app URL in `LEADERBOARD_URL` in `index.html`.
