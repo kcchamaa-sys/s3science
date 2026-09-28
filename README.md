@@ -19,6 +19,11 @@ A bite-sized, Chiikawa-themed escape room game for **S3 (Grade 9) Physics — Li
 
 Each room has 5 locks (puzzles). Wrong answers are safe: Hachiware gives a hint and you try again.
 
+- Wording follows HK S3 / junior physics conventions (erect, laterally inverted, m s⁻¹, infra-red, n = sin i / sin r, c = fλ).
+- After each lock: an explanation, an exam tip where useful, and bilingual key terms (English + 中文).
+- After each room: revision notes (重點筆記).
+- Sound effects are generated in the browser (🔊 button to mute). Animations respect the device's reduce-motion setting.
+
 ## Daily streak system
 
 - 🔥 **Streak:** +1 for each consecutive day you open the game.
@@ -31,4 +36,4 @@ Progress is saved in the browser (`localStorage`). The **🔒 Save data** panel 
 
 See [`PROMPT.md`](PROMPT.md) for the original Game Master spec.
 
-*Fan-made educational project. Characters are drawn as simple original doodles; Chiikawa belongs to Nagano.*
+*Fan-made educational project. Characters are original hand-drawn tributes, not official artwork; Chiikawa belongs to Nagano.*
