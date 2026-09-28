@@ -24,16 +24,20 @@ Each room has 5 locks (puzzles). Wrong answers are safe: Hachiware gives a hint 
 - After each room: revision notes (重點筆記).
 - Sound effects are generated in the browser (🔊 button to mute). Animations respect the device's reduce-motion setting.
 
-## Daily streak system
+## How a room works
 
-- 🔥 **Streak:** +1 for each consecutive day you open the game.
-- 🛡️ **Streak shields:** start with 1. A shield covers one missed day automatically. Earn 1 every 7-day milestone (max 3); the daily chest can also drop one.
-- 🎁 **Daily chest:** Momonga & Kuri-Manju's snack chest, once per day.
-- 🏅 **Badges & items:** earned the first time you escape each room.
-- 📈 **Physics mastery:** per topic, counts locks solved on the first try without a hint.
+- Tap the glowing **?** objects (bookshelf, wall clock, room object, locked box, safe). Each opens a puzzle: multiple choice, keypad lock or combination dials.
+- Each solved lock gives an item with one digit of the **door code**. Enter the 5 digits at the 🚪 exit door to escape.
+- 15-minute countdown per room. When it runs out the room keeps going in overtime, with no penalty.
+- **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.
 
-Progress is saved in the browser (`localStorage`). The **🔒 Save data** panel on the map shows the full JSON state and lets you copy it to another device or restore it.
+## Saving progress
 
-See [`PROMPT.md`](PROMPT.md) for the original Game Master spec.
+- **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Reopening the game shows a **Resume game** prompt.
+- **🔑 Save code:** a 5-character code (e.g. `K7Q2M`) or a link ending in `#K7Q2M` moves progress to another device with no account needed. It stores stars per room, locks solved in the current room, streak and shields. The game shows what a code contains before loading it.
 
-*Fan-made educational project. Characters are original hand-drawn tributes, not official artwork; Chiikawa belongs to Nagano.*
+## Daily streak
+
+- 🔥 +1 for each day in a row. 🛡️ Shields cover missed days (earn one every 7 days, max 3). 🎁 Daily snack chest.
+
+*Fan-made educational project. Characters are original Chiikawa-style drawings, not official artwork; Chiikawa belongs to Nagano.*
