@@ -2,6 +2,8 @@
 
 A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Light, Colours and Beyond**. Concept-only: there are **no calculations** anywhere in the game.
 
+🌐 **English / 繁體中文:** switch language with the 🌐 button (or on the welcome screen). Everything is translated using HK junior science terms; key-term chips stay bilingual.
+
 - **Play:** open `index.html` in any browser. No install, no build step.
 - **Session length:** one room ≈ 10–15 minutes. One room a day is the whole goal.
 
