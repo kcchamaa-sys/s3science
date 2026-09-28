@@ -1,32 +1,27 @@
 # 🔦 Chiikawa Physics Escape
 
-A bite-sized, Chiikawa-themed escape room game for **S3 (Grade 9) Physics — Light & Optics**.
+A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Light, Colours and Beyond**. Concept-only: there are **no calculations** anywhere in the game.
 
 - **Play:** open `index.html` in any browser. No install, no build step.
 - **Session length:** one room ≈ 10–15 minutes. One room a day is the whole goal.
 
-## Rooms
+## Rooms (Chapter 14 topics)
 
 | # | Room | Topic |
 |---|------|-------|
-| 1 | The Dark Cavern | Luminous / non-luminous, light travels in straight lines |
-| 2 | The Hall of Mirrors | Law of reflection, plane mirror images |
-| 3 | The Bent Pool | Refraction, refractive index, apparent depth |
-| 4 | The Crystal Fibre Tunnel | Critical angle, total internal reflection |
-| 5 | The Lens Workshop | Convex & concave lenses, magnification |
-| 6 | The Rainbow Prism Tower | Dispersion, visible spectrum, colour mixing & filters |
-| 7 | The Wave Observatory | Electromagnetic spectrum & its uses |
+| 1 | The Dark Cavern | Light propagation and sight (luminous objects, straight lines, parallel/divergent/convergent beams) |
+| 2 | The Hall of Mirrors | Reflection and plane mirrors (law of reflection, image features, periscopes, driving mirrors) |
+| 3 | The Bent Pool | Refraction (towards/away from the normal, shallow pools, bent chopsticks) |
+| 4 | The Crystal Fibre Tunnel | Total internal reflection (two conditions, optical fibres, prisms, diamonds) |
+| 5 | The Lens Workshop | Convex and concave lenses (images, magnifying glass, projector, peephole, short sight) |
+| 6 | The Rainbow Prism Tower | Visible spectrum and colours (dispersion, RGB mixing, object colours) |
+| 7 | The Wave Observatory | Electromagnetic spectrum (order, uses, hazards) |
 
-Each room has 5 locks (puzzles). Wrong answers are safe: Hachiware gives a hint and you try again.
-
-- Wording follows HK S3 / junior physics conventions (erect, laterally inverted, m s⁻¹, infra-red, n = sin i / sin r, c = fλ).
-- After each lock: an explanation, an exam tip where useful, and bilingual key terms (English + 中文).
-- After each room: revision notes (重點筆記).
-- Sound effects are generated in the browser (🔊 button to mute). Animations respect the device's reduce-motion setting.
+Puzzles are multiple choice or combination dials. 🎵 Soft background music is generated in the browser (music-box tune on the map, calmer mysterious tune in rooms) and can be turned off with the 🎵 button.
 
 ## How a room works
 
-- Tap the glowing **?** objects (bookshelf, wall clock, room object, locked box, safe). Each opens a puzzle: multiple choice, keypad lock or combination dials.
+- Tap the glowing **?** objects (bookshelf, wall clock, room object, locked box, safe). Each opens a puzzle: multiple choice or combination dials.
 - Each solved lock gives an item with one digit of the **door code**. Enter the 5 digits at the 🚪 exit door to escape.
 - 15-minute countdown per room. When it runs out the room keeps going in overtime, with no penalty.
 - **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.

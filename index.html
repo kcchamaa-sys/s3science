@@ -75,7 +75,7 @@ header.top {
 .tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .pill { border: var(--line); border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: .88rem; background: var(--yellow); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pill.saved { background: var(--green); animation: pop .4s ease-out; }
-@media (max-width: 560px) { .tools .lbl { display: none; } .brand .bt { display: none; } header.top { flex-wrap: nowrap; } .tools { gap: 6px; flex-wrap: nowrap; } }
+@media (max-width: 560px) { .tools .lbl { display: none; } .brand .bt { display: none; } .tools { gap: 6px; } .iconbtn { min-width: 42px; padding: 4px 8px; } }
 
 main { max-width: 1000px; margin: 0 auto; padding: 16px 16px 40px; display: grid; gap: 16px; }
 .card { background: #fff; border: var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px; display: grid; gap: 12px; min-width: 0; }
@@ -198,7 +198,9 @@ main { max-width: 1000px; margin: 0 auto; padding: 16px 16px 40px; display: grid
 .key.del { background: var(--pink-2); }
 .dials { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .dial { display: grid; gap: 6px; justify-items: center; }
+.dial .dlabel { font-size: .8rem; font-weight: 800; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 0 8px; text-align: center; }
 .dial .face { min-width: 128px; background: #fff; border: var(--line); border-radius: 14px; box-shadow: inset 0 -6px 0 var(--cream-2); padding: 12px 10px; font-weight: 800; text-align: center; font-size: 1.05rem; }
+@media (max-width: 560px) { .dials { flex-direction: column; align-items: stretch; } .dial { grid-template-columns: 48px 1fr 48px; align-items: center; } .dial .dlabel { grid-column: 1 / -1; justify-self: center; } .dial .face { min-width: 0; padding: 8px 6px; } .dial .arr { width: 48px; } }
 .dial .face.spin { animation: spin .25s ease-out; }
 .dial .arr { width: 56px; height: 38px; border: var(--line); border-radius: 10px; background: var(--blue); box-shadow: var(--shadow-sm); font-weight: 800; }
 .fb { border: var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 10px; }
@@ -305,7 +307,7 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
   <div class="tools" id="tools"></div>
 </header>
 <main id="app"></main>
-<footer>Fan-made study game for HK S3 Science (Light). Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.</footer>
+<footer>Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.</footer>
 <div id="modal"></div>
 <div id="journal"></div>
 <div id="toast" class="toast" hidden></div>
@@ -412,26 +414,106 @@ const SFX = {
 };
 
 /* ============================================================
+   2b. Background music: soft, generated live (no audio files).
+   Map: gentle music-box tune in C major. Rooms: slower, mysterious A-minor tune.
+   ============================================================ */
+const MUSIC_KEY = "escapeGameMusic";
+const SONGS = {
+  map: { bpm: 84,
+    chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]],
+    melody: [[76, 0, 79, 0, 81, 79, 76, 0], [72, 0, 76, 0, 74, 0, 0, 0], [81, 0, 79, 0, 76, 0, 74, 0], [74, 0, 76, 0, 79, 0, 0, 0],
+             [79, 0, 81, 0, 84, 81, 79, 0], [76, 0, 79, 0, 76, 74, 72, 0], [74, 0, 76, 0, 81, 0, 79, 0], [76, 0, 74, 0, 72, 0, 0, 0]] },
+  room: { bpm: 66,
+    chords: [[45, 48, 52], [41, 45, 48], [48, 52, 55], [43, 47, 50]],
+    melody: [[76, 0, 0, 0, 74, 0, 72, 0], [69, 0, 0, 0, 0, 0, 0, 0], [72, 0, 74, 0, 76, 0, 0, 0], [79, 0, 76, 0, 74, 0, 0, 0],
+             [81, 0, 79, 0, 76, 0, 0, 0], [74, 0, 72, 0, 69, 0, 0, 0], [72, 0, 0, 74, 76, 0, 0, 0], [74, 0, 0, 0, 0, 0, 0, 0]] }
+};
+const MUSIC = {
+  on: true, mode: "map", step: 0, next: 0, timer: null, out: null,
+  midi: m => 440 * Math.pow(2, (m - 69) / 12),
+  bus() {
+    const ctx = SFX.ctx; if (!ctx) return null;
+    if (!this.out) {
+      this.out = ctx.createGain(); this.out.gain.value = 0;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600;
+      this.out.connect(lp).connect(ctx.destination);
+    }
+    return this.out;
+  },
+  bell(freq, t, vol) {
+    const ctx = SFX.ctx, o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine"; o.frequency.value = freq; o2.type = "triangle"; o2.frequency.value = freq * 2;
+    const g2 = ctx.createGain(); g2.gain.value = .15;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+    o.connect(g); o2.connect(g2).connect(g); g.connect(this.out);
+    o.start(t); o2.start(t); o.stop(t + 1.7); o2.stop(t + 1.7);
+  },
+  pad(notes, t, dur) {
+    const ctx = SFX.ctx;
+    notes.forEach(m => [0, 4].forEach(det => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = this.midi(m); o.detune.value = det;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.05, t + .9); g.gain.setValueAtTime(.05, t + dur - .6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + .4);
+      o.connect(g).connect(this.out); o.start(t); o.stop(t + dur + .5);
+    }));
+  },
+  schedule() {
+    const ctx = SFX.ctx; if (!ctx || document.hidden) return;
+    const song = SONGS[this.mode], eighth = 30 / song.bpm;
+    if (this.next < ctx.currentTime) this.next = ctx.currentTime + .1;
+    while (this.next < ctx.currentTime + .6) {
+      const bar = Math.floor(this.step / 8) % song.melody.length, pos = this.step % 8;
+      if (pos === 0) this.pad(song.chords[bar % song.chords.length], this.next, eighth * 8);
+      const m = song.melody[bar][pos];
+      if (m) this.bell(this.midi(m), this.next, this.mode === "room" ? .07 : .08);
+      this.next += eighth; this.step++;
+    }
+  },
+  start() {
+    if (!this.on) return;
+    SFX.init(); const out = this.bus(); if (!out || this.timer) return;
+    const ctx = SFX.ctx;
+    out.gain.cancelScheduledValues(ctx.currentTime); out.gain.setTargetAtTime(.55, ctx.currentTime, .8);
+    this.next = ctx.currentTime + .15; this.timer = setInterval(() => this.schedule(), 150);
+  },
+  stop() {
+    if (this.out && SFX.ctx) this.out.gain.setTargetAtTime(0, SFX.ctx.currentTime, .3);
+    clearInterval(this.timer); this.timer = null;
+  },
+  setMode(m) { if (this.mode === m) return; this.mode = m; this.step = 0; }
+};
+try { MUSIC.on = localStorage.getItem(MUSIC_KEY) !== "off"; } catch (e) {}
+
+/* ============================================================
    3. Diagrams
    ============================================================ */
 const RAY = "#E0567E", NORM = "#7A6A66", GLASS = "rgba(160,196,255,.45)";
+const arrowHead = (x, y, ang, c) => { const a = ang * Math.PI / 180, s = 9; return `<path d="M${x} ${y} l${(-s * Math.cos(a - .45)).toFixed(1)} ${(-s * Math.sin(a - .45)).toFixed(1)} M${x} ${y} l${(-s * Math.cos(a + .45)).toFixed(1)} ${(-s * Math.sin(a + .45)).toFixed(1)}" stroke="${c}" stroke-width="3" stroke-linecap="round" fill="none"/>`; };
 const DIAGRAMS = {
-  mirror30: `<svg class="diagram" viewBox="0 0 320 175" role="img" aria-label="A light ray strikes a plane mirror at 30 degrees to the mirror surface">
-    <line x1="30" y1="140" x2="290" y2="140" stroke="${INK}" stroke-width="4"/>
-    <g stroke="${INK}" stroke-width="1.5">${Array.from({ length: 13 }, (_, i) => `<line x1="${36 + i * 20}" y1="142" x2="${28 + i * 20}" y2="154"/>`).join("")}</g>
-    <line x1="160" y1="140" x2="160" y2="18" stroke="${NORM}" stroke-width="2" stroke-dasharray="6 5"/>
-    <text x="166" y="28" fill="${NORM}" font-size="12">normal</text>
-    <line x1="40" y1="70.7" x2="160" y2="140" stroke="${RAY}" stroke-width="3"/>
-    <path d="M92 104 l12 3 l-6 -10" fill="none" stroke="${RAY}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M110 140 A50 50 0 0 0 116.7 115" fill="none" stroke="${INK}" stroke-width="1.5"/>
-    <text x="80" y="134" fill="${INK}" font-size="14" font-weight="700">30°</text>
-    <text x="205" y="170" fill="${INK}" font-size="12">plane mirror</text></svg>`,
-  glassblock: `<svg class="diagram" viewBox="0 0 320 190" role="img" aria-label="A ray enters a glass block from air: angle of incidence 50 degrees, angle of refraction 30 degrees">
+  beams: `<svg class="diagram" viewBox="0 0 330 150" role="img" aria-label="Three beams of light labelled A, B and C: A spreads out from a point, B has rays side by side, C has rays meeting at a point">
+    <g stroke="${RAY}" stroke-width="2.5" stroke-linecap="round">
+      <circle cx="18" cy="70" r="5" fill="${RAY}"/><path d="M18 70 L100 30 M18 70 L100 70 M18 70 L100 110"/>
+      <path d="M125 40 H205 M125 70 H205 M125 100 H205"/>
+      <path d="M230 30 L310 70 M230 70 L310 70 M230 110 L310 70"/><circle cx="310" cy="70" r="4" fill="${RAY}"/>
+    </g>
+    ${arrowHead(100, 30, -26, RAY)}${arrowHead(100, 70, 0, RAY)}${arrowHead(100, 110, 26, RAY)}
+    ${arrowHead(205, 40, 0, RAY)}${arrowHead(205, 70, 0, RAY)}${arrowHead(205, 100, 0, RAY)}
+    <text x="52" y="142" fill="${INK}" font-size="16" font-weight="800">A</text><text x="160" y="142" fill="${INK}" font-size="16" font-weight="800">B</text><text x="266" y="142" fill="${INK}" font-size="16" font-weight="800">C</text></svg>`,
+  mirrorChoice: `<svg class="diagram" viewBox="0 0 320 175" role="img" aria-label="An incident ray hits a plane mirror. Three possible reflected rays are labelled A, B and C">
+    <line x1="20" y1="145" x2="300" y2="145" stroke="${INK}" stroke-width="4"/>
+    <g stroke="${INK}" stroke-width="1.5">${Array.from({ length: 14 }, (_, i) => `<line x1="${26 + i * 20}" y1="147" x2="${18 + i * 20}" y2="159"/>`).join("")}</g>
+    <line x1="160" y1="145" x2="160" y2="15" stroke="${NORM}" stroke-width="2" stroke-dasharray="6 5"/><text x="166" y="24" fill="${NORM}" font-size="12">normal</text>
+    <line x1="50" y1="45" x2="160" y2="145" stroke="${RAY}" stroke-width="3"/>${arrowHead(110, 100, 42, RAY)}
+    <g stroke="#5B8FC9" stroke-width="3"><line x1="160" y1="145" x2="195" y2="25"/><line x1="160" y1="145" x2="270" y2="45"/><line x1="160" y1="145" x2="300" y2="112"/></g>
+    <text x="198" y="22" fill="${INK}" font-size="15" font-weight="800">A</text><text x="274" y="44" fill="${INK}" font-size="15" font-weight="800">B</text><text x="300" y="106" fill="${INK}" font-size="15" font-weight="800">C</text>
+    <text x="20" y="172" fill="${INK}" font-size="12">plane mirror</text></svg>`,
+  refractOut: `<svg class="diagram" viewBox="0 0 320 190" role="img" aria-label="A ray travels up through a glass block and reaches the top surface. Three possible paths in the air are labelled A, B and C">
     <rect x="20" y="95" width="280" height="85" fill="${GLASS}" stroke="${INK}" stroke-width="2"/>
     <text x="28" y="172" fill="${INK}" font-size="12">glass</text><text x="28" y="22" fill="${INK}" font-size="12">air</text>
     <line x1="160" y1="15" x2="160" y2="185" stroke="${NORM}" stroke-width="2" stroke-dasharray="6 5"/>
-    <line x1="65" y1="15" x2="160" y2="95" stroke="${RAY}" stroke-width="3"/><line x1="160" y1="95" x2="205" y2="173" stroke="${RAY}" stroke-width="3"/>
-    <text x="164" y="58" fill="${INK}" font-size="14" font-weight="700">i = 50°</text><text x="170" y="140" fill="${INK}" font-size="14" font-weight="700">r = 30°</text></svg>`,
+    <line x1="100" y1="175" x2="160" y2="95" stroke="${RAY}" stroke-width="3"/>${arrowHead(130, 135, -53, RAY)}
+    <g stroke="#5B8FC9" stroke-width="3"><line x1="160" y1="95" x2="258" y2="48"/><line x1="160" y1="95" x2="214" y2="23"/><line x1="160" y1="95" x2="178" y2="22"/></g>
+    <text x="262" y="48" fill="${INK}" font-size="15" font-weight="800">A</text><text x="217" y="20" fill="${INK}" font-size="15" font-weight="800">B</text><text x="170" y="16" fill="${INK}" font-size="15" font-weight="800">C</text></svg>`,
   convex: `<svg class="diagram" viewBox="0 0 320 165" role="img" aria-label="Rays parallel to the principal axis pass through a convex lens and meet at one point">
     <line x1="10" y1="80" x2="310" y2="80" stroke="${NORM}" stroke-width="1.5" stroke-dasharray="6 5"/>
     <text x="236" y="156" fill="${NORM}" font-size="11">principal axis</text>
@@ -448,9 +530,9 @@ const DIAGRAMS = {
 };
 
 /* ============================================================
-   4. Chapter "Light 光": 7 topics = 7 escape rooms.
-   Wording follows HK junior secondary science (S3) conventions.
-   Puzzle types: mc (choices), keypad (number), dial (combination dials).
+   4. Chapter 14 "Light, Colours and Beyond": 7 topics = 7 escape rooms.
+   Concept-only content: no calculations anywhere.
+   Puzzle types: mc (choices) and dial (combination dials, optional labels).
    Each room: 5 hotspots (bookshelf, wall clock, special, locked box, safe) + exit door.
    ============================================================ */
 const HOTSPOTS = [
@@ -461,128 +543,128 @@ const HOTSPOTS = [
   { name: "Safe", x: 77.5, y: 63, item: "gem", itemName: "Light gem", line: "A heavy safe with a lock. Hmm..." }
 ];
 const DOOR = { x: 93, y: 47 };
+const WAVES = ["Radio waves", "Microwaves", "Infrared", "Visible light", "Ultraviolet", "X-rays", "Gamma rays"];
 
 const ROOMS = [
   {
-    id: "room1", topicNo: 1, name: "The Dark Cavern", topic: "Light sources and propagation of light", zh: "光源與光的傳播", mastery: "light_basics",
+    id: "room1", topicNo: 1, name: "The Dark Cavern", topic: "Light propagation and sight", zh: "光的傳播與視覺", mastery: "light_basics",
     tint: "#6E6784", floor: "#4E4760", dim: .72, special: "candle", specialName: "Candle", specialLine: "An unlit candle. Maybe the right answer will light it...",
     code: "30812", badge: "🏮 Cavern Lantern Badge", item: "✨ Glow Stone",
     intro: [["chiikawa", "cry", "Ya...! It's so dark in here... 😖"], ["hachiware", "normal", "Don't worry! Tap the glowing things in the room. Each one hides a light puzzle!"], ["usagi", "happy", "Yaha! Ura! 🔦"]],
     notes: [
-      "<b>Luminous objects</b> give out light by themselves (e.g. the Sun, a lit candle, a switched-on lamp).",
-      "<b>Non-luminous objects</b> do not give out light. We see them because they <b>reflect</b> light from a light source into our eyes.",
-      "Light travels in <b>straight lines</b> (rectilinear propagation of light). This explains the formation of <b>shadows</b>.",
-      "A <b>pinhole camera</b> forms a <b>real</b> and <b>inverted</b> image. A larger pinhole gives a brighter but more blurred image."
+      "<b>Luminous objects</b> give out light by themselves (e.g. the Sun, a lit candle). <b>Non-luminous objects</b> do not; we see them because light from a source is <b>reflected</b> by them into our eyes.",
+      "We see a luminous object when its light travels <b>directly</b> into our eyes.",
+      "Light travels in <b>straight lines</b>, so opaque objects form shadows.",
+      "A beam of light can be <b>parallel</b> (rays side by side), <b>divergent</b> (rays spreading out) or <b>convergent</b> (rays coming together).",
+      "Rays from a <b>near</b> object reach our eyes <b>diverging</b>; rays from a <b>distant</b> object (e.g. a star) arrive almost <b>parallel</b>."
     ],
-    formulas: ["Speed of light in vacuum = 3 × 10⁸ m s⁻¹"],
+    rules: ["Direct light: source → eye", "Reflected light: source → object → eye", "Near object → divergent rays; distant object → parallel rays"],
     puzzles: [
       { type: "mc", q: "A glowing sign says: \"Only a LUMINOUS object can open this.\" Which of the following is a luminous object?",
         choices: ["The Moon", "A lit candle", "A plane mirror", "A white sheet of paper"], answer: 1,
         hint: "Luminous objects give out light by THEMSELVES. Which one is doing that?",
         explain: "A lit candle is a luminous object: it gives out light by itself. The Moon, a mirror and paper are non-luminous objects. They only reflect light.",
         terms: [["luminous object", "發光體"], ["non-luminous object", "非發光體"]] },
-      { type: "mc", q: "Once the candle is lit, Chiikawa can see a book on the floor. Why?",
+      { type: "mc", q: "Once the candle is lit, Chiikawa can see a book on the floor. How does the light reach Chiikawa's eyes?",
         choices: ["Light from Chiikawa's eyes hits the book", "The book gives out light by itself", "Light from the candle is reflected by the book into Chiikawa's eyes", "The book absorbs all the light"], answer: 2,
         hint: "Follow the light: light source → object → ?",
-        explain: "We see a non-luminous object because light from a light source is reflected by the object and enters our eyes.",
-        terms: [["light source", "光源"], ["light ray", "光線"]] },
-      { type: "mc", q: "Under a tiny torch, Usagi's shadow has sharp edges. Which property of light explains the formation of shadows?",
-        choices: ["Light travels in straight lines", "Light bends around corners easily", "Light needs air to travel", "Light travels slower than sound"], answer: 0,
+        explain: "The book is non-luminous. Light from the candle is reflected by the book and travels into Chiikawa's eyes. (We see the candle itself because its light enters our eyes directly.)",
+        terms: [["light source", "光源"], ["reflect", "反射"]] },
+      { type: "dial", q: "Three beams of light are painted on the wall (see diagram). Set each dial to name the beam.", svg: "beams",
+        labels: ["Beam A", "Beam B", "Beam C"], dials: [["Parallel", "Divergent", "Convergent"], ["Parallel", "Divergent", "Convergent"], ["Parallel", "Divergent", "Convergent"]], answer: [1, 0, 2],
+        hint: "Divergent = spreading out. Convergent = coming together. Parallel = side by side, never meeting.",
+        explain: "A spreads out from a point (divergent), B's rays stay side by side (parallel), and C's rays come together to a point (convergent).",
+        terms: [["parallel beam", "平行光束"], ["divergent beam", "發散光束"], ["convergent beam", "會聚光束"]] },
+      { type: "mc", q: "Chiikawa looks at a candle nearby, then at a star far away. Which statement is correct?",
+        choices: ["Rays from both reach the eye as convergent beams", "Rays from the nearby candle reach the eye diverging; rays from the distant star arrive almost parallel", "Rays from the candle arrive parallel; rays from the star diverge", "Only the star's light travels in straight lines"], answer: 1,
+        hint: "Rays spread out from every point of an object. Over a huge distance, the few rays that reach your small eye are almost side by side.",
+        explain: "Rays from a near object are still spreading out (divergent) when they reach the eye. Rays from a very distant object have travelled so far that they arrive almost parallel.",
+        terms: [["near object", "近物"], ["distant object", "遠物"]] },
+      { type: "mc", q: "Under a tiny torch, Usagi's shadow has sharp edges. Which property of light explains shadows?",
+        choices: ["Light travels in straight lines", "Light bends around corners easily", "Light needs air to travel", "Light is always a convergent beam"], answer: 0,
         hint: "If light could curve around Usagi, would there be a shadow at all?",
-        explain: "Light travels in straight lines (rectilinear propagation of light). An opaque object blocks the light, so a shadow forms behind it.",
-        terms: [["rectilinear propagation of light", "光的直線傳播"], ["opaque", "不透明"], ["shadow", "影子"]] },
-      { type: "keypad", q: "The box asks for the speed of light in vacuum. Enter the missing power of ten: speed of light = 3 × 10^? m s⁻¹",
-        answer: 8, tol: 0, unit: "",
-        hint: "Light is about a million times faster than sound (340 m s⁻¹).",
-        explain: "Light travels at 3 × 10⁸ m s⁻¹ in vacuum, and almost the same speed in air.",
-        tip: "This is why we see lightning before we hear thunder.",
-        terms: [["vacuum", "真空"], ["speed of light", "光速"]] },
-      { type: "dial", q: "Hachiware's pinhole camera shows the exit sign on its screen. Set the dials to describe the image.",
-        dials: [["Real", "Virtual"], ["Erect", "Inverted"]], answer: [0, 1],
-        hint: "Light rays cross at the pinhole. And the image is caught on a screen...",
-        explain: "Light rays cross at the pinhole, so the image is inverted. It is formed on a screen, so it is real.",
-        terms: [["pinhole camera", "針孔照相機"], ["real image", "實像"], ["inverted", "倒立"]] }
+        explain: "Light travels in straight lines. An opaque object blocks the light, so a shadow forms behind it.",
+        terms: [["travels in straight lines", "直線傳播"], ["opaque", "不透明"], ["shadow", "影子"]] }
     ]
   },
   {
-    id: "room2", topicNo: 2, name: "The Hall of Mirrors", topic: "Reflection of light", zh: "光的反射", mastery: "reflection",
+    id: "room2", topicNo: 2, name: "The Hall of Mirrors", topic: "Reflection and plane mirrors", zh: "反射與平面鏡", mastery: "reflection",
     tint: "#CFE0FF", floor: "#A9B8D9", dim: .45, special: "mirror", specialName: "Magic mirror", specialLine: "A tall mirror. Chiikawa waves... the reflection waves back!",
     code: "90460", badge: "👑 Mirror Crown Badge", item: "🔷 Silver Mirror Shard",
-    intro: [["chiikawa", "cry", "Fuwa...! There are SO many Chiikawas! 😳"], ["hachiware", "normal", "They're just images in plane mirrors! The laws of reflection will get us out."], ["usagi", "happy", "Puru! Puru! 🪞"]],
+    intro: [["chiikawa", "cry", "Fuwa...! There are SO many Chiikawas! 😳"], ["hachiware", "normal", "They're just images in plane mirrors! The law of reflection will get us out."], ["usagi", "happy", "Puru! Puru! 🪞"]],
     notes: [
-      "<b>Laws of reflection:</b> (1) the incident ray, the reflected ray and the normal all lie in the same plane; (2) the angle of incidence = the angle of reflection.",
-      "All angles are measured from the <b>normal</b> (the line at 90° to the mirror).",
-      "The image in a plane mirror is <b>virtual</b>, <b>erect</b>, the <b>same size</b> as the object and <b>laterally inverted</b>.",
-      "Image distance = object distance."
+      "The <b>incident ray</b> hits the mirror; the <b>reflected ray</b> bounces off; the <b>normal</b> is the line at right angles to the mirror.",
+      "<b>Law of reflection:</b> angle of incidence = angle of reflection (both measured from the normal).",
+      "A plane mirror image is <b>virtual</b>, <b>laterally inverted</b> (left–right reversed), the <b>same size</b> as the object and as far <b>behind</b> the mirror as the object is in front.",
+      "Uses: <b>periscopes</b>, <b>driving mirrors</b>, and mirror walls that make rooms look deeper (interior design)."
     ],
-    formulas: ["angle of incidence (i) = angle of reflection (r)", "image distance = object distance"],
+    rules: ["angle of incidence = angle of reflection", "Image: virtual · laterally inverted · same size · equal distance behind the mirror"],
     puzzles: [
-      { type: "mc", q: "Which of the following is one of the laws of reflection?",
-        choices: ["The angle of incidence equals the angle of reflection", "The angle of reflection is always 90°", "The incident ray and the reflected ray are always parallel", "The angle of incidence is measured from the mirror surface"], answer: 0,
-        hint: "The normal is the line at 90° to the mirror. How do the two angles compare?",
-        explain: "Laws of reflection: (1) the incident ray, the reflected ray and the normal lie in the same plane; (2) angle of incidence = angle of reflection, both measured from the normal.",
-        terms: [["laws of reflection", "反射定律"], ["angle of incidence", "入射角"], ["angle of reflection", "反射角"], ["normal", "法線"]] },
-      { type: "keypad", q: "A light ray strikes a plane mirror at 30° to the mirror SURFACE (see diagram). What is the angle of reflection?", svg: "mirror30",
-        answer: 60, tol: 0.5, unit: "°",
-        hint: "Careful! Angles are measured from the normal. 90° − 30° = ?",
-        explain: "Angle of incidence = 90° − 30° = 60°. So the angle of reflection is also 60°.",
-        tip: "Exam trap: always measure angles from the normal, not from the mirror surface.",
+      { type: "mc", q: "Which of the following is the law of reflection?",
+        choices: ["The angle of incidence equals the angle of reflection", "The reflected ray always travels along the mirror", "The incident ray and the reflected ray are always parallel", "Angles are measured from the mirror surface"], answer: 0,
+        hint: "The normal is the line at right angles to the mirror. How do the two angles compare?",
+        explain: "Angle of incidence = angle of reflection, and both angles are measured from the normal.",
+        terms: [["law of reflection", "反射定律"], ["angle of incidence", "入射角"], ["angle of reflection", "反射角"], ["normal", "法線"]] },
+      { type: "mc", q: "A light ray hits the plane mirror (see diagram). Which ray, A, B or C, is the reflected ray?", svg: "mirrorChoice",
+        choices: ["Ray A", "Ray B", "Ray C", "None of them"], answer: 1,
+        hint: "Look at the angle between the incident ray and the dashed normal. The reflected ray makes the SAME angle on the other side of the normal.",
+        explain: "Ray B makes the same angle with the normal as the incident ray, on the other side. That's the law of reflection.",
         terms: [["incident ray", "入射線"], ["reflected ray", "反射線"]] },
-      { type: "dial", q: "Set the dials to describe the image formed by a plane mirror.",
-        dials: [["Real", "Virtual"], ["Erect", "Inverted"], ["Magnified", "Same size", "Diminished"]], answer: [1, 0, 1],
-        hint: "Can you catch your mirror image on a piece of paper? Is your reflection upside down? Is it bigger than you?",
-        explain: "The image in a plane mirror is virtual (it cannot be formed on a screen), erect, the same size as the object, and laterally inverted.",
-        terms: [["virtual image", "虛像"], ["erect", "正立"], ["plane mirror", "平面鏡"], ["lateral inversion", "左右倒轉"]] },
-      { type: "keypad", q: "Chiikawa stands 1.5 m in front of a plane mirror. What is the distance between Chiikawa and the image?",
-        answer: 3, tol: 0.01, unit: "m",
-        hint: "The image is as far BEHIND the mirror as Chiikawa is in FRONT of it.",
-        explain: "Image distance = object distance = 1.5 m. Distance between Chiikawa and the image = 1.5 + 1.5 = 3 m.",
-        terms: [["object distance", "物距"], ["image distance", "像距"]] },
-      { type: "mc", q: "Why is the word \"AMBULANCE\" printed in reverse on the front of an ambulance?",
-        choices: ["The image in a plane mirror is laterally inverted", "Mirrors turn images upside down", "Light slows down in mirrors", "It is just a design style"], answer: 0,
-        hint: "Drivers in front see the ambulance in their rear-view MIRROR.",
-        explain: "The image in a plane mirror is laterally inverted, so reversed writing reads correctly in a rear-view mirror.",
-        terms: [["lateral inversion", "左右倒轉"]] }
+      { type: "dial", q: "Set the dials to describe the image of Chiikawa in a plane mirror.",
+        labels: ["Type", "Left–right", "Size"], dials: [["Real", "Virtual"], ["Not reversed", "Laterally inverted"], ["Magnified", "Same size", "Diminished"]], answer: [1, 1, 1],
+        hint: "Can you catch your mirror image on paper? Does your raised right hand look like a left hand? Is your image bigger than you?",
+        explain: "The image is virtual (it can't be caught on a screen), laterally inverted (left and right swapped) and the same size. That's why AMBULANCE is printed reversed: drivers read it correctly in their driving mirror.",
+        terms: [["virtual image", "虛像"], ["lateral inversion", "左右倒轉"], ["plane mirror", "平面鏡"]] },
+      { type: "mc", q: "A tiny café covers one whole wall with a big mirror. Why does the café look much bigger?",
+        choices: ["The mirror makes the tables magnified", "The image of the room appears as far behind the mirror as the room is in front, so the room looks about twice as deep", "The mirror adds extra light, which makes rooms grow", "The mirror image is real, so customers can walk into it"], answer: 1,
+        hint: "Where does a plane mirror image appear: in front of, on, or behind the mirror?",
+        explain: "Images in a plane mirror appear as far behind the mirror as the objects are in front. The mirror shows a 'second room' behind the wall, so the café looks deeper.",
+        terms: [["interior design", "室內設計"], ["image distance", "像距"]] },
+      { type: "mc", q: "Usagi builds a periscope to peek over a wall. How are its two plane mirrors arranged?",
+        choices: ["Facing each other and parallel, each tilted at 45°", "Both lying flat on the floor", "At right angles to each other, facing away", "One mirror is enough; the second one is decoration"], answer: 0,
+        hint: "Light enters the top, turns down, then turns again into your eye. Both turns happen the same way.",
+        explain: "The two mirrors are parallel, each tilted at 45°. Each mirror turns the light through a right angle, so light from above the wall reaches your eye below.",
+        terms: [["periscope", "潛望鏡"], ["driving mirror", "倒後鏡"]] }
     ]
   },
   {
-    id: "room3", topicNo: 3, name: "The Bent Pool", topic: "Refraction of light", zh: "光的折射", mastery: "refraction",
+    id: "room3", topicNo: 3, name: "The Bent Pool", topic: "Refraction", zh: "折射", mastery: "refraction",
     tint: "#C3ECE8", floor: "#94C9C4", dim: .45, special: "tank", specialName: "Water tank", specialLine: "There's a key at the bottom of the tank... but it looks closer than it really is!",
     code: "15320", badge: "💧 Droplet Diver Badge", item: "💎 Water Droplet Gem",
-    intro: [["usagi", "happy", "Ura! *dives for the key in the tank and misses*"], ["hachiware", "normal", "The key looks closer than it is... That's refraction! Light bends when its speed changes."], ["chiikawa", "normal", "Ya... I'll hold the towel. 🫧"]],
+    intro: [["usagi", "happy", "Ura! *dives for the key in the tank and misses*"], ["hachiware", "normal", "The key looks closer than it is... That's refraction! Light bends when it crosses into a different medium."], ["chiikawa", "normal", "Ya... I'll hold the towel. 🫧"]],
     notes: [
-      "<b>Refraction</b> is the bending of light when it travels from one medium to another, because its speed changes.",
-      "Light entering an optically denser medium (e.g. air → glass) slows down and bends <b>towards the normal</b>. Leaving it, light bends <b>away from the normal</b>.",
-      "Along the normal (i = 0°), light does not bend.",
-      "Because of refraction, a pool looks shallower: <b>apparent depth &lt; real depth</b>."
+      "<b>Refraction</b> is the bending of light when it crosses the boundary between media with different <b>refractive indices</b>.",
+      "Light bends <b>towards the normal</b> when it enters a medium with a <b>higher</b> refractive index (e.g. air → glass or water).",
+      "Light bends <b>away from the normal</b> when it goes into a medium with a <b>lower</b> refractive index (e.g. water → air).",
+      "A ray along the normal does not bend.",
+      "Illusions: objects under water look <b>shallower / closer</b>; chopsticks look <b>bent</b> at the water surface."
     ],
-    formulas: ["Snell's law: n = sin i / sin r", "n = speed of light in vacuum / speed of light in the medium"],
+    rules: ["Lower → higher refractive index: bends TOWARDS the normal", "Higher → lower refractive index: bends AWAY FROM the normal", "Along the normal: no bending"],
     puzzles: [
-      { type: "mc", q: "A light ray travels from air into glass at an angle. What happens to the ray?",
-        choices: ["It speeds up and bends away from the normal", "It slows down and bends towards the normal", "It slows down but does not bend", "It is totally reflected"], answer: 1,
-        hint: "Glass is optically denser than air. Denser → slower → bends ___ the normal.",
-        explain: "When light enters an optically denser medium, it slows down and bends towards the normal.",
-        terms: [["refraction", "折射"], ["optically denser medium", "光密介質"]] },
+      { type: "mc", q: "A light ray travels from air into glass at an angle. Glass has a higher refractive index. What happens?",
+        choices: ["It bends away from the normal", "It bends towards the normal", "It does not bend at all", "It is always totally reflected"], answer: 1,
+        hint: "Going INTO a medium with a higher refractive index... towards or away from the normal?",
+        explain: "Entering a medium with a higher refractive index (air → glass), light bends towards the normal.",
+        terms: [["refraction", "折射"], ["refractive index", "折射率"], ["boundary", "界面"]] },
+      { type: "mc", q: "A ray inside the glass block reaches the top surface (see diagram). Which path, A, B or C, does it take in the air?", svg: "refractOut",
+        choices: ["Path A", "Path B", "Path C", "It stops at the surface"], answer: 0,
+        hint: "Glass → air means going into a LOWER refractive index. Towards or away from the dashed normal?",
+        explain: "Path A bends away from the normal, which is what happens when light goes from glass into air. Path B doesn't bend at all; path C bends the wrong way.",
+        terms: [["bends away from the normal", "偏離法線"], ["bends towards the normal", "偏向法線"]] },
       { type: "mc", q: "Why does the water tank look shallower than it really is?",
-        choices: ["Light from the bottom bends away from the normal as it leaves the water", "Water absorbs red light", "Light bends towards the normal as it leaves the water", "The water surface reflects all the light"], answer: 0,
+        choices: ["Light from the bottom bends away from the normal as it leaves the water, so the bottom appears higher", "Water absorbs red light", "Light bends towards the normal as it leaves the water", "The water surface reflects all the light"], answer: 0,
         hint: "Light going from water into air bends which way? Our eyes trace rays back in straight lines.",
-        explain: "Light from the bottom bends away from the normal as it leaves the water. Our eyes trace the rays back in straight lines, so the bottom appears higher. Apparent depth < real depth.",
+        explain: "Light from the bottom bends away from the normal as it leaves the water. Our eyes trace the rays back in straight lines, so the bottom seems higher: the tank looks shallower.",
         terms: [["real depth", "實深"], ["apparent depth", "視深"]] },
-      { type: "keypad", q: "A laser enters a glass block: angle of incidence = 50°, angle of refraction = 30°. Find the refractive index of the glass (2 d.p.).", svg: "glassblock",
-        answer: 1.53, tol: 0.03, unit: "",
-        hint: "n = sin i / sin r. sin 50° ≈ 0.766 and sin 30° = 0.5.",
-        explain: "n = sin 50° / sin 30° = 0.766 / 0.5 ≈ 1.53",
-        tip: "Set your calculator to DEG mode before using sin!",
-        terms: [["refractive index", "折射率"], ["Snell's law", "斯涅耳定律"], ["angle of refraction", "折射角"]] },
-      { type: "keypad", q: "The refractive index of glass is 1.5. Find the speed of light in the glass, in × 10⁸ m s⁻¹.",
-        answer: 2, tol: 0.02, unit: "× 10⁸ m s⁻¹",
-        hint: "Speed in glass = speed in vacuum / n = 3 × 10⁸ / 1.5",
-        explain: "Speed in glass = (3 × 10⁸) / 1.5 = 2 × 10⁸ m s⁻¹",
-        terms: [["speed of light", "光速"], ["medium", "介質"]] },
-      { type: "mc", q: "A light ray strikes the glass block along the normal (angle of incidence = 0°). What happens?",
-        choices: ["It bends towards the normal", "It bends away from the normal", "It goes straight through without bending, but slows down", "It undergoes total internal reflection"], answer: 2,
+      { type: "mc", q: "Chiikawa puts chopsticks in a bowl of water. They look bent at the water surface. Why?",
+        choices: ["The water really bends the chopsticks", "Light from the part under water is refracted as it leaves the water, so that part appears higher", "The chopsticks absorb light under water", "Light travels in curves inside water"], answer: 1,
+        hint: "Same idea as the shallow-looking tank!",
+        explain: "Light from the underwater part bends away from the normal as it leaves the water. That part appears higher than it really is, so the chopsticks look bent at the surface.",
+        terms: [["illusion", "錯覺"], ["medium", "介質"]] },
+      { type: "mc", q: "A light ray strikes the glass block along the normal. What happens?",
+        choices: ["It bends towards the normal", "It bends away from the normal", "It goes straight through without bending", "It is totally internally reflected"], answer: 2,
         hint: "If the ray already travels along the normal, which way could it bend?",
-        explain: "When the angle of incidence is 0°, the ray does not change direction. It still slows down inside the glass.",
+        explain: "A ray travelling along the normal crosses the boundary without changing direction.",
         terms: [["normal", "法線"]] }
     ]
   },
@@ -590,166 +672,167 @@ const ROOMS = [
     id: "room4", topicNo: 4, name: "The Crystal Fibre Tunnel", topic: "Total internal reflection", zh: "全內反射", mastery: "refraction",
     tint: "#DCD4FF", floor: "#B2A7E0", dim: .55, special: "crystal", specialName: "Crystal", specialLine: "Light is zig-zagging inside this crystal. It's trapped!",
     code: "41848", badge: "🌟 Fibre Guardian Badge", item: "🧵 Glowing Fibre Thread",
-    intro: [["chiikawa", "happy", "Wah... the light is zig-zagging inside the crystal! ✨"], ["hachiware", "normal", "That's total internal reflection! It's how optical fibres carry the internet."], ["usagi", "happy", "Yaha! 💫"]],
+    intro: [["chiikawa", "happy", "Wah... the light is zig-zagging inside the crystal! ✨"], ["hachiware", "normal", "That's total internal reflection! It's how optical fibres carry data."], ["usagi", "happy", "Yaha! 💫"]],
     notes: [
-      "<b>Total internal reflection (TIR)</b> happens only when: (1) light travels from an optically <b>denser</b> medium to an optically <b>less dense</b> medium, and (2) the angle of incidence is <b>greater than the critical angle</b>.",
-      "At the critical angle, the angle of refraction is 90°.",
-      "Uses: optical fibres, endoscopes, prism periscopes, the sparkle of diamonds."
+      "<b>Total internal reflection (TIR)</b> needs <b>two</b> conditions:",
+      "(1) Light travels from a medium of <b>higher</b> refractive index to one of <b>lower</b> refractive index (e.g. glass or water → air).",
+      "(2) The angle of incidence is <b>greater than the critical angle</b>.",
+      "If the angle of incidence is smaller than the critical angle, most light <b>refracts out</b> (a little is reflected).",
+      "Uses: <b>optical fibres</b> (data transmission), <b>triangular prisms</b> in binoculars and periscopes, <b>sparkling diamonds</b>."
     ],
-    formulas: ["sin c = 1 / n   (c = critical angle)"],
+    rules: ["Condition 1: higher → lower refractive index", "Condition 2: angle of incidence > critical angle", "Both conditions → ALL light reflected back inside"],
     puzzles: [
       { type: "mc", q: "Which of the following gives the TWO conditions for total internal reflection?",
-        choices: ["Less dense → denser medium; angle of incidence < critical angle", "Denser → less dense medium; angle of incidence > critical angle", "Denser → less dense medium; angle of incidence = 0°", "Any medium; angle of incidence > 90°"], answer: 1,
-        hint: "TIR happens INSIDE the denser material, when the ray hits the boundary at a large angle.",
-        explain: "TIR needs light travelling from an optically denser to a less dense medium, and an angle of incidence greater than the critical angle.",
+        choices: ["Lower → higher refractive index; angle of incidence smaller than the critical angle", "Higher → lower refractive index; angle of incidence greater than the critical angle", "Higher → lower refractive index; ray along the normal", "Any medium; any angle"], answer: 1,
+        hint: "TIR happens INSIDE the glass or water, when the ray hits the boundary at a large angle.",
+        explain: "TIR needs light travelling from a higher to a lower refractive index (e.g. glass → air) AND an angle of incidence greater than the critical angle.",
         terms: [["total internal reflection", "全內反射"], ["critical angle", "臨界角"]] },
-      { type: "keypad", q: "The refractive index of the crystal is 1.5. Calculate its critical angle (1 d.p.).",
-        answer: 41.8, tol: 0.6, unit: "°",
-        hint: "sin c = 1 / n = 1 / 1.5 ≈ 0.667. Then press sin⁻¹.",
-        explain: "sin c = 1 / 1.5 = 0.667, so c = sin⁻¹(0.667) ≈ 41.8°",
-        terms: [["optically less dense medium", "光疏介質"]] },
-      { type: "mc", q: "Inside the crystal (critical angle ≈ 42°), a light ray hits the boundary with air at an angle of incidence of 60°. What happens?",
-        choices: ["It refracts out into the air", "It travels along the boundary", "It undergoes total internal reflection", "It stops"], answer: 2,
-        hint: "Compare 60° with the critical angle 42°.",
-        explain: "60° > 42° (critical angle), so all the light is reflected back into the crystal: total internal reflection.",
-        terms: [["boundary", "界面"]] },
+      { type: "dial", q: "Set the lock to the conditions that trap light inside the crystal.",
+        labels: ["Light travels", "Angle of incidence"], dials: [["air → glass", "glass → air"], ["smaller than the critical angle", "greater than the critical angle"]], answer: [1, 1],
+        hint: "Light must be trying to LEAVE the crystal, and hitting the surface at a big angle.",
+        explain: "Glass → air (higher → lower refractive index) with an angle of incidence greater than the critical angle: all the light is reflected back inside.",
+        terms: [["optically denser medium", "光密介質"], ["optically less dense medium", "光疏介質"]] },
+      { type: "mc", q: "Inside the crystal, a ray hits the boundary with air at an angle SMALLER than the critical angle. What happens?",
+        choices: ["All the light is reflected back inside", "Most of the light refracts out into the air, bending away from the normal", "The light stops at the boundary", "The light bends towards the normal"], answer: 1,
+        hint: "Condition 2 for TIR is not met...",
+        explain: "The angle of incidence is too small for TIR, so most light refracts out into the air (bending away from the normal). Only a little is reflected.",
+        terms: [["angle of incidence", "入射角"]] },
+      { type: "mc", q: "How does an optical fibre carry internet data as light over long distances?",
+        choices: ["The light is absorbed and re-made at each bend", "The light undergoes total internal reflection again and again along the fibre", "The fibre is coated with plane mirrors on the outside", "The light travels in a curve by itself"], answer: 1,
+        hint: "Remember the zig-zagging light in the crystal!",
+        explain: "Light inside the fibre keeps hitting the boundary at angles greater than the critical angle, so it is totally internally reflected again and again and stays inside.",
+        terms: [["optical fibre", "光纖"], ["data transmission", "數據傳輸"]] },
       { type: "mc", q: "Which of the following does NOT make use of total internal reflection?",
-        choices: ["Optical fibres", "Prism periscope", "The sparkle of a diamond", "A bathroom plane mirror"], answer: 3,
+        choices: ["Triangular prisms in binoculars", "Optical fibres", "The sparkle of a diamond", "A bathroom plane mirror"], answer: 3,
         hint: "One of these reflects light from a shiny metal coating.",
-        explain: "A bathroom mirror uses ordinary reflection from a silvered surface. Optical fibres, prism periscopes and diamonds use total internal reflection.",
-        terms: [["optical fibre", "光纖"], ["endoscope", "內窺鏡"], ["periscope", "潛望鏡"]] },
-      { type: "keypad", q: "The refractive index of water is 1.33. Calculate the critical angle of water (1 d.p.).",
-        answer: 48.8, tol: 0.6, unit: "°",
-        hint: "Same method: sin c = 1 / 1.33",
-        explain: "sin c = 1 / 1.33 ≈ 0.752, so c ≈ 48.8°",
-        terms: [["critical angle", "臨界角"]] }
+        explain: "A bathroom mirror reflects light from a silvered surface (ordinary reflection). Prisms in binoculars and periscopes, optical fibres and diamonds all use total internal reflection.",
+        terms: [["binoculars", "雙筒望遠鏡"], ["prism", "稜鏡"]] }
     ]
   },
   {
-    id: "room5", topicNo: 5, name: "The Lens Workshop", topic: "Lenses", zh: "透鏡", mastery: "lenses",
+    id: "room5", topicNo: 5, name: "The Lens Workshop", topic: "Convex and concave lenses", zh: "凸透鏡與凹透鏡", mastery: "lenses",
     tint: "#FFE9C7", floor: "#E3C79C", dim: .42, special: "lens", specialName: "Lens bench", specialLine: "A big lens on a stand. Everything looks different through it!",
     code: "23005", badge: "🔭 Lens Crafter Badge", item: "🔍 Magnifying Glass",
     intro: [["hachiware", "normal", "A workshop full of lenses! Let's focus the light onto each lock."], ["chiikawa", "happy", "Fuwa... everything looks big through this one! 👀"], ["usagi", "happy", "Ura! Ura! 🔎"]],
     notes: [
-      "<b>Convex lens</b> = converging lens. Rays parallel to the principal axis meet at the <b>principal focus (F)</b>. <b>Focal length (f)</b> = distance from the optical centre to F.",
-      "<b>Concave lens</b> = diverging lens. It always forms a <b>virtual, erect, diminished</b> image.",
-      "Convex lens images: object beyond 2F → real, inverted, diminished (camera, eye); at 2F → real, inverted, same size; between F and 2F → real, inverted, magnified (projector); within F → virtual, erect, magnified (magnifying glass)."
+      "<b>Convex (converging) lens:</b> thicker in the middle. It converges parallel rays to the <b>principal focus (F)</b>.",
+      "A convex lens forms <b>real</b> or <b>virtual</b> images depending on how far away the object is. Uses: <b>magnifying glasses</b>, <b>cameras</b>, <b>projectors</b>.",
+      "<b>Concave (diverging) lens:</b> thinner in the middle. It spreads parallel rays out so they <b>appear to come from F'</b>.",
+      "A concave lens always forms a <b>virtual, erect, diminished</b> image. Uses: <b>short-sight spectacles</b>, <b>front-door peepholes</b>."
     ],
-    formulas: ["magnification = image height / object height"],
+    rules: ["Convex: thicker middle · converges light", "Concave: thinner middle · diverges light · image always virtual, erect, diminished", "Object very close to a convex lens → virtual, erect, magnified (magnifying glass)"],
     puzzles: [
       { type: "mc", q: "Rays parallel to the principal axis pass through a convex lens (see diagram). Where do they meet?", svg: "convex",
-        choices: ["At the optical centre", "At the principal focus (F)", "They never meet", "At 2F on the same side"], answer: 1,
+        choices: ["At the optical centre", "At the principal focus (F)", "They never meet", "Back on the same side as they came from"], answer: 1,
         hint: "A convex lens is a CONVERGING lens. The meeting point starts with 'principal'...",
-        explain: "A convex lens converges rays parallel to the principal axis to the principal focus F.",
-        terms: [["convex lens", "凸透鏡"], ["principal focus", "主焦點"], ["focal length", "焦距"], ["principal axis", "主軸"], ["optical centre", "光心"]] },
-      { type: "dial", q: "Set the dials to describe the image of a real object formed by a CONCAVE lens.",
-        dials: [["Real", "Virtual"], ["Erect", "Inverted"], ["Magnified", "Same size", "Diminished"]], answer: [1, 0, 2],
+        explain: "A convex lens converges parallel rays to one point: the principal focus F.",
+        terms: [["convex lens", "凸透鏡"], ["principal focus", "主焦點"], ["principal axis", "主軸"], ["converging", "會聚"]] },
+      { type: "dial", q: "Set the dials to describe the image formed by a CONCAVE lens.",
+        labels: ["Type", "Way up", "Size"], dials: [["Real", "Virtual"], ["Erect", "Inverted"], ["Magnified", "Same size", "Diminished"]], answer: [1, 0, 2],
         hint: "A concave lens spreads light out. The rays never actually meet...",
-        explain: "A concave lens always forms a virtual, erect and diminished image.",
+        explain: "A concave lens always forms a virtual, erect and diminished image, wherever the object is.",
         terms: [["concave lens", "凹透鏡"], ["diverging", "發散"], ["diminished", "縮小"]] },
-      { type: "mc", q: "To use a convex lens as a magnifying glass, where should the object be placed?",
-        choices: ["Beyond 2F", "At 2F", "Between the lens and F", "Exactly at F"], answer: 2,
-        hint: "A magnifying glass gives a virtual, erect image. The object must be very close.",
-        explain: "Object within the focal length → virtual, erect, magnified image: a magnifying glass.",
-        terms: [["magnifying glass", "放大鏡"], ["magnified", "放大"]] },
-      { type: "keypad", q: "A 2 cm tall acorn forms an image 6 cm tall through a lens. What is the magnification?",
-        answer: 3, tol: 0.01, unit: "",
-        hint: "magnification = image height / object height",
-        explain: "magnification = 6 cm / 2 cm = 3",
-        tip: "Magnification has no unit.",
-        terms: [["magnification", "放大率"]] },
-      { type: "dial", q: "A projector places the slide between F and 2F of a convex lens. Set the dials to describe the image on the screen.",
-        dials: [["Real", "Virtual"], ["Erect", "Inverted"], ["Magnified", "Same size", "Diminished"]], answer: [0, 1, 0],
-        hint: "The picture appears on a SCREEN and it is BIGGER than the slide.",
-        explain: "Object between F and 2F → real, inverted, magnified image beyond 2F. That's why slides go in upside down!",
-        terms: [["projector", "投影機"], ["converging", "會聚"]] }
+      { type: "mc", q: "To use a convex lens as a magnifying glass, where should the object be?",
+        choices: ["Very far from the lens", "Closer to the lens than the principal focus", "Exactly at the principal focus", "On the other side of the lens"], answer: 1,
+        hint: "A magnifying glass gives a virtual, erect, magnified image. The object must be very close.",
+        explain: "When the object is closer to a convex lens than F, the lens forms a virtual, erect and magnified image: a magnifying glass.",
+        terms: [["magnifying glass", "放大鏡"], ["magnified", "放大"], ["erect", "正立"]] },
+      { type: "mc", q: "Which lens is used in short-sight spectacles and in front-door peepholes?",
+        choices: ["Convex lens", "Concave lens", "A plane mirror", "A triangular prism"], answer: 1,
+        hint: "A peephole shows the whole visitor as a SMALL, upright picture...",
+        explain: "Concave lenses diverge light. A peephole uses one to give a small, erect, virtual view of the whole doorway, and short-sight spectacles use them to spread light before it enters the eye.",
+        terms: [["short sight", "近視"], ["peephole", "防盜眼"]] },
+      { type: "dial", q: "A projector shows a big picture on the screen using a convex lens. Set the dials to describe that image.",
+        labels: ["Type", "Way up", "Size"], dials: [["Real", "Virtual"], ["Erect", "Inverted"], ["Magnified", "Same size", "Diminished"]], answer: [0, 1, 0],
+        hint: "The picture appears ON A SCREEN and it is BIGGER than the slide.",
+        explain: "A projector's image is real (it forms on a screen), inverted and magnified. That's why slides are loaded upside down!",
+        terms: [["projector", "投影機"], ["real image", "實像"], ["inverted", "倒立"]] }
     ]
   },
   {
-    id: "room6", topicNo: 6, name: "The Rainbow Prism Tower", topic: "Dispersion and colours", zh: "色散與顏色", mastery: "colours",
+    id: "room6", topicNo: 6, name: "The Rainbow Prism Tower", topic: "Visible spectrum and colours", zh: "可見光譜與顏色", mastery: "colours",
     tint: "#FFDCE6", floor: "#E8B3C2", dim: .42, special: "prism", specialName: "Prism", specialLine: "A glass prism is making a rainbow on the wall!",
     code: "70471", badge: "🌈 Rainbow Keeper Badge", item: "🔺 Prism Crystal",
     intro: [["momonga", "happy", "Look at me! I'm the cutest rainbow! 🌈"], ["hachiware", "normal", "That's white light split by a prism. It's called dispersion!"], ["chiikawa", "happy", "Ya...! So pretty! ✨"]],
     notes: [
-      "<b>Dispersion:</b> a prism splits white light into a <b>spectrum</b>: red, orange, yellow, green, blue, indigo, violet. Violet is refracted the most; red the least.",
-      "<b>Primary colours of light:</b> red, green, blue. <b>Secondary colours:</b> yellow, magenta, cyan.",
-      "An object looks a certain colour because it <b>reflects</b> that colour and <b>absorbs</b> the others.",
-      "A <b>colour filter</b> lets only its own colour(s) pass through."
+      "<b>White light</b> is a mixture of colours. A prism <b>disperses</b> it into a spectrum: red, orange, yellow, green, blue, indigo, violet. <b>Red bends least; violet bends most.</b>",
+      "<b>Primary colours of light:</b> red, green, blue (RGB).",
+      "<b>Mixing:</b> red + green = yellow; red + blue = magenta; green + blue = cyan; red + green + blue = white.",
+      "An object appears the colour of the light it <b>reflects</b>; it <b>absorbs</b> all other colours. Under coloured light, it can only reflect the colours that are there."
     ],
-    formulas: ["red + green = yellow", "red + blue = magenta", "green + blue = cyan", "red + green + blue = white"],
+    rules: ["Red bends least · violet bends most", "R + G = Yellow · R + B = Magenta · G + B = Cyan · R + G + B = White", "Seen colour = colours reflected"],
     puzzles: [
-      { type: "mc", q: "White light passes through a prism (see diagram). Which colour is at B, refracted the MOST?", svg: "prism",
+      { type: "mc", q: "White light passes through a prism (see diagram). Which colour is at B, bent the MOST?", svg: "prism",
         choices: ["Red", "Green", "Yellow", "Violet"], answer: 3,
-        hint: "ROYGBIV: the colour at the end is refracted the most.",
-        explain: "Violet is refracted the most and red the least. Splitting white light into colours is dispersion.",
+        hint: "ROYGBIV: red bends least, and the colour at the other end bends most.",
+        explain: "Violet bends the most and red the least. Splitting white light into colours is called dispersion.",
         terms: [["dispersion", "色散"], ["prism", "稜鏡"], ["spectrum", "光譜"]] },
       { type: "mc", q: "Which of the following shows the correct order of the visible spectrum?",
         choices: ["Red, orange, yellow, green, blue, indigo, violet", "Red, yellow, orange, green, indigo, blue, violet", "Violet, green, red, orange, yellow, blue, indigo", "Blue, red, green, yellow, orange, violet, indigo"], answer: 0,
         hint: "ROY G BIV!",
-        explain: "Red, orange, yellow, green, blue, indigo, violet. Red has the longest wavelength, violet the shortest.",
-        terms: [["visible spectrum", "可見光譜"]] },
-      { type: "dial", q: "Kuri-Manju shines red light and green light onto the same spot on a white wall. Turn the dial to the colour that appears.",
-        dials: [["White", "Brown", "Yellow", "Cyan", "Magenta"]], answer: [2],
-        hint: "Mixing LIGHT is not like mixing paint! Red + green light = ?",
-        explain: "Red + green = yellow. (Red + blue = magenta, green + blue = cyan, all three = white.)",
+        explain: "Red, orange, yellow, green, blue, indigo, violet. White light is a mixture of all of them.",
+        terms: [["visible spectrum", "可見光譜"], ["white light", "白光"]] },
+      { type: "dial", q: "Kuri-Manju shines two coloured spotlights onto a white wall. Set each dial to the colour that appears.",
+        labels: ["Red + Green", "Green + Blue", "Red + Blue"], dials: [["White", "Yellow", "Cyan", "Magenta"], ["White", "Yellow", "Cyan", "Magenta"], ["White", "Yellow", "Cyan", "Magenta"]], answer: [1, 2, 3],
+        hint: "Mixing LIGHT is not like mixing paint! R + G = Y, G + B = C, R + B = M.",
+        explain: "Red + green = yellow, green + blue = cyan, red + blue = magenta. All three primary colours together make white.",
         terms: [["primary colours of light", "光的三原色"], ["secondary colours", "二次色"]] },
-      { type: "mc", q: "A red rose is placed under blue light only. What colour does the rose appear?",
+      { type: "mc", q: "A red rose is lit by blue light only. What colour does it appear?",
         choices: ["Red", "Blue", "Purple", "Black"], answer: 3,
         hint: "A red object reflects only red light. Is there any red light?",
-        explain: "The rose absorbs blue light and there is no red light to reflect, so it appears black.",
+        explain: "The rose absorbs blue light and there is no red light for it to reflect, so it appears black.",
         terms: [["absorb", "吸收"], ["reflect", "反射"]] },
-      { type: "mc", q: "White light passes through a red filter onto a green leaf. What colour does the leaf appear?",
-        choices: ["Green", "Red", "Black", "Yellow"], answer: 2,
-        hint: "Step 1: which colour passes the red filter? Step 2: does a green leaf reflect it?",
-        explain: "Only red light passes the filter. The green leaf absorbs red light, so it appears black.",
-        terms: [["colour filter", "濾色片"]] }
+      { type: "mc", q: "A white T-shirt is lit by red light and green light together. What colour does it appear?",
+        choices: ["White", "Yellow", "Red", "Black"], answer: 1,
+        hint: "White objects reflect every colour that shines on them. Which colours are shining?",
+        explain: "A white object reflects all the light that falls on it. Red and green light are reflected, and red + green = yellow.",
+        terms: [["coloured light", "色光"]] }
     ]
   },
   {
     id: "room7", topicNo: 7, name: "The Wave Observatory", topic: "Electromagnetic spectrum", zh: "電磁波譜", mastery: "em_waves",
-    tint: "#26304F", floor: "#1B223A", dim: .6, special: "telescope", specialName: "Telescope", specialLine: "A telescope pointing at the stars. The dial shows wavelengths!",
+    tint: "#26304F", floor: "#1B223A", dim: .6, special: "telescope", specialName: "Telescope", specialLine: "A telescope pointing at the stars. The dial shows wave names!",
     code: "31405", badge: "🛰️ Wave Master Badge", item: "📡 Tiny Radio Antenna",
     intro: [["hachiware", "normal", "The final room! Visible light is just one member of a big family: the electromagnetic spectrum."], ["usagi", "happy", "Yaha! *spins the telescope dial wildly* 🔭"], ["chiikawa", "cry", "We're almost free... Ya...! 🥹"]],
     notes: [
-      "<b>EM spectrum</b> in order of increasing wavelength: gamma rays, X-rays, ultraviolet, visible light, infra-red, microwaves, radio waves.",
-      "All EM waves are transverse waves, travel at <b>3 × 10⁸ m s⁻¹ in vacuum</b> and do not need a medium.",
-      "Uses: radio waves (broadcasting), microwaves (cooking, mobile phones), infra-red (remote controls, thermal imaging), ultraviolet (sterilisation, checking banknotes), X-rays (bone images, airport security), gamma rays (killing cancer cells)."
+      "<b>EM spectrum</b>, in order of <b>decreasing wavelength / increasing energy</b>: radio waves → microwaves → infrared → visible light → ultraviolet → X-rays → gamma rays.",
+      "Uses: radio waves (Wi-Fi, Bluetooth, Octopus cards), microwaves (radar, cooking), infrared (thermal imaging, remote controls), ultraviolet (sterilisation, checking banknotes), X-rays (bone images), gamma rays (cancer treatment, sterilisation).",
+      "<b>Hazards:</b> high-energy, short-wavelength waves (UV, X-rays, gamma rays) can cause cell damage, sunburn or mutations."
     ],
-    formulas: ["wave equation: c = f λ", "1 nm = 10⁻⁹ m"],
+    rules: ["Radio → Micro → IR → Visible → UV → X → Gamma: wavelength decreases, energy increases", "UV, X-rays, gamma rays: high energy, can damage cells"],
     puzzles: [
-      { type: "mc", q: "Which of the following lists EM waves in order of INCREASING wavelength?",
-        choices: ["Radio, microwaves, infra-red, visible, ultraviolet, X-rays, gamma", "Gamma, X-rays, ultraviolet, visible, infra-red, microwaves, radio", "Visible, ultraviolet, infra-red, X-rays, gamma, radio, microwaves", "Gamma, ultraviolet, X-rays, visible, microwaves, infra-red, radio"], answer: 1,
-        hint: "Gamma rays have the SHORTEST wavelength; radio waves the LONGEST.",
-        explain: "Increasing wavelength: gamma rays → X-rays → ultraviolet → visible light → infra-red → microwaves → radio waves.",
-        terms: [["electromagnetic spectrum", "電磁波譜"], ["wavelength", "波長"], ["frequency", "頻率"]] },
-      { type: "mc", q: "Which of the following is common to ALL electromagnetic waves?",
-        choices: ["Same wavelength", "Same frequency", "They travel at 3 × 10⁸ m s⁻¹ in vacuum", "They need a medium to travel"], answer: 2,
-        hint: "Sunlight reaches us through empty space...",
-        explain: "All EM waves travel at 3 × 10⁸ m s⁻¹ in vacuum and do not need a medium. They are transverse waves.",
-        terms: [["transverse wave", "橫波"]] },
-      { type: "mc", q: "Chiikawa's TV remote control sends signals using which type of EM wave?",
-        choices: ["Infra-red", "Ultraviolet", "X-rays", "Gamma rays"], answer: 0,
-        hint: "It's the same radiation that warm objects give out.",
-        explain: "Remote controls use infra-red. Ultraviolet is used for sterilisation and checking banknotes; X-rays for bone images.",
-        terms: [["infra-red", "紅外線"], ["ultraviolet", "紫外線"], ["X-rays", "X射線"]] },
-      { type: "keypad", q: "Orange light has a wavelength of 600 nm (6 × 10⁻⁷ m). Find its frequency, in × 10¹⁴ Hz.",
-        answer: 5, tol: 0.05, unit: "× 10¹⁴ Hz",
-        hint: "c = f λ, so f = c / λ = (3 × 10⁸) / (6 × 10⁻⁷)",
-        explain: "f = (3 × 10⁸) / (6 × 10⁻⁷) = 5 × 10¹⁴ Hz",
-        tip: "Convert nm to m first: 1 nm = 10⁻⁹ m.",
-        terms: [["wave equation", "波動方程"]] },
-      { type: "mc", q: "Which EM wave has the highest frequency and is used to kill cancer cells?",
+      { type: "mc", q: "Which list shows the EM spectrum in order of DECREASING wavelength (increasing energy)?",
+        choices: ["Radio waves, microwaves, infrared, visible light, ultraviolet, X-rays, gamma rays", "Gamma rays, X-rays, ultraviolet, visible light, infrared, microwaves, radio waves", "Visible light, ultraviolet, infrared, X-rays, gamma rays, radio waves, microwaves", "Radio waves, infrared, microwaves, visible light, X-rays, ultraviolet, gamma rays"], answer: 0,
+        hint: "Radio waves have the LONGEST wavelength; gamma rays have the SHORTEST (and the most energy).",
+        explain: "Decreasing wavelength / increasing energy: radio waves → microwaves → infrared → visible light → ultraviolet → X-rays → gamma rays.",
+        terms: [["electromagnetic spectrum", "電磁波譜"], ["wavelength", "波長"], ["energy", "能量"]] },
+      { type: "mc", q: "Chiikawa taps an Octopus card on the MTR gate. Which EM wave does the card reader use?",
+        choices: ["Radio waves", "X-rays", "Ultraviolet", "Gamma rays"], answer: 0,
+        hint: "It's the same family used for Wi-Fi and Bluetooth.",
+        explain: "Octopus cards, Wi-Fi and Bluetooth all use radio waves.",
+        terms: [["radio waves", "無線電波"]] },
+      { type: "dial", q: "The telescope lock asks: which EM wave is used for each job? Set the dials.",
+        labels: ["TV remote control", "Checking banknotes", "Bone images"], dials: [WAVES, WAVES, WAVES], answer: [2, 4, 5],
+        hint: "Remote controls give out invisible 'heat' light. Banknote checkers make hidden ink glow. Bone images pass through flesh.",
+        explain: "Remote controls use infrared, banknote checkers use ultraviolet, and bone images use X-rays.",
+        terms: [["infrared", "紅外線"], ["ultraviolet", "紫外線"], ["X-rays", "X射線"]] },
+      { type: "mc", q: "Which EM wave is used in hospitals to treat cancer and to sterilise medical tools?",
         choices: ["Radio waves", "Microwaves", "Visible light", "Gamma rays"], answer: 3,
-        hint: "Highest frequency = shortest wavelength.",
-        explain: "Gamma rays have the highest frequency and energy. They are used in radiotherapy and to sterilise medical equipment.",
-        terms: [["gamma rays", "γ射線"], ["microwaves", "微波"], ["radio waves", "無線電波"]] }
+        hint: "It's the wave with the most energy.",
+        explain: "Gamma rays have the most energy. They can kill cancer cells and sterilise medical equipment.",
+        terms: [["gamma rays", "γ射線"], ["sterilisation", "消毒"]] },
+      { type: "mc", q: "Which group of EM waves can cause cell damage, sunburn or mutations?",
+        choices: ["Radio waves, microwaves and infrared", "Ultraviolet, X-rays and gamma rays", "Visible light only", "All EM waves are equally harmful"], answer: 1,
+        hint: "Danger comes with HIGH energy and SHORT wavelength.",
+        explain: "Ultraviolet, X-rays and gamma rays are high-energy, short-wavelength waves. They can damage cells, cause sunburn (UV) or mutations. That's why we use sunscreen and radiographers use lead shields.",
+        terms: [["hazard", "危害"], ["mutation", "突變"], ["microwaves", "微波"]] }
     ]
   }
 ];
 const ROOM_SECONDS = 15 * 60;
 const CHEERS = ["Yaha!", "Ura!", "Puru puru!", "好嘢!"];
 const SNACKS = ["🍡 Chestnut bun", "🍘 Rice cracker", "🍮 Pudding", "🍙 Onigiri", "🍜 Ramen ticket", "🧋 Bubble tea", "🥚 Egg tart 蛋撻", "🧇 Egg waffle 雞蛋仔", "🍍 Pineapple bun 菠蘿包"];
-const TOPIC_LABELS = { light_basics: "Light sources 光源", reflection: "Reflection 反射", refraction: "Refraction & TIR 折射", lenses: "Lenses 透鏡", colours: "Colours 顏色", em_waves: "EM spectrum 電磁波譜" };
+const TOPIC_LABELS = { light_basics: "Light & sight 光與視覺", reflection: "Reflection 反射", refraction: "Refraction & TIR 折射", lenses: "Lenses 透鏡", colours: "Colours 顏色", em_waves: "EM spectrum 電磁波譜" };
 
 /* ============================================================
    5. Save system
@@ -1031,10 +1114,15 @@ function renderTools() {
     ${S ? `<button class="iconbtn" id="tTrophy" aria-label="Open the Trophy Cabinet">🏆<span class="lbl">Trophies</span></button>` : ""}
     <button class="iconbtn" id="tJournal" aria-label="Open the Study Journal">📓<span class="lbl">Journal</span></button>
     ${S ? `<button class="iconbtn" id="tSave" aria-label="Save and share code">🔑<span class="lbl">Save code</span></button>` : ""}
-    <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? "Turn sound off" : "Turn sound on"}">${SFX.on ? "🔊" : "🔇"}</button>`;
+    <button class="iconbtn" id="tMus" aria-label="${MUSIC.on ? "Turn music off" : "Turn music on"}" title="Background music" aria-pressed="${MUSIC.on}" style="${MUSIC.on ? "" : "opacity:.5;text-decoration:line-through"}">🎵<span class="lbl">${MUSIC.on ? "Music on" : "Music off"}</span></button>
+    <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? "Turn sound effects off" : "Turn sound effects on"}" title="Sound effects">${SFX.on ? "🔊" : "🔇"}</button>`;
   document.getElementById("tJournal").onclick = () => { SFX.init(); SFX.tap(); openJournal(); };
   const tt = document.getElementById("tTrophy"); if (tt) tt.onclick = () => { SFX.init(); SFX.tap(); openCabinet(); };
   const ts = document.getElementById("tSave"); if (ts) ts.onclick = () => { SFX.init(); SFX.tap(); openSaveModal(); };
+  document.getElementById("tMus").onclick = () => {
+    MUSIC.on = !MUSIC.on; try { localStorage.setItem(MUSIC_KEY, MUSIC.on ? "on" : "off"); } catch (e) {}
+    MUSIC.on ? MUSIC.start() : MUSIC.stop(); renderTools();
+  };
   document.getElementById("tSnd").onclick = () => {
     SFX.on = !SFX.on; try { localStorage.setItem(SOUND_KEY, SFX.on ? "on" : "off"); } catch (e) {}
     if (SFX.on) { SFX.init(); SFX.tap(); } renderTools();
@@ -1074,11 +1162,11 @@ function openJournal(roomId, highlight = []) {
     r.puzzles.forEach(p => (p.terms || []).forEach(t => { if (!seen.has(t[0])) { seen.add(t[0]); terms.push(t); } }));
     $journal.innerHTML = `<div class="overlay top" id="jov"><div class="modal wide" role="dialog" aria-modal="true" aria-label="Study Journal">
       <button class="iconbtn x" id="jx" aria-label="Close journal">✕</button>
-      <span class="kicker">📓 Study Journal · Chapter: Light 光</span>
+      <span class="kicker">📓 Study Journal · Chapter 14: Light, Colours and Beyond</span>
       <h2>Topic ${r.topicNo}: ${esc(r.topic)} <span class="zh">${r.zh}</span></h2>
       <div class="tabs" role="tablist">${ROOMS.map(x => `<button class="tab" role="tab" aria-selected="${x.id === rid}" data-t="${x.id}">T${x.topicNo} ${x.zh}</button>`).join("")}</div>
       <section class="jsec"><h3>📖 Summary 重點</h3><ul>${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></section>
-      <section class="jsec"><h3>🧮 Formulas 公式</h3>${r.formulas.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
+      <section class="jsec"><h3>🧭 Key rules 重點規則</h3>${r.rules.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
       <section class="jsec"><h3>🔤 Key terms 關鍵詞</h3><table class="tterms"><tbody>
         ${terms.map(([en, zh]) => `<tr class="${highlight.includes(en) ? "hl" : ""}"><td>${esc(en)}</td><td class="zh">${zh}</td></tr>`).join("")}</tbody></table>
         ${highlight.length ? `<p class="small muted">Highlighted terms are used in the puzzle you're on.</p>` : ""}</section>
@@ -1185,16 +1273,16 @@ const castHtml = moods => `<div class="cast">${["usagi", "hachiware", "chiikawa"
 const starsBg = () => `<div class="stars" aria-hidden="true">${[[6, 14], [18, 40], [30, 10], [52, 22], [70, 8], [84, 30], [94, 12], [62, 44]].map(([x, y], i) => `<span style="left:${x}%;top:${y}%;animation-delay:${-i * .4}s">✦</span>`).join("")}</div>`;
 
 function renderWelcome() {
-  stopTimer(); R = null; renderTools();
+  MUSIC.setMode("map"); stopTimer(); R = null; renderTools();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
-      <span class="kicker" style="color:#fff">S3 Science · Chapter: Light 光</span>
+      <span class="kicker" style="color:#fff">S3 Science · Chapter 14: Light, Colours and Beyond</span>
       <h1>Chiikawa Physics Escape</h1>
       <p class="sub">7 escape rooms · 1 room a day · 10–15 minutes</p>
       ${castHtml({ chiikawa: "cry", usagi: "happy" })}
     </section>
     <section class="card">
-      ${say("hachiware", "We're locked inside 7 mysterious rooms! Every lock is a puzzle from the Light chapter. Help us escape?", "normal", "hint")}
+      ${say("hachiware", "We're locked inside 7 mysterious rooms! Every lock is a puzzle from Chapter 14: Light, Colours and Beyond. No calculations, just thinking! Help us escape?", "normal", "hint")}
       ${say("chiikawa", "Ya...! 🥺 Please?", "cry")}
       <label for="nm"><b>What should we call you?</b></label>
       <input id="nm" class="name" maxlength="24" placeholder="Your name or nickname" autocomplete="off">
@@ -1227,11 +1315,11 @@ function renderWelcome() {
 }
 
 function renderMap() {
-  stopTimer(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
+  MUSIC.setMode("map"); stopTimer(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
-      <span class="kicker" style="color:#fff">S3 Science · Chapter: Light 光</span>
+      <span class="kicker" style="color:#fff">S3 Science · Chapter 14: Light, Colours and Beyond</span>
       <h1>Hi, ${esc(S.player_name)}!</h1>
       <p class="sub">${allDone ? "You escaped every room! 全部房間都逃出咗!" : `Next: Topic ${ROOMS[ni].topicNo} · ${esc(ROOMS[ni].name)}`}</p>
       ${castHtml(allDone ? { chiikawa: "happy", hachiware: "happy", usagi: "happy", momonga: "happy", kurimanju: "happy" } : { usagi: "happy" })}
@@ -1246,7 +1334,7 @@ function renderMap() {
     </section>
     <section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
     <section class="card">
-      <h2>🗺️ Chapter: Light 光</h2>
+      <h2>🗺️ Chapter 14: Light, Colours and Beyond</h2>
       <div class="topics">${ROOMS.map((r, i) => {
         const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length;
         return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
@@ -1341,7 +1429,7 @@ function enterRoom(id) {
   if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
   if (replay) { S.room_progress[room.id] = []; S.room_timer[room.id] = ROOM_SECONDS; }
   if (S.room_timer[room.id] == null) S.room_timer[room.id] = ROOM_SECONDS;
-  S.current_room = room.id; save();
+  S.current_room = room.id; save(); MUSIC.setMode("room");
   if (R) clearTimeout(R.introT);
   R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0 };
   closeModal(); renderRoom();
@@ -1491,7 +1579,7 @@ function answerUi(p) {
   if (p.type === "keypad") return `<div class="keypad"><div class="kdisplay" aria-live="polite"><span id="kd">_</span>${p.unit ? `<span class="u">${esc(p.unit)}</span>` : ""}</div>
     <div class="keys">${["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0", "⌫"].map(k => `<button class="key ${k === "⌫" ? "del" : ""}" data-k="${k}" aria-label="${k === "⌫" ? "Delete" : k === "." ? "Decimal point" : k}">${k}</button>`).join("")}</div>
     <button class="btn" id="kok" style="width:min(208px,100%)">Unlock 🔓</button></div>`;
-  return `<div class="dials">${p.dials.map((opts, d) => `<div class="dial"><button class="arr" data-d="${d}" data-dir="-1" aria-label="Previous option">▲</button>
+  return `<div class="dials">${p.dials.map((opts, d) => `<div class="dial">${p.labels ? `<span class="dlabel">${esc(p.labels[d])}</span>` : ""}<button class="arr" data-d="${d}" data-dir="-1" aria-label="Previous option">▲</button>
     <div class="face" id="face${d}" aria-live="polite">${esc(opts[0])}</div><button class="arr" data-d="${d}" data-dir="1" aria-label="Next option">▼</button></div>`).join("")}</div>
     <div class="row" style="justify-content:center"><button class="btn" id="dok">Try the lock 🔓</button></div>`;
 }
@@ -1654,7 +1742,8 @@ function escapeRoom() {
    10. Boot: save-code links (#CODE), resume prompt, or new game
    ============================================================ */
 document.getElementById("home").onclick = () => { if (S) { SFX.init(); SFX.tap(); closeModal(); renderMap(); } };
-document.addEventListener("pointerdown", () => SFX.init(), { once: true });
+document.addEventListener("pointerdown", () => { SFX.init(); MUSIC.start(); }, { once: true });
+document.addEventListener("keydown", () => { SFX.init(); MUSIC.start(); }, { once: true });
 document.addEventListener("visibilitychange", () => { if (document.hidden && S) save(); });
 window.addEventListener("pagehide", () => { if (S) save(); });
 (function boot() {
