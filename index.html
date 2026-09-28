@@ -71,7 +71,8 @@ header.top {
   background: var(--cream); border-bottom: var(--line);
 }
 .brand { background: none; border: 0; padding: 0; font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
-.brand svg { width: 34px; height: 34px; }
+.brand svg { width: 34px; height: 34px; overflow: visible; }
+.brand .fr-rainbow, .brand .fr-laser, .brand .fr-sakura { display: inline-flex; padding: 2px; }
 .tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .pill { border: var(--line); border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: .88rem; background: var(--yellow); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pill.saved { background: var(--green); animation: pop .4s ease-out; }
@@ -283,6 +284,58 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .penalty { position: fixed; left: 50%; top: 30%; transform: translateX(-50%); z-index: 96; pointer-events: none; font-size: 2.4rem; font-weight: 800; color: #fff; background: #D64545; border: var(--line); border-radius: 18px; padding: 0 16px; box-shadow: var(--shadow); animation: rise 1.1s ease-out forwards; }
 .rules { background: #FFF0F0; border: 2px dashed var(--ink); border-radius: 12px; padding: 8px 12px; font-size: .9rem; }
 .rules ul { margin: 4px 0 0; padding-left: 20px; }
+/* Frames around the player's Chiikawa */
+.fr-rainbow { border-radius: 50%; background: conic-gradient(#FFB7C5, #FDFFB6, #B9F3C9, #A0C4FF, #C9C3F0, #FFB7C5); padding: 4px; }
+.fr-laser { border-radius: 50%; background: #2B2433; padding: 4px; box-shadow: 0 0 0 2px #39FF14, 0 0 12px #39FF14; }
+.fr-sakura { border-radius: 50%; background: radial-gradient(circle, #FFE3EA 60%, #FFB7C5 61%); padding: 4px; }
+/* Mode cards */
+.modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.mode { text-align: left; border: var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 14px; display: grid; gap: 6px; background: #fff; align-content: start; }
+.mode.rush { background: #2B2433; color: #fff; background-image: radial-gradient(circle at 90% 0, rgba(255,107,107,.45), transparent 50%); }
+.mode.rush .muted { color: #D8CFE8; }
+.mode h3 { font-size: 1.15rem; }
+.coinpill { background: #F2D7AE; }
+/* Rush */
+.rushhead { background: var(--night); color: #fff; border: var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.rushhead .big { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.combo { background: var(--yellow); color: var(--ink); border: 2px solid #000; border-radius: 999px; padding: 0 10px; font-weight: 800; }
+.combo.hot { background: var(--pink); animation: pop .3s ease-out; }
+.rq { min-height: 320px; align-content: start; }
+.rtype { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: var(--blue-2); border: 2px solid var(--ink); border-radius: 999px; padding: 1px 10px; justify-self: start; }
+.rgrid { display: grid; gap: 10px; }
+@media (min-width: 640px) { .rgrid.two { grid-template-columns: 1fr 1fr; } }
+.rbtn { text-align: left; background: #fff; border: var(--line); border-radius: 14px; box-shadow: var(--shadow-sm); padding: 10px 12px; min-height: 50px; font-weight: 700; }
+.rbtn.ok { background: var(--green); } .rbtn.no { background: var(--red); }
+.rbtn.sel { background: var(--yellow); }
+.rbtn:disabled { cursor: default; }
+.tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tf .rbtn { text-align: center; font-size: 1.2rem; min-height: 70px; }
+.match { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.match .col { display: grid; gap: 8px; align-content: start; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.sw { display: flex; gap: 8px; align-items: center; }
+.sw i { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink); flex: 0 0 28px; }
+.ordered { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; }
+.plus { position: fixed; left: 50%; top: 38%; transform: translateX(-50%); z-index: 96; pointer-events: none; font-size: 2rem; font-weight: 800; background: var(--green); border: var(--line); border-radius: 16px; padding: 0 14px; box-shadow: var(--shadow); animation: rise .9s ease-out forwards; }
+/* Shop */
+.shopgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.sitem { background: #fff; border: var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); padding: 10px; display: grid; gap: 6px; justify-items: center; text-align: center; }
+.sitem.on { background: var(--green); }
+.sitem .pv { width: 72px; height: 72px; }
+.sitem .pv svg { width: 100%; height: 100%; overflow: visible; }
+.sitem .btn { min-height: 38px; padding: 4px 12px; font-size: .9rem; }
+.preview-big { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.preview-big .fig { width: 120px; }
+.preview-big .fig svg { width: 100%; height: auto; overflow: visible; }
+.pwr { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pwr .btn { min-height: 40px; padding: 4px 12px; font-size: .9rem; background: var(--cream-2); }
+/* Leaderboard */
+.lb { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.lb th { text-align: left; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); padding: 4px 6px; }
+.lb td { padding: 8px 6px; border-top: 2px dashed #E5DCC9; }
+.lb tr.me td { background: var(--yellow); font-weight: 800; }
+.lb .rk { font-size: 1.2rem; width: 42px; }
+.lb-wrap { overflow-x: auto; background: #fff; border: var(--line); border-radius: 16px; padding: 6px; }
 @keyframes shine { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg) translateY(-2px); } }
 @keyframes drop { 0% { transform: translate(-50%, -120%); } 70% { transform: translate(-50%, 6px); } 100% { transform: translate(-50%, 0); } }
 @keyframes rise { 0% { transform: translate(-50%, 20px) scale(.7); opacity: 0; } 20% { transform: translate(-50%, 0) scale(1.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, -40px); opacity: 0; } }
@@ -367,7 +420,7 @@ const CHAR = {
       <path clip-path="url(#${id})" d="M0 29 Q32 19 64 29 L64 0 L0 0 Z" fill="#A8703F"/>
       <path d="M8 45 Q6 18 32 16 Q58 18 56 45 Q32 56 8 45Z" fill="none" ${OUT}/>${blush(15, 49, 43)}${e}${mouth(32, 44, m)}`; } }
 };
-const avatar = (who, mood = "normal") => `<svg viewBox="0 0 64 64" aria-hidden="true"><g filter="url(#sketch)">${CHAR[who].head(mood)}</g></svg>`;
+const avatar = (who, mood = "normal", eq) => `<svg viewBox="0 0 64 64" aria-hidden="true"><g filter="url(#sketch)">${CHAR[who].head(mood)}${who === "chiikawa" ? outfitSvg(eq) : ""}</g></svg>`;
 function figure(who, mood = "normal") {
   const c = CHAR[who].color;
   return `<svg viewBox="-4 -4 72 100" aria-hidden="true"><g filter="url(#sketch)">
@@ -375,7 +428,7 @@ function figure(who, mood = "normal") {
     <ellipse cx="13" cy="70" rx="5" ry="7" fill="${c}" ${OUT} transform="rotate(30 13 70)"/>
     <ellipse cx="51" cy="70" rx="5" ry="7" fill="${c}" ${OUT} transform="rotate(-30 51 70)"/>
     <ellipse cx="24" cy="90" rx="6" ry="3.5" fill="${c}" ${OUT}/><ellipse cx="40" cy="90" rx="6" ry="3.5" fill="${c}" ${OUT}/>
-    ${CHAR[who].head(mood)}</g></svg>`;
+    <g>${CHAR[who].head(mood)}${who === "chiikawa" ? outfitSvg() : ""}</g></g></svg>`;
 }
 
 /* ============================================================
@@ -428,6 +481,7 @@ const SONGS = {
     melody: [[76, 0, 0, 0, 74, 0, 72, 0], [69, 0, 0, 0, 0, 0, 0, 0], [72, 0, 74, 0, 76, 0, 0, 0], [79, 0, 76, 0, 74, 0, 0, 0],
              [81, 0, 79, 0, 76, 0, 0, 0], [74, 0, 72, 0, 69, 0, 0, 0], [72, 0, 0, 74, 76, 0, 0, 0], [74, 0, 0, 0, 0, 0, 0, 0]] }
 };
+SONGS.rush = { bpm: 112, chords: SONGS.map.chords, melody: SONGS.map.melody };
 const MUSIC = {
   on: true, mode: "map", step: 0, next: 0, timer: null, out: null,
   midi: m => 440 * Math.pow(2, (m - 69) / 12),
@@ -850,15 +904,18 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
-function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0 }; }
+function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0 }; }
 function freshRun() { return { firsts: [], strikes: 0, hints: false }; }
+function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function freshState() {
   return {
     v: 2, player_name: "Student", current_streak: 0, longest_streak: 0, last_login_date: null,
     completed_rooms: [], current_room: ROOMS[0].id, streak_shields: 1, chiikawa_badges: [], inventory: [],
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null,
-    room_run: {}, trophies: {}, stats: freshStats()
+    room_run: {}, trophies: {}, stats: freshStats(),
+    coins: 0, owned: [], equip: { hat: null, face: null, ribbon: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
+    rush: { best: 0, lastDay: null }, player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -866,6 +923,8 @@ function normalise(obj) {
   s.physics_mastery = Object.assign(freshState().physics_mastery, (obj && obj.physics_mastery) || {});
   s.stats = Object.assign(freshStats(), (obj && obj.stats) || {});
   s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run);
+  s.equip = Object.assign({ hat: null, face: null, ribbon: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
+  s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
   s.room_progress = Object.assign({}, s.room_progress);
@@ -946,7 +1005,7 @@ function stateFromCode(d, name) {
   });
   if (d.escaped < 7) { s.room_progress[ROOMS[d.escaped].id] = Array.from({ length: d.lock }, (_, i) => i); s.current_room = ROOMS[d.escaped].id; }
   s.current_streak = d.streak; s.longest_streak = d.streak; s.streak_shields = d.shields; s.last_login_date = today();
-  if (S) { s.trophies = S.trophies || {}; s.stats = Object.assign(freshStats(), S.stats); s.last_chest_date = S.last_chest_date; s.inventory = s.inventory.concat((S.inventory || []).filter(x => SNACKS.includes(x))); }
+  if (S) { s.trophies = S.trophies || {}; s.stats = Object.assign(freshStats(), S.stats); s.coins = S.coins || 0; s.owned = S.owned || []; s.equip = S.equip || s.equip; s.power = S.power || s.power; s.rush = S.rush || s.rush; s.player_id = S.player_id || s.player_id; s.last_chest_date = S.last_chest_date; s.inventory = s.inventory.concat((S.inventory || []).filter(x => SNACKS.includes(x))); }
   return s;
 }
 
@@ -1086,15 +1145,15 @@ function checkTrophies() {
   TROPHIES.forEach(t => {
     if (S.trophies[t.id]) return;
     const [cur, goal] = t.prog();
-    if (cur >= goal) { S.trophies[t.id] = today(); trophyQueue.push(t); }
+    if (cur >= goal) { S.trophies[t.id] = today(); S.coins = (S.coins || 0) + 30; trophyQueue.push(t); }
   });
-  if (trophyQueue.length) { save(); showTrophyBanner(); }
+  if (trophyQueue.length) { save(); renderTools(); showTrophyBanner(); lbSubmit(true); }
 }
 function showTrophyBanner() {
   if (document.querySelector(".tbanner") || !trophyQueue.length) return;
   const t = trophyQueue.shift();
   const d = document.createElement("button"); d.className = "tbanner"; d.setAttribute("aria-live", "polite");
-  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">Trophy unlocked!</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)}</span></span>`;
+  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">Trophy unlocked!</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)} · +30 🌰</span></span>`;
   const done = () => { d.remove(); setTimeout(showTrophyBanner, 300); };
   d.onclick = () => { SFX.tap(); done(); };
   document.body.appendChild(d);
@@ -1103,20 +1162,353 @@ function showTrophyBanner() {
 }
 
 /* ============================================================
+   6c. Wardrobe (cosmetics) and power-ups, bought with 🌰 chestnuts from Light Rush
+   ============================================================ */
+const O2 = `stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"`;
+const WARDROBE = [
+  { id: "hat_party", slot: "hat", name: "Party hat", price: 40, svg: `<path d="M21 19 L32 -8 L43 19 Z" fill="#FFB7C5" ${O2}/><path d="M25 12 H39 M28 4 H36" stroke="#fff" stroke-width="2.4"/><circle cx="32" cy="-9" r="3.5" fill="#FDFFB6" ${O2}/>` },
+  { id: "hat_beret", slot: "hat", name: "Pink beret", price: 60, svg: `<ellipse cx="30" cy="15" rx="21" ry="7.5" fill="#FF8FA3" ${O2}/><path d="M30 7.5 v-4" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>` },
+  { id: "hat_ears", slot: "hat", name: "Bunny-ear band", price: 80, svg: `<ellipse cx="22" cy="0" rx="5" ry="12" fill="#fff" ${O2}/><ellipse cx="42" cy="0" rx="5" ry="12" fill="#fff" ${O2}/><ellipse cx="22" cy="0" rx="2" ry="8" fill="#FFB7C5"/><ellipse cx="42" cy="0" rx="2" ry="8" fill="#FFB7C5"/><path d="M13 21 Q32 6 51 21" fill="none" stroke="#FF8FA3" stroke-width="4" stroke-linecap="round"/>` },
+  { id: "hat_grad", slot: "hat", name: "Graduation cap", price: 120, svg: `<rect x="20" y="10" width="24" height="9" rx="2" fill="${INK}"/><path d="M8 9 L32 1 L56 9 L32 17 Z" fill="${INK}" ${O2}/><path d="M32 9 L50 12 V22" stroke="#FDFFB6" stroke-width="2" fill="none"/><circle cx="50" cy="23" r="2.4" fill="#FDFFB6"/>` },
+  { id: "hat_crown", slot: "hat", name: "Little crown", price: 160, svg: `<path d="M19 19 L21 3 L26.5 11 L32 1 L37.5 11 L43 3 L45 19 Z" fill="#FFE27A" ${O2}/><circle cx="32" cy="14" r="2.5" fill="#FFB7C5"/><circle cx="24.5" cy="15" r="1.8" fill="#A0C4FF"/><circle cx="39.5" cy="15" r="1.8" fill="#A0C4FF"/>` },
+  { id: "face_round", slot: "face", name: "Round glasses", price: 50, svg: `<g fill="rgba(255,255,255,.3)" stroke="${INK}" stroke-width="2"><circle cx="24" cy="36" r="6"/><circle cx="40" cy="36" r="6"/></g><path d="M30 36 h4 M18 35 l-6 -2 M46 35 l6 -2" stroke="${INK}" stroke-width="2"/>` },
+  { id: "face_sun", slot: "face", name: "Cool sunglasses", price: 90, svg: `<path d="M16 32 h14 v4 q-7 8 -14 0Z M34 32 h14 v4 q-7 8 -14 0Z" fill="#2B2433" ${O2}/><path d="M30 33 h4" stroke="${INK}" stroke-width="2"/><path d="M19 34 h4 M37 34 h4" stroke="#fff" stroke-width="1.5"/>` },
+  { id: "face_prism", slot: "face", name: "Prism glasses", price: 130, svg: `<path d="M17 41 L24 29 L31 41Z M33 41 L40 29 L47 41Z" fill="rgba(160,196,255,.65)" ${O2}/><path d="M20 38 h8 M36 38 h8" stroke="#FF6B6B" stroke-width="1.4"/><path d="M21 40 h6 M37 40 h6" stroke="#8E44C8" stroke-width="1.4"/><path d="M31 38 h2" stroke="${INK}" stroke-width="2"/>` },
+  { id: "rib_bow", slot: "ribbon", name: "Red bow", price: 30, svg: `<path d="M48 13 L40 8 L41 18 Z M48 13 L56 8 L55 18 Z" fill="#FF6B6B" ${O2}/><circle cx="48" cy="13" r="2.8" fill="#FF6B6B" ${O2}/>` },
+  { id: "rib_flower", slot: "ribbon", name: "Sakura flower", price: 45, svg: `${[0, 72, 144, 216, 288].map(a => `<circle cx="${(48 + 4 * Math.sin(a * Math.PI / 180)).toFixed(1)}" cy="${(12 - 4 * Math.cos(a * Math.PI / 180)).toFixed(1)}" r="3.4" fill="#FFB7C5" stroke="${INK}" stroke-width="1.6"/>`).join("")}<circle cx="48" cy="12" r="2.2" fill="#FDFFB6"/>` },
+  { id: "rib_star", slot: "ribbon", name: "Star clip", price: 70, svg: `<path d="M48 3 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8z" fill="#FDFFB6" ${O2}/>` },
+  { id: "fr_sakura", slot: "frame", name: "Sakura frame", price: 60, cls: "fr-sakura" },
+  { id: "fr_laser", slot: "frame", name: "Laser frame", price: 90, cls: "fr-laser" },
+  { id: "fr_rainbow", slot: "frame", name: "Rainbow frame", price: 140, cls: "fr-rainbow" }
+];
+const SLOT_NAMES = { hat: "Hats", face: "Glasses", ribbon: "Hair clips", frame: "Frames" };
+const POWERUPS = [
+  { id: "torch", icon: "🔦", name: "Torch", price: 25, desc: "Removes one wrong answer, or sets one dial correctly. (Counts as a hint.)" },
+  { id: "crystal", icon: "⏳", name: "Time crystal", price: 30, desc: "Adds 60 seconds to the room timer." },
+  { id: "guard", icon: "🛡️", name: "Guard charm", price: 35, desc: "Blocks all penalties for your next wrong answer." }
+];
+const MAX_POWER = 5;
+const itemById = id => WARDROBE.find(w => w.id === id);
+function outfitSvg(eq) {
+  eq = eq || (typeof S !== "undefined" && S && S.equip);
+  if (!eq) return "";
+  return ["ribbon", "face", "hat"].map(k => eq[k] && itemById(eq[k]) ? itemById(eq[k]).svg : "").join("");
+}
+const frameCls = eq => { eq = eq || (S && S.equip) || {}; const f = eq.frame && itemById(eq.frame); return f ? f.cls : ""; };
+const playerAv = (mood = "normal") => `<span class="${frameCls()}" style="display:inline-flex">${avatar("chiikawa", mood)}</span>`;
+function addCoins(n, why) { S.coins = Math.max(0, (S.coins || 0) + n); save(); renderTools(); if (why) toast(`${n >= 0 ? "+" : ""}${n} 🌰 ${why}`); }
+
+function openShop(tab = "outfits") {
+  const draw = () => {
+    const eq = S.equip;
+    const html = `
+      <span class="kicker">👗 Wardrobe &amp; Shop</span>
+      <h2>Dress up Chiikawa</h2>
+      <div class="preview-big"><div class="fig"><span class="${frameCls()}" style="display:inline-flex;border-radius:50%">${figure("chiikawa", "happy")}</span></div>
+        <div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} chestnuts</span>
+        <span class="small muted">Earn chestnuts in ⚡ Light Rush (double on your first round each day), by escaping rooms and by unlocking trophies.</span></div></div>
+      <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${tab === "outfits"}" data-tab="outfits">👒 Outfits</button><button class="tab" role="tab" aria-selected="${tab === "power"}" data-tab="power">🎒 Power-ups</button></div>
+      ${tab === "outfits" ? Object.keys(SLOT_NAMES).map(slot => `<h3>${SLOT_NAMES[slot]}</h3><div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
+          const own = S.owned.includes(w.id), on = eq[slot] === w.id;
+          const prevEq = Object.assign({}, eq, { [slot]: w.id });
+          return `<div class="sitem ${on ? "on" : ""}"><div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
+            <b class="small">${esc(w.name)}</b>
+            ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? "Take off" : "Wear"}</button>`
+                  : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`).join("")
+      : `<p class="small muted">Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.</p>
+         <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
+           <span class="small"><b>You have ${S.power[u.id] || 0}</b></span>
+           <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🌰 ${u.price}</button></div>`).join("")}</div>`}`;
+    const box = openModal(html, { wide: true });
+    box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { SFX.tap(); tab = b.dataset.tab; draw(); });
+    box.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
+      const w = itemById(b.dataset.buy); if (S.coins < w.price) return;
+      S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha("Cute!"); draw(); refreshPlayer();
+    });
+    box.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
+      const w = itemById(b.dataset.wear); S.equip[w.slot] = S.equip[w.slot] === w.id ? null : w.id; save(true); SFX.item(); draw(); refreshPlayer();
+    });
+    box.querySelectorAll("[data-pbuy]").forEach(b => b.onclick = () => {
+      const u = POWERUPS.find(x => x.id === b.dataset.pbuy); if (S.coins < u.price) return;
+      S.coins -= u.price; S.power[u.id] = (S.power[u.id] || 0) + 1; save(true); SFX.item(); draw();
+    });
+  };
+  draw();
+}
+function refreshPlayer() {
+  document.getElementById("brandav").innerHTML = playerAv("happy");
+  const c = document.getElementById("chiiAv"); if (c) { c.className = "av " + frameCls(); c.innerHTML = avatar("chiikawa", R ? R.mood : "normal"); }
+  renderTools();
+}
+
+/* ============================================================
+   6d. Leaderboard: the 10 most dedicated players.
+   Needs a free Google Apps Script web app (see leaderboard/SETUP.md).
+   Paste its /exec URL below. When empty, the game shows your own dedication points only.
+   ============================================================ */
+const LEADERBOARD_URL = "";
+function dedication() {
+  const t = Object.keys(S.trophies || {}).length;
+  return S.stats.days * 10 + S.stats.correct + S.stats.rushRounds * 5 + S.completed_rooms.length * 10 + t * 25;
+}
+function lbPayload() {
+  return { id: S.player_id, name: String(S.player_name || "Student").slice(0, 16), score: dedication(), days: S.stats.days, streak: S.longest_streak, trophies: Object.keys(S.trophies || {}).length };
+}
+async function lbSubmit(force) {
+  if (!LEADERBOARD_URL || !S) return null;
+  if (!force && Date.now() - (S.lb_last || 0) < 60000) return null;
+  S.lb_last = Date.now(); save();
+  try { const r = await fetch(LEADERBOARD_URL, { method: "POST", body: JSON.stringify(lbPayload()) }); return await r.json(); } catch (e) { return null; }
+}
+async function lbFetch() {
+  try { const r = await fetch(`${LEADERBOARD_URL}?id=${encodeURIComponent(S.player_id)}`); return await r.json(); } catch (e) { return null; }
+}
+function openLeaderboard() {
+  const mine = `<div class="preview row" style="justify-content:space-between"><span class="row" style="gap:8px">${playerAv("happy").replace("<svg", '<svg width="40" height="40"')}<b>${esc(S.player_name)}</b></span><span><b>${dedication()}</b> dedication points</span></div>`;
+  const how = `<p class="small muted">Dedication points = 10 per day played + 1 per lock opened + 10 per room escaped + 5 per Light Rush round + 25 per trophy. Coming back every day matters most!</p>`;
+  const nameBox = `<div class="row"><label for="lbName" class="small"><b>Your nickname on the board:</b></label><input id="lbName" class="name" maxlength="16" value="${esc(S.player_name)}" style="max-width:200px"><button class="btn plain" id="lbSave">Save</button></div>
+    <p class="small muted">Please use a nickname, not your full name.</p>`;
+  const box = openModal(`<span class="kicker">🏅 Leaderboard</span><h2>Top 10 most dedicated players</h2>${mine}${how}
+    <div id="lbBody">${LEADERBOARD_URL ? `<p>Loading the board... ⏳</p>` : say("hachiware", "The class leaderboard isn't switched on yet. Your teacher can connect it in about 5 minutes (see <b>leaderboard/SETUP.md</b> in the project). Until then, your dedication points are saved on this device.", "normal", "hint")}</div>${nameBox}`, { wide: true });
+  document.getElementById("lbSave").onclick = () => {
+    const v = document.getElementById("lbName").value.trim(); if (!v) return;
+    S.player_name = v.slice(0, 16); save(true); toast("Nickname saved ✓"); lbSubmit(true).then(() => openLeaderboard());
+  };
+  if (!LEADERBOARD_URL) return;
+  lbSubmit(true).then(() => lbFetch()).then(d => {
+    const body = document.getElementById("lbBody"); if (!body) return;
+    if (!d || !d.top) { body.innerHTML = say("chiikawa", "Wah... the board couldn't load. Check your internet and try again.", "cry"); return; }
+    const medal = i => ["🥇", "🥈", "🥉"][i] || String(i + 1);
+    body.innerHTML = `<div class="lb-wrap"><table class="lb"><thead><tr><th>#</th><th>Player</th><th>Points</th><th>🔥 Best streak</th><th>🏆</th></tr></thead><tbody>
+      ${d.top.map((r, i) => `<tr class="${r.id === S.player_id ? "me" : ""}"><td class="rk">${medal(i)}</td><td>${esc(r.name)}</td><td>${Number(r.score) || 0}</td><td>${Number(r.streak) || 0}</td><td>${Number(r.trophies) || 0}</td></tr>`).join("") || `<tr><td colspan="5">No players yet. Be the first!</td></tr>`}
+    </tbody></table></div>${d.me && d.me.rank > 10 ? `<p class="small"><b>Your rank: #${d.me.rank}</b>. Keep going to reach the top 10! 💪</p>` : ""}`;
+  });
+}
+
+/* ============================================================
+   6e. ⚡ Light Rush: 60-second mixed question rush (no calculations)
+   ============================================================ */
+const RUSH_SECONDS = 60;
+const TF_BANK = [
+  ["Luminous objects give out light by themselves.", true, ""],
+  ["The Moon is a luminous object.", false, "The Moon only reflects sunlight: it is non-luminous."],
+  ["We see non-luminous objects because they reflect light into our eyes.", true, ""],
+  ["Light travels in curved lines around objects.", false, "Light travels in straight lines."],
+  ["Rays from a distant star reach our eyes almost parallel.", true, ""],
+  ["Rays from a nearby candle reach our eyes as a convergent beam.", false, "They reach the eye diverging."],
+  ["The angle of incidence equals the angle of reflection.", true, ""],
+  ["Angles of incidence are measured from the mirror surface.", false, "They are measured from the normal."],
+  ["A plane mirror image is real and can be caught on a screen.", false, "It is virtual."],
+  ["A plane mirror image is laterally inverted.", true, ""],
+  ["A plane mirror image is the same size as the object.", true, ""],
+  ["A periscope uses two parallel plane mirrors.", true, ""],
+  ["Light bends towards the normal when it goes from air into water.", true, ""],
+  ["Light bends towards the normal when it goes from glass into air.", false, "Into a lower refractive index, it bends away from the normal."],
+  ["A ray travelling along the normal does not bend.", true, ""],
+  ["Objects under water look deeper than they really are.", false, "They look shallower."],
+  ["Total internal reflection can happen when light goes from air into glass.", false, "It needs higher → lower refractive index (e.g. glass → air)."],
+  ["For total internal reflection, the angle of incidence must be greater than the critical angle.", true, ""],
+  ["Optical fibres carry data using total internal reflection.", true, ""],
+  ["A convex lens is thinner in the middle.", false, "Convex lenses are thicker in the middle."],
+  ["A convex lens converges parallel rays to the principal focus.", true, ""],
+  ["A concave lens always forms a virtual, erect, diminished image.", true, ""],
+  ["Short-sight spectacles use convex lenses.", false, "They use concave lenses."],
+  ["A magnifying glass forms a virtual, erect, magnified image.", true, ""],
+  ["Red light bends the most in a prism.", false, "Red bends least; violet bends most."],
+  ["White light is a mixture of colours.", true, ""],
+  ["Red, green and blue are the primary colours of light.", true, ""],
+  ["Red light + green light = yellow light.", true, ""],
+  ["A red object looks black under green light.", true, ""],
+  ["Gamma rays have the longest wavelength.", false, "Gamma rays have the shortest wavelength."],
+  ["Radio waves have the lowest energy in the EM spectrum.", true, ""],
+  ["Ultraviolet can cause sunburn.", true, ""],
+  ["X-rays are used to take images of bones.", true, ""],
+  ["TV remote controls use ultraviolet.", false, "They use infrared."]
+];
+const PAIR_BANK = [
+  ["Luminous object", "Gives out light by itself"], ["Non-luminous object", "Only reflects light"], ["Parallel beam", "Rays side by side"],
+  ["Divergent beam", "Rays spreading out"], ["Convergent beam", "Rays coming together"], ["Normal", "Line at right angles to the surface"],
+  ["Lateral inversion", "Left and right swapped"], ["Periscope", "Two parallel mirrors to see over walls"], ["Refraction", "Bending of light at a boundary"],
+  ["Critical angle", "Beyond it, total internal reflection happens"], ["Optical fibre", "Carries data using TIR"], ["Convex lens", "Thicker in the middle; converges light"],
+  ["Concave lens", "Thinner in the middle; diverges light"], ["Principal focus", "Where parallel rays meet after a convex lens"], ["Peephole", "Uses a concave lens"],
+  ["Dispersion", "White light splitting into colours"], ["Cyan", "Green + blue light"], ["Magenta", "Red + blue light"],
+  ["Radio waves", "Octopus cards, Wi-Fi"], ["Microwaves", "Radar and cooking"], ["Infrared", "Thermal imaging, remote controls"],
+  ["Ultraviolet", "Sterilisation, banknote checks"], ["X-rays", "Bone images"], ["Gamma rays", "Cancer treatment"]
+];
+const ODD_BANK = [
+  ["Which is NOT luminous?", ["The Sun", "A lit candle", "A firefly", "The Moon"], 3, "The Moon only reflects light."],
+  ["Which does NOT use total internal reflection?", ["Optical fibre", "Diamond sparkle", "Binocular prism", "Bathroom mirror"], 3, "A bathroom mirror uses ordinary reflection."],
+  ["Which is NOT a primary colour of light?", ["Red", "Green", "Blue", "Yellow"], 3, "Yellow is red + green."],
+  ["Which is NOT a high-energy wave that can damage cells?", ["Ultraviolet", "X-rays", "Gamma rays", "Radio waves"], 3, "Radio waves have low energy."],
+  ["Which does NOT use a convex lens?", ["Magnifying glass", "Camera", "Projector", "Door peephole"], 3, "A peephole uses a concave lens."],
+  ["Which is NOT a feature of a plane mirror image?", ["Virtual", "Same size", "Laterally inverted", "Upside down"], 3, "Plane mirror images are not upside down."],
+  ["Which is NOT a use of plane mirrors?", ["Periscope", "Driving mirror", "Mirror wall in a café", "Optical fibre"], 3, "Optical fibres use total internal reflection."],
+  ["Which is NOT a colour of the visible spectrum?", ["Orange", "Indigo", "Violet", "Magenta"], 3, "Magenta is a mix of red + blue light, not a spectrum colour."],
+  ["Which is NOT caused by refraction?", ["A pool looking shallow", "Chopsticks looking bent", "Your image in a mirror", "A prism making a rainbow"], 2, "A mirror image is caused by reflection."],
+  ["Which is NOT an EM wave?", ["Microwaves", "Infrared", "Sound waves", "X-rays"], 2, "Sound is not an electromagnetic wave."]
+];
+const CLOZE_BANK = [
+  ["Light bends ___ the normal when it goes from air into glass.", ["towards", "away from"], 0],
+  ["Light bends ___ the normal when it goes from water into air.", ["towards", "away from"], 1],
+  ["A convex lens ___ parallel rays.", ["converges", "diverges"], 0],
+  ["A concave lens ___ parallel rays.", ["converges", "diverges"], 1],
+  ["In a prism, red light bends the ___.", ["least", "most"], 0],
+  ["An object appears the colour of the light it ___.", ["reflects", "absorbs"], 0],
+  ["Rays from a near object reach the eye ___.", ["diverging", "parallel"], 0],
+  ["TIR needs light to travel from a ___ refractive index to a lower one.", ["higher", "lower"], 0],
+  ["A plane mirror image is as far ___ the mirror as the object is in front.", ["behind", "in front of"], 0],
+  ["Gamma rays have the ___ wavelength.", ["shortest", "longest"], 0],
+  ["The image made by a projector is ___.", ["real", "virtual"], 0],
+  ["Octopus cards use ___.", ["radio waves", "X-rays"], 0]
+];
+const COLOURS = { Red: "#E53935", Green: "#43A047", Blue: "#1E63D6", Yellow: "#FFE14D", Cyan: "#3FE0E8", Magenta: "#E040C8", White: "#FFFFFF", Black: "#222222" };
+const MIX_BANK = [
+  ["Red light + green light = ?", "Yellow"], ["Red light + blue light = ?", "Magenta"], ["Green light + blue light = ?", "Cyan"],
+  ["Red + green + blue light = ?", "White"], ["A white shirt under blue light looks...", "Blue"], ["A red rose under green light looks...", "Black"],
+  ["A yellow banana under red light looks...", "Red"], ["A green leaf under red light looks...", "Black"]
+];
+const ORDER_BANK = [
+  () => { const all = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]; return ["Tap from the colour that bends LEAST to the one that bends MOST.", subseq(all, 4)]; },
+  () => ["Tap from LONGEST wavelength to SHORTEST.", subseq(WAVES, 4)],
+  () => ["Tap from LOWEST energy to HIGHEST.", subseq(WAVES, 4)],
+  () => ["How do we see a book? Tap the path of the light in order.", ["Light source", "Book", "Eye"]]
+];
+function subseq(arr, n) { const idx = shuffle(arr.map((_, i) => i)).slice(0, n).sort((a, b) => a - b); return idx.map(i => arr[i]); }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const MC_POOL = () => ROOMS.flatMap(r => r.puzzles.filter(p => p.type === "mc" && !p.svg));
+
+const RUSH_MAKERS = [
+  { w: 2, label: "Multiple choice", make() { const p = pick(MC_POOL()); const order = shuffle(p.choices.map((_, i) => i));
+      return { prompt: p.q, render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(p.choices[i])}</button>`).join("")}</div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === p.answer; b.classList.add(ok ? "ok" : "no"); if (!ok) el.querySelector(`[data-i="${p.answer}"]`).classList.add("ok"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, p.choices[p.answer]); }); } }; } },
+  { w: 3, label: "True or false", make() { const [t, v, why] = pick(TF_BANK);
+      return { prompt: t, render: (el, done) => { el.innerHTML = `<div class="tf"><button class="rbtn" data-v="1">✅ True</button><button class="rbtn" data-v="0">❌ False</button></div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = (b.dataset.v === "1") === v; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `${v ? "True" : "False"}. ${why}`); }); } }; } },
+  { w: 1, label: "Matching", make() { const pairs = shuffle(PAIR_BANK).slice(0, 3); const right = shuffle(pairs.map((_, i) => i));
+      return { prompt: "Match each term to its meaning. Tap a term, then its meaning.", render: (el, done) => {
+        el.innerHTML = `<div class="match"><div class="col">${pairs.map((pr, i) => `<button class="rbtn" data-l="${i}">${esc(pr[0])}</button>`).join("")}</div><div class="col">${right.map(i => `<button class="rbtn" data-r="${i}">${esc(pairs[i][1])}</button>`).join("")}</div></div>`;
+        let sel = null, got = 0, over = false;
+        el.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { if (over) return; el.querySelectorAll("[data-l]").forEach(x => x.classList.remove("sel")); sel = Number(b.dataset.l); b.classList.add("sel"); SFX.tap(); });
+        el.querySelectorAll("[data-r]").forEach(b => b.onclick = () => {
+          if (over) return; if (sel === null) { toast("Tap a term on the left first"); return; }
+          const L = el.querySelector(`[data-l="${sel}"]`);
+          if (Number(b.dataset.r) === sel) { L.classList.remove("sel"); L.classList.add("ok"); b.classList.add("ok"); L.disabled = b.disabled = true; sel = null; got++; SFX.click(); if (got === 3) { over = true; done(true); } }
+          else { over = true; b.classList.add("no"); L.classList.add("no"); done(false, pairs.map(pr => `${pr[0]} → ${pr[1]}`).join(" · ")); }
+        }); } }; } },
+  { w: 1, label: "Put in order", make() { const [prompt, items] = pick(ORDER_BANK)(); const shown = shuffle(items);
+      return { prompt, render: (el, done) => { el.innerHTML = `<div class="ordered" id="ordAns"></div><div class="rgrid two">${shown.map(t => `<button class="rbtn" data-t="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
+        let k = 0, over = false; const ans = el.querySelector("#ordAns");
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { if (over) return;
+          if (b.dataset.t === items[k]) { b.disabled = true; b.classList.add("ok"); ans.insertAdjacentHTML("beforeend", `<span class="tag">${k + 1}. ${esc(items[k])}</span>`); k++; SFX.click(); if (k === items.length) { over = true; done(true); } }
+          else { over = true; b.classList.add("no"); done(false, items.join(" → ")); } }); } }; } },
+  { w: 2, label: "Odd one out", make() { const [q, items, odd, why] = pick(ODD_BANK); const order = shuffle(items.map((_, i) => i));
+      return { prompt: q, render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(items[i])}</button>`).join("")}</div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === odd; b.classList.add(ok ? "ok" : "no"); if (!ok) el.querySelector(`[data-i="${odd}"]`).classList.add("ok"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, why); }); } }; } },
+  { w: 2, label: "Fill the gap", make() { const [t, opts, a] = pick(CLOZE_BANK); const order = shuffle(opts.map((_, i) => i));
+      return { prompt: t.replace("___", "______"), render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(opts[i])}</button>`).join("")}</div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === a; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, t.replace("___", opts[a])); }); } }; } },
+  { w: 1, label: "Colour mixer", make() { const [q, a] = pick(MIX_BANK); const opts = shuffle([a, ...shuffle(Object.keys(COLOURS).filter(c => c !== a)).slice(0, 3)]);
+      return { prompt: q, render: (el, done) => { el.innerHTML = `<div class="swatches">${opts.map(c => `<button class="rbtn sw" data-c="${c}"><i style="background:${COLOURS[c]}"></i>${c}</button>`).join("")}</div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = b.dataset.c === a; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `Answer: ${a}`); }); } }; } }
+];
+let RU = null;
+function stopRush() { if (RU) { clearInterval(RU.tid); clearTimeout(RU.nextT); } RU = null; }
+function rushIntro() {
+  const bonus = S.rush.lastDay !== today();
+  openModal(`<span class="kicker">⚡ Light Rush</span><h2>60-second question rush!</h2>
+    ${say("usagi", "Yaha! Answer as many as you can before time runs out! 🐰", "happy")}
+    <div class="rules"><ul><li>Mixed questions: multiple choice, true/false, matching, ordering, odd one out, fill the gap, colour mixing.</li>
+      <li>Correct = +10 points. 3 in a row = <b>×2 combo</b>, 6 in a row = <b>×3</b>.</li>
+      <li>Wrong = <b>−3 seconds</b> and the combo resets.</li>
+      <li>Every 10 points = 1 🌰 chestnut. ${bonus ? "<b>Today's first round pays double!</b>" : ""}</li></ul></div>
+    <p class="small muted">Best score: ${S.rush.best}</p>
+    <div class="row"><button class="btn big" id="rushGo">⚡ Start!</button><button class="btn plain" id="rushShop">👗 Shop</button></div>`);
+  document.getElementById("rushGo").onclick = () => { SFX.init(); startRush(); };
+  document.getElementById("rushShop").onclick = () => { SFX.tap(); openShop(); };
+}
+function startRush() {
+  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush();
+  MUSIC.setMode("rush"); renderTools();
+  RU = { score: 0, combo: 0, correct: 0, total: 0, end: Date.now() + RUSH_SECONDS * 1000, lock: false, last: -1 };
+  $app.innerHTML = `
+    <section class="rushhead">
+      <div class="status"><div class="av ${frameCls()}" id="rushAv">${avatar("chiikawa", "normal")}</div><div><div class="rtopic" style="color:var(--yellow)">⚡ Light Rush · Chapter 14</div><div class="big" id="rScore">0 pts</div></div></div>
+      <div style="display:grid;justify-items:end;gap:6px"><div class="timer" id="rTimer">01:00</div><span class="combo" id="rCombo">Combo ×1</span></div>
+    </section>
+    <section class="card rq"><span class="rtype" id="rType"></span><p class="q" id="rPrompt"></p><div id="rBody"></div><div id="rFb"></div></section>
+    <div class="row"><button class="btn plain" id="rQuit">✕ End round</button></div>`;
+  document.getElementById("rQuit").onclick = () => { SFX.tap(); rushEnd(); };
+  RU.tid = setInterval(rushTick, 200);
+  rushNext();
+}
+function rushTick() {
+  if (!RU) return;
+  const left = Math.max(0, Math.ceil((RU.end - Date.now()) / 1000));
+  const el = document.getElementById("rTimer"); if (el) { el.textContent = fmt(left); el.className = "timer" + (left <= 10 ? " low" : ""); }
+  if (left <= 0) rushEnd();
+}
+function rushNext() {
+  if (!RU) return;
+  const bag = RUSH_MAKERS.flatMap((m, i) => Array(m.w).fill(i).filter(x => x !== RU.last || RUSH_MAKERS.length === 1));
+  const mi = pick(bag); RU.last = mi; const m = RUSH_MAKERS[mi], q = m.make();
+  document.getElementById("rType").textContent = m.label;
+  document.getElementById("rPrompt").textContent = q.prompt;
+  document.getElementById("rFb").innerHTML = ""; RU.lock = false;
+  q.render(document.getElementById("rBody"), rushAnswer);
+}
+function rushAnswer(ok, reveal) {
+  if (!RU || RU.lock) return; RU.lock = true; RU.total++;
+  const av = document.getElementById("rushAv");
+  if (ok) {
+    RU.correct++; RU.combo++; const mult = RU.combo >= 6 ? 3 : RU.combo >= 3 ? 2 : 1; RU.score += 10 * mult;
+    SFX.right(); if (mult > 1) SFX.yaha();
+    const d = document.createElement("div"); d.className = "plus"; d.textContent = `+${10 * mult}`; document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+    if (av) av.innerHTML = avatar("chiikawa", "happy");
+  } else {
+    RU.combo = 0; RU.end -= 3000; SFX.wrong(); penaltyFlash("−3s ⏱️");
+    if (av) av.innerHTML = avatar("chiikawa", "cry");
+    document.getElementById("rFb").innerHTML = `<div class="fb no small"><b>Answer:</b> ${esc(reveal || "")}</div>`;
+  }
+  const mult = RU.combo >= 6 ? 3 : RU.combo >= 3 ? 2 : 1;
+  document.getElementById("rScore").textContent = `${RU.score} pts`;
+  const c = document.getElementById("rCombo"); c.textContent = `Combo ×${mult}`; c.className = "combo" + (mult > 1 ? " hot" : "");
+  RU.nextT = setTimeout(() => { if (RU) { if (av) av.innerHTML = avatar("chiikawa", "normal"); rushNext(); } }, ok ? 500 : 1700);
+}
+function rushEnd() {
+  if (!RU) return;
+  const r = RU; stopRush();
+  const bonus = S.rush.lastDay !== today();
+  let coins = Math.ceil(r.score / 10); if (bonus && r.total > 0) coins *= 2;
+  if (r.total > 0) { S.rush.lastDay = today(); S.stats.rushRounds += 1; }
+  const best = r.score > S.rush.best; S.rush.best = Math.max(S.rush.best, r.score);
+  S.coins += coins; save(true); checkTrophies(); lbSubmit(true);
+  SFX.fanfare(); if (r.score > 0) confetti(120);
+  openModal(`<span class="kicker">⚡ Light Rush · Round over</span><h2>${best ? "🎉 New best score!" : "Time's up!"}</h2>
+    <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} pts</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? " (×2 daily bonus)" : ""}</span></div>
+    ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? "YAHA!!! Amazing rush! 🐰🎊" : "Nice try! Every round makes your brain faster. 🌱", "happy", r.correct >= 8 ? "" : "hint")}
+    <div class="row"><button class="btn big" id="rAgain">⚡ Play again</button><button class="btn yellow" id="rShop">👗 Spend chestnuts</button><button class="btn plain" id="rMap">🗺️ Map</button></div>`, { onClose: renderMap });
+  document.getElementById("rAgain").onclick = () => { SFX.tap(); startRush(); };
+  document.getElementById("rShop").onclick = () => { SFX.tap(); renderMap(); openShop(); };
+  document.getElementById("rMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
+}
+
+/* ============================================================
    7. Top bar
    ============================================================ */
-document.getElementById("brandav").innerHTML = avatar("chiikawa", "happy");
+document.getElementById("brandav").innerHTML = playerAv("happy");
 function renderTools() {
   const justSaved = Date.now() - savedFlash < 2500;
   document.getElementById("tools").innerHTML = `
     ${S ? `<span class="pill" title="Daily streak">🔥 ${S.current_streak}</span>` : ""}
     ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="Your progress saves automatically on this device">${justSaved ? `✓<span class="lbl"> Saved</span>` : `💾<span class="lbl"> Auto-save</span>`}</span>` : ""}
+    ${S ? `<button class="iconbtn coinpill" id="tCoins" aria-label="Chestnuts: ${S.coins}. Open the shop">🌰 ${S.coins}</button>` : ""}
     ${S ? `<button class="iconbtn" id="tTrophy" aria-label="Open the Trophy Cabinet">🏆<span class="lbl">Trophies</span></button>` : ""}
     <button class="iconbtn" id="tJournal" aria-label="Open the Study Journal">📓<span class="lbl">Journal</span></button>
     ${S ? `<button class="iconbtn" id="tSave" aria-label="Save and share code">🔑<span class="lbl">Save code</span></button>` : ""}
     <button class="iconbtn" id="tMus" aria-label="${MUSIC.on ? "Turn music off" : "Turn music on"}" title="Background music" aria-pressed="${MUSIC.on}" style="${MUSIC.on ? "" : "opacity:.5;text-decoration:line-through"}">🎵<span class="lbl">${MUSIC.on ? "Music on" : "Music off"}</span></button>
     <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? "Turn sound effects off" : "Turn sound effects on"}" title="Sound effects">${SFX.on ? "🔊" : "🔇"}</button>`;
   document.getElementById("tJournal").onclick = () => { SFX.init(); SFX.tap(); openJournal(); };
+  const tc = document.getElementById("tCoins"); if (tc) tc.onclick = () => { SFX.init(); SFX.tap(); openShop(); };
   const tt = document.getElementById("tTrophy"); if (tt) tt.onclick = () => { SFX.init(); SFX.tap(); openCabinet(); };
   const ts = document.getElementById("tSave"); if (ts) ts.onclick = () => { SFX.init(); SFX.tap(); openSaveModal(); };
   document.getElementById("tMus").onclick = () => {
@@ -1194,7 +1586,7 @@ function openSaveModal() {
       <button class="btn yellow" id="cpCode">Copy code</button>
       <button class="btn blue" id="cpLink">Copy link</button>
     </div>
-    <p class="small muted" style="text-align:center">🏆 Trophies and play stats stay on this device.</p>
+    <p class="small muted" style="text-align:center">🏆 Trophies, 🌰 chestnuts, outfits and power-ups stay on this device.</p>
     <p class="small muted" style="text-align:center">Write the code in your notebook ✏️ or send the link to yourself. The link opens the game with your progress ready to load.</p>
     <div class="linkbox" id="linkbox">${esc(link)}</div>
     <hr style="border:0;border-top:2px dashed var(--ink);width:100%;margin:4px 0">
@@ -1273,7 +1665,7 @@ const castHtml = moods => `<div class="cast">${["usagi", "hachiware", "chiikawa"
 const starsBg = () => `<div class="stars" aria-hidden="true">${[[6, 14], [18, 40], [30, 10], [52, 22], [70, 8], [84, 30], [94, 12], [62, 44]].map(([x, y], i) => `<span style="left:${x}%;top:${y}%;animation-delay:${-i * .4}s">✦</span>`).join("")}</div>`;
 
 function renderWelcome() {
-  MUSIC.setMode("map"); stopTimer(); R = null; renderTools();
+  stopRush(); MUSIC.setMode("map"); stopTimer(); R = null; renderTools();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
       <span class="kicker" style="color:#fff">S3 Science · Chapter 14: Light, Colours and Beyond</span>
@@ -1315,7 +1707,7 @@ function renderWelcome() {
 }
 
 function renderMap() {
-  MUSIC.setMode("map"); stopTimer(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
+  stopRush(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
@@ -1330,6 +1722,14 @@ function renderMap() {
       <div class="row">
         ${!allDone ? `<button class="btn big" data-room="${ROOMS[ni].id}">▶ Enter ${esc(ROOMS[ni].name)}</button>` : ""}
         <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? "🎁 Daily snack chest" : "🎁 Opened. Back tomorrow!"}</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>🎮 Game modes</h2>
+      <div class="modes">
+        <button class="mode rush" id="mRush"><h3>⚡ Light Rush</h3><span class="muted small">60 seconds of mixed quick questions. Earn 🌰 chestnuts for outfits and power-ups.</span><span class="small">Best: <b>${S.rush.best}</b> pts ${S.rush.lastDay !== today() ? "· <b>×2 today!</b>" : ""}</span></button>
+        <button class="mode" id="mShop"><h3>👗 Wardrobe &amp; Shop</h3><span class="muted small">Dress up Chiikawa and buy power-ups for the escape rooms.</span><span class="small">🌰 <b>${S.coins}</b> chestnuts</span></button>
+        <button class="mode" id="mLb"><h3>🏅 Leaderboard</h3><span class="muted small">The 10 most dedicated players.</span><span class="small">Your points: <b>${dedication()}</b></span></button>
       </div>
     </section>
     <section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
@@ -1356,6 +1756,9 @@ function renderMap() {
       <p class="small muted">🔥 Longest streak: ${S.longest_streak} days · 🛡️ Shields: ${S.streak_shields} (a shield saves your streak if you miss a day)</p>
     </section>`;
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
+  document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
+  document.getElementById("mShop").onclick = () => { SFX.init(); SFX.tap(); openShop(); };
+  document.getElementById("mLb").onclick = () => { SFX.init(); SFX.tap(); openLeaderboard(); };
   const c = document.getElementById("chest");
   if (chestReady) c.onclick = () => {
     SFX.init(); SFX.fanfare(); confetti(70);
@@ -1424,6 +1827,7 @@ let R = null, timerId = null, moodTimer = null;
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
 function enterRoom(id) {
+  stopRush();
   const room = ROOMS[roomIndex(id)];
   const replay = S.completed_rooms.includes(room.id);
   if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
@@ -1443,7 +1847,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", "Tap a glowing <b>?</b> to start. ⚠️ Careful: every wrong answer costs <b>30 seconds</b>, and guessing <b>jams the lock</b>. Think first, then answer!"), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", "Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first!"), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -1478,7 +1882,7 @@ function renderRoom() {
   $app.innerHTML = `
     <section class="roomhead">
       <div class="status">
-        <div class="av" id="chiiAv">${avatar("chiikawa", R.mood)}</div>
+        <div class="av ${frameCls()}" id="chiiAv">${avatar("chiikawa", R.mood)}</div>
         <div style="min-width:0"><div class="rtopic">Topic ${room.topicNo}: ${esc(room.topic)} <span class="zh">${room.zh}</span></div>
           <div class="rt">${esc(room.name)}</div>
           <div class="small" id="chiiSt">Chiikawa is ready</div></div>
@@ -1544,11 +1948,54 @@ function openPuzzle(i) {
     <div id="jamBox"></div>
     <div id="ans">${answerUi(p)}</div>
     <div class="row"><button class="btn blue" id="hint">💡 Hint from Hachiware</button><button class="btn plain" id="pj">📓 Journal</button></div>
+    <div class="pwr" id="pwr"></div>
     <div id="pfb"></div>`, { wide: true });
+  renderPwr(p, i);
   document.getElementById("hint").onclick = () => { SFX.hint(); markHint(i); document.getElementById("pfb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
   document.getElementById("pj").onclick = () => { SFX.tap(); openJournal(room.id, (p.terms || []).map(t => t[0])); };
   wireAnswer(p, box);
   if (R.jam[i] > Date.now()) startJam(i, 0);
+}
+function renderPwr(p, i) {
+  const el = document.getElementById("pwr"); if (!el) return;
+  const n = k => S.power[k] || 0;
+  el.innerHTML = `<b class="small">🎒 Power-ups:</b>
+    <button class="btn" data-pw="torch" ${n("torch") ? "" : "disabled"} title="${esc(POWERUPS[0].desc)}">🔦 Torch ×${n("torch")}</button>
+    <button class="btn" data-pw="crystal" ${n("crystal") ? "" : "disabled"} title="${esc(POWERUPS[1].desc)}">⏳ +60s ×${n("crystal")}</button>
+    <button class="btn" data-pw="guard" ${n("guard") && !R.guard ? "" : "disabled"} title="${esc(POWERUPS[2].desc)}">🛡️ ${R.guard ? "Guard ready!" : `Guard ×${n("guard")}`}</button>`;
+  el.querySelectorAll("[data-pw]").forEach(b => b.onclick = () => usePower(b.dataset.pw, p, i));
+}
+function usePower(k, p, i) {
+  if (!(S.power[k] > 0)) return;
+  const box = document.getElementById("mbox");
+  if (k === "torch") {
+    if (p.type === "mc") {
+      const opts = [...box.querySelectorAll(".choice")].filter(b => !b.disabled && Number(b.dataset.i) !== p.answer);
+      if (!opts.length) { toast("Nothing left to remove!"); return; }
+      const b = pick(opts); b.disabled = true; b.classList.add("wrong"); b.style.textDecoration = "line-through";
+    } else {
+      const wrong = p.dials.map((_, d) => d).filter(d => R.dialPos[d] !== p.answer[d]);
+      if (!wrong.length) { toast("All dials are already right. Try the lock!"); return; }
+      const d = pick(wrong); setDial(d, p.answer[d], p);
+    }
+    markHint(i); toast("🔦 The torch shows the way!");
+  } else if (k === "crystal") {
+    S.room_timer[R.room.id] += 60; updateTimerEl(); penaltyFlash("+60s ⏳");
+  } else if (k === "guard") { R.guard = true; toast("🛡️ Your next wrong answer is protected."); }
+  S.power[k] -= 1; SFX.item(); save(); renderPwr(p, i);
+}
+function setDial(d, v, p) {
+  R.dialPos[d] = v; const f = document.getElementById("face" + d); if (!f) return;
+  f.textContent = p.dials[d][v]; f.classList.remove("spin"); void f.offsetWidth; f.classList.add("spin");
+}
+function updateTimerEl() {
+  const tEl = document.getElementById("timer"); if (!tEl || !R) return;
+  const t = S.room_timer[R.room.id]; tEl.textContent = t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`; tEl.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : "");
+}
+function dimLights() {
+  if (!R) return; R.dimUntil = Date.now() + 45000;
+  const sc = document.getElementById("scene"); if (sc) sc.style.setProperty("--dim", Math.min(.9, R.room.dim + .25));
+  const me = R; setTimeout(() => { if (R === me) { const s2 = document.getElementById("scene"); if (s2) s2.style.setProperty("--dim", R.room.dim); } }, 45000);
 }
 function markHint(i) { R.hinted[i] = true; S.room_run[R.room.id].hints = true; save(); }
 /* Anti-guessing: a lock jams for a while after a guess, and Hachiware's hint must be read. */
@@ -1603,11 +2050,11 @@ function wireAnswer(p, box) {
     document.getElementById("kok").onclick = ok;
     box.onkeydown = e => { if (R.jam[R.cur] > Date.now()) return; if (/^[0-9.]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter" && e.target.id !== "collect") { e.preventDefault(); ok(); } };
   } else {
-    const pos = p.dials.map(() => 0);
+    const pos = p.dials.map(() => 0); R.dialPos = pos;
     box.querySelectorAll(".arr").forEach(b => b.onclick = () => {
       const d = Number(b.dataset.d), n = p.dials[d].length;
       pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click();
-      const f = document.getElementById("face" + d); f.textContent = p.dials[d][pos[d]]; f.classList.remove("spin"); void f.offsetWidth; f.classList.add("spin");
+      setDial(d, pos[d], p);
     });
     document.getElementById("dok").onclick = () => { if (pos.every((x, i) => x === p.answer[i])) { box.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true)); solve(); } else miss(box); };
   }
@@ -1615,26 +2062,45 @@ function wireAnswer(p, box) {
 function miss(box) {
   const i = R.cur, id = R.room.id, now = Date.now(), p = R.room.puzzles[i], run = S.room_run[id];
   R.att[i] = (R.att[i] || 0) + 1; S.stats.run = 0;
+  box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+  // Guard charm: blocks every penalty for this one wrong answer
+  if (R.guard) {
+    R.guard = false; R.lastWrongAt = now; SFX.hint(); save(); renderPwr(p, i);
+    document.getElementById("pfb").innerHTML = `<div class="fb no">${say("hachiware", `🛡️ The Guard charm blocked the penalty! Not the right answer though. 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
+    return;
+  }
   // Guessing = a wrong answer within 5 s of opening the lock, or within 4 s of the last wrong answer
   const fast = now - R.openedAt < 5000 || (R.lastWrongAt && now - R.lastWrongAt < 4000);
   R.lastWrongAt = now;
   SFX.wrong(); setMood("cry", 2500);
-  box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-  // Penalty 1: every wrong answer costs 30 seconds
-  S.room_timer[id] -= 30; penaltyFlash("−30s ⏱️");
-  const tEl = document.getElementById("timer");
-  if (tEl) { const t = S.room_timer[id]; tEl.textContent = t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`; tEl.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : ""); }
-  // Penalty 2: guessing or a second miss on the same lock jams it and adds a strike
+  const hit = [];
+  // Penalty 1: time
+  S.room_timer[id] -= 20; penaltyFlash("−20s ⏱️"); updateTimerEl(); hit.push("⏱️ −20 seconds");
+  // Penalty 2: the lock reshuffles, so tapping the next option doesn't work
+  if (p.type === "mc") {
+    const wrap = box.querySelector(".choices"); const kids = shuffle([...wrap.children]);
+    kids.forEach((k, n) => { wrap.appendChild(k); k.querySelector("b").textContent = "ABCD"[n]; });
+    hit.push("🔀 answers shuffled");
+  } else if (p.type === "dial") {
+    p.dials.forEach((opts, d) => setDial(d, Math.floor(Math.random() * opts.length), p));
+    hit.push("🌀 dials spun");
+  }
+  // Penalty 3: guessing or a repeat miss jams the lock, adds a strike and costs chestnuts
   let jam = 0, reason = "";
-  if (fast) { jam = 30; reason = "Guessing detected! Lock jammed"; }
-  else if (R.att[i] >= 2) { jam = Math.min(45, 15 * (R.att[i] - 1)); reason = `Wrong again! Lock jammed`; }
-  if (jam) { run.strikes += 1; markHint(i); SFX.door(); }
+  if (fast) { jam = 25; reason = "Guessing detected! Lock jammed"; }
+  else if (R.att[i] >= 2) { jam = Math.min(40, 10 + 10 * (R.att[i] - 1)); reason = "Wrong again! Lock jammed"; }
+  if (jam) {
+    run.strikes += 1; markHint(i); SFX.door(); hit.push(`🔒 jammed ${jam}s`, "⚠️ strike +1");
+    if (S.coins > 0) { const fine = Math.min(S.coins, 3); S.coins -= fine; hit.push(`🌰 −${fine}`); renderTools(); }
+    // Penalty 4: every 3rd strike, the lights flicker and the room goes dim
+    if (run.strikes % 3 === 0) { dimLights(); hit.push("🌑 lights dimmed for 45 s"); }
+  }
   save();
   const st = document.getElementById("strikes"); if (st) st.textContent = `⚠️ Strikes ${run.strikes}`;
   const warn = run.strikes >= 6 ? "You've lost 2 stars in this room." : run.strikes >= 3 ? "3+ strikes: this room loses 1 star." : `${3 - run.strikes} more strike${3 - run.strikes === 1 ? "" : "s"} and this room loses a star.`;
   document.getElementById("pfb").innerHTML = `<div class="fb no">
-    ${say("chiikawa", jam ? (fast ? "Wah...! That was too fast! Did we guess? 😭" : "Wah...! Wrong again... 😭") : "Wah...! 😭 The lock didn't open... (−30 seconds)", "cry")}
-    ${jam ? `<div class="rules"><b>⚠️ Guess strike +1</b> (total ${run.strikes}). ${warn}</div>` : ""}
+    ${say("chiikawa", jam ? (fast ? "Wah...! That was too fast! Did we guess? 😭" : "Wah...! Wrong again... 😭") : "Wah...! 😭 The lock didn't open...", "cry")}
+    <div class="rules"><b>Penalties:</b> ${hit.join(" · ")}${jam ? `<br>${warn}` : ""}</div>
     ${say("hachiware", `${jam ? "Let's slow down and read carefully." : "Don't worry! We can figure this out together."} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
   if (jam) startJam(i, jam, reason);
 }
@@ -1710,6 +2176,7 @@ function escapeRoom() {
   const stars = Math.max(1, base - lost);
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
   if (!first) S.stats.replays += 1;
+  const earned = first ? 15 : 5; S.coins = (S.coins || 0) + earned;
   if (tLeft >= 0 && run.strikes === 0) S.stats.cleanEscapes += 1;
   if (!run.hints) S.stats.noHintEscapes += 1;
   S.room_run[room.id] = freshRun();
@@ -1727,6 +2194,7 @@ function escapeRoom() {
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
       <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} of 3 stars">${starStr(stars)}</div>
       <p style="text-align:center"><b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}</p>
+      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 chestnuts</span></p>
       ${lost ? `<div class="rules">Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!</div>` : ""}
       ${first ? say("momonga", `You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, "happy") : say("kurimanju", "Replay complete. Practice makes the brain strong. 🍵", "happy")}
       <section class="card cream jsec"><h3>📖 Textbook recap: ${esc(room.topic)} <span class="zh">${room.zh}</span></h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>
@@ -1734,7 +2202,7 @@ function escapeRoom() {
       <div class="row"><button class="btn big" id="eMap">Back to the map</button><button class="btn yellow" id="eCode">🔑 Get my save code</button></div>`, { onClose: renderMap });
     document.getElementById("eMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
     document.getElementById("eCode").onclick = () => { SFX.tap(); renderMap(); openSaveModal(); };
-    setTimeout(checkTrophies, 1800);
+    setTimeout(checkTrophies, 1800); lbSubmit(true);
   }, reduced() ? 100 : 1000);
 }
 

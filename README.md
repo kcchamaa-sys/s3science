@@ -31,16 +31,22 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 - **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Reopening the game shows a **Resume game** prompt.
 - **🔑 Save code:** a 5-character code (e.g. `K7Q2M`) or a link ending in `#K7Q2M` moves progress to another device with no account needed. It stores stars per room, locks solved in the current room, streak and shields. The game shows what a code contains before loading it.
 
+## ⚡ Light Rush, 👗 Wardrobe and 🏅 Leaderboard
+
+- **Light Rush:** 60 seconds of mixed quick questions (multiple choice, true/false, matching, put in order, odd one out, fill the gap, colour mixer). Combos give ×2 / ×3 points; a wrong answer costs 3 seconds. Every 10 points = 1 🌰 chestnut; the first round each day pays double.
+- **Wardrobe & Shop:** spend chestnuts on hats, glasses, hair clips and frames for Chiikawa, or on power-ups for the escape rooms: 🔦 Torch (removes a wrong answer / fixes a dial), ⏳ Time crystal (+60 s), 🛡️ Guard charm (blocks one wrong answer's penalties).
+- **Leaderboard:** top 10 by dedication points (10 per day played + 1 per lock + 10 per room + 5 per rush round + 25 per trophy). It needs a free Google Sheet: see [`leaderboard/SETUP.md`](leaderboard/SETUP.md), then put the web-app URL in `LEADERBOARD_URL` in `index.html`.
+
 ## Trophies 🏆
 
 10 hard trophies in the **Trophy Cabinet** (map screen and 🏆 button). They reward effort over many days: 7- and 30-day streaks, 20 play days, 15 first-try answers in a row, 100 locks opened, all rooms escaped, 3★ everywhere, 5 clean escapes, 5 no-hint escapes, 10 replays. Locked trophies show a progress bar.
 
 ## Anti-guessing rules ⚠️
 
-- Every wrong answer costs **30 seconds** on the room timer.
-- **Guessing** (a wrong answer within 5 s of opening a lock or of the last wrong answer) jams the lock for 30 s.
-- A **second wrong answer** on the same lock jams it for 15 s, rising to 45 s.
-- Each jam adds a **guess strike**: 3 strikes = −1 star, 6 strikes = −2 stars for that escape (minimum 1★).
+- Every wrong answer: **−20 seconds**, and the lock **reshuffles** (answer order shuffles, dials spin).
+- **Guessing** (a wrong answer within 5 s of opening a lock or of the last wrong answer) jams the lock for 25 s; a **repeat miss** jams it for 20–40 s.
+- Each jam adds a **guess strike** and costs **3 🌰 chestnuts**. Every 3rd strike, the **lights dim** for 45 s.
+- 3 strikes = −1 star, 6 strikes = −2 stars for that escape (minimum 1★).
 
 ## Daily streak
 
