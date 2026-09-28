@@ -356,11 +356,11 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
   <filter id="sketch"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <header class="top">
-  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt">Chiikawa Physics Escape</span></button>
+  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt" id="brandText">Chiikawa Physics Escape</span></button>
   <div class="tools" id="tools"></div>
 </header>
 <main id="app"></main>
-<footer>Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.</footer>
+<footer id="footText">Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.</footer>
 <div id="modal"></div>
 <div id="journal"></div>
 <div id="toast" class="toast" hidden></div>
@@ -371,6 +371,11 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
    1. Characters: original Chiikawa-style SVG drawings
    mood: "normal" | "happy" | "cry"
    ============================================================ */
+/* Language: "en" or "zh" (Traditional Chinese). L(en, zh) picks the text for the current language. */
+const LANG_KEY = "escapeGameLang";
+let LANG = "en";
+try { LANG = localStorage.getItem(LANG_KEY) === "zh" ? "zh" : "en"; } catch (e) {}
+const L = (en, zh) => (LANG === "zh" ? zh : en);
 const INK = "#4A3E3D";
 let clipN = 0;
 function eyes(x1, x2, y, mood, big) {
@@ -883,6 +888,147 @@ const ROOMS = [
     ]
   }
 ];
+/* ============================================================
+   5b. Traditional Chinese (繁體中文) content, HK junior science terms.
+   applyLang() copies these over the English data when 中文 mode is on.
+   ============================================================ */
+const WAVES_ZH = ["無線電波", "微波", "紅外線", "可見光", "紫外線", "X 射線", "γ 射線"];
+const IMG3_ZH = [["實像", "虛像"], ["正立", "倒立"], ["放大", "大小相同", "縮小"]];
+const ZH_ROOMS = {
+  room1: { name: "黑暗洞穴", specialName: "蠟燭", specialLine: "一枝未點着的蠟燭。也許答對問題就能點亮它……", badge: "🏮 洞穴燈籠徽章", item: "✨ 發光石",
+    intro: [["chiikawa", "cry", "呀……！這裏好黑呀……😖"], ["hachiware", "normal", "別擔心！點擊房間裏發光的東西，每樣都藏着一道光學謎題！"], ["usagi", "happy", "呀哈！嗚啦！🔦"]],
+    notes: ["<b>發光體</b>會自行發光（例如太陽、點着的蠟燭）。<b>非發光體</b>不會自行發光；我們看見它們，是因為光源的光被它們<b>反射</b>進我們的眼睛。",
+      "發光體的光<b>直接</b>進入眼睛，我們便看見它。", "光沿<b>直線</b>傳播，所以不透明物體會形成影子。",
+      "光束可以是<b>平行光束</b>（光線並排）、<b>發散光束</b>（光線散開）或<b>會聚光束</b>（光線聚合）。",
+      "來自<b>近物</b>的光線到達眼睛時是<b>發散</b>的；來自<b>遠物</b>（例如星星）的光線到達時幾乎<b>平行</b>。"],
+    rules: ["直接光：光源 → 眼睛", "反射光：光源 → 物體 → 眼睛", "近物 → 發散光線；遠物 → 平行光線"],
+    puzzles: [
+      { q: "發光的牌子寫着：「只有發光體才能打開這裏。」以下哪一項是發光體？", choices: ["月亮", "點着的蠟燭", "平面鏡", "一張白紙"], hint: "發光體會自行發光。哪一個正在這樣做？", explain: "點着的蠟燭是發光體：它會自行發光。月亮、鏡子和紙都是非發光體，它們只會反射光。" },
+      { q: "蠟燭點着後，吉伊卡哇看見地上的一本書。光是怎樣到達吉伊卡哇的眼睛？", choices: ["吉伊卡哇眼睛發出的光照到書上", "書本自行發光", "蠟燭的光被書本反射進吉伊卡哇的眼睛", "書本吸收了所有光"], hint: "跟着光走：光源 → 物體 → ？", explain: "書本是非發光體。蠟燭的光被書本反射，再進入吉伊卡哇的眼睛。（我們看見蠟燭本身，是因為它的光直接進入眼睛。）" },
+      { q: "牆上畫了三束光（見圖）。轉動每個密碼盤，說出光束的名稱。", labels: ["光束 A", "光束 B", "光束 C"], dials: [["平行", "發散", "會聚"], ["平行", "發散", "會聚"], ["平行", "發散", "會聚"]], hint: "發散 = 散開；會聚 = 聚合；平行 = 並排、永不相交。", explain: "A 從一點散開（發散），B 的光線並排（平行），C 的光線聚合到一點（會聚）。" },
+      { q: "吉伊卡哇先看附近的蠟燭，再看遠處的星星。以下哪項正確？", choices: ["兩者的光線都以會聚光束到達眼睛", "附近蠟燭的光線以發散方式到達眼睛；遠處星星的光線到達時幾乎平行", "蠟燭的光線平行到達；星星的光線發散", "只有星星的光沿直線傳播"], hint: "光線從物體上每一點散開。經過極遠的距離後，進入小小眼睛的幾條光線幾乎並排。", explain: "近物的光線到達眼睛時仍在散開（發散）。遠物的光線走了很遠，到達時幾乎平行。" },
+      { q: "在細小的電筒下，烏薩奇的影子邊緣很清晰。光的哪個特性解釋了影子的形成？", choices: ["光沿直線傳播", "光很容易繞過轉角", "光需要空氣才能傳播", "光永遠是會聚光束"], hint: "如果光能繞過烏薩奇，還會有影子嗎？", explain: "光沿直線傳播。不透明物體擋住了光，所以後面形成影子。" }] },
+  room2: { name: "鏡子大廳", specialName: "魔法鏡", specialLine: "一面高高的鏡子。吉伊卡哇揮揮手……鏡中人也揮手！", badge: "👑 鏡之皇冠徽章", item: "🔷 銀色鏡子碎片",
+    intro: [["chiikawa", "cry", "呼哇……！有好多個吉伊卡哇！😳"], ["hachiware", "normal", "那些只是平面鏡的像！用反射定律就能逃出去。"], ["usagi", "happy", "噗嚕！噗嚕！🪞"]],
+    notes: ["<b>入射線</b>射向鏡面；<b>反射線</b>從鏡面反彈；<b>法線</b>是垂直於鏡面的線。", "<b>反射定律：</b>入射角 = 反射角（兩者都從法線量度）。",
+      "平面鏡的像是<b>虛像</b>、<b>左右倒轉</b>、與物體<b>大小相同</b>，而且像在鏡<b>後</b>的距離等於物體在鏡前的距離。", "應用：<b>潛望鏡</b>、<b>倒後鏡</b>、令房間看來更深的鏡牆（室內設計）。"],
+    rules: ["入射角 = 反射角", "像：虛像 · 左右倒轉 · 大小相同 · 在鏡後相同距離"],
+    puzzles: [
+      { q: "以下哪一項是反射定律？", choices: ["入射角等於反射角", "反射線永遠沿鏡面前進", "入射線和反射線永遠平行", "角度從鏡面量度"], hint: "法線是垂直於鏡面的線。兩個角的大小有甚麼關係？", explain: "入射角 = 反射角，兩者都從法線量度。" },
+      { q: "一條光線射向平面鏡（見圖）。A、B、C 中哪一條是反射線？", choices: ["光線 A", "光線 B", "光線 C", "都不是"], hint: "看看入射線與虛線法線之間的角。反射線在法線另一邊形成相同的角。", explain: "光線 B 在法線另一邊與法線形成相同的角，這就是反射定律。" },
+      { q: "轉動密碼盤，描述吉伊卡哇在平面鏡中的像。", labels: ["種類", "左右", "大小"], dials: [["實像", "虛像"], ["沒有倒轉", "左右倒轉"], ["放大", "大小相同", "縮小"]], hint: "你能把鏡中的像投射在紙上嗎？你舉起右手時，鏡中像看來像舉起左手嗎？像比你大嗎？", explain: "像是虛像（不能投射在屏幕上）、左右倒轉、大小相同。所以救護車車頭的字是反轉印刷的：前面的司機從倒後鏡看便會看到正確的字。" },
+      { q: "一間小咖啡店用一大面鏡子鋪滿整幅牆。為甚麼咖啡店看起來大了很多？", choices: ["鏡子把枱放大了", "房間的像出現在鏡後，距離與房間在鏡前一樣，所以房間看來深了約一倍", "鏡子增加了光，令房間變大", "鏡中的像是實像，客人可以走進去"], hint: "平面鏡的像出現在鏡前、鏡上，還是鏡後？", explain: "平面鏡的像出現在鏡後，距離等於物體在鏡前的距離。鏡子「多出」一個房間，所以咖啡店看起來更深。" },
+      { q: "烏薩奇做了一個潛望鏡，想從牆後偷看。兩面平面鏡是怎樣擺放的？", choices: ["互相平行並相對，各傾斜 45°", "兩面都平放在地上", "互成直角，背對背", "一面就夠了，另一面只是裝飾"], hint: "光從頂部進入，向下轉，再轉入你的眼睛。兩次轉向的方式相同。", explain: "兩面鏡互相平行，各傾斜 45°。每面鏡把光轉一個直角，所以牆上方的光能到達下方的眼睛。" }] },
+  room3: { name: "彎曲水池", specialName: "水缸", specialLine: "水缸底有一條鎖匙……但它看起來比實際近！", badge: "💧 水滴潛水員徽章", item: "💎 水滴寶石",
+    intro: [["usagi", "happy", "嗚啦！*撲向水缸裏的鎖匙，撲空了*"], ["hachiware", "normal", "鎖匙看起來比實際近……這是折射！光進入另一種介質時會屈折。"], ["chiikawa", "normal", "呀……我來拿毛巾吧。🫧"]],
+    notes: ["<b>折射</b>是光穿過不同<b>折射率</b>介質的界面時發生的屈折。", "光進入折射率<b>較高</b>的介質（例如空氣 → 玻璃或水）時，會<b>偏向法線</b>。",
+      "光進入折射率<b>較低</b>的介質（例如水 → 空氣）時，會<b>偏離法線</b>。", "沿法線入射的光線不會屈折。", "錯覺：水中物體看來<b>較淺／較近</b>；筷子在水面位置看來<b>彎曲</b>。"],
+    rules: ["低 → 高折射率：偏向法線", "高 → 低折射率：偏離法線", "沿法線：不屈折"],
+    puzzles: [
+      { q: "一條光線斜斜地從空氣射進玻璃。玻璃的折射率較高。會發生甚麼事？", choices: ["偏離法線", "偏向法線", "完全不屈折", "一定會全部反射"], hint: "進入折射率較高的介質……偏向還是偏離法線？", explain: "進入折射率較高的介質（空氣 → 玻璃）時，光會偏向法線。" },
+      { q: "玻璃磚內的光線到達頂面（見圖）。在空氣中它會走 A、B 還是 C？", choices: ["路徑 A", "路徑 B", "路徑 C", "停在表面"], hint: "玻璃 → 空氣是進入折射率較低的介質。偏向還是偏離虛線法線？", explain: "路徑 A 偏離法線，這正是光從玻璃進入空氣時發生的事。路徑 B 完全沒有屈折；路徑 C 屈折方向錯了。" },
+      { q: "為甚麼水缸看起來比實際淺？", choices: ["缸底的光離開水面時偏離法線，所以缸底看來較高", "水吸收了紅光", "光離開水面時偏向法線", "水面反射了所有光"], hint: "光從水進入空氣時向哪邊屈折？眼睛會沿直線追溯光線。", explain: "缸底的光離開水面時偏離法線。眼睛沿直線追溯光線，所以缸底看來較高：水缸看起來較淺。" },
+      { q: "吉伊卡哇把筷子放進一碗水裏，筷子在水面位置看起來彎了。為甚麼？", choices: ["水真的把筷子弄彎了", "水中部分的光離開水面時折射，所以那部分看來較高", "筷子在水中吸收了光", "光在水中沿曲線傳播"], hint: "和水缸看起來較淺的原理一樣！", explain: "水中部分的光離開水面時偏離法線，那部分看來比實際高，所以筷子在水面位置看起來彎曲。" },
+      { q: "一條光線沿法線射向玻璃磚。會發生甚麼事？", choices: ["偏向法線", "偏離法線", "直線穿過，不會屈折", "發生全內反射"], hint: "如果光線已經沿法線前進，它可以向哪邊屈折？", explain: "沿法線前進的光線穿過界面時方向不變。" }] },
+  room4: { name: "水晶光纖隧道", specialName: "水晶", specialLine: "光在這塊水晶裏來回曲折。它被困住了！", badge: "🌟 光纖守護者徽章", item: "🧵 發光光纖線",
+    intro: [["chiikawa", "happy", "哇……光在水晶裏左右來回走！✨"], ["hachiware", "normal", "這是全內反射！光纖就是這樣傳送數據的。"], ["usagi", "happy", "呀哈！💫"]],
+    notes: ["<b>全內反射</b>需要<b>兩個</b>條件：", "(1) 光從折射率<b>較高</b>的介質射向折射率<b>較低</b>的介質（例如玻璃或水 → 空氣）。", "(2) 入射角<b>大於臨界角</b>。",
+      "若入射角小於臨界角，大部分光會<b>折射出去</b>（只有少量被反射）。", "應用：<b>光纖</b>（數據傳輸）、雙筒望遠鏡和潛望鏡中的<b>三稜鏡</b>、<b>閃爍的鑽石</b>。"],
+    rules: ["條件一：高 → 低折射率", "條件二：入射角 > 臨界角", "兩個條件都符合 → 所有光反射回內部"],
+    puzzles: [
+      { q: "以下哪一項列出全內反射的兩個條件？", choices: ["低 → 高折射率；入射角小於臨界角", "高 → 低折射率；入射角大於臨界角", "高 → 低折射率；光線沿法線", "任何介質；任何角度"], hint: "全內反射發生在玻璃或水的內部，當光線以大角度射向界面時。", explain: "全內反射需要光從折射率較高射向較低的介質（例如玻璃 → 空氣），而且入射角大於臨界角。" },
+      { q: "把密碼鎖轉到能把光困在水晶內的條件。", labels: ["光的方向", "入射角"], dials: [["空氣 → 玻璃", "玻璃 → 空氣"], ["小於臨界角", "大於臨界角"]], hint: "光必須是想「離開」水晶，而且以大角度射向表面。", explain: "玻璃 → 空氣（高 → 低折射率），入射角大於臨界角：所有光都反射回內部。" },
+      { q: "在水晶內，一條光線以小於臨界角的入射角射向與空氣的界面。會發生甚麼事？", choices: ["所有光都反射回內部", "大部分光折射進入空氣，偏離法線", "光停在界面", "光偏向法線"], hint: "全內反射的第二個條件不符合……", explain: "入射角太小，不會發生全內反射，所以大部分光折射進入空氣（偏離法線），只有少量被反射。" },
+      { q: "光纖怎樣把互聯網數據以光的形式傳送到很遠的地方？", choices: ["光在每個彎位被吸收再重新產生", "光在光纖內不斷發生全內反射", "光纖外面鋪了平面鏡", "光自己會沿曲線走"], hint: "記得在水晶內來回曲折的光嗎？", explain: "光纖內的光射向界面時，入射角一直大於臨界角，所以不斷發生全內反射，光就留在光纖內。" },
+      { q: "以下哪一項沒有利用全內反射？", choices: ["雙筒望遠鏡內的三稜鏡", "光纖", "鑽石的閃爍", "浴室的平面鏡"], hint: "其中一項是靠光亮的金屬塗層反射光。", explain: "浴室鏡子靠鍍銀表面反射光（普通反射）。雙筒望遠鏡和潛望鏡的稜鏡、光纖和鑽石都利用全內反射。" }] },
+  room5: { name: "透鏡工房", specialName: "透鏡架", specialLine: "架上有一塊大透鏡，透過它看甚麼都不一樣！", badge: "🔭 透鏡工匠徽章", item: "🔍 放大鏡",
+    intro: [["hachiware", "normal", "這裏有很多透鏡！把光聚焦在每把鎖上吧。"], ["chiikawa", "happy", "呼哇……透過這塊看，甚麼都變大了！👀"], ["usagi", "happy", "嗚啦！嗚啦！🔎"]],
+    notes: ["<b>凸透鏡（會聚透鏡）：</b>中間較厚，把平行光線會聚到<b>主焦點 (F)</b>。", "凸透鏡會形成<b>實像</b>或<b>虛像</b>，視乎物體距離而定。用途：<b>放大鏡</b>、<b>相機</b>、<b>投影機</b>。",
+      "<b>凹透鏡（發散透鏡）：</b>中間較薄，把平行光線散開，令它們<b>看似從 F' 發出</b>。", "凹透鏡永遠形成<b>虛像、正立、縮小</b>的像。用途：<b>近視眼鏡</b>、<b>防盜眼</b>。"],
+    rules: ["凸透鏡：中間厚 · 會聚光線", "凹透鏡：中間薄 · 發散光線 · 像永遠是虛像、正立、縮小", "物體非常接近凸透鏡 → 虛像、正立、放大（放大鏡）"],
+    puzzles: [
+      { q: "平行於主軸的光線穿過凸透鏡（見圖）。它們在哪裏相交？", choices: ["光心", "主焦點 (F)", "永不相交", "返回光線原來的一邊"], hint: "凸透鏡是會聚透鏡。那個相交點叫「主……」", explain: "凸透鏡把平行光線會聚到一點：主焦點 F。" },
+      { q: "轉動密碼盤，描述凹透鏡所成的像。", labels: ["種類", "方向", "大小"], dials: IMG3_ZH, hint: "凹透鏡把光散開，光線永遠不會真正相交……", explain: "無論物體在哪裏，凹透鏡永遠形成虛像、正立、縮小的像。" },
+      { q: "要把凸透鏡當作放大鏡使用，物體應放在哪裏？", choices: ["離透鏡很遠", "比主焦點更接近透鏡", "剛好在主焦點", "在透鏡的另一邊"], hint: "放大鏡形成虛像、正立、放大的像。物體必須很近。", explain: "物體比 F 更接近凸透鏡時，透鏡形成虛像、正立、放大的像：這就是放大鏡。" },
+      { q: "近視眼鏡和大門的防盜眼用的是哪種透鏡？", choices: ["凸透鏡", "凹透鏡", "平面鏡", "三稜鏡"], hint: "防盜眼把整個訪客顯示成一個細小、正立的影像……", explain: "凹透鏡使光發散。防盜眼用它顯示整個門口細小、正立的虛像；近視眼鏡用它在光進入眼睛前先把光散開。" },
+      { q: "投影機用凸透鏡在屏幕上投射大畫面。轉動密碼盤，描述這個像。", labels: ["種類", "方向", "大小"], dials: IMG3_ZH, hint: "畫面出現在屏幕上，而且比幻燈片大。", explain: "投影機的像是實像（形成在屏幕上）、倒立和放大的。所以幻燈片要倒轉放入！" }] },
+  room6: { name: "彩虹稜鏡塔", specialName: "三稜鏡", specialLine: "一塊玻璃三稜鏡在牆上映出彩虹！", badge: "🌈 彩虹守護者徽章", item: "🔺 稜鏡水晶",
+    intro: [["momonga", "happy", "看我！我是最可愛的彩虹！🌈"], ["hachiware", "normal", "那是三稜鏡把白光分開，叫做色散！"], ["chiikawa", "happy", "呀……！好漂亮！✨"]],
+    notes: ["<b>白光</b>是多種顏色的混合。三稜鏡把它<b>色散</b>成光譜：紅、橙、黃、綠、藍、靛、紫。<b>紅光屈折最少，紫光屈折最多。</b>", "<b>光的三原色：</b>紅、綠、藍 (RGB)。",
+      "<b>混合：</b>紅 + 綠 = 黃；紅 + 藍 = 品紅；綠 + 藍 = 青；紅 + 綠 + 藍 = 白。", "物體呈現它所<b>反射</b>的色光的顏色，並<b>吸收</b>其他顏色。在色光下，它只能反射照在它身上的顏色。"],
+    rules: ["紅光屈折最少 · 紫光屈折最多", "紅 + 綠 = 黃 · 紅 + 藍 = 品紅 · 綠 + 藍 = 青 · 紅 + 綠 + 藍 = 白", "看見的顏色 = 被反射的顏色"],
+    puzzles: [
+      { q: "白光穿過三稜鏡（見圖）。在 B 處、屈折最多的是哪種顏色？", choices: ["紅", "綠", "黃", "紫"], hint: "紅橙黃綠藍靛紫：紅光屈折最少，另一端的顏色屈折最多。", explain: "紫光屈折最多，紅光最少。把白光分成各種顏色叫做色散。" },
+      { q: "以下哪一項是可見光譜的正確次序？", choices: ["紅、橙、黃、綠、藍、靛、紫", "紅、黃、橙、綠、靛、藍、紫", "紫、綠、紅、橙、黃、藍、靛", "藍、紅、綠、黃、橙、紫、靛"], hint: "紅橙黃綠藍靛紫！", explain: "紅、橙、黃、綠、藍、靛、紫。白光是所有這些顏色的混合。" },
+      { q: "栗子饅頭把兩盞色光射向白牆。轉動每個密碼盤，選出出現的顏色。", labels: ["紅 + 綠", "綠 + 藍", "紅 + 藍"], dials: [["白", "黃", "青", "品紅"], ["白", "黃", "青", "品紅"], ["白", "黃", "青", "品紅"]], hint: "混合色光和混合顏料不同！紅 + 綠 = 黃，綠 + 藍 = 青，紅 + 藍 = 品紅。", explain: "紅 + 綠 = 黃，綠 + 藍 = 青，紅 + 藍 = 品紅。三原色加在一起就是白色。" },
+      { q: "一朵紅玫瑰只被藍光照射。它看起來是甚麼顏色？", choices: ["紅", "藍", "紫", "黑"], hint: "紅色物體只反射紅光。這裏有紅光嗎？", explain: "玫瑰吸收藍光，而且沒有紅光可以反射，所以看起來是黑色。" },
+      { q: "一件白色 T 恤同時被紅光和綠光照射。它看起來是甚麼顏色？", choices: ["白", "黃", "紅", "黑"], hint: "白色物體會反射照在它身上的所有顏色。現在有哪些顏色？", explain: "白色物體反射所有照射在它身上的光。紅光和綠光都被反射，而紅 + 綠 = 黃。" }] },
+  room7: { name: "電波天文台", specialName: "望遠鏡", specialLine: "一支指向星空的望遠鏡。轉盤上寫着各種波的名稱！", badge: "🛰️ 電波大師徽章", item: "📡 迷你天線",
+    intro: [["hachiware", "normal", "最後一個房間！可見光只是大家族「電磁波譜」的其中一員。"], ["usagi", "happy", "呀哈！*瘋狂地轉動望遠鏡轉盤* 🔭"], ["chiikawa", "cry", "快要逃出去了……呀……！🥹"]],
+    notes: ["<b>電磁波譜</b>，按<b>波長遞減／能量遞增</b>排列：無線電波 → 微波 → 紅外線 → 可見光 → 紫外線 → X 射線 → γ 射線。",
+      "用途：無線電波（Wi-Fi、藍牙、八達通卡）、微波（雷達、烹調）、紅外線（熱成像、遙控器）、紫外線（消毒、驗鈔）、X 射線（骨骼影像）、γ 射線（治療癌症、消毒）。",
+      "<b>危害：</b>高能量、短波長的波（紫外線、X 射線、γ 射線）可導致細胞受損、曬傷或基因突變。"],
+    rules: ["無線電波 → 微波 → 紅外線 → 可見光 → 紫外線 → X 射線 → γ 射線：波長遞減，能量遞增", "紫外線、X 射線、γ 射線：能量高，可損害細胞"],
+    puzzles: [
+      { q: "以下哪一項按波長遞減（能量遞增）的次序列出電磁波譜？", choices: [WAVES_ZH.join("、"), WAVES_ZH.slice().reverse().join("、"), "可見光、紫外線、紅外線、X 射線、γ 射線、無線電波、微波", "無線電波、紅外線、微波、可見光、X 射線、紫外線、γ 射線"], hint: "無線電波的波長最長；γ 射線的波長最短（能量最高）。", explain: "波長遞減／能量遞增：無線電波 → 微波 → 紅外線 → 可見光 → 紫外線 → X 射線 → γ 射線。" },
+      { q: "吉伊卡哇在港鐵閘機拍八達通卡。讀卡器用的是哪種電磁波？", choices: ["無線電波", "X 射線", "紫外線", "γ 射線"], hint: "Wi-Fi 和藍牙也屬於這一類。", explain: "八達通卡、Wi-Fi 和藍牙都使用無線電波。" },
+      { q: "望遠鏡密碼鎖問：每項工作用哪種電磁波？轉動密碼盤。", labels: ["電視遙控器", "驗鈔", "骨骼影像"], dials: [WAVES_ZH, WAVES_ZH, WAVES_ZH], hint: "遙控器發出看不見的「熱」光；驗鈔機令隱藏油墨發光；骨骼影像的波能穿過肌肉。", explain: "遙控器用紅外線，驗鈔機用紫外線，骨骼影像用 X 射線。" },
+      { q: "醫院用哪種電磁波治療癌症和為醫療器材消毒？", choices: ["無線電波", "微波", "可見光", "γ 射線"], hint: "就是能量最高的那種。", explain: "γ 射線能量最高，可以殺死癌細胞和為醫療器材消毒。" },
+      { q: "哪一組電磁波可導致細胞受損、曬傷或基因突變？", choices: ["無線電波、微波和紅外線", "紫外線、X 射線和 γ 射線", "只有可見光", "所有電磁波的危害都一樣"], hint: "危險來自高能量和短波長。", explain: "紫外線、X 射線和 γ 射線是高能量、短波長的波，可損害細胞、導致曬傷（紫外線）或突變。所以我們要塗防曬，放射技師要用鉛屏障。" }] }
+};
+const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
+const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
+const ZH_WARDROBE = { hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
+const ZH_SLOTS = { hat: "帽子", face: "眼鏡", ribbon: "髮夾", frame: "相框" };
+const ZH_CHAR = { chiikawa: "吉伊卡哇", hachiware: "小八", usagi: "烏薩奇", momonga: "小桃", kurimanju: "栗子饅頭" };
+const ZH_COLOURS = { Red: "紅", Green: "綠", Blue: "藍", Yellow: "黃", Cyan: "青", Magenta: "品紅", White: "白", Black: "黑" };
+const ZH_TOPIC_LABELS = { light_basics: "光與視覺", reflection: "反射", refraction: "折射與全內反射", lenses: "透鏡", colours: "顏色", em_waves: "電磁波譜" };
+const TF_ZH = [
+  ["發光體會自行發光。", true, ""], ["月亮是發光體。", false, "月亮只反射太陽光，是非發光體。"], ["我們看見非發光體，是因為它們把光反射進我們的眼睛。", true, ""],
+  ["光會沿曲線繞過物體。", false, "光沿直線傳播。"], ["遠處星星的光線到達眼睛時幾乎平行。", true, ""], ["附近蠟燭的光線以會聚光束到達眼睛。", false, "它們以發散方式到達眼睛。"],
+  ["入射角等於反射角。", true, ""], ["入射角是從鏡面量度的。", false, "入射角從法線量度。"], ["平面鏡的像是實像，可以投射在屏幕上。", false, "它是虛像。"],
+  ["平面鏡的像是左右倒轉的。", true, ""], ["平面鏡的像與物體大小相同。", true, ""], ["潛望鏡使用兩面互相平行的平面鏡。", true, ""],
+  ["光從空氣進入水時偏向法線。", true, ""], ["光從玻璃進入空氣時偏向法線。", false, "進入折射率較低的介質時，光偏離法線。"], ["沿法線前進的光線不會屈折。", true, ""],
+  ["水中的物體看起來比實際深。", false, "它們看起來較淺。"], ["光從空氣射進玻璃時可以發生全內反射。", false, "需要從高折射率到低折射率（例如玻璃 → 空氣）。"],
+  ["要發生全內反射，入射角必須大於臨界角。", true, ""], ["光纖利用全內反射傳送數據。", true, ""], ["凸透鏡中間較薄。", false, "凸透鏡中間較厚。"],
+  ["凸透鏡把平行光線會聚到主焦點。", true, ""], ["凹透鏡永遠形成虛像、正立、縮小的像。", true, ""], ["近視眼鏡使用凸透鏡。", false, "近視眼鏡使用凹透鏡。"],
+  ["放大鏡形成虛像、正立、放大的像。", true, ""], ["在三稜鏡中紅光屈折最多。", false, "紅光屈折最少，紫光屈折最多。"], ["白光是多種顏色的混合。", true, ""],
+  ["紅、綠、藍是光的三原色。", true, ""], ["紅光 + 綠光 = 黃光。", true, ""], ["紅色物體在綠光下看起來是黑色。", true, ""],
+  ["γ 射線的波長最長。", false, "γ 射線的波長最短。"], ["無線電波是電磁波譜中能量最低的。", true, ""], ["紫外線可導致曬傷。", true, ""],
+  ["X 射線用來拍攝骨骼影像。", true, ""], ["電視遙控器使用紫外線。", false, "遙控器使用紅外線。"]
+];
+const PAIR_ZH = [
+  ["發光體", "自行發光"], ["非發光體", "只會反射光"], ["平行光束", "光線並排"], ["發散光束", "光線散開"], ["會聚光束", "光線聚合"], ["法線", "垂直於表面的線"],
+  ["左右倒轉", "左右互換"], ["潛望鏡", "用兩面平行鏡看過牆"], ["折射", "光在界面屈折"], ["臨界角", "超過它便發生全內反射"], ["光纖", "利用全內反射傳送數據"],
+  ["凸透鏡", "中間厚；會聚光線"], ["凹透鏡", "中間薄；發散光線"], ["主焦點", "平行光線經凸透鏡後相交的點"], ["防盜眼", "使用凹透鏡"], ["色散", "白光分成多種顏色"],
+  ["青色", "綠光 + 藍光"], ["品紅色", "紅光 + 藍光"], ["無線電波", "八達通卡、Wi-Fi"], ["微波", "雷達和烹調"], ["紅外線", "熱成像、遙控器"], ["紫外線", "消毒、驗鈔"],
+  ["X 射線", "骨骼影像"], ["γ 射線", "治療癌症"]
+];
+const ODD_ZH = [
+  ["哪一項不是發光體？", ["太陽", "點着的蠟燭", "螢火蟲", "月亮"], 3, "月亮只反射光。"],
+  ["哪一項沒有利用全內反射？", ["光纖", "鑽石的閃爍", "雙筒望遠鏡的稜鏡", "浴室鏡子"], 3, "浴室鏡子是普通反射。"],
+  ["哪一項不是光的三原色？", ["紅", "綠", "藍", "黃"], 3, "黃色是紅 + 綠。"],
+  ["哪一項不是能損害細胞的高能量波？", ["紫外線", "X 射線", "γ 射線", "無線電波"], 3, "無線電波能量低。"],
+  ["哪一項沒有使用凸透鏡？", ["放大鏡", "相機", "投影機", "防盜眼"], 3, "防盜眼使用凹透鏡。"],
+  ["哪一項不是平面鏡像的特徵？", ["虛像", "大小相同", "左右倒轉", "上下倒轉"], 3, "平面鏡的像不會上下倒轉。"],
+  ["哪一項不是平面鏡的應用？", ["潛望鏡", "倒後鏡", "咖啡店的鏡牆", "光纖"], 3, "光纖利用全內反射。"],
+  ["哪一項不是可見光譜的顏色？", ["橙", "靛", "紫", "品紅"], 3, "品紅是紅光 + 藍光混合而成，不是光譜顏色。"],
+  ["哪一項不是由折射造成？", ["水池看來較淺", "筷子看來彎曲", "鏡中的你", "三稜鏡映出彩虹"], 2, "鏡中的像是由反射造成的。"],
+  ["哪一項不是電磁波？", ["微波", "紅外線", "聲波", "X 射線"], 2, "聲波不是電磁波。"]
+];
+const CLOZE_ZH = [
+  ["光從空氣進入玻璃時會 ___ 法線。", ["偏向", "偏離"], 0], ["光從水進入空氣時會 ___ 法線。", ["偏向", "偏離"], 1],
+  ["凸透鏡把平行光線 ___。", ["會聚", "發散"], 0], ["凹透鏡把平行光線 ___。", ["會聚", "發散"], 1],
+  ["在三稜鏡中，紅光屈折 ___。", ["最少", "最多"], 0], ["物體呈現它所 ___ 的色光的顏色。", ["反射", "吸收"], 0],
+  ["近物的光線以 ___ 方式到達眼睛。", ["發散", "平行"], 0], ["全內反射需要光從折射率 ___ 的介質射向較低的介質。", ["較高", "較低"], 0],
+  ["平面鏡的像在鏡 ___，距離等於物體在鏡前的距離。", ["後", "前"], 0], ["γ 射線的波長 ___。", ["最短", "最長"], 0],
+  ["投影機所成的像是 ___。", ["實像", "虛像"], 0], ["八達通卡使用 ___。", ["無線電波", "X 射線"], 0]
+];
+const MIX_ZH = [["紅光 + 綠光 = ？", "Yellow"], ["紅光 + 藍光 = ？", "Magenta"], ["綠光 + 藍光 = ？", "Cyan"], ["紅 + 綠 + 藍光 = ？", "White"],
+  ["白色恤衫在藍光下看起來是……", "Blue"], ["紅玫瑰在綠光下看起來是……", "Black"], ["黃色香蕉在紅光下看起來是……", "Red"], ["綠葉在紅光下看起來是……", "Black"]];
+const ZH_RUSH_LABELS = ["選擇題", "是非題", "配對", "排序", "找不同", "填充", "調色"];
+
 const ROOM_SECONDS = 15 * 60;
 const CHEERS = ["Yaha!", "Ura!", "Puru puru!", "好嘢!"];
 const SNACKS = ["🍡 Chestnut bun", "🍘 Rice cracker", "🍮 Pudding", "🍙 Onigiri", "🍜 Ramen ticket", "🧋 Bubble tea", "🥚 Egg tart 蛋撻", "🧇 Egg waffle 雞蛋仔", "🍍 Pineapple bun 菠蘿包"];
@@ -1017,16 +1163,16 @@ try { SFX.on = localStorage.getItem(SOUND_KEY) !== "off"; } catch (e) {}
 function checkIn() {
   const t = today();
   if (S.last_login_date !== t) S.stats.days += 1;
-  if (!S.last_login_date) { S.current_streak = 1; streakNote = "🔥 Day 1 of your streak!"; }
+  if (!S.last_login_date) { S.current_streak = 1; streakNote = L("🔥 Day 1 of your streak!", "🔥 連續紀錄第 1 天！"); }
   else if (S.last_login_date !== t) {
     const gap = dayNum(t) - dayNum(S.last_login_date);
-    if (gap === 1) { S.current_streak += 1; streakNote = `🔥 Streak up! ${S.current_streak} days in a row.`; }
+    if (gap === 1) { S.current_streak += 1; streakNote = L(`🔥 Streak up! ${S.current_streak} days in a row.`, `🔥 連續紀錄 +1！已連續 ${S.current_streak} 天。`); }
     else if (gap > 1) {
       const missed = gap - 1;
-      if (S.streak_shields >= missed) { S.streak_shields -= missed; S.current_streak += 1; streakNote = `🛡️ Hachiware used ${missed} shield${missed > 1 ? "s" : ""} to protect your streak! Now ${S.current_streak} days.`; }
-      else { S.current_streak = 1; streakNote = "🌱 Welcome back! Your streak restarted at 1."; }
+      if (S.streak_shields >= missed) { S.streak_shields -= missed; S.current_streak += 1; streakNote = L(`🛡️ Hachiware used ${missed} shield${missed > 1 ? "s" : ""} to protect your streak! Now ${S.current_streak} days.`, `🛡️ 小八用了 ${missed} 個護盾保護你的連續紀錄！現在是 ${S.current_streak} 天。`); }
+      else { S.current_streak = 1; streakNote = L("🌱 Welcome back! Your streak restarted at 1.", "🌱 歡迎回來！連續紀錄由 1 重新開始。"); }
     }
-    if (S.current_streak % 7 === 0 && S.streak_shields < 3) { S.streak_shields += 1; streakNote += " 🛡️ 7-day milestone: +1 shield!"; }
+    if (S.current_streak % 7 === 0 && S.streak_shields < 3) { S.streak_shields += 1; streakNote += L(" 🛡️ 7-day milestone: +1 shield!", " 🛡️ 7 天里程碑：+1 護盾！"); }
   }
   S.longest_streak = Math.max(S.longest_streak || 0, S.current_streak);
   S.last_login_date = t;
@@ -1123,19 +1269,19 @@ function trophySvg(t, got) {
 function trophyCard(t) {
   const got = !!S.trophies[t.id];
   const [cur, goal] = t.prog(), v = Math.min(cur, goal);
-  return `<div class="trophy ${got ? "got" : "locked"}" aria-label="${esc(t.name)}: ${got ? "unlocked" : `locked, ${v} of ${goal}`}">
+  return `<div class="trophy ${got ? "got" : "locked"}" aria-label="${esc(t.name)}: ${got ? L("unlocked", "已解鎖") : `${v} / ${goal}`}">
     ${trophySvg(t, got)}
     <span class="tn">${esc(t.name)}</span>
     <span class="rar ${t.rar}">${RAR[t.rar][2]}</span>
     <span class="td">${esc(t.desc)}</span>
-    ${got ? `<span class="pnum">🏆 Unlocked ${esc(S.trophies[t.id])}</span>`
+    ${got ? `<span class="pnum">🏆 ${L("Unlocked", "已解鎖")} ${esc(S.trophies[t.id])}</span>`
           : `<div class="pbar"><i style="width:${Math.round(100 * v / goal)}%"></i></div><span class="pnum">${v} / ${goal}</span>`}
   </div>`;
 }
 function cabinetHtml() {
   const n = TROPHIES.filter(t => S.trophies[t.id]).length;
-  return `<div class="row" style="justify-content:space-between"><h2>🏆 Trophy Cabinet</h2><span class="pill">${n} / ${TROPHIES.length} unlocked</span></div>
-    <p class="small muted">These are hard on purpose. They reward coming back day after day and thinking carefully, not rushing.</p>
+  return `<div class="row" style="justify-content:space-between"><h2>🏆 ${L("Trophy Cabinet", "獎盃櫃")}</h2><span class="pill">${n} / ${TROPHIES.length} ${L("unlocked", "已解鎖")}</span></div>
+    <p class="small muted">${L("These are hard on purpose. They reward coming back day after day and thinking carefully, not rushing.", "這些獎盃刻意設計得很難，獎勵每天堅持回來、細心思考的你，而不是亂猜。")}</p>
     <div class="shelf">${TROPHIES.map(trophyCard).join("")}</div>`;
 }
 function openCabinet() { openModal(cabinetHtml(), { wide: true }); }
@@ -1153,7 +1299,7 @@ function showTrophyBanner() {
   if (document.querySelector(".tbanner") || !trophyQueue.length) return;
   const t = trophyQueue.shift();
   const d = document.createElement("button"); d.className = "tbanner"; d.setAttribute("aria-live", "polite");
-  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">Trophy unlocked!</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)} · +30 🌰</span></span>`;
+  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">${L("Trophy unlocked!", "解鎖獎盃！")}</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)} · +30 🌰</span></span>`;
   const done = () => { d.remove(); setTimeout(showTrophyBanner, 300); };
   d.onclick = () => { SFX.tap(); done(); };
   document.body.appendChild(d);
@@ -1202,28 +1348,28 @@ function openShop(tab = "outfits") {
   const draw = () => {
     const eq = S.equip;
     const html = `
-      <span class="kicker">👗 Wardrobe &amp; Shop</span>
-      <h2>Dress up Chiikawa</h2>
+      <span class="kicker">👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</span>
+      <h2>${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2>
       <div class="preview-big"><div class="fig"><span class="${frameCls()}" style="display:inline-flex;border-radius:50%">${figure("chiikawa", "happy")}</span></div>
-        <div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} chestnuts</span>
-        <span class="small muted">Earn chestnuts in ⚡ Light Rush (double on your first round each day), by escaping rooms and by unlocking trophies.</span></div></div>
-      <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${tab === "outfits"}" data-tab="outfits">👒 Outfits</button><button class="tab" role="tab" aria-selected="${tab === "power"}" data-tab="power">🎒 Power-ups</button></div>
+        <div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} ${L("chestnuts", "栗子")}</span>
+        <span class="small muted">${L("Earn chestnuts in ⚡ Light Rush (double on your first round each day), by escaping rooms and by unlocking trophies.", "在 ⚡ 光速挑戰（每天第一局雙倍）、逃出房間和解鎖獎盃都可以賺取栗子。")}</span></div></div>
+      <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${tab === "outfits"}" data-tab="outfits">👒 ${L("Outfits", "服飾")}</button><button class="tab" role="tab" aria-selected="${tab === "power"}" data-tab="power">🎒 ${L("Power-ups", "道具")}</button></div>
       ${tab === "outfits" ? Object.keys(SLOT_NAMES).map(slot => `<h3>${SLOT_NAMES[slot]}</h3><div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
           const own = S.owned.includes(w.id), on = eq[slot] === w.id;
           const prevEq = Object.assign({}, eq, { [slot]: w.id });
           return `<div class="sitem ${on ? "on" : ""}"><div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
             <b class="small">${esc(w.name)}</b>
-            ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? "Take off" : "Wear"}</button>`
+            ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
                   : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`).join("")
-      : `<p class="small muted">Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.</p>
+      : `<p class="small muted">${L(`Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.`, `道具可在密室中使用：在任何一把鎖的 🎒 欄使用。每種最多持有 ${MAX_POWER} 個。`)}</p>
          <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
-           <span class="small"><b>You have ${S.power[u.id] || 0}</b></span>
+           <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
            <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🌰 ${u.price}</button></div>`).join("")}</div>`}`;
     const box = openModal(html, { wide: true });
     box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { SFX.tap(); tab = b.dataset.tab; draw(); });
     box.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
       const w = itemById(b.dataset.buy); if (S.coins < w.price) return;
-      S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha("Cute!"); draw(); refreshPlayer();
+      S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha(L("Cute!", "好可愛！")); draw(); refreshPlayer();
     });
     box.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
       const w = itemById(b.dataset.wear); S.equip[w.slot] = S.equip[w.slot] === w.id ? null : w.id; save(true); SFX.item(); draw(); refreshPlayer();
@@ -1264,24 +1410,24 @@ async function lbFetch() {
   try { const r = await fetch(`${LEADERBOARD_URL}?id=${encodeURIComponent(S.player_id)}`); return await r.json(); } catch (e) { return null; }
 }
 function openLeaderboard() {
-  const mine = `<div class="preview row" style="justify-content:space-between"><span class="row" style="gap:8px">${playerAv("happy").replace("<svg", '<svg width="40" height="40"')}<b>${esc(S.player_name)}</b></span><span><b>${dedication()}</b> dedication points</span></div>`;
-  const how = `<p class="small muted">Dedication points = 10 per day played + 1 per lock opened + 10 per room escaped + 5 per Light Rush round + 25 per trophy. Coming back every day matters most!</p>`;
-  const nameBox = `<div class="row"><label for="lbName" class="small"><b>Your nickname on the board:</b></label><input id="lbName" class="name" maxlength="16" value="${esc(S.player_name)}" style="max-width:200px"><button class="btn plain" id="lbSave">Save</button></div>
-    <p class="small muted">Please use a nickname, not your full name.</p>`;
-  const box = openModal(`<span class="kicker">🏅 Leaderboard</span><h2>Top 10 most dedicated players</h2>${mine}${how}
-    <div id="lbBody">${LEADERBOARD_URL ? `<p>Loading the board... ⏳</p>` : say("hachiware", "The class leaderboard isn't switched on yet. Your teacher can connect it in about 5 minutes (see <b>leaderboard/SETUP.md</b> in the project). Until then, your dedication points are saved on this device.", "normal", "hint")}</div>${nameBox}`, { wide: true });
+  const mine = `<div class="preview row" style="justify-content:space-between"><span class="row" style="gap:8px">${playerAv("happy").replace("<svg", '<svg width="40" height="40"')}<b>${esc(S.player_name)}</b></span><span><b>${dedication()}</b> ${L("dedication points", "努力分")}</span></div>`;
+  const how = `<p class="small muted">${L("Dedication points = 10 per day played + 1 per lock opened + 10 per room escaped + 5 per Light Rush round + 25 per trophy. Coming back every day matters most!", "努力分 = 每個遊玩日 10 分 + 每把鎖 1 分 + 每個逃出的房間 10 分 + 每局光速挑戰 5 分 + 每個獎盃 25 分。每天回來最重要！")}</p>`;
+  const nameBox = `<div class="row"><label for="lbName" class="small"><b>${L("Your nickname on the board:", "排行榜上的暱稱：")}</b></label><input id="lbName" class="name" maxlength="16" value="${esc(S.player_name)}" style="max-width:200px"><button class="btn plain" id="lbSave">${L("Save", "儲存")}</button></div>
+    <p class="small muted">${L("Please use a nickname, not your full name.", "請使用暱稱，不要用全名。")}</p>`;
+  const box = openModal(`<span class="kicker">🏅 ${L("Leaderboard", "排行榜")}</span><h2>${L("Top 10 most dedicated players", "最努力的十位玩家")}</h2>${mine}${how}
+    <div id="lbBody">${LEADERBOARD_URL ? `<p>${L("Loading the board... ⏳", "載入排行榜中…… ⏳")}</p>` : say("hachiware", L("The class leaderboard isn't switched on yet. Your teacher can connect it in about 5 minutes (see <b>leaderboard/SETUP.md</b> in the project). Until then, your dedication points are saved on this device.", "班級排行榜尚未開啟。老師大約 5 分鐘就能設定好（見項目中的 <b>leaderboard/SETUP.md</b>）。在此之前，你的努力分會儲存在這部裝置。"), "normal", "hint")}</div>${nameBox}`, { wide: true });
   document.getElementById("lbSave").onclick = () => {
     const v = document.getElementById("lbName").value.trim(); if (!v) return;
-    S.player_name = v.slice(0, 16); save(true); toast("Nickname saved ✓"); lbSubmit(true).then(() => openLeaderboard());
+    S.player_name = v.slice(0, 16); save(true); toast(L("Nickname saved ✓", "暱稱已儲存 ✓")); lbSubmit(true).then(() => openLeaderboard());
   };
   if (!LEADERBOARD_URL) return;
   lbSubmit(true).then(() => lbFetch()).then(d => {
     const body = document.getElementById("lbBody"); if (!body) return;
-    if (!d || !d.top) { body.innerHTML = say("chiikawa", "Wah... the board couldn't load. Check your internet and try again.", "cry"); return; }
+    if (!d || !d.top) { body.innerHTML = say("chiikawa", L("Wah... the board couldn't load. Check your internet and try again.", "哇……排行榜載入失敗。請檢查網絡後再試。"), "cry"); return; }
     const medal = i => ["🥇", "🥈", "🥉"][i] || String(i + 1);
-    body.innerHTML = `<div class="lb-wrap"><table class="lb"><thead><tr><th>#</th><th>Player</th><th>Points</th><th>🔥 Best streak</th><th>🏆</th></tr></thead><tbody>
-      ${d.top.map((r, i) => `<tr class="${r.id === S.player_id ? "me" : ""}"><td class="rk">${medal(i)}</td><td>${esc(r.name)}</td><td>${Number(r.score) || 0}</td><td>${Number(r.streak) || 0}</td><td>${Number(r.trophies) || 0}</td></tr>`).join("") || `<tr><td colspan="5">No players yet. Be the first!</td></tr>`}
-    </tbody></table></div>${d.me && d.me.rank > 10 ? `<p class="small"><b>Your rank: #${d.me.rank}</b>. Keep going to reach the top 10! 💪</p>` : ""}`;
+    body.innerHTML = `<div class="lb-wrap"><table class="lb"><thead><tr><th>#</th><th>${L("Player", "玩家")}</th><th>${L("Points", "分數")}</th><th>🔥 ${L("Best streak", "最長連續")}</th><th>🏆</th></tr></thead><tbody>
+      ${d.top.map((r, i) => `<tr class="${r.id === S.player_id ? "me" : ""}"><td class="rk">${medal(i)}</td><td>${esc(r.name)}</td><td>${Number(r.score) || 0}</td><td>${Number(r.streak) || 0}</td><td>${Number(r.trophies) || 0}</td></tr>`).join("") || `<tr><td colspan="5">${L("No players yet. Be the first!", "還沒有玩家，成為第一個吧！")}</td></tr>`}
+    </tbody></table></div>${d.me && d.me.rank > 10 ? `<p class="small"><b>${L("Your rank", "你的排名")}: #${d.me.rank}</b>. ${L("Keep going to reach the top 10! 💪", "繼續努力，衝進前十名！💪")}</p>` : ""}`;
   });
 }
 
@@ -1368,10 +1514,10 @@ const MIX_BANK = [
   ["A yellow banana under red light looks...", "Red"], ["A green leaf under red light looks...", "Black"]
 ];
 const ORDER_BANK = [
-  () => { const all = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]; return ["Tap from the colour that bends LEAST to the one that bends MOST.", subseq(all, 4)]; },
-  () => ["Tap from LONGEST wavelength to SHORTEST.", subseq(WAVES, 4)],
-  () => ["Tap from LOWEST energy to HIGHEST.", subseq(WAVES, 4)],
-  () => ["How do we see a book? Tap the path of the light in order.", ["Light source", "Book", "Eye"]]
+  () => { const all = L(["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"], ["紅", "橙", "黃", "綠", "藍", "靛", "紫"]); return [L("Tap from the colour that bends LEAST to the one that bends MOST.", "由屈折最少到最多，依次點擊顏色。"), subseq(all, 4)]; },
+  () => [L("Tap from LONGEST wavelength to SHORTEST.", "由波長最長到最短，依次點擊。"), subseq(L(WAVES, WAVES_ZH), 4)],
+  () => [L("Tap from LOWEST energy to HIGHEST.", "由能量最低到最高，依次點擊。"), subseq(L(WAVES, WAVES_ZH), 4)],
+  () => [L("How do we see a book? Tap the path of the light in order.", "我們怎樣看見一本書？依次點擊光的路徑。"), L(["Light source", "Book", "Eye"], ["光源", "書本", "眼睛"])]
 ];
 function subseq(arr, n) { const idx = shuffle(arr.map((_, i) => i)).slice(0, n).sort((a, b) => a - b); return idx.map(i => arr[i]); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -1382,15 +1528,15 @@ const RUSH_MAKERS = [
       return { prompt: p.q, render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(p.choices[i])}</button>`).join("")}</div>`;
         el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === p.answer; b.classList.add(ok ? "ok" : "no"); if (!ok) el.querySelector(`[data-i="${p.answer}"]`).classList.add("ok"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, p.choices[p.answer]); }); } }; } },
   { w: 3, label: "True or false", make() { const [t, v, why] = pick(TF_BANK);
-      return { prompt: t, render: (el, done) => { el.innerHTML = `<div class="tf"><button class="rbtn" data-v="1">✅ True</button><button class="rbtn" data-v="0">❌ False</button></div>`;
-        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = (b.dataset.v === "1") === v; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `${v ? "True" : "False"}. ${why}`); }); } }; } },
+      return { prompt: t, render: (el, done) => { el.innerHTML = `<div class="tf"><button class="rbtn" data-v="1">✅ ${L("True", "正確")}</button><button class="rbtn" data-v="0">❌ ${L("False", "錯誤")}</button></div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = (b.dataset.v === "1") === v; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `${v ? L("True", "正確") : L("False", "錯誤")}. ${why}`); }); } }; } },
   { w: 1, label: "Matching", make() { const pairs = shuffle(PAIR_BANK).slice(0, 3); const right = shuffle(pairs.map((_, i) => i));
-      return { prompt: "Match each term to its meaning. Tap a term, then its meaning.", render: (el, done) => {
+      return { prompt: L("Match each term to its meaning. Tap a term, then its meaning.", "把每個詞語配對到它的意思：先點詞語，再點意思。"), render: (el, done) => {
         el.innerHTML = `<div class="match"><div class="col">${pairs.map((pr, i) => `<button class="rbtn" data-l="${i}">${esc(pr[0])}</button>`).join("")}</div><div class="col">${right.map(i => `<button class="rbtn" data-r="${i}">${esc(pairs[i][1])}</button>`).join("")}</div></div>`;
         let sel = null, got = 0, over = false;
         el.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { if (over) return; el.querySelectorAll("[data-l]").forEach(x => x.classList.remove("sel")); sel = Number(b.dataset.l); b.classList.add("sel"); SFX.tap(); });
         el.querySelectorAll("[data-r]").forEach(b => b.onclick = () => {
-          if (over) return; if (sel === null) { toast("Tap a term on the left first"); return; }
+          if (over) return; if (sel === null) { toast(L("Tap a term on the left first", "請先點左邊的詞語")); return; }
           const L = el.querySelector(`[data-l="${sel}"]`);
           if (Number(b.dataset.r) === sel) { L.classList.remove("sel"); L.classList.add("ok"); b.classList.add("ok"); L.disabled = b.disabled = true; sel = null; got++; SFX.click(); if (got === 3) { over = true; done(true); } }
           else { over = true; b.classList.add("no"); L.classList.add("no"); done(false, pairs.map(pr => `${pr[0]} → ${pr[1]}`).join(" · ")); }
@@ -1408,21 +1554,25 @@ const RUSH_MAKERS = [
       return { prompt: t.replace("___", "______"), render: (el, done) => { el.innerHTML = `<div class="rgrid two">${order.map(i => `<button class="rbtn" data-i="${i}">${esc(opts[i])}</button>`).join("")}</div>`;
         el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = Number(b.dataset.i) === a; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, t.replace("___", opts[a])); }); } }; } },
   { w: 1, label: "Colour mixer", make() { const [q, a] = pick(MIX_BANK); const opts = shuffle([a, ...shuffle(Object.keys(COLOURS).filter(c => c !== a)).slice(0, 3)]);
-      return { prompt: q, render: (el, done) => { el.innerHTML = `<div class="swatches">${opts.map(c => `<button class="rbtn sw" data-c="${c}"><i style="background:${COLOURS[c]}"></i>${c}</button>`).join("")}</div>`;
-        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = b.dataset.c === a; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `Answer: ${a}`); }); } }; } }
+      return { prompt: q, render: (el, done) => { el.innerHTML = `<div class="swatches">${opts.map(c => `<button class="rbtn sw" data-c="${c}"><i style="background:${COLOURS[c]}"></i>${L(c, ZH_COLOURS[c])}</button>`).join("")}</div>`;
+        el.querySelectorAll(".rbtn").forEach(b => b.onclick = () => { const ok = b.dataset.c === a; b.classList.add(ok ? "ok" : "no"); el.querySelectorAll(".rbtn").forEach(x => x.disabled = true); done(ok, `${L("Answer", "答案")}: ${L(a, ZH_COLOURS[a])}`); }); } }; } }
 ];
 let RU = null;
 function stopRush() { if (RU) { clearInterval(RU.tid); clearTimeout(RU.nextT); } RU = null; }
 function rushIntro() {
   const bonus = S.rush.lastDay !== today();
-  openModal(`<span class="kicker">⚡ Light Rush</span><h2>60-second question rush!</h2>
-    ${say("usagi", "Yaha! Answer as many as you can before time runs out! 🐰", "happy")}
-    <div class="rules"><ul><li>Mixed questions: multiple choice, true/false, matching, ordering, odd one out, fill the gap, colour mixing.</li>
+  openModal(`<span class="kicker">⚡ ${L("Light Rush", "光速挑戰")}</span><h2>${L("60-second question rush!", "60 秒極速問答！")}</h2>
+    ${say("usagi", L("Yaha! Answer as many as you can before time runs out! 🐰", "呀哈！在時間用完前盡量答多些！🐰"), "happy")}
+    <div class="rules">${L(`<ul><li>Mixed questions: multiple choice, true/false, matching, ordering, odd one out, fill the gap, colour mixing.</li>
       <li>Correct = +10 points. 3 in a row = <b>×2 combo</b>, 6 in a row = <b>×3</b>.</li>
       <li>Wrong = <b>−3 seconds</b> and the combo resets.</li>
-      <li>Every 10 points = 1 🌰 chestnut. ${bonus ? "<b>Today's first round pays double!</b>" : ""}</li></ul></div>
-    <p class="small muted">Best score: ${S.rush.best}</p>
-    <div class="row"><button class="btn big" id="rushGo">⚡ Start!</button><button class="btn plain" id="rushShop">👗 Shop</button></div>`);
+      <li>Every 10 points = 1 🌰 chestnut. ${bonus ? "<b>Today's first round pays double!</b>" : ""}</li></ul>`,
+      `<ul><li>混合題型：選擇題、是非題、配對、排序、找不同、填充、調色。</li>
+      <li>答對 = +10 分。連續答對 3 題 = <b>×2 連擊</b>，6 題 = <b>×3</b>。</li>
+      <li>答錯 = <b>扣 3 秒</b>，連擊重設。</li>
+      <li>每 10 分 = 1 顆 🌰 栗子。${bonus ? "<b>今天第一局雙倍獎勵！</b>" : ""}</li></ul>`)}</div>
+    <p class="small muted">${L("Best score", "最高分")}: ${S.rush.best}</p>
+    <div class="row"><button class="btn big" id="rushGo">⚡ ${L("Start!", "開始！")}</button><button class="btn plain" id="rushShop">👗 ${L("Shop", "商店")}</button></div>`);
   document.getElementById("rushGo").onclick = () => { SFX.init(); startRush(); };
   document.getElementById("rushShop").onclick = () => { SFX.tap(); openShop(); };
 }
@@ -1432,11 +1582,11 @@ function startRush() {
   RU = { score: 0, combo: 0, correct: 0, total: 0, end: Date.now() + RUSH_SECONDS * 1000, lock: false, last: -1 };
   $app.innerHTML = `
     <section class="rushhead">
-      <div class="status"><div class="av ${frameCls()}" id="rushAv">${avatar("chiikawa", "normal")}</div><div><div class="rtopic" style="color:var(--yellow)">⚡ Light Rush · Chapter 14</div><div class="big" id="rScore">0 pts</div></div></div>
-      <div style="display:grid;justify-items:end;gap:6px"><div class="timer" id="rTimer">01:00</div><span class="combo" id="rCombo">Combo ×1</span></div>
+      <div class="status"><div class="av ${frameCls()}" id="rushAv">${avatar("chiikawa", "normal")}</div><div><div class="rtopic" style="color:var(--yellow)">⚡ ${L("Light Rush · Chapter 14", "光速挑戰 · 第 14 章")}</div><div class="big" id="rScore">0 ${L("pts", "分")}</div></div></div>
+      <div style="display:grid;justify-items:end;gap:6px"><div class="timer" id="rTimer">01:00</div><span class="combo" id="rCombo">${L("Combo", "連擊")} ×1</span></div>
     </section>
     <section class="card rq"><span class="rtype" id="rType"></span><p class="q" id="rPrompt"></p><div id="rBody"></div><div id="rFb"></div></section>
-    <div class="row"><button class="btn plain" id="rQuit">✕ End round</button></div>`;
+    <div class="row"><button class="btn plain" id="rQuit">✕ ${L("End round", "結束這局")}</button></div>`;
   document.getElementById("rQuit").onclick = () => { SFX.tap(); rushEnd(); };
   RU.tid = setInterval(rushTick, 200);
   rushNext();
@@ -1465,13 +1615,13 @@ function rushAnswer(ok, reveal) {
     const d = document.createElement("div"); d.className = "plus"; d.textContent = `+${10 * mult}`; document.body.appendChild(d); setTimeout(() => d.remove(), 900);
     if (av) av.innerHTML = avatar("chiikawa", "happy");
   } else {
-    RU.combo = 0; RU.end -= 3000; SFX.wrong(); penaltyFlash("−3s ⏱️");
+    RU.combo = 0; RU.end -= 3000; SFX.wrong(); penaltyFlash(L("−3s ⏱️", "−3 秒 ⏱️"));
     if (av) av.innerHTML = avatar("chiikawa", "cry");
-    document.getElementById("rFb").innerHTML = `<div class="fb no small"><b>Answer:</b> ${esc(reveal || "")}</div>`;
+    document.getElementById("rFb").innerHTML = `<div class="fb no small"><b>${L("Answer", "答案")}:</b> ${esc(reveal || "")}</div>`;
   }
   const mult = RU.combo >= 6 ? 3 : RU.combo >= 3 ? 2 : 1;
-  document.getElementById("rScore").textContent = `${RU.score} pts`;
-  const c = document.getElementById("rCombo"); c.textContent = `Combo ×${mult}`; c.className = "combo" + (mult > 1 ? " hot" : "");
+  document.getElementById("rScore").textContent = `${RU.score} ${L("pts", "分")}`;
+  const c = document.getElementById("rCombo"); c.textContent = `${L("Combo", "連擊")} ×${mult}`; c.className = "combo" + (mult > 1 ? " hot" : "");
   RU.nextT = setTimeout(() => { if (RU) { if (av) av.innerHTML = avatar("chiikawa", "normal"); rushNext(); } }, ok ? 500 : 1700);
 }
 function rushEnd() {
@@ -1483,14 +1633,73 @@ function rushEnd() {
   const best = r.score > S.rush.best; S.rush.best = Math.max(S.rush.best, r.score);
   S.coins += coins; save(true); checkTrophies(); lbSubmit(true);
   SFX.fanfare(); if (r.score > 0) confetti(120);
-  openModal(`<span class="kicker">⚡ Light Rush · Round over</span><h2>${best ? "🎉 New best score!" : "Time's up!"}</h2>
-    <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} pts</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? " (×2 daily bonus)" : ""}</span></div>
-    ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? "YAHA!!! Amazing rush! 🐰🎊" : "Nice try! Every round makes your brain faster. 🌱", "happy", r.correct >= 8 ? "" : "hint")}
-    <div class="row"><button class="btn big" id="rAgain">⚡ Play again</button><button class="btn yellow" id="rShop">👗 Spend chestnuts</button><button class="btn plain" id="rMap">🗺️ Map</button></div>`, { onClose: renderMap });
+  openModal(`<span class="kicker">⚡ ${L("Light Rush · Round over", "光速挑戰 · 完結")}</span><h2>${best ? L("🎉 New best score!", "🎉 新紀錄！") : L("Time's up!", "時間到！")}</h2>
+    <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} ${L("pts", "分")}</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? L(" (×2 daily bonus)", "（每日雙倍）") : ""}</span></div>
+    ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? L("YAHA!!! Amazing rush! 🐰🎊", "呀哈！！！超厲害！🐰🎊") : L("Nice try! Every round makes your brain faster. 🌱", "做得好！每一局都令你的腦袋更快。🌱"), "happy", r.correct >= 8 ? "" : "hint")}
+    <div class="row"><button class="btn big" id="rAgain">⚡ ${L("Play again", "再玩一次")}</button><button class="btn yellow" id="rShop">👗 ${L("Spend chestnuts", "使用栗子")}</button><button class="btn plain" id="rMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
   document.getElementById("rAgain").onclick = () => { SFX.tap(); startRush(); };
   document.getElementById("rShop").onclick = () => { SFX.tap(); renderMap(); openShop(); };
   document.getElementById("rMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
 }
+
+/* ============================================================
+   6f. Switching language: copies English or Chinese text into the live data
+   ============================================================ */
+const EN = JSON.parse(JSON.stringify({ rooms: ROOMS, hotspots: HOTSPOTS, tf: TF_BANK, pair: PAIR_BANK, odd: ODD_BANK, cloze: CLOZE_BANK, mix: MIX_BANK,
+  trophies: TROPHIES.map(t => [t.name, t.desc]), wardrobe: WARDROBE.map(w => w.name), power: POWERUPS.map(u => [u.name, u.desc]), slots: SLOT_NAMES,
+  chars: Object.fromEntries(Object.entries(CHAR).map(([k, v]) => [k, v.name])), labels: RUSH_MAKERS.map(m => m.label), cheers: CHEERS, topicLabels: TOPIC_LABELS }));
+const swap = (arr, src) => { arr.splice(0, arr.length, ...JSON.parse(JSON.stringify(src))); };
+const DIAGRAMS_EN = Object.assign({}, DIAGRAMS);
+const DIAGRAM_ZH = [["normal", "法線"], ["glass", "玻璃"], ["air", "空氣"], ["plane mirror", "平面鏡"], ["principal axis", "主軸"], ["white light", "白光"]];
+function applyLang() {
+  const zh = LANG === "zh";
+  Object.keys(DIAGRAMS_EN).forEach(k => { DIAGRAMS[k] = zh ? DIAGRAM_ZH.reduce((svg, [e, z]) => svg.split(`>${e}</text>`).join(`>${z}</text>`), DIAGRAMS_EN[k]) : DIAGRAMS_EN[k]; });
+  document.documentElement.lang = zh ? "zh-HK" : "en";
+  ROOMS.forEach((r, i) => {
+    const en = EN.rooms[i], z = zh ? ZH_ROOMS[r.id] : null;
+    ["name", "specialName", "specialLine", "badge", "item", "intro", "notes", "rules"].forEach(k => { r[k] = JSON.parse(JSON.stringify(z ? z[k] : en[k])); });
+    r.puzzles.forEach((p, j) => {
+      const pe = en.puzzles[j], pz = z ? z.puzzles[j] : null;
+      ["q", "choices", "hint", "explain", "tip", "labels", "dials"].forEach(k => { const v = pz && pz[k] !== undefined ? pz[k] : pe[k]; if (v !== undefined) p[k] = JSON.parse(JSON.stringify(v)); });
+      if (zh && pe.tip && !pz.tip) delete p.tip;
+    });
+  });
+  HOTSPOTS.forEach((h, i) => { const e = EN.hotspots[i]; h.name = zh ? ZH_HOTSPOTS[i][0] : e.name; h.itemName = zh ? ZH_HOTSPOTS[i][1] : e.itemName; h.line = zh ? ZH_HOTSPOTS[i][2] : e.line; });
+  swap(TF_BANK, zh ? TF_ZH : EN.tf); swap(PAIR_BANK, zh ? PAIR_ZH : EN.pair); swap(ODD_BANK, zh ? ODD_ZH : EN.odd); swap(CLOZE_BANK, zh ? CLOZE_ZH : EN.cloze); swap(MIX_BANK, zh ? MIX_ZH : EN.mix);
+  TROPHIES.forEach((t, i) => { [t.name, t.desc] = zh ? ZH_TROPHIES[t.id] : EN.trophies[i]; });
+  WARDROBE.forEach((w, i) => { w.name = zh ? ZH_WARDROBE[w.id] : EN.wardrobe[i]; });
+  POWERUPS.forEach((u, i) => { [u.name, u.desc] = zh ? ZH_POWER[u.id] : EN.power[i]; });
+  Object.keys(SLOT_NAMES).forEach(k => { SLOT_NAMES[k] = zh ? ZH_SLOTS[k] : EN.slots[k]; });
+  Object.keys(CHAR).forEach(k => { CHAR[k].name = zh ? ZH_CHAR[k] : EN.chars[k]; });
+  Object.keys(TOPIC_LABELS).forEach(k => { TOPIC_LABELS[k] = zh ? ZH_TOPIC_LABELS[k] : EN.topicLabels[k]; });
+  RUSH_MAKERS.forEach((m, i) => { m.label = zh ? ZH_RUSH_LABELS[i] : EN.labels[i]; });
+  swap(CHEERS, zh ? ["呀哈！", "嗚啦！", "噗嚕噗嚕！", "好嘢！"] : EN.cheers);
+  RAR.bronze[2] = L("Bronze", "銅"); RAR.silver[2] = L("Silver", "銀"); RAR.gold[2] = L("Gold", "金"); RAR.legend[2] = L("Legendary", "傳說");
+  document.title = L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫");
+  document.getElementById("brandText").textContent = L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫");
+  document.getElementById("footText").textContent = L("Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.",
+    "香港中三科學第 14 章「光、顏色與其他」的愛好者自製學習遊戲，與吉伊卡哇官方品牌無關。角色為原創的吉伊卡哇風格繪畫。");
+}
+// Show a stored badge/item (saved in whichever language it was earned) in the current language
+function trItem(str) {
+  for (let i = 0; i < ROOMS.length; i++) {
+    const e = EN.rooms[i], z = ZH_ROOMS[ROOMS[i].id];
+    if (str === e.badge || str === z.badge) return L(e.badge, z.badge);
+    if (str === e.item || str === z.item) return L(e.item, z.item);
+  }
+  return str;
+}
+const tTopic = r => L(EN.rooms[roomIndex(r.id)].topic, r.zh);
+const topicHtml = r => L(`${esc(EN.rooms[roomIndex(r.id)].topic)} <span class="zh">${r.zh}</span>`, `<span class="zh">${r.zh}</span>`);
+const topicNo = n => L(`Topic ${n}`, `課題 ${n}`);
+function setLang(l) {
+  LANG = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
+  applyLang(); $journal.innerHTML = "";
+  if (RU) { renderTools(); return; }
+  closeModal();
+  if (R) { renderRoom(); } else if (S) renderMap(); else renderWelcome();
+}
+applyLang();
 
 /* ============================================================
    7. Top bar
@@ -1499,18 +1708,20 @@ document.getElementById("brandav").innerHTML = playerAv("happy");
 function renderTools() {
   const justSaved = Date.now() - savedFlash < 2500;
   document.getElementById("tools").innerHTML = `
-    ${S ? `<span class="pill" title="Daily streak">🔥 ${S.current_streak}</span>` : ""}
-    ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="Your progress saves automatically on this device">${justSaved ? `✓<span class="lbl"> Saved</span>` : `💾<span class="lbl"> Auto-save</span>`}</span>` : ""}
-    ${S ? `<button class="iconbtn coinpill" id="tCoins" aria-label="Chestnuts: ${S.coins}. Open the shop">🌰 ${S.coins}</button>` : ""}
-    ${S ? `<button class="iconbtn" id="tTrophy" aria-label="Open the Trophy Cabinet">🏆<span class="lbl">Trophies</span></button>` : ""}
-    <button class="iconbtn" id="tJournal" aria-label="Open the Study Journal">📓<span class="lbl">Journal</span></button>
-    ${S ? `<button class="iconbtn" id="tSave" aria-label="Save and share code">🔑<span class="lbl">Save code</span></button>` : ""}
-    <button class="iconbtn" id="tMus" aria-label="${MUSIC.on ? "Turn music off" : "Turn music on"}" title="Background music" aria-pressed="${MUSIC.on}" style="${MUSIC.on ? "" : "opacity:.5;text-decoration:line-through"}">🎵<span class="lbl">${MUSIC.on ? "Music on" : "Music off"}</span></button>
-    <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? "Turn sound effects off" : "Turn sound effects on"}" title="Sound effects">${SFX.on ? "🔊" : "🔇"}</button>`;
+    ${S ? `<span class="pill" title="${L("Daily streak", "連續日數")}">🔥 ${S.current_streak}</span>` : ""}
+    ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="${L("Your progress saves automatically on this device", "進度會自動儲存在這部裝置")}">${justSaved ? `✓<span class="lbl"> ${L("Saved", "已儲存")}</span>` : `💾<span class="lbl"> ${L("Auto-save", "自動儲存")}</span>`}</span>` : ""}
+    ${S ? `<button class="iconbtn coinpill" id="tCoins" aria-label="${L("Chestnuts", "栗子")}: ${S.coins}">🌰 ${S.coins}</button>` : ""}
+    ${S ? `<button class="iconbtn" id="tTrophy" aria-label="${L("Open the Trophy Cabinet", "打開獎盃櫃")}">🏆<span class="lbl">${L("Trophies", "獎盃")}</span></button>` : ""}
+    <button class="iconbtn" id="tJournal" aria-label="${L("Open the Study Journal", "打開學習日誌")}">📓<span class="lbl">${L("Journal", "日誌")}</span></button>
+    ${S ? `<button class="iconbtn" id="tSave" aria-label="${L("Save and share code", "儲存及分享代碼")}">🔑<span class="lbl">${L("Save code", "存檔代碼")}</span></button>` : ""}
+    <button class="iconbtn" id="tLang" aria-label="${L("Switch to Traditional Chinese", "Switch to English")}" title="${L("Language", "語言")}">🌐<span class="lbl">${L("中文", "English")}</span></button>
+    <button class="iconbtn" id="tMus" aria-label="${MUSIC.on ? L("Turn music off", "關閉音樂") : L("Turn music on", "開啟音樂")}" title="${L("Background music", "背景音樂")}" aria-pressed="${MUSIC.on}" style="${MUSIC.on ? "" : "opacity:.5;text-decoration:line-through"}">🎵<span class="lbl">${MUSIC.on ? L("Music on", "音樂開") : L("Music off", "音樂關")}</span></button>
+    <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? L("Turn sound effects off", "關閉音效") : L("Turn sound effects on", "開啟音效")}" title="${L("Sound effects", "音效")}">${SFX.on ? "🔊" : "🔇"}</button>`;
   document.getElementById("tJournal").onclick = () => { SFX.init(); SFX.tap(); openJournal(); };
   const tc = document.getElementById("tCoins"); if (tc) tc.onclick = () => { SFX.init(); SFX.tap(); openShop(); };
   const tt = document.getElementById("tTrophy"); if (tt) tt.onclick = () => { SFX.init(); SFX.tap(); openCabinet(); };
   const ts = document.getElementById("tSave"); if (ts) ts.onclick = () => { SFX.init(); SFX.tap(); openSaveModal(); };
+  document.getElementById("tLang").onclick = () => { SFX.init(); SFX.tap(); setLang(LANG === "zh" ? "en" : "zh"); };
   document.getElementById("tMus").onclick = () => {
     MUSIC.on = !MUSIC.on; try { localStorage.setItem(MUSIC_KEY, MUSIC.on ? "on" : "off"); } catch (e) {}
     MUSIC.on ? MUSIC.start() : MUSIC.stop(); renderTools();
@@ -1528,7 +1739,7 @@ function renderTools() {
    ============================================================ */
 function openModal(html, { wide = false, closable = true, onClose = null } = {}) {
   $modal.innerHTML = `<div class="overlay" id="ov"><div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true" id="mbox">
-    ${closable ? `<button class="iconbtn x" id="mx" aria-label="Close">✕</button>` : ""}${html}</div></div>`;
+    ${closable ? `<button class="iconbtn x" id="mx" aria-label="${L("Close", "關閉")}">✕</button>` : ""}${html}</div></div>`;
   const close = () => { closeModal(); onClose && onClose(); };
   if (closable) {
     document.getElementById("mx").onclick = () => { SFX.tap(); $modal._close && $modal._close(); };
@@ -1552,16 +1763,16 @@ function openJournal(roomId, highlight = []) {
     const r = ROOMS[roomIndex(rid)];
     const terms = [], seen = new Set();
     r.puzzles.forEach(p => (p.terms || []).forEach(t => { if (!seen.has(t[0])) { seen.add(t[0]); terms.push(t); } }));
-    $journal.innerHTML = `<div class="overlay top" id="jov"><div class="modal wide" role="dialog" aria-modal="true" aria-label="Study Journal">
-      <button class="iconbtn x" id="jx" aria-label="Close journal">✕</button>
-      <span class="kicker">📓 Study Journal · Chapter 14: Light, Colours and Beyond</span>
-      <h2>Topic ${r.topicNo}: ${esc(r.topic)} <span class="zh">${r.zh}</span></h2>
+    $journal.innerHTML = `<div class="overlay top" id="jov"><div class="modal wide" role="dialog" aria-modal="true" aria-label="${L("Study Journal", "學習日誌")}">
+      <button class="iconbtn x" id="jx" aria-label="${L("Close journal", "關閉日誌")}">✕</button>
+      <span class="kicker">📓 ${L("Study Journal · Chapter 14: Light, Colours and Beyond", "學習日誌 · 第 14 章：光、顏色與其他")}</span>
+      <h2>${topicNo(r.topicNo)}: ${topicHtml(r)}</h2>
       <div class="tabs" role="tablist">${ROOMS.map(x => `<button class="tab" role="tab" aria-selected="${x.id === rid}" data-t="${x.id}">T${x.topicNo} ${x.zh}</button>`).join("")}</div>
-      <section class="jsec"><h3>📖 Summary 重點</h3><ul>${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></section>
-      <section class="jsec"><h3>🧭 Key rules 重點規則</h3>${r.rules.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
-      <section class="jsec"><h3>🔤 Key terms 關鍵詞</h3><table class="tterms"><tbody>
+      <section class="jsec"><h3>📖 ${L("Summary 重點", "重點")}</h3><ul>${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></section>
+      <section class="jsec"><h3>🧭 ${L("Key rules 重點規則", "重點規則")}</h3>${r.rules.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
+      <section class="jsec"><h3>🔤 ${L("Key terms 關鍵詞", "關鍵詞（中英對照）")}</h3><table class="tterms"><tbody>
         ${terms.map(([en, zh]) => `<tr class="${highlight.includes(en) ? "hl" : ""}"><td>${esc(en)}</td><td class="zh">${zh}</td></tr>`).join("")}</tbody></table>
-        ${highlight.length ? `<p class="small muted">Highlighted terms are used in the puzzle you're on.</p>` : ""}</section>
+        ${highlight.length ? `<p class="small muted">${L("Highlighted terms are used in the puzzle you're on.", "標示的詞語會在目前的謎題中出現。")}</p>` : ""}</section>
     </div></div>`;
     document.getElementById("jx").onclick = () => { SFX.tap(); $journal.innerHTML = ""; };
     document.getElementById("jov").onclick = e => { if (e.target.id === "jov") $journal.innerHTML = ""; };
@@ -1573,38 +1784,39 @@ function openJournal(roomId, highlight = []) {
 
 /* ----- Save & Share Code ----- */
 function codePreview(d) {
-  return `<div class="preview small"><b>This code contains:</b> ${d.escaped} room${d.escaped === 1 ? "" : "s"} escaped${d.escaped ? ` (${d.stars.filter(Boolean).map(starStr).join(" · ")})` : ""}${d.escaped < 7 ? `, ${d.lock}/5 locks in ${esc(ROOMS[d.escaped].name)}` : ""}, 🔥 ${d.streak}-day streak, 🛡️ ${d.shields} shield${d.shields === 1 ? "" : "s"}.</div>`;
+  return L(`<div class="preview small"><b>This code contains:</b> ${d.escaped} room${d.escaped === 1 ? "" : "s"} escaped${d.escaped ? ` (${d.stars.filter(Boolean).map(starStr).join(" · ")})` : ""}${d.escaped < 7 ? `, ${d.lock}/5 locks in ${esc(ROOMS[d.escaped].name)}` : ""}, 🔥 ${d.streak}-day streak, 🛡️ ${d.shields} shield${d.shields === 1 ? "" : "s"}.</div>`,
+    `<div class="preview small"><b>這個代碼包含：</b>已逃出 ${d.escaped} 個房間${d.escaped ? `（${d.stars.filter(Boolean).map(starStr).join(" · ")}）` : ""}${d.escaped < 7 ? `，${esc(ROOMS[d.escaped].name)} 已開 ${d.lock}/5 把鎖` : ""}，🔥 連續 ${d.streak} 天，🛡️ ${d.shields} 個護盾。</div>`);
 }
 function openSaveModal() {
   const code = makeCode(), link = `${shareBase()}#${code}`;
   openModal(`
-    <span class="kicker">🔑 Save &amp; Share Code</span>
-    <h2>Your save code</h2>
-    ${say("hachiware", "Your game saves automatically on this device. To carry on using <b>another</b> device (e.g. a school iPad), use this code!", "normal", "hint")}
+    <span class="kicker">🔑 ${L("Save &amp; Share Code", "儲存及分享代碼")}</span>
+    <h2>${L("Your save code", "你的存檔代碼")}</h2>
+    ${say("hachiware", L("Your game saves automatically on this device. To carry on using <b>another</b> device (e.g. a school iPad), use this code!", "遊戲會自動儲存在這部裝置。想在<b>另一部</b>裝置（例如學校 iPad）繼續玩，就用這個代碼！"), "normal", "hint")}
     <div class="codebox" aria-label="Save code ${code.split("").join(" ")}">${code.split("").map(c => `<span>${c}</span>`).join("")}</div>
     <div class="row" style="justify-content:center">
-      <button class="btn yellow" id="cpCode">Copy code</button>
-      <button class="btn blue" id="cpLink">Copy link</button>
+      <button class="btn yellow" id="cpCode">${L("Copy code", "複製代碼")}</button>
+      <button class="btn blue" id="cpLink">${L("Copy link", "複製連結")}</button>
     </div>
-    <p class="small muted" style="text-align:center">🏆 Trophies, 🌰 chestnuts, outfits and power-ups stay on this device.</p>
-    <p class="small muted" style="text-align:center">Write the code in your notebook ✏️ or send the link to yourself. The link opens the game with your progress ready to load.</p>
+    <p class="small muted" style="text-align:center">${L("🏆 Trophies, 🌰 chestnuts, outfits and power-ups stay on this device.", "🏆 獎盃、🌰 栗子、服飾和道具會留在這部裝置。")}</p>
+    <p class="small muted" style="text-align:center">${L("Write the code in your notebook ✏️ or send the link to yourself. The link opens the game with your progress ready to load.", "把代碼寫在筆記簿 ✏️，或把連結傳給自己。打開連結就能載入進度。")}</p>
     <div class="linkbox" id="linkbox">${esc(link)}</div>
     <hr style="border:0;border-top:2px dashed var(--ink);width:100%;margin:4px 0">
-    <h3>Have a code from another device?</h3>
-    <div class="row"><input class="codein" id="codeIn" maxlength="6" placeholder="ABCDE" autocomplete="off" autocapitalize="characters" aria-label="Enter save code"><button class="btn" id="codeGo">Load</button></div>
+    <h3>${L("Have a code from another device?", "有其他裝置的代碼？")}</h3>
+    <div class="row"><input class="codein" id="codeIn" maxlength="6" placeholder="ABCDE" autocomplete="off" autocapitalize="characters" aria-label="${L("Enter save code", "輸入存檔代碼")}"><button class="btn" id="codeGo">${L("Load", "載入")}</button></div>
     <div id="codeMsg" style="display:grid;gap:10px"></div>`);
   const copy = async (text, el, ok) => {
     try { await navigator.clipboard.writeText(text); toast(ok); }
-    catch (e) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press copy on your device."); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast(L("Selected. Press copy on your device.", "已選取，請在裝置上按複製。")); }
   };
-  document.getElementById("cpCode").onclick = () => copy(code, $modal.querySelector(".codebox"), `Code ${code} copied 📋`);
-  document.getElementById("cpLink").onclick = () => copy(link, document.getElementById("linkbox"), "Link copied 📋");
+  document.getElementById("cpCode").onclick = () => copy(code, $modal.querySelector(".codebox"), L(`Code ${code} copied 📋`, `已複製代碼 ${code} 📋`));
+  document.getElementById("cpLink").onclick = () => copy(link, document.getElementById("linkbox"), L("Link copied 📋", "已複製連結 📋"));
   const go = () => {
     const d = decodeCode(document.getElementById("codeIn").value);
     const msg = document.getElementById("codeMsg");
-    if (!d) { SFX.wrong(); msg.innerHTML = say("chiikawa", "Wah... that code doesn't work. Check each letter and try again. (Codes have 5 letters or numbers.)", "cry"); return; }
-    msg.innerHTML = `${codePreview(d)}${say("hachiware", "Load this progress? It will replace the progress on this device.", "normal", "hint")}
-      <div class="row"><button class="btn" id="codeYes">Yes, load it</button><button class="btn plain" id="codeNo">Cancel</button></div>`;
+    if (!d) { SFX.wrong(); msg.innerHTML = say("chiikawa", L("Wah... that code doesn't work. Check each letter and try again. (Codes have 5 letters or numbers.)", "哇……這個代碼不對。請逐個字母檢查再試。（代碼共有 5 個英文字母或數字。）"), "cry"); return; }
+    msg.innerHTML = `${codePreview(d)}${say("hachiware", L("Load this progress? It will replace the progress on this device.", "要載入這個進度嗎？它會取代這部裝置上的進度。"), "normal", "hint")}
+      <div class="row"><button class="btn" id="codeYes">${L("Yes, load it", "是，載入")}</button><button class="btn plain" id="codeNo">${L("Cancel", "取消")}</button></div>`;
     document.getElementById("codeYes").onclick = () => applyCode(d);
     document.getElementById("codeNo").onclick = () => (msg.innerHTML = "");
   };
@@ -1616,7 +1828,7 @@ function applyCode(d, name) {
   stopTimer();
   S = stateFromCode(d, name); recomputeMastery(); save(true);
   closeModal(); SFX.item(); confetti(60);
-  streakNote = `🔑 Progress loaded from code ${d.code}!`;
+  streakNote = L(`🔑 Progress loaded from code ${d.code}!`, `🔑 已從代碼 ${d.code} 載入進度！`);
   clearHash();
   renderMap();
   setTimeout(checkTrophies, 800);
@@ -1628,14 +1840,14 @@ function showResume() {
   const r = ni === -1 ? null : ROOMS[ni];
   const solved = r ? (S.room_progress[r.id] || []).length : 0;
   openModal(`
-    <span class="kicker">Welcome back</span>
-    <h2>Hi, ${esc(S.player_name)}! 👋</h2>
-    ${say("chiikawa", streakNote ? esc(streakNote) : "Ya...! You came back! 🥹", "happy")}
-    ${r ? say("hachiware", `You were in <b>${esc(r.name)}</b> (Topic ${r.topicNo}: ${esc(r.topic)}) with <b>${solved}/5</b> locks open.`, "normal", "hint") : say("hachiware", "You've escaped every room! Replay any room to practise.", "normal", "hint")}
+    <span class="kicker">${L("Welcome back", "歡迎回來")}</span>
+    <h2>${L("Hi", "你好")}, ${esc(S.player_name)}! 👋</h2>
+    ${say("chiikawa", streakNote ? esc(streakNote) : L("Ya...! You came back! 🥹", "呀……！你回來了！🥹"), "happy")}
+    ${r ? say("hachiware", L(`You were in <b>${esc(r.name)}</b> (${topicNo(r.topicNo)}: ${esc(tTopic(r))}) with <b>${solved}/5</b> locks open.`, `你上次在<b>${esc(r.name)}</b>（${topicNo(r.topicNo)}：${esc(tTopic(r))}），已開 <b>${solved}/5</b> 把鎖。`), "normal", "hint") : say("hachiware", L("You've escaped every room! Replay any room to practise.", "你已逃出所有房間！可以重玩任何房間練習。"), "normal", "hint")}
     <div class="row">
-      ${r ? `<button class="btn big" id="rsGo">▶ Resume game</button>` : ""}
-      <button class="btn blue" id="rsMap">🗺️ Topic map</button>
-      <button class="btn plain" id="rsCode">🔑 Use a save code</button>
+      ${r ? `<button class="btn big" id="rsGo">▶ ${L("Resume game", "繼續遊戲")}</button>` : ""}
+      <button class="btn blue" id="rsMap">🗺️ ${L("Topic map", "課題地圖")}</button>
+      <button class="btn plain" id="rsCode">🔑 ${L("Use a save code", "使用存檔代碼")}</button>
     </div>`, { closable: false });
   if (r) document.getElementById("rsGo").onclick = () => { SFX.init(); SFX.tap(); closeModal(); streakNote = ""; enterRoom(r.id); };
   document.getElementById("rsMap").onclick = () => { SFX.init(); SFX.tap(); closeModal(); renderMap(); };
@@ -1643,13 +1855,13 @@ function showResume() {
 }
 function showCodeFromLink(d) {
   openModal(`
-    <span class="kicker">🔑 Save code link</span>
-    <h2>Load code ${d.code}?</h2>
+    <span class="kicker">🔑 ${L("Save code link", "存檔連結")}</span>
+    <h2>${L(`Load code ${d.code}?`, `載入代碼 ${d.code}？`)}</h2>
     ${codePreview(d)}
-    ${S ? say("hachiware", "This device already has saved progress. Loading the code will replace it.", "normal", "hint") : `<label for="nm2"><b>What's your name?</b></label><input id="nm2" class="name" maxlength="24" placeholder="Your name or nickname" autocomplete="off">`}
+    ${S ? say("hachiware", L("This device already has saved progress. Loading the code will replace it.", "這部裝置已有儲存的進度，載入代碼會取代它。"), "normal", "hint") : `<label for="nm2"><b>${L("What's your name?", "你叫甚麼名字？")}</b></label><input id="nm2" class="name" maxlength="24" placeholder="${L("Your name or nickname", "名字或暱稱")}" autocomplete="off">`}
     <div class="row">
-      <button class="btn big" id="lkYes">Load my progress</button>
-      <button class="btn plain" id="lkNo">${S ? "Keep this device's progress" : "Start a new game"}</button>
+      <button class="btn big" id="lkYes">${L("Load my progress", "載入我的進度")}</button>
+      <button class="btn plain" id="lkNo">${S ? L("Keep this device's progress", "保留這部裝置的進度") : L("Start a new game", "開始新遊戲")}</button>
     </div>`, { closable: false });
   document.getElementById("lkYes").onclick = () => { SFX.init(); const n = document.getElementById("nm2"); applyCode(d, n && n.value.trim()); };
   document.getElementById("lkNo").onclick = () => {
@@ -1668,19 +1880,20 @@ function renderWelcome() {
   stopRush(); MUSIC.setMode("map"); stopTimer(); R = null; renderTools();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
-      <span class="kicker" style="color:#fff">S3 Science · Chapter 14: Light, Colours and Beyond</span>
-      <h1>Chiikawa Physics Escape</h1>
-      <p class="sub">7 escape rooms · 1 room a day · 10–15 minutes</p>
+      <span class="kicker" style="color:#fff">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色與其他")}</span>
+      <h1>${L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫")}</h1>
+      <p class="sub">${L("7 escape rooms · 1 room a day · 10–15 minutes", "7 個密室 · 每天 1 個 · 10 至 15 分鐘")}</p>
       ${castHtml({ chiikawa: "cry", usagi: "happy" })}
     </section>
     <section class="card">
-      ${say("hachiware", "We're locked inside 7 mysterious rooms! Every lock is a puzzle from Chapter 14: Light, Colours and Beyond. No calculations, just thinking! Help us escape?", "normal", "hint")}
-      ${say("chiikawa", "Ya...! 🥺 Please?", "cry")}
-      <label for="nm"><b>What should we call you?</b></label>
-      <input id="nm" class="name" maxlength="24" placeholder="Your name or nickname" autocomplete="off">
+      <div class="row"><b>🌐 Language 語言：</b><button class="btn ${LANG === "en" ? "yellow" : "plain"}" data-lang="en">English</button><button class="btn ${LANG === "zh" ? "yellow" : "plain"}" data-lang="zh">繁體中文</button></div>
+      ${say("hachiware", L("We're locked inside 7 mysterious rooms! Every lock is a puzzle from Chapter 14: Light, Colours and Beyond. No calculations, just thinking! Help us escape?", "我們被困在 7 個神秘房間裏！每把鎖都是第 14 章「光、顏色與其他」的謎題。不用計算，只需思考！幫我們逃出去吧？"), "normal", "hint")}
+      ${say("chiikawa", L("Ya...! 🥺 Please?", "呀……！🥺 拜託？"), "cry")}
+      <label for="nm"><b>${L("What should we call you?", "我們應該怎樣稱呼你？")}</b></label>
+      <input id="nm" class="name" maxlength="24" placeholder="${L("Your name or nickname", "名字或暱稱")}" autocomplete="off">
       <div class="row">
-        <button class="btn big" id="go">Start the adventure →</button>
-        <button class="btn plain" id="haveCode">🔑 I have a save code</button>
+        <button class="btn big" id="go">${L("Start the adventure →", "開始冒險 →")}</button>
+        <button class="btn plain" id="haveCode">🔑 ${L("I have a save code", "我有存檔代碼")}</button>
       </div>
       <div id="wCode" style="display:grid;gap:10px"></div>
     </section>`;
@@ -1690,6 +1903,7 @@ function renderWelcome() {
     checkIn(); save(true); enterRoom(ROOMS[0].id);
   };
   document.getElementById("go").onclick = go;
+  $app.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); const nm = document.getElementById("nm").value; setLang(b.dataset.lang); document.getElementById("nm").value = nm; });
   document.getElementById("nm").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
   document.getElementById("haveCode").onclick = () => {
     SFX.init(); SFX.tap();
@@ -1697,7 +1911,7 @@ function renderWelcome() {
     w.innerHTML = `<div class="row"><input class="codein" id="wIn" maxlength="6" placeholder="ABCDE" autocomplete="off" autocapitalize="characters" aria-label="Enter save code"><button class="btn" id="wGo">Load</button></div><div id="wMsg"></div>`;
     const loadIt = () => {
       const d = decodeCode(document.getElementById("wIn").value);
-      if (!d) { SFX.wrong(); document.getElementById("wMsg").innerHTML = say("chiikawa", "Wah... that code doesn't work. Check each letter and try again.", "cry"); return; }
+      if (!d) { SFX.wrong(); document.getElementById("wMsg").innerHTML = say("chiikawa", L("Wah... that code doesn't work. Check each letter and try again.", "哇……這個代碼不對。請逐個字母檢查再試。"), "cry"); return; }
       applyCode(d, document.getElementById("nm").value.trim());
     };
     document.getElementById("wGo").onclick = loadIt;
@@ -1711,49 +1925,49 @@ function renderMap() {
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
   $app.innerHTML = `
     <section class="hero">${starsBg()}
-      <span class="kicker" style="color:#fff">S3 Science · Chapter 14: Light, Colours and Beyond</span>
-      <h1>Hi, ${esc(S.player_name)}!</h1>
-      <p class="sub">${allDone ? "You escaped every room! 全部房間都逃出咗!" : `Next: Topic ${ROOMS[ni].topicNo} · ${esc(ROOMS[ni].name)}`}</p>
+      <span class="kicker" style="color:#fff">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色與其他")}</span>
+      <h1>${L("Hi", "你好")}, ${esc(S.player_name)}!</h1>
+      <p class="sub">${allDone ? L("You escaped every room! 全部房間都逃出咗!", "全部房間都逃出咗！") : `${L("Next", "下一個")}: ${topicNo(ROOMS[ni].topicNo)} · ${esc(ROOMS[ni].name)}`}</p>
       ${castHtml(allDone ? { chiikawa: "happy", hachiware: "happy", usagi: "happy", momonga: "happy", kurimanju: "happy" } : { usagi: "happy" })}
     </section>
     ${streakNote ? `<section class="card cream"><b>${esc(streakNote)}</b></section>` : ""}
     <section class="card">
-      ${allDone ? say("chiikawa", "We escaped EVERY room! 🥹🎉 Replay rooms to earn 3 stars.", "happy") : say("hachiware", "Your next right step: just <b>one</b> room today. Small steps count! 🌱", "normal", "hint")}
+      ${allDone ? say("chiikawa", L("We escaped EVERY room! 🥹🎉 Replay rooms to earn 3 stars.", "我們逃出所有房間了！🥹🎉 重玩房間爭取 3 粒星吧。"), "happy") : say("hachiware", L("Your next right step: just <b>one</b> room today. Small steps count! 🌱", "下一步：今天只需完成<b>一個</b>房間。一小步也很重要！🌱"), "normal", "hint")}
       <div class="row">
-        ${!allDone ? `<button class="btn big" data-room="${ROOMS[ni].id}">▶ Enter ${esc(ROOMS[ni].name)}</button>` : ""}
-        <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? "🎁 Daily snack chest" : "🎁 Opened. Back tomorrow!"}</button>
+        ${!allDone ? `<button class="btn big" data-room="${ROOMS[ni].id}">▶ ${L("Enter", "進入")} ${esc(ROOMS[ni].name)}</button>` : ""}
+        <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? L("🎁 Daily snack chest", "🎁 每日零食寶箱") : L("🎁 Opened. Back tomorrow!", "🎁 已打開，明天再來！")}</button>
       </div>
     </section>
     <section class="card">
-      <h2>🎮 Game modes</h2>
+      <h2>🎮 ${L("Game modes", "遊戲模式")}</h2>
       <div class="modes">
-        <button class="mode rush" id="mRush"><h3>⚡ Light Rush</h3><span class="muted small">60 seconds of mixed quick questions. Earn 🌰 chestnuts for outfits and power-ups.</span><span class="small">Best: <b>${S.rush.best}</b> pts ${S.rush.lastDay !== today() ? "· <b>×2 today!</b>" : ""}</span></button>
-        <button class="mode" id="mShop"><h3>👗 Wardrobe &amp; Shop</h3><span class="muted small">Dress up Chiikawa and buy power-ups for the escape rooms.</span><span class="small">🌰 <b>${S.coins}</b> chestnuts</span></button>
-        <button class="mode" id="mLb"><h3>🏅 Leaderboard</h3><span class="muted small">The 10 most dedicated players.</span><span class="small">Your points: <b>${dedication()}</b></span></button>
+        <button class="mode rush" id="mRush"><h3>⚡ ${L("Light Rush", "光速挑戰")}</h3><span class="muted small">${L("60 seconds of mixed quick questions. Earn 🌰 chestnuts for outfits and power-ups.", "60 秒混合快問快答。賺取 🌰 栗子換服飾和道具。")}</span><span class="small">${L("Best", "最高分")}: <b>${S.rush.best}</b> ${L("pts", "分")} ${S.rush.lastDay !== today() ? L("· <b>×2 today!</b>", "· <b>今天雙倍！</b>") : ""}</span></button>
+        <button class="mode" id="mShop"><h3>👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</h3><span class="muted small">${L("Dress up Chiikawa and buy power-ups for the escape rooms.", "為吉伊卡哇打扮，並購買密室道具。")}</span><span class="small">🌰 <b>${S.coins}</b> ${L("chestnuts", "栗子")}</span></button>
+        <button class="mode" id="mLb"><h3>🏅 ${L("Leaderboard", "排行榜")}</h3><span class="muted small">${L("The 10 most dedicated players.", "最努力的十位玩家。")}</span><span class="small">${L("Your points", "你的分數")}: <b>${dedication()}</b></span></button>
       </div>
     </section>
     <section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
     <section class="card">
-      <h2>🗺️ Chapter 14: Light, Colours and Beyond</h2>
+      <h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色與其他")}</h2>
       <div class="topics">${ROOMS.map((r, i) => {
         const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length;
         return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
-          <span class="tnum">Topic ${r.topicNo}</span>
-          <span class="tname">${esc(r.topic)} <span class="zh small">${r.zh}</span></span>
+          <span class="tnum">${topicNo(r.topicNo)}</span>
+          <span class="tname">${topicHtml(r)}</span>
           <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>
-          <span class="rstars" aria-label="${done ? roomStars(r) + " of 3 stars" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 locks` : "Escape the room before"}</span>
+          <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 ${L("locks", "把鎖")}` : L("Escape the room before", "先逃出上一個房間")}</span>
         </button>`; }).join("")}</div>
     </section>
     <section class="card">
-      <h2>📈 Physics mastery</h2>
-      <p class="small muted">Goes up when you open a lock on the first try without a hint.</p>
+      <h2>📈 ${L("Physics mastery", "物理掌握度")}</h2>
+      <p class="small muted">${L("Goes up when you open a lock on the first try without a hint.", "一次答對、不用提示打開鎖，掌握度就會上升。")}</p>
       ${Object.entries(S.physics_mastery).map(([k, v]) => `<div><div class="row" style="justify-content:space-between"><b class="small">${TOPIC_LABELS[k]}</b><b class="small">${v}%</b></div>
         <div style="height:14px;border:2px solid var(--ink);border-radius:999px;background:var(--cream);overflow:hidden"><i style="display:block;height:100%;width:${v}%;background:var(--pink)"></i></div></div>`).join("")}
     </section>
     <section class="card">
-      <h2>🎒 Backpack</h2>
-      <div class="bag">${S.chiikawa_badges.concat(S.inventory).map(b => `<span class="tag">${esc(b)}</span>`).join("") || `<span class="muted small">Empty. Escape a room or open the daily chest!</span>`}</div>
-      <p class="small muted">🔥 Longest streak: ${S.longest_streak} days · 🛡️ Shields: ${S.streak_shields} (a shield saves your streak if you miss a day)</p>
+      <h2>🎒 ${L("Backpack", "背包")}</h2>
+      <div class="bag">${S.chiikawa_badges.concat(S.inventory).map(b => `<span class="tag">${esc(trItem(b))}</span>`).join("") || `<span class="muted small">${L("Empty. Escape a room or open the daily chest!", "空空如也。逃出房間或打開每日寶箱吧！")}</span>`}</div>
+      <p class="small muted">${L(`🔥 Longest streak: ${S.longest_streak} days · 🛡️ Shields: ${S.streak_shields} (a shield saves your streak if you miss a day)`, `🔥 最長連續：${S.longest_streak} 天 · 🛡️ 護盾：${S.streak_shields}（漏玩一天時護盾會保住連續紀錄）`)}</p>
     </section>`;
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
   document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
@@ -1763,8 +1977,8 @@ function renderMap() {
   if (chestReady) c.onclick = () => {
     SFX.init(); SFX.fanfare(); confetti(70);
     const snack = pick(SNACKS); S.inventory.push(snack);
-    let extra = ""; if (Math.random() < .2 && S.streak_shields < 3) { S.streak_shields++; extra = " …and a 🛡️ shield!"; }
-    S.last_chest_date = today(); streakNote = `🎁 Kuri-Manju opened the chest: ${snack}${extra}`; save(true); renderMap();
+    let extra = ""; if (Math.random() < .2 && S.streak_shields < 3) { S.streak_shields++; extra = L(" …and a 🛡️ shield!", "……還有一個 🛡️ 護盾！"); }
+    S.last_chest_date = today(); streakNote = L(`🎁 Kuri-Manju opened the chest: ${snack}${extra}`, `🎁 栗子饅頭打開了寶箱：${snack}${extra}`); save(true); renderMap();
   };
 }
 
@@ -1847,7 +2061,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", "Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first!"), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first!", "點擊發光的 <b>?</b> 開始。⚠️ 小心：答錯會<b>扣 20 秒</b>並打亂鎖；亂猜會<b>卡住鎖</b>、扣 🌰 栗子，還可能令燈光變暗。先想清楚！")), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -1858,7 +2072,7 @@ function setLine(who, html, mood = "normal") {
 function setMood(m, ms) {
   if (!R) return; R.mood = m;
   const el = document.getElementById("chiiAv"); if (el) el.innerHTML = avatar("chiikawa", m);
-  const st = document.getElementById("chiiSt"); if (st) st.textContent = { normal: "Chiikawa is ready", happy: "Chiikawa is happy!", cry: "Chiikawa is nervous..." }[m];
+  const st = document.getElementById("chiiSt"); if (st) st.textContent = { normal: L("Chiikawa is ready", "吉伊卡哇準備好了"), happy: L("Chiikawa is happy!", "吉伊卡哇很開心！"), cry: L("Chiikawa is nervous...", "吉伊卡哇很緊張……") }[m];
   clearTimeout(moodTimer);
   if (ms) moodTimer = setTimeout(() => R && setMood(S.room_timer[R.room.id] < 120 ? "cry" : "normal"), ms);
 }
@@ -1868,9 +2082,9 @@ function tickTimer() {
   S.room_timer[id] -= 1;
   const t = S.room_timer[id];
   const el = document.getElementById("timer");
-  if (el) { el.textContent = t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`; el.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : ""); }
-  if (t === 120) { setMood("cry"); setLine("chiikawa", "Wah! Only 2 minutes left! 😖", "cry"); }
-  if (t === 0) setLine("hachiware", "Time's up, but don't worry! We can keep going in overtime. No penalty! 🌱");
+  if (el) { el.textContent = t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`; el.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : ""); }
+  if (t === 120) { setMood("cry"); setLine("chiikawa", L("Wah! Only 2 minutes left! 😖", "哇！只剩 2 分鐘！😖"), "cry"); }
+  if (t === 0) setLine("hachiware", L("Time's up, but don't worry! We can keep going in overtime. No penalty! 🌱", "時間到了，但別擔心！可以超時繼續，不會扣分！🌱"));
   if (t > 0 && t <= 10) SFX.tick();
   if (t % 5 === 0) save();
 }
@@ -1883,14 +2097,14 @@ function renderRoom() {
     <section class="roomhead">
       <div class="status">
         <div class="av ${frameCls()}" id="chiiAv">${avatar("chiikawa", R.mood)}</div>
-        <div style="min-width:0"><div class="rtopic">Topic ${room.topicNo}: ${esc(room.topic)} <span class="zh">${room.zh}</span></div>
+        <div style="min-width:0"><div class="rtopic">${topicNo(room.topicNo)}: ${topicHtml(room)}</div>
           <div class="rt">${esc(room.name)}</div>
-          <div class="small" id="chiiSt">Chiikawa is ready</div></div>
+          <div class="small" id="chiiSt">${L("Chiikawa is ready", "吉伊卡哇準備好了")}</div></div>
       </div>
       <div style="display:grid;justify-items:end;gap:4px">
-        <div class="timer ${t < 0 ? "over" : t < 120 ? "low" : ""}" id="timer" role="timer" aria-label="Time left">${t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`}</div>
-        <span class="small">🔓 ${solved.length}/5 locks · 🚪 ${solved.length === 5 ? "code ready!" : "door locked"}</span>
-        <span class="strikes" id="strikes" title="Guess strikes: 3 strikes = −1 star, 6 strikes = −2 stars">⚠️ Strikes ${S.room_run[room.id].strikes}</span>
+        <div class="timer ${t < 0 ? "over" : t < 120 ? "low" : ""}" id="timer" role="timer" aria-label="${L("Time left", "剩餘時間")}">${t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`}</div>
+        <span class="small">🔓 ${solved.length}/5 ${L("locks", "把鎖")} · 🚪 ${solved.length === 5 ? L("code ready!", "密碼齊了！") : L("door locked", "門已上鎖")}</span>
+        <span class="strikes" id="strikes" title="${L("Guess strikes: 3 strikes = −1 star, 6 strikes = −2 stars", "猜測警告：3 次 = 扣 1 粒星，6 次 = 扣 2 粒星")}">⚠️ ${L("Strikes", "警告")} ${S.room_run[room.id].strikes}</span>
       </div>
     </section>
     <div id="line"></div>
@@ -1900,16 +2114,16 @@ function renderRoom() {
         <div class="dark"></div>
         ${HOTSPOTS.map((h, i) => {
           const nm = i === 2 ? room.specialName : h.name, done = solved.includes(i);
-          return `<button class="hs ${done ? "done" : ""}" data-hs="${i}" style="left:${h.x}%;top:${h.y}%" aria-label="${esc(nm)}${done ? " (solved)" : ""}">${done ? "✓" : "?"}<span class="lbl">${esc(nm)}</span></button>`;
+          return `<button class="hs ${done ? "done" : ""}" data-hs="${i}" style="left:${h.x}%;top:${h.y}%" aria-label="${esc(nm)}${done ? L(" (solved)", "（已解開）") : ""}">${done ? "✓" : "?"}<span class="lbl">${esc(nm)}</span></button>`;
         }).join("")}
-        <button class="hs door" data-hs="door" style="left:${DOOR.x}%;top:${DOOR.y}%" aria-label="Exit door">🚪<span class="lbl">Exit door</span></button>
+        <button class="hs door" data-hs="door" style="left:${DOOR.x}%;top:${DOOR.y}%" aria-label="${L("Exit door", "出口大門")}">🚪<span class="lbl">${L("Exit door", "出口大門")}</span></button>
       </div>
     </section>
     <section class="card" style="padding:12px">
-      <div class="row" style="justify-content:space-between"><b>🎒 Inventory</b><span class="small muted">Each item shows one digit of the door code</span></div>
+      <div class="row" style="justify-content:space-between"><b>🎒 ${L("Inventory", "物品欄")}</b><span class="small muted">${L("Each item shows one digit of the door code", "每件物品顯示大門密碼的一個數字")}</span></div>
       <div class="inv" id="inv">${invHtml()}</div>
     </section>
-    <div class="row"><button class="btn plain" id="toMap">← Topic map</button><button class="btn blue" id="openJ">📓 Textbook notes for this topic</button></div>`;
+    <div class="row"><button class="btn plain" id="toMap">← ${L("Topic map", "課題地圖")}</button><button class="btn blue" id="openJ">📓 ${L("Textbook notes for this topic", "本課題的課本筆記")}</button></div>`;
   const scene = document.getElementById("scene");
   const move = e => { const b = scene.getBoundingClientRect(); scene.style.setProperty("--sx", `${((e.clientX - b.left) / b.width) * 100}%`); scene.style.setProperty("--sy", `${((e.clientY - b.top) / b.height) * 100}%`); };
   scene.addEventListener("pointermove", move); scene.addEventListener("pointerdown", move);
@@ -1917,15 +2131,15 @@ function renderRoom() {
   wireSlots();
   document.getElementById("toMap").onclick = () => { SFX.tap(); save(); renderMap(); };
   document.getElementById("openJ").onclick = () => { SFX.tap(); openJournal(room.id); };
-  setLine("hachiware", "Tap a glowing <b>?</b> to find a puzzle.");
+  setLine("hachiware", L("Tap a glowing <b>?</b> to find a puzzle.", "點擊發光的 <b>?</b> 尋找謎題。"));
 }
 function wireSlots() { $app.querySelectorAll(".slot.full").forEach(el => el.onclick = () => { SFX.tap(); toast(el.dataset.info); }); }
-function itemName(i) { return i === 2 ? R.room.specialName + " charm" : HOTSPOTS[i].itemName; }
+function itemName(i) { return i === 2 ? R.room.specialName + L(" charm", "護符") : HOTSPOTS[i].itemName; }
 function invHtml(newIdx = -1) {
   const solved = S.room_progress[R.room.id] || [];
   return HOTSPOTS.map((h, i) => solved.includes(i)
-    ? `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))}: code digit #${i + 1} is ${R.room.code[i]}" aria-label="${esc(itemName(i))}, digit ${i + 1} is ${R.room.code[i]}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">#${i + 1} = ${R.room.code[i]}</span></button>`
-    : `<div class="slot" aria-label="Empty slot ${i + 1}"><span class="muted">#${i + 1}<br>?</span></div>`).join("");
+    ? `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))}: ${L("code digit", "密碼數字")} #${i + 1} = ${R.room.code[i]}" aria-label="${esc(itemName(i))}: #${i + 1} = ${R.room.code[i]}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">#${i + 1} = ${R.room.code[i]}</span></button>`
+    : `<div class="slot" aria-label="${L("Empty slot", "空格")} ${i + 1}"><span class="muted">#${i + 1}<br>?</span></div>`).join("");
 }
 
 /* ----- Puzzle modal ----- */
@@ -1935,19 +2149,19 @@ function openPuzzle(i) {
   const p = room.puzzles[i];
   const hsName = i === 2 ? room.specialName : HOTSPOTS[i].name;
   const line = i === 2 ? room.specialLine : HOTSPOTS[i].line;
-  if (solved.includes(i)) { toast(`${hsName}: already solved ✓`); return; }
+  if (solved.includes(i)) { toast(`${hsName}: ${L("already solved ✓", "已解開 ✓")}`); return; }
   SFX.click();
   R.cur = i; R.att[i] = R.att[i] || 0; R.openedAt = Date.now();
-  const typeLabel = { mc: "Multiple choice", keypad: "Keypad lock", dial: "Combination dials" }[p.type];
+  const typeLabel = { mc: L("Multiple choice", "選擇題"), keypad: L("Keypad lock", "數字鎖"), dial: L("Combination dials", "密碼盤") }[p.type];
   const box = openModal(`
-    <span class="kicker">${typeLabel} · Topic ${room.topicNo} ${room.zh}</span>
+    <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh}</span>
     <h2>${esc(hsName)}</h2>
     ${say("chiikawa", esc(line))}
     <p class="q">${esc(p.q)}</p>
     ${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
     <div id="jamBox"></div>
     <div id="ans">${answerUi(p)}</div>
-    <div class="row"><button class="btn blue" id="hint">💡 Hint from Hachiware</button><button class="btn plain" id="pj">📓 Journal</button></div>
+    <div class="row"><button class="btn blue" id="hint">💡 ${L("Hint from Hachiware", "小八的提示")}</button><button class="btn plain" id="pj">📓 ${L("Journal", "日誌")}</button></div>
     <div class="pwr" id="pwr"></div>
     <div id="pfb"></div>`, { wide: true });
   renderPwr(p, i);
@@ -1959,10 +2173,10 @@ function openPuzzle(i) {
 function renderPwr(p, i) {
   const el = document.getElementById("pwr"); if (!el) return;
   const n = k => S.power[k] || 0;
-  el.innerHTML = `<b class="small">🎒 Power-ups:</b>
-    <button class="btn" data-pw="torch" ${n("torch") ? "" : "disabled"} title="${esc(POWERUPS[0].desc)}">🔦 Torch ×${n("torch")}</button>
+  el.innerHTML = `<b class="small">🎒 ${L("Power-ups", "道具")}:</b>
+    <button class="btn" data-pw="torch" ${n("torch") ? "" : "disabled"} title="${esc(POWERUPS[0].desc)}">🔦 ${POWERUPS[0].name} ×${n("torch")}</button>
     <button class="btn" data-pw="crystal" ${n("crystal") ? "" : "disabled"} title="${esc(POWERUPS[1].desc)}">⏳ +60s ×${n("crystal")}</button>
-    <button class="btn" data-pw="guard" ${n("guard") && !R.guard ? "" : "disabled"} title="${esc(POWERUPS[2].desc)}">🛡️ ${R.guard ? "Guard ready!" : `Guard ×${n("guard")}`}</button>`;
+    <button class="btn" data-pw="guard" ${n("guard") && !R.guard ? "" : "disabled"} title="${esc(POWERUPS[2].desc)}">🛡️ ${R.guard ? L("Guard ready!", "守護中！") : `${POWERUPS[2].name} ×${n("guard")}`}</button>`;
   el.querySelectorAll("[data-pw]").forEach(b => b.onclick = () => usePower(b.dataset.pw, p, i));
 }
 function usePower(k, p, i) {
@@ -1971,17 +2185,17 @@ function usePower(k, p, i) {
   if (k === "torch") {
     if (p.type === "mc") {
       const opts = [...box.querySelectorAll(".choice")].filter(b => !b.disabled && Number(b.dataset.i) !== p.answer);
-      if (!opts.length) { toast("Nothing left to remove!"); return; }
+      if (!opts.length) { toast(L("Nothing left to remove!", "沒有可移除的答案了！")); return; }
       const b = pick(opts); b.disabled = true; b.classList.add("wrong"); b.style.textDecoration = "line-through";
     } else {
       const wrong = p.dials.map((_, d) => d).filter(d => R.dialPos[d] !== p.answer[d]);
-      if (!wrong.length) { toast("All dials are already right. Try the lock!"); return; }
+      if (!wrong.length) { toast(L("All dials are already right. Try the lock!", "所有密碼盤都已正確，試試開鎖吧！")); return; }
       const d = pick(wrong); setDial(d, p.answer[d], p);
     }
-    markHint(i); toast("🔦 The torch shows the way!");
+    markHint(i); toast(L("🔦 The torch shows the way!", "🔦 電筒照亮了道路！"));
   } else if (k === "crystal") {
-    S.room_timer[R.room.id] += 60; updateTimerEl(); penaltyFlash("+60s ⏳");
-  } else if (k === "guard") { R.guard = true; toast("🛡️ Your next wrong answer is protected."); }
+    S.room_timer[R.room.id] += 60; updateTimerEl(); penaltyFlash(L("+60s ⏳", "+60 秒 ⏳"));
+  } else if (k === "guard") { R.guard = true; toast(L("🛡️ Your next wrong answer is protected.", "🛡️ 下一次答錯會受到保護。")); }
   S.power[k] -= 1; SFX.item(); save(); renderPwr(p, i);
 }
 function setDial(d, v, p) {
@@ -1990,7 +2204,7 @@ function setDial(d, v, p) {
 }
 function updateTimerEl() {
   const tEl = document.getElementById("timer"); if (!tEl || !R) return;
-  const t = S.room_timer[R.room.id]; tEl.textContent = t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`; tEl.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : "");
+  const t = S.room_timer[R.room.id]; tEl.textContent = t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`; tEl.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : "");
 }
 function dimLights() {
   if (!R) return; R.dimUntil = Date.now() + 45000;
@@ -2009,8 +2223,8 @@ function startJam(i, secs, reason) {
     if (R.cur !== i || !document.getElementById("jamBox")) return;
     const left = Math.ceil((R.jam[i] - Date.now()) / 1000);
     if (left <= 0) { ans.inert = false; ans.classList.remove("jammed"); jb.innerHTML = ""; SFX.click(); return; }
-    jb.innerHTML = `<div class="jam" role="status"><b>🔒 ${esc(reason || R.jamReason || "Lock jammed!")}</b><span class="jt">${left}s</span>
-      <span class="small">Use this time to read Hachiware's hint below or open the 📓 Journal.</span></div>`;
+    jb.innerHTML = `<div class="jam" role="status"><b>🔒 ${esc(reason || R.jamReason || L("Lock jammed!", "鎖卡住了！"))}</b><span class="jt">${left}s</span>
+      <span class="small">${L("Use this time to read Hachiware's hint below or open the 📓 Journal.", "趁這段時間細讀下面小八的提示，或打開 📓 日誌。")}</span></div>`;
     setTimeout(tick, 250);
   };
   R.jamReason = reason || R.jamReason;
@@ -2026,9 +2240,9 @@ function answerUi(p) {
   if (p.type === "keypad") return `<div class="keypad"><div class="kdisplay" aria-live="polite"><span id="kd">_</span>${p.unit ? `<span class="u">${esc(p.unit)}</span>` : ""}</div>
     <div class="keys">${["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0", "⌫"].map(k => `<button class="key ${k === "⌫" ? "del" : ""}" data-k="${k}" aria-label="${k === "⌫" ? "Delete" : k === "." ? "Decimal point" : k}">${k}</button>`).join("")}</div>
     <button class="btn" id="kok" style="width:min(208px,100%)">Unlock 🔓</button></div>`;
-  return `<div class="dials">${p.dials.map((opts, d) => `<div class="dial">${p.labels ? `<span class="dlabel">${esc(p.labels[d])}</span>` : ""}<button class="arr" data-d="${d}" data-dir="-1" aria-label="Previous option">▲</button>
-    <div class="face" id="face${d}" aria-live="polite">${esc(opts[0])}</div><button class="arr" data-d="${d}" data-dir="1" aria-label="Next option">▼</button></div>`).join("")}</div>
-    <div class="row" style="justify-content:center"><button class="btn" id="dok">Try the lock 🔓</button></div>`;
+  return `<div class="dials">${p.dials.map((opts, d) => `<div class="dial">${p.labels ? `<span class="dlabel">${esc(p.labels[d])}</span>` : ""}<button class="arr" data-d="${d}" data-dir="-1" aria-label="${L("Previous option", "上一個選項")}">▲</button>
+    <div class="face" id="face${d}" aria-live="polite">${esc(opts[0])}</div><button class="arr" data-d="${d}" data-dir="1" aria-label="${L("Next option", "下一個選項")}">▼</button></div>`).join("")}</div>
+    <div class="row" style="justify-content:center"><button class="btn" id="dok">${L("Try the lock 🔓", "試開鎖 🔓")}</button></div>`;
 }
 function wireAnswer(p, box) {
   if (p.type === "mc") {
@@ -2066,7 +2280,7 @@ function miss(box) {
   // Guard charm: blocks every penalty for this one wrong answer
   if (R.guard) {
     R.guard = false; R.lastWrongAt = now; SFX.hint(); save(); renderPwr(p, i);
-    document.getElementById("pfb").innerHTML = `<div class="fb no">${say("hachiware", `🛡️ The Guard charm blocked the penalty! Not the right answer though. 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
+    document.getElementById("pfb").innerHTML = `<div class="fb no">${say("hachiware", `${L("🛡️ The Guard charm blocked the penalty! Not the right answer though.", "🛡️ 守護符擋住了懲罰！不過答案還是不對。")} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
     return;
   }
   // Guessing = a wrong answer within 5 s of opening the lock, or within 4 s of the last wrong answer
@@ -2075,33 +2289,33 @@ function miss(box) {
   SFX.wrong(); setMood("cry", 2500);
   const hit = [];
   // Penalty 1: time
-  S.room_timer[id] -= 20; penaltyFlash("−20s ⏱️"); updateTimerEl(); hit.push("⏱️ −20 seconds");
+  S.room_timer[id] -= 20; penaltyFlash(L("−20s ⏱️", "−20 秒 ⏱️")); updateTimerEl(); hit.push(L("⏱️ −20 seconds", "⏱️ −20 秒"));
   // Penalty 2: the lock reshuffles, so tapping the next option doesn't work
   if (p.type === "mc") {
     const wrap = box.querySelector(".choices"); const kids = shuffle([...wrap.children]);
     kids.forEach((k, n) => { wrap.appendChild(k); k.querySelector("b").textContent = "ABCD"[n]; });
-    hit.push("🔀 answers shuffled");
+    hit.push(L("🔀 answers shuffled", "🔀 答案被打亂"));
   } else if (p.type === "dial") {
     p.dials.forEach((opts, d) => setDial(d, Math.floor(Math.random() * opts.length), p));
-    hit.push("🌀 dials spun");
+    hit.push(L("🌀 dials spun", "🌀 密碼盤亂轉"));
   }
   // Penalty 3: guessing or a repeat miss jams the lock, adds a strike and costs chestnuts
   let jam = 0, reason = "";
-  if (fast) { jam = 25; reason = "Guessing detected! Lock jammed"; }
-  else if (R.att[i] >= 2) { jam = Math.min(40, 10 + 10 * (R.att[i] - 1)); reason = "Wrong again! Lock jammed"; }
+  if (fast) { jam = 25; reason = L("Guessing detected! Lock jammed", "偵測到亂猜！鎖卡住了"); }
+  else if (R.att[i] >= 2) { jam = Math.min(40, 10 + 10 * (R.att[i] - 1)); reason = L("Wrong again! Lock jammed", "又答錯了！鎖卡住了"); }
   if (jam) {
-    run.strikes += 1; markHint(i); SFX.door(); hit.push(`🔒 jammed ${jam}s`, "⚠️ strike +1");
+    run.strikes += 1; markHint(i); SFX.door(); hit.push(L(`🔒 jammed ${jam}s`, `🔒 卡住 ${jam} 秒`), L("⚠️ strike +1", "⚠️ 警告 +1"));
     if (S.coins > 0) { const fine = Math.min(S.coins, 3); S.coins -= fine; hit.push(`🌰 −${fine}`); renderTools(); }
     // Penalty 4: every 3rd strike, the lights flicker and the room goes dim
-    if (run.strikes % 3 === 0) { dimLights(); hit.push("🌑 lights dimmed for 45 s"); }
+    if (run.strikes % 3 === 0) { dimLights(); hit.push(L("🌑 lights dimmed for 45 s", "🌑 燈光變暗 45 秒")); }
   }
   save();
-  const st = document.getElementById("strikes"); if (st) st.textContent = `⚠️ Strikes ${run.strikes}`;
-  const warn = run.strikes >= 6 ? "You've lost 2 stars in this room." : run.strikes >= 3 ? "3+ strikes: this room loses 1 star." : `${3 - run.strikes} more strike${3 - run.strikes === 1 ? "" : "s"} and this room loses a star.`;
+  const st = document.getElementById("strikes"); if (st) st.textContent = `⚠️ ${L("Strikes", "警告")} ${run.strikes}`;
+  const warn = run.strikes >= 6 ? L("You've lost 2 stars in this room.", "這個房間已扣 2 粒星。") : run.strikes >= 3 ? L("3+ strikes: this room loses 1 star.", "3 次或以上警告：這個房間扣 1 粒星。") : L(`${3 - run.strikes} more strike${3 - run.strikes === 1 ? "" : "s"} and this room loses a star.`, `再有 ${3 - run.strikes} 次警告，這個房間便會扣 1 粒星。`);
   document.getElementById("pfb").innerHTML = `<div class="fb no">
-    ${say("chiikawa", jam ? (fast ? "Wah...! That was too fast! Did we guess? 😭" : "Wah...! Wrong again... 😭") : "Wah...! 😭 The lock didn't open...", "cry")}
-    <div class="rules"><b>Penalties:</b> ${hit.join(" · ")}${jam ? `<br>${warn}` : ""}</div>
-    ${say("hachiware", `${jam ? "Let's slow down and read carefully." : "Don't worry! We can figure this out together."} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
+    ${say("chiikawa", jam ? (fast ? L("Wah...! That was too fast! Did we guess? 😭", "哇……！太快了！我們是在亂猜嗎？😭") : L("Wah...! Wrong again... 😭", "哇……！又錯了……😭")) : L("Wah...! 😭 The lock didn't open...", "哇……！😭 鎖打不開……"), "cry")}
+    <div class="rules"><b>${L("Penalties", "懲罰")}:</b> ${hit.join(" · ")}${jam ? `<br>${warn}` : ""}</div>
+    ${say("hachiware", `${jam ? L("Let's slow down and read carefully.", "我們慢慢來，細心閱讀。") : L("Don't worry! We can figure this out together.", "別擔心！我們一起想辦法。")} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
   if (jam) startJam(i, jam, reason);
 }
 function solve() {
@@ -2118,12 +2332,12 @@ function solve() {
   if (firstTry) confetti(40);
   document.getElementById("hint").hidden = true;
   document.getElementById("pfb").innerHTML = `<div class="fb ok">
-    ${say("usagi", `<b>Yaha!</b> ${firstTry ? "First try! Mastery up 📈" : "Unlocked! 🔓"}`, "happy")}
+    ${say("usagi", `<b>${L("Yaha!", "呀哈！")}</b> ${firstTry ? L("First try! Mastery up 📈", "一次答對！掌握度上升 📈") : L("Unlocked! 🔓", "解鎖了！🔓")}`, "happy")}
     <p>${esc(p.explain)}</p>
-    ${p.tip ? `<p class="tip"><b>📝 Exam tip 考試貼士:</b> ${esc(p.tip)}</p>` : ""}
+    ${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip 考試貼士", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
     ${p.terms ? `<div class="terms">${p.terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span></span>`).join("")}</div>` : ""}
-    <div class="found">${ICONS[HOTSPOTS[i].item]}<span>You found: <b>${esc(itemName(i))}</b>. Code digit #${i + 1} = <b>${room.code[i]}</b></span></div>
-    <div class="row"><button class="btn big" id="collect">Collect item ✨</button></div></div>`;
+    <div class="found">${ICONS[HOTSPOTS[i].item]}<span>${L("You found", "你找到了")}: <b>${esc(itemName(i))}</b>. ${L("Code digit", "密碼數字")} #${i + 1} = <b>${room.code[i]}</b></span></div>
+    <div class="row"><button class="btn big" id="collect">${L("Collect item ✨", "收集物品 ✨")}</button></div></div>`;
   const c = document.getElementById("collect"); c.focus({ preventScroll: true });
   document.getElementById("pfb").scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "nearest" });
   $modal._close = () => collect(i);
@@ -2134,24 +2348,24 @@ function collect(i) {
   SFX.item(); closeModal(); renderRoom();
   document.getElementById("inv").innerHTML = invHtml(i); wireSlots();
   const n = (S.room_progress[R.room.id] || []).length;
-  if (n === 5) setLine("hachiware", "All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!");
-  else setLine("chiikawa", `Ya...! ${5 - n} more lock${5 - n === 1 ? "" : "s"} to go! 🔍`, "happy");
+  if (n === 5) setLine("hachiware", L("All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!", "5 個密碼數字都找到了！點擊 🚪 <b>出口大門</b>輸入密碼！"));
+  else setLine("chiikawa", L(`Ya...! ${5 - n} more lock${5 - n === 1 ? "" : "s"} to go! 🔍`, `呀……！還有 ${5 - n} 把鎖！🔍`), "happy");
 }
 
 /* ----- Exit door ----- */
 function openDoor() {
   const { room } = R;
   const solved = S.room_progress[room.id] || [];
-  if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", `The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, "cry"); return; }
+  if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", L(`The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, `大門需要 5 位數密碼……我們只有 ${solved.length}/5 個數字。再開多些鎖吧！🔍`), "cry"); return; }
   SFX.click();
   const box = openModal(`
-    <span class="kicker">Exit door · Keypad</span>
-    <h2>🚪 Enter the door code</h2>
-    ${say("hachiware", "Use the digits on your items, in order #1 → #5.", "normal", "hint")}
+    <span class="kicker">${L("Exit door · Keypad", "出口大門 · 數字鎖")}</span>
+    <h2>🚪 ${L("Enter the door code", "輸入大門密碼")}</h2>
+    ${say("hachiware", L("Use the digits on your items, in order #1 → #5.", "按 #1 → #5 的次序輸入物品上的數字。"), "normal", "hint")}
     <div class="row" style="justify-content:center">${HOTSPOTS.map((h, i) => `<span class="tag">#${i + 1} = ${room.code[i]}</span>`).join("")}</div>
     <div class="keypad"><div class="kdisplay"><span id="kd">_</span></div>
-    <div class="keys">${["7", "8", "9", "4", "5", "6", "1", "2", "3", "", "0", "⌫"].map(k => k ? `<button class="key ${k === "⌫" ? "del" : ""}" data-k="${k}" aria-label="${k === "⌫" ? "Delete" : k}">${k}</button>` : "<span></span>").join("")}</div>
-    <button class="btn" id="kok" style="width:min(208px,100%)">Open the door 🔓</button></div>
+    <div class="keys">${["7", "8", "9", "4", "5", "6", "1", "2", "3", "", "0", "⌫"].map(k => k ? `<button class="key ${k === "⌫" ? "del" : ""}" data-k="${k}" aria-label="${k === "⌫" ? L("Delete", "刪除") : k}">${k}</button>` : "<span></span>").join("")}</div>
+    <button class="btn" id="kok" style="width:min(208px,100%)">${L("Open the door 🔓", "開門 🔓")}</button></div>
     <div id="pfb"></div>`);
   let v = "";
   const show = () => (document.getElementById("kd").textContent = v || "_");
@@ -2159,7 +2373,7 @@ function openDoor() {
   box.querySelectorAll(".key").forEach(b => b.onclick = () => press(b.dataset.k));
   const ok = () => {
     if (v === room.code) { closeModal(); escapeRoom(); }
-    else { SFX.wrong(); box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake"); v = ""; show(); document.getElementById("pfb").innerHTML = say("chiikawa", "Wah... wrong code! Type the digits in order #1 → #5. 🎒", "cry"); }
+    else { SFX.wrong(); box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake"); v = ""; show(); document.getElementById("pfb").innerHTML = say("chiikawa", L("Wah... wrong code! Type the digits in order #1 → #5. 🎒", "哇……密碼錯了！按 #1 → #5 的次序輸入。🎒"), "cry"); }
   };
   document.getElementById("kok").onclick = ok;
   box.onkeydown = e => { if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter") { e.preventDefault(); ok(); } };
@@ -2185,21 +2399,21 @@ function escapeRoom() {
   recomputeMastery(); save(true);
   SFX.door();
   document.getElementById("doorG").classList.add("door-open");
-  setMood("happy"); setLine("usagi", "YAHA!!! The door is opening!!! 🐰🎊", "happy");
+  setMood("happy"); setLine("usagi", L("YAHA!!! The door is opening!!! 🐰🎊", "呀哈！！！門打開了！！！🐰🎊"), "happy");
   setTimeout(() => {
-    SFX.fanfare(); confetti(180); yaha("Yaha!!");
+    SFX.fanfare(); confetti(180); yaha(L("Yaha!!", "呀哈！！"));
     openModal(`
-      <span class="kicker">Escaped! · Topic ${room.topicNo}</span>
-      <h2>🎉 You escaped ${esc(room.name)}!</h2>
+      <span class="kicker">${L("Escaped!", "逃脫成功！")} · ${topicNo(room.topicNo)}</span>
+      <h2>🎉 ${L(`You escaped ${esc(room.name)}!`, `你逃出了${esc(room.name)}！`)}</h2>
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
-      <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} of 3 stars">${starStr(stars)}</div>
-      <p style="text-align:center"><b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}</p>
-      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 chestnuts</span></p>
-      ${lost ? `<div class="rules">Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!</div>` : ""}
-      ${first ? say("momonga", `You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, "happy") : say("kurimanju", "Replay complete. Practice makes the brain strong. 🍵", "happy")}
-      <section class="card cream jsec"><h3>📖 Textbook recap: ${esc(room.topic)} <span class="zh">${room.zh}</span></h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>
-      ${say("hachiware", ni === -1 ? "That was the final room. You've mastered Light! 🌟" : `That's today's mission done! 🌱 Next time: <b>Topic ${ROOMS[ni].topicNo}: ${esc(ROOMS[ni].topic)}</b>.`, "happy", "hint")}
-      <div class="row"><button class="btn big" id="eMap">Back to the map</button><button class="btn yellow" id="eCode">🔑 Get my save code</button></div>`, { onClose: renderMap });
+      <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} / 3 ★">${starStr(stars)}</div>
+      <p style="text-align:center">${L(`<b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}`, `一次答對 <b>${n}/5</b> 把鎖 · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? "（超時）" : ""} · ⚠️ ${run.strikes} 次警告`)}</p>
+      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}</span></p>
+      ${lost ? `<div class="rules">${L(`Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!`, `猜測警告令你這次失去 <b>${lost} 粒星</b>。重玩房間、先想後答就能贏回來！`)}</div>` : ""}
+      ${first ? say("momonga", L(`You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, `你獲得了<b>${esc(room.badge)}</b>和<b>${esc(room.item)}</b>！💜`), "happy") : say("kurimanju", L("Replay complete. Practice makes the brain strong. 🍵", "重玩完成。多練習令腦袋更強壯。🍵"), "happy")}
+      <section class="card cream jsec"><h3>📖 ${L("Textbook recap", "課本重溫")}: ${topicHtml(room)}</h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>
+      ${say("hachiware", ni === -1 ? L("That was the final room. You've mastered Light! 🌟", "這是最後一個房間。你已掌握「光」這一章！🌟") : L(`That's today's mission done! 🌱 Next time: <b>${topicNo(ROOMS[ni].topicNo)}: ${esc(tTopic(ROOMS[ni]))}</b>.`, `今天的任務完成了！🌱 下次：<b>${topicNo(ROOMS[ni].topicNo)}：${esc(tTopic(ROOMS[ni]))}</b>。`), "happy", "hint")}
+      <div class="row"><button class="btn big" id="eMap">${L("Back to the map", "返回地圖")}</button><button class="btn yellow" id="eCode">🔑 ${L("Get my save code", "取得存檔代碼")}</button></div>`, { onClose: renderMap });
     document.getElementById("eMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
     document.getElementById("eCode").onclick = () => { SFX.tap(); renderMap(); openSaveModal(); };
     setTimeout(checkTrophies, 1800); lbSubmit(true);
