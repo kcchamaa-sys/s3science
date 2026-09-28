@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#fff8f3">
 <title>Chiikawa Physics Escape</title>
 <meta name="description" content="A bite-sized, Chiikawa-themed escape room that teaches S3 Physics: Light & Optics.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,6 +46,7 @@
     --ray: #ff7fa1;
     --normal: #c2b0a9;
     --glass: rgba(147, 182, 227, .22);
+    color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
@@ -63,6 +66,7 @@
   --ray: #ff7fa1;
   --normal: #c2b0a9;
   --glass: rgba(147, 182, 227, .22);
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -78,7 +82,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 header.top {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
   padding: 12px 16px; background: var(--surface); border-bottom: 2px solid var(--line);
-  position: sticky; top: 0; z-index: 5;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 .brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
 .stats { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -171,6 +176,25 @@ input.name {
 }
 .celebrate { text-align: center; font-size: 3rem; letter-spacing: 6px; }
 .small { font-size: .85rem; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.btn, .choice, .room { min-height: 44px; }
+.btn:focus-visible, .choice:focus-visible, .room:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.numrow input { font-size: 16px; } /* stops iOS zooming into the field */
+.confirm { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+/* iPad / tablet */
+@media (min-width: 700px) {
+  body { font-size: 17px; }
+  .wrap { max-width: 900px; padding-inline: 24px; }
+  .choices { grid-template-columns: 1fr 1fr; }
+  .say svg { flex-basis: 56px; width: 56px; height: 56px; }
+  .diagram { max-width: 480px; }
+  .rooms { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+}
+/* Large desktop */
+@media (min-width: 1100px) {
+  .wrap { max-width: 980px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 @media (max-width: 480px) {
   h1 { font-size: 1.35rem; }
   .card { padding: 14px; }
@@ -731,10 +755,16 @@ function wireSavePanel() {
       save(); streakNote = "💾 Save restored!"; renderMap();
     } catch (e) { toast("That doesn't look like a valid save. 🥲"); }
   };
-  document.getElementById("reset").onclick = () => {
-    if (!confirm("Start over? This erases all progress in this browser.")) return;
-    try { localStorage.removeItem(KEY); } catch (e) {}
-    S = null; streakNote = ""; renderWelcome();
+  document.getElementById("reset").onclick = e => {
+    const btn = e.currentTarget;
+    if (document.getElementById("resetask")) return;
+    btn.insertAdjacentHTML("afterend", `<span class="confirm" id="resetask"><b class="small">Erase all progress?</b>
+      <button class="btn" id="resetyes">Yes, start over</button><button class="btn ghost" id="resetno">Keep my progress</button></span>`);
+    document.getElementById("resetno").onclick = () => document.getElementById("resetask").remove();
+    document.getElementById("resetyes").onclick = () => {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      S = null; streakNote = ""; renderWelcome();
+    };
   };
 }
 
