@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chiikawa Physics Escape</title>
+<meta name="description" content="A bite-sized, Chiikawa-themed escape room that teaches S3 Physics: Light & Optics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fff8f3;
+  --surface: #ffffff;
+  --surface-2: #fff1e8;
+  --ink: #3b2f2f;
+  --ink-soft: #7a6660;
+  --line: #f0dcd0;
+  --pink: #ff9eb5;
+  --pink-deep: #e0587e;
+  --blue: #7fa7d8;
+  --yellow: #ffd66b;
+  --green: #5fb88a;
+  --red: #e0645a;
+  --shadow: 0 6px 18px rgba(120, 70, 50, .10);
+  --ray: #e0587e;
+  --normal: #7a6660;
+  --glass: rgba(127, 167, 216, .25);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1f1a1d;
+    --surface: #2a2327;
+    --surface-2: #332a2f;
+    --ink: #f6ebe6;
+    --ink-soft: #c2b0a9;
+    --line: #463a40;
+    --pink: #ff9eb5;
+    --pink-deep: #ff7fa1;
+    --blue: #93b6e3;
+    --yellow: #ffd66b;
+    --green: #74cf9f;
+    --red: #ff8479;
+    --shadow: 0 6px 18px rgba(0, 0, 0, .35);
+    --ray: #ff7fa1;
+    --normal: #c2b0a9;
+    --glass: rgba(147, 182, 227, .22);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1f1a1d;
+  --surface: #2a2327;
+  --surface-2: #332a2f;
+  --ink: #f6ebe6;
+  --ink-soft: #c2b0a9;
+  --line: #463a40;
+  --pink: #ff9eb5;
+  --pink-deep: #ff7fa1;
+  --blue: #93b6e3;
+  --yellow: #ffd66b;
+  --green: #74cf9f;
+  --red: #ff8479;
+  --shadow: 0 6px 18px rgba(0, 0, 0, .35);
+  --ray: #ff7fa1;
+  --normal: #c2b0a9;
+  --glass: rgba(147, 182, 227, .22);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "M PLUS Rounded 1c", system-ui, sans-serif;
+  line-height: 1.55;
+  font-size: 16px;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
+header.top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; background: var(--surface); border-bottom: 2px solid var(--line);
+  position: sticky; top: 0; z-index: 5;
+}
+.brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+.stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 10px; font-size: .85rem; font-weight: 700; white-space: nowrap;
+}
+.card {
+  background: var(--surface); border: 2px solid var(--line); border-radius: 20px;
+  padding: 18px; box-shadow: var(--shadow); margin: 14px 0;
+}
+h1, h2, h3 { line-height: 1.25; margin: 0 0 8px; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.25rem; }
+p { margin: 6px 0; }
+.muted { color: var(--ink-soft); }
+.btn {
+  border: 2px solid var(--pink-deep); background: var(--pink-deep); color: #fff;
+  border-radius: 14px; padding: 10px 18px; font-weight: 800;
+}
+.btn.ghost { background: transparent; color: var(--pink-deep); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.say { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; }
+.say svg { flex: 0 0 48px; width: 48px; height: 48px; }
+.bubble {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px 16px 16px 16px;
+  padding: 8px 12px; min-width: 0;
+}
+.bubble b.name { display: block; font-size: .8rem; color: var(--ink-soft); }
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.room {
+  text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: 18px;
+  padding: 14px; box-shadow: var(--shadow);
+}
+.room.done { border-color: var(--green); }
+.room.next { border-color: var(--pink-deep); }
+.room:disabled { opacity: .5; cursor: not-allowed; }
+.room .emoji { font-size: 1.8rem; }
+.room .t { font-weight: 800; display: block; }
+.room .s { font-size: .85rem; color: var(--ink-soft); }
+.locks { display: flex; gap: 6px; margin: 6px 0 12px; }
+.lock {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--surface-2); border: 2px solid var(--line); font-size: 1rem;
+}
+.lock.open { border-color: var(--green); }
+.lock.cur { border-color: var(--pink-deep); }
+.q { font-weight: 700; font-size: 1.05rem; }
+.choices { display: grid; gap: 8px; margin-top: 12px; }
+.choice {
+  text-align: left; background: var(--surface-2); border: 2px solid var(--line); border-radius: 14px;
+  padding: 10px 14px;
+}
+.choice:hover:not(:disabled) { border-color: var(--pink); }
+.choice.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 18%, var(--surface)); }
+.choice.wrong { border-color: var(--red); background: color-mix(in srgb, var(--red) 14%, var(--surface)); }
+.numrow { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.numrow input {
+  font: inherit; color: var(--ink); background: var(--surface-2); border: 2px solid var(--line);
+  border-radius: 12px; padding: 9px 12px; width: 140px;
+}
+.numrow .unit { font-weight: 700; color: var(--ink-soft); }
+.feedback { margin-top: 12px; border-radius: 14px; padding: 10px 14px; }
+.feedback.ok { background: color-mix(in srgb, var(--green) 16%, var(--surface)); border: 1px solid var(--green); }
+.feedback.no { background: color-mix(in srgb, var(--red) 12%, var(--surface)); border: 1px solid var(--red); }
+.diagram { display: block; width: 100%; max-width: 420px; height: auto; margin: 10px auto 0; color: var(--ink); }
+.bar { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+.bar > i { display: block; height: 100%; background: var(--pink-deep); }
+.mastery { display: grid; gap: 8px; }
+.mastery .lbl { display: flex; justify-content: space-between; font-size: .88rem; font-weight: 700; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+details summary { cursor: pointer; font-weight: 800; }
+pre.json {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+  overflow: auto; font-size: .8rem; max-height: 320px; white-space: pre;
+}
+textarea {
+  width: 100%; min-height: 90px; font-family: ui-monospace, monospace; font-size: .8rem;
+  color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px;
+}
+input.name {
+  font: inherit; color: var(--ink); background: var(--surface-2); border: 2px solid var(--line);
+  border-radius: 12px; padding: 9px 12px; width: 100%; max-width: 280px;
+}
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 14px; font-weight: 700;
+  max-width: calc(100% - 32px); z-index: 20; box-shadow: var(--shadow);
+}
+.celebrate { text-align: center; font-size: 3rem; letter-spacing: 6px; }
+.small { font-size: .85rem; }
+@media (max-width: 480px) {
+  h1 { font-size: 1.35rem; }
+  .card { padding: 14px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span aria-hidden="true">🔦</span> Chiikawa Physics Escape</div>
+  <div class="stats" id="stats"></div>
+</header>
+<main class="wrap" id="app"></main>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* ============================================================
+   Characters — simple original doodle avatars (no official art)
+   ============================================================ */
+const AVATARS = {
+  chiikawa: `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="13" cy="11" r="6" fill="#fff" stroke="#3b2f2f" stroke-width="2"/><circle cx="35" cy="11" r="6" fill="#fff" stroke="#3b2f2f" stroke-width="2"/><circle cx="24" cy="27" r="18" fill="#fff" stroke="#3b2f2f" stroke-width="2"/><circle cx="17" cy="26" r="2.2" fill="#3b2f2f"/><circle cx="31" cy="26" r="2.2" fill="#3b2f2f"/><ellipse cx="13" cy="32" rx="3.5" ry="2" fill="#ff9eb5"/><ellipse cx="35" cy="32" rx="3.5" ry="2" fill="#ff9eb5"/><path d="M21 31 q3 3 6 0" fill="none" stroke="#3b2f2f" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  hachiware: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16 L11 4 L19 11 Z" fill="#7fa7d8" stroke="#3b2f2f" stroke-width="2" stroke-linejoin="round"/><path d="M40 16 L37 4 L29 11 Z" fill="#7fa7d8" stroke="#3b2f2f" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="27" r="18" fill="#fff" stroke="#3b2f2f" stroke-width="2"/><path d="M7.5 22 A18 18 0 0 1 40.5 22 L24 30 Z" fill="#7fa7d8"/><path d="M24 30 L14 18 M24 30 L34 18" stroke="#fff" stroke-width="5"/><circle cx="24" cy="27" r="18" fill="none" stroke="#3b2f2f" stroke-width="2"/><circle cx="17" cy="29" r="2.2" fill="#3b2f2f"/><circle cx="31" cy="29" r="2.2" fill="#3b2f2f"/><path d="M20 35 q2 2 4 0 q2 2 4 0" fill="none" stroke="#3b2f2f" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  usagi: `<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="17" cy="9" rx="4" ry="9" fill="#ffe28a" stroke="#3b2f2f" stroke-width="2"/><ellipse cx="31" cy="9" rx="4" ry="9" fill="#ffe28a" stroke="#3b2f2f" stroke-width="2"/><circle cx="24" cy="29" r="17" fill="#ffe28a" stroke="#3b2f2f" stroke-width="2"/><circle cx="17" cy="28" r="2.4" fill="#3b2f2f"/><circle cx="31" cy="28" r="2.4" fill="#3b2f2f"/><ellipse cx="24" cy="36" rx="5" ry="4" fill="#e0587e" stroke="#3b2f2f" stroke-width="1.6"/></svg>`,
+  momonga: `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="27" r="18" fill="#fff" stroke="#3b2f2f" stroke-width="2"/><path d="M7 24 A18 18 0 0 1 41 24 Q24 18 7 24 Z" fill="#c9c3e6"/><circle cx="17" cy="28" r="3.2" fill="#3b2f2f"/><circle cx="31" cy="28" r="3.2" fill="#3b2f2f"/><circle cx="18" cy="27" r="1" fill="#fff"/><circle cx="32" cy="27" r="1" fill="#fff"/><path d="M21 35 q3 2 6 0" fill="none" stroke="#3b2f2f" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  kurimanju: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 36 Q6 10 24 8 Q42 10 42 36 Q24 42 6 36 Z" fill="#c98a55" stroke="#3b2f2f" stroke-width="2"/><path d="M9 20 Q24 13 39 20" fill="none" stroke="#8a5530" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="29" r="2" fill="#3b2f2f"/><circle cx="30" cy="29" r="2" fill="#3b2f2f"/><path d="M21 34 h6" stroke="#3b2f2f" stroke-width="1.6" stroke-linecap="round"/></svg>`
+};
+const NAMES = { chiikawa: "Chiikawa", hachiware: "Hachiware", usagi: "Usagi", momonga: "Momonga", kurimanju: "Kuri-Manju" };
+
+/* ============================================================
+   Diagrams (inline SVG, theme-aware via CSS variables)
+   ============================================================ */
+const DIAGRAMS = {
+  mirror30: `<svg class="diagram" viewBox="0 0 320 170" role="img" aria-label="A light ray hits a plane mirror at 30 degrees to the mirror surface">
+    <line x1="30" y1="140" x2="290" y2="140" stroke="currentColor" stroke-width="4"/>
+    <g stroke="currentColor" stroke-width="1.5">${Array.from({length:13},(_,i)=>`<line x1="${36+i*20}" y1="142" x2="${28+i*20}" y2="154"/>`).join("")}</g>
+    <line x1="160" y1="140" x2="160" y2="20" stroke="var(--normal)" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="166" y="30" fill="var(--normal)" font-size="12">normal</text>
+    <line x1="40" y1="70.7" x2="160" y2="140" stroke="var(--ray)" stroke-width="3"/>
+    <path d="M92 104 l12 3 l-6 -10" fill="none" stroke="var(--ray)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M110 140 A50 50 0 0 0 116.7 115" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="84" y="134" fill="currentColor" font-size="14" font-weight="700">30°</text>
+    <text x="220" y="165" fill="currentColor" font-size="12">mirror</text>
+  </svg>`,
+  glassblock: `<svg class="diagram" viewBox="0 0 320 190" role="img" aria-label="A ray enters a glass block from air: angle of incidence 50 degrees, angle of refraction 30 degrees">
+    <rect x="20" y="95" width="280" height="85" fill="var(--glass)" stroke="currentColor" stroke-width="2"/>
+    <text x="28" y="172" fill="currentColor" font-size="12">glass</text>
+    <text x="28" y="22" fill="currentColor" font-size="12">air</text>
+    <line x1="160" y1="15" x2="160" y2="185" stroke="var(--normal)" stroke-width="2" stroke-dasharray="6 5"/>
+    <line x1="65" y1="15" x2="160" y2="95" stroke="var(--ray)" stroke-width="3"/>
+    <line x1="160" y1="95" x2="205" y2="173" stroke="var(--ray)" stroke-width="3"/>
+    <text x="120" y="60" fill="currentColor" font-size="14" font-weight="700">50°</text>
+    <text x="170" y="140" fill="currentColor" font-size="14" font-weight="700">30°</text>
+  </svg>`,
+  convex: `<svg class="diagram" viewBox="0 0 320 160" role="img" aria-label="Parallel rays pass through a convex lens and meet at the principal focus F">
+    <line x1="10" y1="80" x2="310" y2="80" stroke="var(--normal)" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <path d="M150 20 Q180 80 150 140 Q120 80 150 20 Z" fill="var(--glass)" stroke="currentColor" stroke-width="2"/>
+    ${[40,60,100,120].map(y=>`<line x1="20" y1="${y}" x2="150" y2="${y}" stroke="var(--ray)" stroke-width="2.5"/><line x1="150" y1="${y}" x2="240" y2="80" stroke="var(--ray)" stroke-width="2.5"/>`).join("")}
+    <line x1="20" y1="80" x2="240" y2="80" stroke="var(--ray)" stroke-width="2.5"/>
+    <circle cx="240" cy="80" r="4" fill="currentColor"/>
+    <text x="234" y="104" fill="currentColor" font-size="14" font-weight="700">?</text>
+  </svg>`,
+  prism: `<svg class="diagram" viewBox="0 0 320 170" role="img" aria-label="White light enters a triangular prism and spreads into a spectrum of colours">
+    <polygon points="150,20 90,150 210,150" fill="var(--glass)" stroke="currentColor" stroke-width="2"/>
+    <line x1="10" y1="100" x2="118" y2="90" stroke="currentColor" stroke-width="4"/>
+    <line x1="118" y1="90" x2="182" y2="99" stroke="currentColor" stroke-width="3" opacity=".7"/>
+    <text x="14" y="88" fill="currentColor" font-size="12">white light</text>
+    ${["#e0473d","#f28c28","#f2c230","#4caf50","#3b7de0","#4b3fb8","#8e44c8"].map((c,i)=>`<line x1="${180}" y1="${96+i*2}" x2="310" y2="${88+i*12}" stroke="${c}" stroke-width="3"/>`).join("")}
+    <text x="286" y="84" fill="currentColor" font-size="12" font-weight="700">A</text>
+    <text x="286" y="172" fill="currentColor" font-size="12" font-weight="700">B</text>
+  </svg>`
+};
+
+/* ============================================================
+   Rooms & puzzles — S3 Physics: Light & Optics
+   type: "mc" (choices + answer index) or "num" (answer + tol + unit)
+   ============================================================ */
+const ROOMS = [
+  {
+    id: "room1", name: "Room 1: The Dark Cavern", emoji: "🕯️", topic: "light_basics",
+    blurb: "Luminous vs non-luminous, straight-line light",
+    badge: "🏮 Cavern Lantern Badge", item: "✨ Glow Stone",
+    intro: [
+      ["chiikawa", "Ya...! It's so dark in here... 😖"],
+      ["hachiware", "Don't worry! If we understand how light works, we can find the way out together!"],
+      ["usagi", "Yaha! Ura! 🔦"]
+    ],
+    puzzles: [
+      { type: "mc", q: "A glowing sign says: \"Only a LUMINOUS object can open this door.\" Which one does Usagi grab?",
+        choices: ["The Moon in a painting", "A lit candle", "A shiny mirror", "A white sheet of paper"], answer: 1,
+        hint: "Luminous objects make their OWN light. Which one is doing that?",
+        explain: "A lit candle is luminous — it gives out its own light. The Moon, mirrors and paper are non-luminous: they only reflect light." },
+      { type: "mc", q: "Chiikawa can see a book on the cavern floor once the candle is lit. Why?",
+        choices: ["Light from the eyes hits the book", "The book gives out its own light", "Light from the candle reflects off the book into Chiikawa's eyes", "The book absorbs all the light"], answer: 2,
+        hint: "Think about the path: source → object → ?",
+        explain: "We see non-luminous objects because light from a source reflects off them and enters our eyes." },
+      { type: "mc", q: "Under a tiny torch, Usagi's shadow has sharp edges. Which property of light explains shadows?",
+        choices: ["Light travels in straight lines", "Light bends around corners easily", "Light needs air to travel", "Light is slower than sound"], answer: 0,
+        hint: "If light could curve around Usagi, would there be a shadow at all?",
+        explain: "Light travels in straight lines (rectilinear propagation). An opaque object blocks the rays, leaving a shadow behind it." },
+      { type: "mc", q: "The code lock asks for the speed of light in a vacuum. Which is it?",
+        choices: ["340 m/s", "3 × 10⁵ m/s", "3 × 10⁸ m/s", "3 × 10¹² m/s"], answer: 2,
+        hint: "340 m/s is the speed of sound in air — light is MUCH faster.",
+        explain: "Light travels at about 3 × 10⁸ m/s in a vacuum (and nearly that in air)." },
+      { type: "mc", q: "Hachiware builds a pinhole camera to look at the exit sign. What is the image on the screen like?",
+        choices: ["Upright and virtual", "Inverted and real", "Upright and real", "Inverted and virtual"], answer: 1,
+        hint: "Rays from the top of the sign travel in straight lines through the hole... where do they land?",
+        explain: "Rays cross at the pinhole, so the image is inverted. It forms on a screen, so it is real." }
+    ]
+  },
+  {
+    id: "room2", name: "Room 2: The Hall of Mirrors", emoji: "🪞", topic: "reflection",
+    blurb: "Law of reflection & plane mirror images",
+    badge: "👑 Mirror Crown Badge", item: "🔷 Silver Mirror Shard",
+    intro: [
+      ["chiikawa", "Fuwa...! There are SO many Chiikawas! 😳"],
+      ["hachiware", "They're just images in mirrors! Let's use the law of reflection to beam light at the exit."],
+      ["usagi", "Puru! Puru! 🪞"]
+    ],
+    puzzles: [
+      { type: "mc", q: "Which statement is the law of reflection?",
+        choices: ["Angle of incidence = angle of reflection, both measured from the normal", "Angle of incidence = angle of reflection, both measured from the mirror", "The reflected ray is always at 90° to the mirror", "Angle of reflection is always half the angle of incidence"], answer: 0,
+        hint: "The normal is the dashed line drawn at 90° to the mirror. Angles are measured from there.",
+        explain: "Angle i = angle r, measured from the NORMAL. The incident ray, reflected ray and normal all lie in the same plane." },
+      { type: "num", q: "A beam hits the mirror at 30° to the mirror SURFACE (see diagram). What is the angle of reflection?", svg: "mirror30",
+        answer: 60, tol: 0.5, unit: "°",
+        hint: "Trap! Angles are measured from the normal. The normal is 90° from the mirror, so 90° − 30° = ?",
+        explain: "Angle of incidence = 90° − 30° = 60° (from the normal), so the angle of reflection is also 60°." },
+      { type: "mc", q: "Which is NOT true about the image in a plane mirror?",
+        choices: ["It is upright", "It is the same size as the object", "It is real and can be caught on a screen", "It is laterally inverted"], answer: 2,
+        hint: "Can you catch your mirror reflection on a piece of paper?",
+        explain: "A plane mirror image is virtual (it can't be caught on a screen), upright, same size, laterally inverted, and as far behind the mirror as the object is in front." },
+      { type: "num", q: "Chiikawa stands 1.5 m in front of a plane mirror. How far is Chiikawa from their own image?",
+        answer: 3, tol: 0.01, unit: "m",
+        hint: "The image is as far BEHIND the mirror as Chiikawa is in FRONT of it.",
+        explain: "Image is 1.5 m behind the mirror, so the distance between Chiikawa and the image is 1.5 + 1.5 = 3 m." },
+      { type: "mc", q: "Why is \"AMBULANCE\" written backwards on the front of ambulances?",
+        choices: ["Because the image in a plane mirror is laterally inverted", "Because mirrors turn images upside down", "Because light slows down in mirrors", "It is just a design style"], answer: 0,
+        hint: "A driver ahead sees the ambulance in their rear-view MIRROR. What does a mirror do to left and right?",
+        explain: "Mirror images are laterally inverted (left ↔ right), so reversed writing looks correct in a rear-view mirror." }
+    ]
+  },
+  {
+    id: "room3", name: "Room 3: The Bent Pool", emoji: "🏊", topic: "refraction",
+    blurb: "Refraction, refractive index, apparent depth",
+    badge: "💧 Droplet Diver Badge", item: "💎 Water Droplet Gem",
+    intro: [
+      ["usagi", "Ura! *jumps at the key at the bottom of the pool and misses*"],
+      ["hachiware", "The key looks closer than it really is... That's refraction! Light bends when it changes speed."],
+      ["chiikawa", "Ya... I'll hold the towel. 🫧"]
+    ],
+    puzzles: [
+      { type: "mc", q: "A ray of light goes from air into glass at an angle. What happens?",
+        choices: ["It speeds up and bends away from the normal", "It slows down and bends towards the normal", "It slows down and does not bend", "It is completely reflected"], answer: 1,
+        hint: "Glass is optically denser than air. Denser → slower → bends ___ the normal.",
+        explain: "Entering a denser medium, light slows down and bends TOWARDS the normal." },
+      { type: "mc", q: "Why does the pool look shallower than it really is?",
+        choices: ["Light from the bottom bends away from the normal as it leaves the water", "Water absorbs red light", "Light bends towards the normal as it leaves the water", "The water reflects all the light"], answer: 0,
+        hint: "Light going from water (denser) into air (less dense) bends which way? Our brain traces the ray back in a straight line.",
+        explain: "Rays leaving water bend away from the normal. Our eyes trace them back in straight lines, so the bottom appears higher — the apparent depth is less than the real depth." },
+      { type: "num", q: "Hachiware shines a laser into a glass block: angle of incidence 50°, angle of refraction 30°. Find the refractive index of the glass (2 d.p.).", svg: "glassblock",
+        answer: 1.53, tol: 0.03, unit: "",
+        hint: "Snell's law: n = sin i ÷ sin r. sin 50° ≈ 0.766 and sin 30° = 0.5.",
+        explain: "n = sin 50° / sin 30° = 0.766 / 0.5 ≈ 1.53." },
+      { type: "num", q: "Glass has refractive index 1.5. What is the speed of light in the glass? (Answer in × 10⁸ m/s)",
+        answer: 2, tol: 0.02, unit: "× 10⁸ m/s",
+        hint: "n = (speed in vacuum) ÷ (speed in medium). So speed in glass = 3 × 10⁸ ÷ 1.5.",
+        explain: "v = c / n = 3 × 10⁸ / 1.5 = 2 × 10⁸ m/s." },
+      { type: "mc", q: "A ray hits the glass block along the normal (angle of incidence 0°). What happens?",
+        choices: ["It bends towards the normal", "It bends away from the normal", "It passes straight through without bending (but slows down)", "It is totally internally reflected"], answer: 2,
+        hint: "If the ray already travels along the normal, which way could it bend?",
+        explain: "At 0° incidence, the ray does not change direction — though it still slows down inside the glass." }
+    ]
+  },
+  {
+    id: "room4", name: "Room 4: The Crystal Fibre Tunnel", emoji: "💎", topic: "refraction",
+    blurb: "Critical angle & total internal reflection",
+    badge: "🌟 Fibre Guardian Badge", item: "🧵 Glowing Fibre Thread",
+    intro: [
+      ["chiikawa", "Wah... the light is zig-zagging inside the crystal tube! ✨"],
+      ["hachiware", "It's total internal reflection! Light gets trapped inside — that's how optical fibres work."],
+      ["usagi", "Yaha! 💫"]
+    ],
+    puzzles: [
+      { type: "mc", q: "Which TWO conditions are needed for total internal reflection?",
+        choices: ["Light goes from less dense to denser medium; angle of incidence < critical angle", "Light goes from denser to less dense medium; angle of incidence > critical angle", "Light goes from denser to less dense medium; angle of incidence = 0°", "Any medium; angle of incidence > 90°"], answer: 1,
+        hint: "TIR happens INSIDE the denser material, when the ray hits the edge at a big angle.",
+        explain: "TIR needs: (1) light travelling from an optically denser to a less dense medium, and (2) angle of incidence greater than the critical angle." },
+      { type: "num", q: "The crystal has refractive index 1.5. Calculate its critical angle (1 d.p.).",
+        answer: 41.8, tol: 0.6, unit: "°",
+        hint: "sin c = 1 ÷ n = 1 ÷ 1.5 ≈ 0.667. Then use sin⁻¹ on your calculator.",
+        explain: "sin c = 1/1.5 = 0.667, so c = sin⁻¹(0.667) ≈ 41.8°." },
+      { type: "mc", q: "Inside the crystal (critical angle ≈ 42°), a ray hits the edge at 60°. What happens?",
+        choices: ["It refracts out into the air", "It travels along the surface", "It is totally internally reflected", "It stops"], answer: 2,
+        hint: "Compare 60° with the critical angle 42°.",
+        explain: "60° > 42°, so ALL the light is reflected back inside — total internal reflection." },
+      { type: "mc", q: "Momonga lists some gadgets. Which one does NOT use total internal reflection?",
+        choices: ["Optical fibre for internet", "Prism periscope", "Sparkling diamond", "Bathroom plane mirror"], answer: 3,
+        hint: "One of these reflects light using a shiny metal coating, not TIR.",
+        explain: "A bathroom mirror uses ordinary reflection from a silvered surface. Optical fibres, prism periscopes and diamonds all rely on TIR." },
+      { type: "num", q: "Water has refractive index 1.33. What is its critical angle (1 d.p.)?",
+        answer: 48.8, tol: 0.6, unit: "°",
+        hint: "Same method: sin c = 1 ÷ 1.33.",
+        explain: "sin c = 1/1.33 ≈ 0.752, so c ≈ 48.8°." }
+    ]
+  },
+  {
+    id: "room5", name: "Room 5: The Lens Workshop", emoji: "🔍", topic: "lenses",
+    blurb: "Convex & concave lenses, images, magnification",
+    badge: "🔭 Lens Crafter Badge", item: "🔍 Magnifying Glass",
+    intro: [
+      ["hachiware", "This workshop is full of lenses! Let's pick the right one to focus the light on the lock."],
+      ["chiikawa", "Fuwa... everything looks big through this one! 👀"],
+      ["usagi", "Ura! Ura! 🔎"]
+    ],
+    puzzles: [
+      { type: "mc", q: "Parallel rays pass through a convex lens (see diagram). Where do they meet?", svg: "convex",
+        choices: ["At the optical centre", "At the principal focus (F)", "They never meet", "At 2F on the same side"], answer: 1,
+        hint: "A convex lens is a CONVERGING lens. The special meeting point has a name starting with 'principal'...",
+        explain: "A convex lens converges parallel rays to the principal focus F. The distance from the lens to F is the focal length." },
+      { type: "mc", q: "What kind of image does a concave lens ALWAYS form of a real object?",
+        choices: ["Real, inverted, magnified", "Virtual, upright, diminished", "Real, upright, same size", "Virtual, inverted, magnified"], answer: 1,
+        hint: "A concave lens spreads light out (diverging). The rays never actually meet...",
+        explain: "A concave lens always gives a virtual, upright, diminished image." },
+      { type: "mc", q: "To use a convex lens as a magnifying glass, where must the object be placed?",
+        choices: ["Beyond 2F", "Exactly at 2F", "Between F and the lens (closer than the focal length)", "Exactly at F"], answer: 2,
+        hint: "A magnifying glass gives an upright, virtual image. That only happens when the object is really close.",
+        explain: "Object within the focal length → virtual, upright, magnified image: a magnifying glass." },
+      { type: "num", q: "A 2 cm tall acorn forms a 6 cm tall image through a lens. What is the magnification?",
+        answer: 3, tol: 0.01, unit: "×",
+        hint: "Magnification = image height ÷ object height.",
+        explain: "m = 6 cm ÷ 2 cm = 3." },
+      { type: "mc", q: "An object is placed at 2F of a convex lens. What is the image like?",
+        choices: ["At 2F, real, inverted, same size", "At F, real, inverted, diminished", "Beyond 2F, real, upright, magnified", "No image formed"], answer: 0,
+        hint: "2F is the 'mirror point' — the image appears at 2F on the other side.",
+        explain: "Object at 2F → image at 2F on the other side: real, inverted and the same size." }
+    ]
+  },
+  {
+    id: "room6", name: "Room 6: The Rainbow Prism Tower", emoji: "🌈", topic: "colours",
+    blurb: "Dispersion, the visible spectrum, colour mixing",
+    badge: "🌈 Rainbow Keeper Badge", item: "🔺 Prism Crystal",
+    intro: [
+      ["momonga", "Look at me! I'm the cutest rainbow! 🌈"],
+      ["hachiware", "That's white light being split up by a prism — it's called dispersion!"],
+      ["chiikawa", "Ya...! So pretty! ✨"]
+    ],
+    puzzles: [
+      { type: "mc", q: "White light passes through a prism (see diagram). Which colour is at B, bent the MOST?", svg: "prism",
+        choices: ["Red", "Green", "Yellow", "Violet"], answer: 3,
+        hint: "Remember ROYGBIV — the colour at the far end of the list is refracted most.",
+        explain: "Violet is refracted the most and red the least. This spreading of white light into colours is dispersion." },
+      { type: "mc", q: "Which is the correct order of the visible spectrum?",
+        choices: ["Red, Orange, Yellow, Green, Blue, Indigo, Violet", "Red, Yellow, Orange, Green, Indigo, Blue, Violet", "Violet, Green, Red, Orange, Yellow, Blue, Indigo", "Blue, Red, Green, Yellow, Orange, Violet, Indigo"], answer: 0,
+        hint: "ROY G BIV!",
+        explain: "Red, Orange, Yellow, Green, Blue, Indigo, Violet (ROYGBIV). Red has the longest wavelength, violet the shortest." },
+      { type: "mc", q: "Kuri-Manju shines red light and green light onto the same white wall. What colour appears?",
+        choices: ["Brown", "Yellow", "Cyan", "White"], answer: 1,
+        hint: "Mixing LIGHT is different from mixing paint! Red + Green light = ?",
+        explain: "Red + green light = yellow. (Red + blue = magenta, green + blue = cyan, all three = white.)" },
+      { type: "mc", q: "A red rose is lit only by blue light. What colour does it look?",
+        choices: ["Red", "Blue", "Purple", "Black"], answer: 3,
+        hint: "A red object reflects only red light. Is there any red light to reflect?",
+        explain: "The rose absorbs blue light and there's no red to reflect, so it looks black." },
+      { type: "mc", q: "Usagi shines white light through a red filter onto a green leaf. What colour does the leaf look?",
+        choices: ["Green", "Red", "Black", "Yellow"], answer: 2,
+        hint: "Step 1: what colour gets through the red filter? Step 2: does a green leaf reflect that colour?",
+        explain: "The red filter only lets red through. The green leaf absorbs red, so nothing is reflected — it looks black." }
+    ]
+  },
+  {
+    id: "room7", name: "Room 7: The Wave Observatory", emoji: "📡", topic: "em_waves",
+    blurb: "The electromagnetic spectrum & its uses",
+    badge: "🛰️ Wave Master Badge", item: "📡 Tiny Radio Antenna",
+    intro: [
+      ["hachiware", "The final room! Light is just one part of a huge family: the electromagnetic spectrum."],
+      ["usagi", "Yaha! *spins the telescope dial wildly* 🔭"],
+      ["chiikawa", "We're almost free... Ya...! 🥹"]
+    ],
+    puzzles: [
+      { type: "mc", q: "Which list is in order of INCREASING wavelength?",
+        choices: ["Radio, microwave, infrared, visible, UV, X-ray, gamma", "Gamma, X-ray, UV, visible, infrared, microwave, radio", "Visible, UV, infrared, X-ray, gamma, radio, microwave", "Gamma, UV, X-ray, visible, microwave, infrared, radio"], answer: 1,
+        hint: "Gamma rays have the SHORTEST wavelength; radio waves the LONGEST.",
+        explain: "Increasing wavelength: gamma → X-ray → UV → visible → infrared → microwave → radio (frequency and energy decrease in that order)." },
+      { type: "mc", q: "What do ALL electromagnetic waves have in common?",
+        choices: ["Same wavelength", "Same frequency", "They travel at 3 × 10⁸ m/s in a vacuum", "They need a medium to travel"], answer: 2,
+        hint: "Light can reach us from the Sun across empty space. And they all go at the same...",
+        explain: "All EM waves travel at the same speed, 3 × 10⁸ m/s in a vacuum, and don't need a medium. They are transverse waves." },
+      { type: "mc", q: "Chiikawa's TV remote controller sends which type of EM wave?",
+        choices: ["Infrared", "Ultraviolet", "X-rays", "Gamma rays"], answer: 0,
+        hint: "It's the same type your body gives off as heat.",
+        explain: "Remote controls use infrared. UV is used for sterilising and detecting fake notes, X-rays for imaging bones." },
+      { type: "num", q: "Orange light has wavelength 600 nm (6 × 10⁻⁷ m). Find its frequency. (Answer in × 10¹⁴ Hz)",
+        answer: 5, tol: 0.05, unit: "× 10¹⁴ Hz",
+        hint: "Wave equation: c = f λ, so f = c ÷ λ = (3 × 10⁸) ÷ (6 × 10⁻⁷).",
+        explain: "f = 3 × 10⁸ / 6 × 10⁻⁷ = 5 × 10¹⁴ Hz." },
+      { type: "mc", q: "The last lock: which EM wave has the highest energy and is used to kill cancer cells?",
+        choices: ["Radio waves", "Microwaves", "Visible light", "Gamma rays"], answer: 3,
+        hint: "Highest energy = highest frequency = shortest wavelength.",
+        explain: "Gamma rays have the highest frequency and energy. They are used in radiotherapy and to sterilise medical equipment." }
+    ]
+  }
+];
+
+const CHEERS = [
+  ["chiikawa", "Ya...! We did it! 🥹✨"],
+  ["usagi", "YAHA! Ura! Ura! 🎉"],
+  ["chiikawa", "Fuwa...! The lock clicked open! 🔓"],
+  ["momonga", "Hmph. Not bad. …Okay, that was really good! 💜"],
+  ["kurimanju", "*nods slowly and sips tea* Well done. 🍵"],
+  ["usagi", "Puru puru puru! 🐰"]
+];
+const OOPS = [
+  ["chiikawa", "Wah...! 😭 The lock didn't open..."],
+  ["usagi", "Ura?! *shakes the lock* 🔒"],
+  ["momonga", "Eek! Try again, quickly! 😤"]
+];
+const SNACKS = ["🍡 Kuri-Manju's chestnut bun", "🍘 Momonga's rice cracker", "🍮 Usagi's pudding", "🍙 Onigiri", "🍜 Ramen ticket", "🍰 Strawberry shortcake", "🧋 Bubble tea"];
+const TOPIC_LABELS = { light_basics: "Light basics", reflection: "Reflection", refraction: "Refraction & TIR", lenses: "Lenses", colours: "Colours", em_waves: "EM waves" };
+
+/* ============================================================
+   State: daily streak & progress tracking
+   ============================================================ */
+const KEY = "chiikawa-physics-escape-v1";
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
+
+function freshState() {
+  return {
+    player_name: "Student",
+    current_streak: 0,
+    longest_streak: 0,
+    last_login_date: null,
+    completed_rooms: [],
+    current_room: ROOMS[0].name,
+    streak_shields: 1,
+    chiikawa_badges: [],
+    inventory: [],
+    physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
+    room_progress: {},
+    mastered_puzzles: [],
+    last_chest_date: null
+  };
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return Object.assign(freshState(), JSON.parse(raw));
+  } catch (e) {}
+  return null;
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+}
+
+let S = load();
+let streakNote = "";
+
+// Streak rules: same day → no change; next day → +1; missed days → a shield
+// covers each missed day if available, otherwise the streak restarts at 1.
+function checkIn() {
+  const t = today();
+  if (!S.last_login_date) {
+    S.current_streak = 1;
+    streakNote = "🔥 Day 1 of your streak! Every legendary adventure starts somewhere.";
+  } else if (S.last_login_date !== t) {
+    const gap = dayNum(t) - dayNum(S.last_login_date);
+    if (gap === 1) {
+      S.current_streak += 1;
+      streakNote = `🔥 Streak up! ${S.current_streak} days in a row.`;
+    } else if (gap > 1) {
+      const missed = gap - 1;
+      if (S.streak_shields >= missed) {
+        S.streak_shields -= missed;
+        S.current_streak += 1;
+        streakNote = `🛡️ Hachiware used ${missed} streak shield${missed > 1 ? "s" : ""} to protect your streak! Now ${S.current_streak} days.`;
+      } else {
+        S.current_streak = 1;
+        streakNote = "🌱 Welcome back! Your streak restarted at 1 — Chiikawa is just happy you're here.";
+      }
+    }
+    // Earn a shield every 7-day milestone (max 3)
+    if (S.current_streak > 0 && S.current_streak % 7 === 0 && S.streak_shields < 3) {
+      S.streak_shields += 1;
+      streakNote += " 🛡️ 7-day milestone: +1 streak shield!";
+    }
+  }
+  S.longest_streak = Math.max(S.longest_streak || 0, S.current_streak);
+  S.last_login_date = t;
+  save();
+}
+
+function recomputeMastery() {
+  const totals = {}, got = {};
+  ROOMS.forEach(r => r.puzzles.forEach((_, i) => {
+    totals[r.topic] = (totals[r.topic] || 0) + 1;
+    if (S.mastered_puzzles.includes(`${r.id}-${i}`)) got[r.topic] = (got[r.topic] || 0) + 1;
+  }));
+  Object.keys(S.physics_mastery).forEach(k => {
+    S.physics_mastery[k] = totals[k] ? Math.round(100 * (got[k] || 0) / totals[k]) : 0;
+  });
+}
+
+/* ============================================================
+   UI helpers
+   ============================================================ */
+const $app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const say = (who, text) => `<div class="say">${AVATARS[who]}<div class="bubble"><b class="name">${NAMES[who]}</b>${text}</div></div>`;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 2600);
+}
+function renderStats() {
+  document.getElementById("stats").innerHTML = S ? `
+    <span class="chip" title="Daily streak">🔥 ${S.current_streak} day${S.current_streak === 1 ? "" : "s"}</span>
+    <span class="chip" title="Streak shields">🛡️ ${S.streak_shields}</span>
+    <span class="chip" title="Badges">🏅 ${S.chiikawa_badges.length}/${ROOMS.length}</span>` : "";
+}
+const roomIndex = id => ROOMS.findIndex(r => r.id === id);
+const isUnlocked = i => i === 0 || S.completed_rooms.includes(ROOMS[i - 1].name);
+const nextRoomIndex = () => { const i = ROOMS.findIndex(r => !S.completed_rooms.includes(r.name)); return i; };
+
+/* Session timer — gentle nudge after ~12 minutes */
+let sessionStart = null, nudged = false;
+function sessionMinutes() { return sessionStart ? Math.floor((Date.now() - sessionStart) / 60000) : 0; }
+
+/* ============================================================
+   Screens
+   ============================================================ */
+function renderWelcome() {
+  renderStats();
+  $app.innerHTML = `
+    <section class="card">
+      <h1>Welcome to the Chiikawa Physics Escape! 🔦</h1>
+      <p class="muted">Seven mysterious rooms. One topic: <b>Light &amp; Optics</b>. About <b>10–15 minutes</b> a day.</p>
+      ${say("hachiware", "Hi! We got locked in these strange rooms... but every lock is a physics puzzle! Will you help us escape?")}
+      ${say("chiikawa", "Ya...! 🥺 Please?")}
+      ${say("usagi", "Yaha! 🐰")}
+      <label for="nm"><b>What should we call you?</b></label><br>
+      <input id="nm" class="name" maxlength="24" placeholder="Your name" autocomplete="off">
+      <div class="row" style="margin-top:12px"><button class="btn" id="go">Let's go! →</button></div>
+    </section>`;
+  const go = () => {
+    S = freshState();
+    const v = document.getElementById("nm").value.trim();
+    if (v) S.player_name = v;
+    checkIn();
+    renderMap();
+  };
+  document.getElementById("go").onclick = go;
+  document.getElementById("nm").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+}
+
+function renderMap() {
+  recomputeMastery(); save(); renderStats();
+  const ni = nextRoomIndex();
+  const chestReady = S.last_chest_date !== today();
+  const allDone = ni === -1;
+  $app.innerHTML = `
+    ${streakNote ? `<section class="card"><b>${esc(streakNote)}</b></section>` : ""}
+    <section class="card">
+      <h2>Hi, ${esc(S.player_name)}! 👋</h2>
+      ${allDone
+        ? say("chiikawa", "Ya...!!! We escaped EVERY room! You're a Light &amp; Optics master! 🥹🎉 You can replay any room to practise.")
+        : say("hachiware", `Today's mission: <b>${esc(ROOMS[ni].name)}</b>. Just one room — that's the whole goal. Small steps count! 🌱`)}
+      <div class="row" style="margin-top:8px">
+        ${!allDone ? `<button class="btn" data-room="${ROOMS[ni].id}">Enter ${ROOMS[ni].emoji} ${esc(ROOMS[ni].name.split(": ")[1])} →</button>` : ""}
+        <button class="btn ghost" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? "🎁 Open daily chest" : "🎁 Chest opened — back tomorrow"}</button>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="margin-top:18px">🗺️ Room map</h2>
+      <div class="rooms">
+        ${ROOMS.map((r, i) => {
+          const done = S.completed_rooms.includes(r.name);
+          const open = isUnlocked(i);
+          const prog = S.room_progress[r.id] || 0;
+          return `<button class="room ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
+            <span class="emoji" aria-hidden="true">${open ? r.emoji : "🔒"}</span>
+            <span class="t">${esc(r.name)}</span>
+            <span class="s">${esc(r.blurb)}</span><br>
+            <span class="s">${done ? "✅ Escaped — replay" : open ? `🔑 ${prog}/${r.puzzles.length} locks` : "Locked"}</span>
+          </button>`;
+        }).join("")}
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📈 Physics mastery</h2>
+      <p class="small muted">Goes up when you solve a lock on the first try.</p>
+      <div class="mastery">
+        ${Object.entries(S.physics_mastery).map(([k, v]) => `
+          <div><div class="lbl"><span>${TOPIC_LABELS[k]}</span><span>${v}%</span></div><div class="bar"><i style="width:${v}%"></i></div></div>`).join("")}
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🎒 Badges &amp; inventory</h2>
+      <div class="badges">${S.chiikawa_badges.length ? S.chiikawa_badges.map(b => `<span class="chip">${esc(b)}</span>`).join("") : `<span class="muted small">No badges yet — escape a room to earn one!</span>`}</div>
+      <div class="badges" style="margin-top:8px">${S.inventory.length ? S.inventory.map(b => `<span class="chip">${esc(b)}</span>`).join("") : `<span class="muted small">Your bag is empty. Momonga says the daily chest might help… 👀</span>`}</div>
+      <p class="small muted" style="margin-top:8px">🔥 Longest streak: ${S.longest_streak} · 🛡️ Shields protect your streak if you miss a day (earn one every 7 days, max 3).</p>
+    </section>
+
+    ${saveDataPanel()}`;
+
+  $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => startRoom(b.dataset.room));
+  const chest = document.getElementById("chest");
+  if (chest && chestReady) chest.onclick = openChest;
+  wireSavePanel();
+}
+
+function openChest() {
+  const snack = pick(SNACKS);
+  S.inventory.push(snack);
+  let extra = "";
+  if (Math.random() < 0.2 && S.streak_shields < 3) { S.streak_shields += 1; extra = " …and a 🛡️ streak shield!"; }
+  S.last_chest_date = today();
+  streakNote = `🎁 Kuri-Manju opened the chest: ${snack}${extra}`;
+  save();
+  renderMap();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function saveDataPanel() {
+  return `<section class="card">
+    <details>
+      <summary>🔒 Save data (progress JSON)</summary>
+      <p class="small muted">Your progress is saved in this browser. Copy it to move to another device, or paste a save to restore.</p>
+      <pre class="json" id="json">${esc(JSON.stringify(S, null, 2))}</pre>
+      <div class="row"><button class="btn ghost" id="copy">Copy</button></div>
+      <p class="small" style="margin-top:12px"><b>Restore from a save:</b></p>
+      <textarea id="imp" placeholder='Paste JSON here'></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn ghost" id="doimp">Restore</button>
+        <button class="btn ghost" id="reset">Start over</button>
+      </div>
+    </details>
+  </section>`;
+}
+function wireSavePanel() {
+  const c = document.getElementById("copy");
+  if (!c) return;
+  c.onclick = async () => {
+    try { await navigator.clipboard.writeText(JSON.stringify(S, null, 2)); toast("Copied! 📋"); }
+    catch (e) { toast("Couldn't copy — select the text and copy it manually."); }
+  };
+  document.getElementById("doimp").onclick = () => {
+    try {
+      const obj = JSON.parse(document.getElementById("imp").value);
+      if (typeof obj !== "object" || !obj) throw 0;
+      S = Object.assign(freshState(), obj);
+      S.physics_mastery = Object.assign(freshState().physics_mastery, obj.physics_mastery || {});
+      save(); streakNote = "💾 Save restored!"; renderMap();
+    } catch (e) { toast("That doesn't look like a valid save. 🥲"); }
+  };
+  document.getElementById("reset").onclick = () => {
+    if (!confirm("Start over? This erases all progress in this browser.")) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    S = null; streakNote = ""; renderWelcome();
+  };
+}
+
+/* ----- Room play ----- */
+let R = null; // { room, idx, attempts, solved }
+
+function startRoom(id) {
+  const room = ROOMS[roomIndex(id)];
+  const done = S.completed_rooms.includes(room.name);
+  const saved = S.room_progress[room.id] || 0;
+  R = { room, idx: done ? 0 : Math.min(saved, room.puzzles.length - 1), attempts: 0, solved: false, replay: done };
+  S.current_room = room.name;
+  save();
+  if (!sessionStart) sessionStart = Date.now();
+  streakNote = "";
+  renderPuzzle(true);
+  window.scrollTo({ top: 0 });
+}
+
+function renderPuzzle(withIntro) {
+  renderStats();
+  const { room, idx } = R;
+  const p = room.puzzles[idx];
+  const locks = room.puzzles.map((_, i) => `<span class="lock ${i < idx ? "open" : ""} ${i === idx ? "cur" : ""}" aria-label="Lock ${i + 1}${i < idx ? " open" : ""}">${i < idx ? "🔓" : "🔒"}</span>`).join("");
+  let nudge = "";
+  if (!nudged && sessionMinutes() >= 12) {
+    nudged = true;
+    nudge = say("kurimanju", "You've been exploring for over 12 minutes. That's a great session! It's totally fine to finish this lock and rest. Your progress is saved. 🍵");
+  }
+  $app.innerHTML = `
+    <div class="row" style="justify-content:space-between;margin-top:6px">
+      <button class="btn ghost" id="back">← Map</button>
+      <span class="chip">${room.emoji} Lock ${idx + 1} of ${room.puzzles.length}</span>
+    </div>
+    <section class="card">
+      <h2>${esc(room.name)}</h2>
+      <div class="locks">${locks}</div>
+      ${withIntro && idx === 0 ? room.intro.map(([w, t]) => say(w, t)).join("") : ""}
+      ${nudge}
+      <p class="q">${esc(p.q)}</p>
+      ${p.svg ? DIAGRAMS[p.svg] : ""}
+      ${p.type === "mc"
+        ? `<div class="choices">${p.choices.map((c, i) => `<button class="choice" data-i="${i}">${String.fromCharCode(65 + i)}. ${esc(c)}</button>`).join("")}</div>`
+        : `<div class="numrow"><input id="num" inputmode="decimal" placeholder="Your answer" aria-label="Your answer"> <span class="unit">${esc(p.unit)}</span> <button class="btn" id="check">Check</button></div>`}
+      <div class="row" style="margin-top:10px"><button class="btn ghost" id="hint">💡 Ask Hachiware for a hint</button></div>
+      <div id="fb"></div>
+    </section>`;
+
+  document.getElementById("back").onclick = renderMap;
+  document.getElementById("hint").onclick = () => {
+    document.getElementById("fb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`);
+    R.usedHint = true;
+  };
+  if (p.type === "mc") {
+    $app.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      if (i === p.answer) { b.classList.add("right"); lockChoices(); onCorrect(); }
+      else { b.classList.add("wrong"); b.disabled = true; onWrong(); }
+    });
+  } else {
+    const inp = document.getElementById("num");
+    const check = () => {
+      const v = parseFloat(inp.value.replace(",", "."));
+      if (Number.isNaN(v)) { toast("Type a number first 🙂"); return; }
+      if (Math.abs(v - p.answer) <= p.tol) { inp.disabled = true; document.getElementById("check").disabled = true; onCorrect(); }
+      else onWrong();
+    };
+    document.getElementById("check").onclick = check;
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+    inp.focus({ preventScroll: true });
+  }
+}
+function lockChoices() { $app.querySelectorAll(".choice").forEach(b => (b.disabled = true)); }
+
+function onWrong() {
+  R.attempts += 1;
+  const p = R.room.puzzles[R.idx];
+  const [w, t] = pick(OOPS);
+  document.getElementById("fb").innerHTML = `<div class="feedback no">${say(w, t)}${say("hachiware", `Don't worry! We can figure this out together. 💡 ${esc(p.hint)}`)}</div>`;
+}
+
+function onCorrect() {
+  const { room, idx } = R;
+  const p = room.puzzles[idx];
+  const pid = `${room.id}-${idx}`;
+  const firstTry = R.attempts === 0 && !R.usedHint;
+  if (firstTry && !S.mastered_puzzles.includes(pid)) S.mastered_puzzles.push(pid);
+  if (!R.replay) S.room_progress[room.id] = idx + 1;
+  recomputeMastery(); save();
+  const [w, t] = pick(CHEERS);
+  const last = idx === room.puzzles.length - 1;
+  document.getElementById("fb").innerHTML = `<div class="feedback ok">
+      ${say(w, t)}
+      <p><b>✅ ${firstTry ? "First try! Mastery up 📈" : "Unlocked!"}</b></p>
+      <p>${esc(p.explain)}</p>
+      <div class="row" style="margin-top:8px"><button class="btn" id="next">${last ? "Open the exit door 🚪" : "Next lock →"}</button></div>
+    </div>`;
+  document.getElementById("next").onclick = () => {
+    if (last) return finishRoom();
+    R.idx += 1; R.attempts = 0; R.usedHint = false;
+    renderPuzzle(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  document.getElementById("next").focus({ preventScroll: false });
+}
+
+function finishRoom() {
+  const { room } = R;
+  const first = !S.completed_rooms.includes(room.name);
+  if (first) {
+    S.completed_rooms.push(room.name);
+    S.chiikawa_badges.push(room.badge);
+    S.inventory.push(room.item);
+  }
+  S.room_progress[room.id] = room.puzzles.length;
+  const ni = nextRoomIndex();
+  S.current_room = ni === -1 ? "All rooms escaped! 🎉" : ROOMS[ni].name;
+  recomputeMastery(); save(); renderStats();
+  $app.innerHTML = `
+    <section class="card">
+      <div class="celebrate" aria-hidden="true">🎉✨🔓✨🎉</div>
+      <h1 style="text-align:center">You escaped ${esc(room.name.split(": ")[1])}!</h1>
+      ${say("chiikawa", "Ya...!!! We're free! 🥹💕")}
+      ${say("usagi", "YAHA!!! URA!!! 🐰🎊")}
+      ${first
+        ? say("momonga", `Fine, fine, you earned it: <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b> for your bag! 💜`)
+        : say("kurimanju", "Replay complete. Practice makes the brain strong. 🍵")}
+      ${say("hachiware", ni === -1
+        ? "That was the final room — you've mastered Light &amp; Optics! Come back any day to keep your streak and replay rooms. 🌟"
+        : `That's today's mission done! 🌱 Next time: <b>${esc(ROOMS[ni].name)}</b>. Come back tomorrow to grow your 🔥 streak!`)}
+      <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="map">Back to the map</button></div>
+    </section>`;
+  document.getElementById("map").onclick = renderMap;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================
+   Boot
+   ============================================================ */
+if (S) { checkIn(); renderMap(); } else { renderWelcome(); }
+</script>
+</body>
+</html>
