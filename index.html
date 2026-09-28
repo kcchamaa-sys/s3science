@@ -1392,7 +1392,7 @@ function refreshPlayer() {
    Needs a free Google Apps Script web app (see leaderboard/SETUP.md).
    Paste its /exec URL below. When empty, the game shows your own dedication points only.
    ============================================================ */
-const LEADERBOARD_URL = "";
+const LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbytWsgXOUM8oYgMgczy8zPCkKqx91f76Muc0tMJbDWKWHVH6EhoYh3iRp2RPPCMGaER3A/exec";
 function dedication() {
   const t = Object.keys(S.trophies || {}).length;
   return S.stats.days * 10 + S.stats.correct + S.stats.rushRounds * 5 + S.completed_rooms.length * 10 + t * 25;
