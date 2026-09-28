@@ -247,6 +247,43 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .door-light { opacity: 0; transition: opacity .9s; }
 .door-open .door-light { opacity: 1; }
 
+/* Trophy cabinet */
+.cabinet { background: linear-gradient(#FFF6DA, #FFF6DA) padding-box; }
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.trophy {
+  background: #fff; border: var(--line); border-radius: 18px; box-shadow: var(--shadow-sm); padding: 10px 10px 12px;
+  display: grid; gap: 4px; justify-items: center; text-align: center; position: relative; align-content: start;
+}
+.trophy::after { content: ""; position: absolute; left: 10px; right: 10px; top: 118px; height: 8px; background: #C98F6B; border: 2px solid var(--ink); border-radius: 4px; }
+.trophy svg.cup { width: 96px; height: 116px; overflow: visible; }
+.trophy.got svg.cup { animation: shine 3s ease-in-out infinite; }
+.trophy .tn { font-weight: 800; margin-top: 10px; line-height: 1.2; }
+.trophy .rar { font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border: 2px solid var(--ink); border-radius: 999px; padding: 0 8px; }
+.rar.bronze { background: #F2C9A0; } .rar.silver { background: #E3E8F0; } .rar.gold { background: #FFE27A; }
+.rar.legend { background: linear-gradient(90deg, #FFB7C5, #FDFFB6, #B9F3C9, #A0C4FF, #C9C3F0); }
+.trophy .td { font-size: .8rem; color: var(--ink-soft); line-height: 1.3; }
+.trophy .pbar { width: 100%; height: 12px; border: 2px solid var(--ink); border-radius: 999px; background: var(--cream); overflow: hidden; }
+.trophy .pbar i { display: block; height: 100%; background: var(--pink); }
+.trophy .pnum { font-size: .78rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.trophy.locked { background: #F4F0E8; }
+.trophy.locked .tn { color: var(--ink-soft); }
+.tbanner {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 95;
+  background: var(--yellow); border: var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 10px 16px;
+  display: flex; gap: 12px; align-items: center; width: min(420px, calc(100% - 32px)); animation: drop .5s ease-out;
+}
+.tbanner svg { width: 56px; height: 68px; flex: 0 0 56px; overflow: visible; }
+/* Anti-guessing */
+.jam { border: var(--line); border-radius: 16px; background: #2B2433; color: #fff; padding: 12px; display: grid; gap: 6px; text-align: center; }
+.jam .jt { color: var(--led); font-weight: 800; font-size: 1.6rem; font-variant-numeric: tabular-nums; text-shadow: 0 0 8px rgba(255,107,107,.8); }
+#ans.jammed { opacity: .35; filter: grayscale(1); }
+.strikes { font-weight: 800; font-size: .85rem; background: rgba(255,107,107,.2); border: 2px solid var(--led); border-radius: 999px; padding: 0 8px; }
+.penalty { position: fixed; left: 50%; top: 30%; transform: translateX(-50%); z-index: 96; pointer-events: none; font-size: 2.4rem; font-weight: 800; color: #fff; background: #D64545; border: var(--line); border-radius: 18px; padding: 0 16px; box-shadow: var(--shadow); animation: rise 1.1s ease-out forwards; }
+.rules { background: #FFF0F0; border: 2px dashed var(--ink); border-radius: 12px; padding: 8px 12px; font-size: .9rem; }
+.rules ul { margin: 4px 0 0; padding-left: 20px; }
+@keyframes shine { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg) translateY(-2px); } }
+@keyframes drop { 0% { transform: translate(-50%, -120%); } 70% { transform: translate(-50%, 6px); } 100% { transform: translate(-50%, 0); } }
+@keyframes rise { 0% { transform: translate(-50%, 20px) scale(.7); opacity: 0; } 20% { transform: translate(-50%, 0) scale(1.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, -40px); opacity: 0; } }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes pop { 0% { transform: scale(.88); } 70% { transform: scale(1.04); } 100% { transform: scale(1); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
@@ -730,17 +767,22 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
+function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0 }; }
+function freshRun() { return { firsts: [], strikes: 0, hints: false }; }
 function freshState() {
   return {
     v: 2, player_name: "Student", current_streak: 0, longest_streak: 0, last_login_date: null,
     completed_rooms: [], current_room: ROOMS[0].id, streak_shields: 1, chiikawa_badges: [], inventory: [],
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
-    room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null
+    room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null,
+    room_run: {}, trophies: {}, stats: freshStats()
   };
 }
 function normalise(obj) {
   const s = Object.assign(freshState(), obj || {});
   s.physics_mastery = Object.assign(freshState().physics_mastery, (obj && obj.physics_mastery) || {});
+  s.stats = Object.assign(freshStats(), (obj && obj.stats) || {});
+  s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run);
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
   s.room_progress = Object.assign({}, s.room_progress);
@@ -775,8 +817,9 @@ function modInv(a, m) {
 const CODE_KINV = modInv(CODE_K, CODE_M);
 function roomStars(r) {
   if (!S.completed_rooms.includes(r.id)) return 0;
+  if (S.room_stars[r.id]) return S.room_stars[r.id];
   const n = r.puzzles.filter((_, i) => S.mastered_puzzles.includes(`${r.id}-${i}`)).length;
-  return Math.max(S.room_stars[r.id] || 1, n === 5 ? 3 : n >= 3 ? 2 : 1);
+  return n === 5 ? 3 : n >= 3 ? 2 : 1;
 }
 function makeCode() {
   let a = 0;
@@ -820,7 +863,7 @@ function stateFromCode(d, name) {
   });
   if (d.escaped < 7) { s.room_progress[ROOMS[d.escaped].id] = Array.from({ length: d.lock }, (_, i) => i); s.current_room = ROOMS[d.escaped].id; }
   s.current_streak = d.streak; s.longest_streak = d.streak; s.streak_shields = d.shields; s.last_login_date = today();
-  if (S) { s.last_chest_date = S.last_chest_date; s.inventory = s.inventory.concat((S.inventory || []).filter(x => SNACKS.includes(x))); }
+  if (S) { s.trophies = S.trophies || {}; s.stats = Object.assign(freshStats(), S.stats); s.last_chest_date = S.last_chest_date; s.inventory = s.inventory.concat((S.inventory || []).filter(x => SNACKS.includes(x))); }
   return s;
 }
 
@@ -831,6 +874,7 @@ try { SFX.on = localStorage.getItem(SOUND_KEY) !== "off"; } catch (e) {}
 // Daily streak: same day → no change; next day → +1; missed days → shields cover them, else restart at 1.
 function checkIn() {
   const t = today();
+  if (S.last_login_date !== t) S.stats.days += 1;
   if (!S.last_login_date) { S.current_streak = 1; streakNote = "🔥 Day 1 of your streak!"; }
   else if (S.last_login_date !== t) {
     const gap = dayNum(t) - dayNum(S.last_login_date);
@@ -845,6 +889,7 @@ function checkIn() {
   S.longest_streak = Math.max(S.longest_streak || 0, S.current_streak);
   S.last_login_date = t;
   save();
+  checkTrophies();
 }
 function recomputeMastery() {
   const tot = {}, got = {};
@@ -901,6 +946,80 @@ const ICONS = {
 };
 
 /* ============================================================
+   6b. Trophies: 10 hard ones that reward steady effort over many days
+   ============================================================ */
+const TROPHIES = [
+  { id: "week", name: "Week Warrior", rar: "bronze", who: "chiikawa", desc: "Play 7 days in a row", prog: () => [S.longest_streak, 7] },
+  { id: "steady", name: "Steady Explorer", rar: "silver", who: "hachiware", desc: "Play on 20 different days", prog: () => [S.stats.days, 20] },
+  { id: "flame", name: "Eternal Flame", rar: "legend", who: "usagi", desc: "Reach a 30-day streak", prog: () => [S.longest_streak, 30] },
+  { id: "sharp", name: "Sharpshooter", rar: "gold", who: "momonga", desc: "15 first-try answers in a row (no hints, no mistakes)", prog: () => [S.stats.bestRun, 15] },
+  { id: "hunter", name: "Knowledge Hunter", rar: "gold", who: "kurimanju", desc: "Open 100 locks in total", prog: () => [S.stats.correct, 100] },
+  { id: "escaper", name: "Master Escaper", rar: "gold", who: "chiikawa", desc: "Escape all 7 rooms", prog: () => [S.completed_rooms.length, 7] },
+  { id: "stars", name: "Star Collector", rar: "legend", who: "hachiware", desc: "Get 3★ in every room (21 stars)", prog: () => [ROOMS.reduce((a, r) => a + roomStars(r), 0), 21] },
+  { id: "clock", name: "Beat the Clock", rar: "silver", who: "usagi", desc: "5 escapes before time runs out, with 0 guess strikes", prog: () => [S.stats.cleanEscapes, 5] },
+  { id: "brain", name: "Brain Power", rar: "silver", who: "momonga", desc: "5 escapes without using any hint", prog: () => [S.stats.noHintEscapes, 5] },
+  { id: "practice", name: "Practice Makes Perfect", rar: "bronze", who: "kurimanju", desc: "Replay escaped rooms 10 times", prog: () => [S.stats.replays, 10] }
+];
+const RAR = { bronze: ["#E9A874", "#F7D2AE", "Bronze"], silver: ["#B9C3D3", "#EEF2F8", "Silver"], gold: ["#F5C542", "#FFF1A8", "Gold"], legend: ["#F49AC1", "#D7F0FF", "Legendary"] };
+function trophySvg(t, got) {
+  const [c1, c2] = got ? RAR[t.rar] : ["#CFC8BC", "#E8E2D6"], id = "tg" + t.id + (++clipN);
+  const fill = t.rar === "legend" && got ? `url(#${id})` : c1;
+  return `<svg class="cup" viewBox="0 0 100 120" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FFB7C5"/><stop offset=".35" stop-color="#FDFFB6"/><stop offset=".65" stop-color="#B9F3C9"/><stop offset="1" stop-color="#A0C4FF"/></linearGradient></defs>
+    ${got && t.rar === "legend" ? `<g fill="#F5C542">${[[10, 18], [90, 24], [14, 70], [88, 64]].map(([x, y]) => `<path d="M${x} ${y - 6} l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"/>`).join("")}</g>` : ""}
+    <path d="M24 26 C6 26 6 56 30 58" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M24 26 C6 26 6 56 30 58" fill="none" stroke="${c2}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M76 26 C94 26 94 56 70 58" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M76 26 C94 26 94 56 70 58" fill="none" stroke="${c2}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M20 14 H80 V38 C80 60 66 72 50 72 C34 72 20 60 20 38 Z" fill="${fill}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M28 20 V36 C28 46 32 54 38 58" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+    <rect x="44" y="72" width="12" height="14" fill="${c1}" stroke="${INK}" stroke-width="3"/>
+    <rect x="30" y="86" width="40" height="12" rx="3" fill="${c2}" stroke="${INK}" stroke-width="3"/>
+    <rect x="24" y="98" width="52" height="12" rx="3" fill="${c1}" stroke="${INK}" stroke-width="3"/>
+    ${got ? `<svg x="31" y="22" width="38" height="38" viewBox="0 0 64 64">${CHAR[t.who].head("happy")}</svg>`
+          : `<g transform="translate(50 42)"><rect x="-10" y="-4" width="20" height="16" rx="3" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M-6 -4 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="${INK}" stroke-width="3"/></g>`}
+  </svg>`;
+}
+function trophyCard(t) {
+  const got = !!S.trophies[t.id];
+  const [cur, goal] = t.prog(), v = Math.min(cur, goal);
+  return `<div class="trophy ${got ? "got" : "locked"}" aria-label="${esc(t.name)}: ${got ? "unlocked" : `locked, ${v} of ${goal}`}">
+    ${trophySvg(t, got)}
+    <span class="tn">${esc(t.name)}</span>
+    <span class="rar ${t.rar}">${RAR[t.rar][2]}</span>
+    <span class="td">${esc(t.desc)}</span>
+    ${got ? `<span class="pnum">🏆 Unlocked ${esc(S.trophies[t.id])}</span>`
+          : `<div class="pbar"><i style="width:${Math.round(100 * v / goal)}%"></i></div><span class="pnum">${v} / ${goal}</span>`}
+  </div>`;
+}
+function cabinetHtml() {
+  const n = TROPHIES.filter(t => S.trophies[t.id]).length;
+  return `<div class="row" style="justify-content:space-between"><h2>🏆 Trophy Cabinet</h2><span class="pill">${n} / ${TROPHIES.length} unlocked</span></div>
+    <p class="small muted">These are hard on purpose. They reward coming back day after day and thinking carefully, not rushing.</p>
+    <div class="shelf">${TROPHIES.map(trophyCard).join("")}</div>`;
+}
+function openCabinet() { openModal(cabinetHtml(), { wide: true }); }
+let trophyQueue = [];
+function checkTrophies() {
+  if (!S) return;
+  TROPHIES.forEach(t => {
+    if (S.trophies[t.id]) return;
+    const [cur, goal] = t.prog();
+    if (cur >= goal) { S.trophies[t.id] = today(); trophyQueue.push(t); }
+  });
+  if (trophyQueue.length) { save(); showTrophyBanner(); }
+}
+function showTrophyBanner() {
+  if (document.querySelector(".tbanner") || !trophyQueue.length) return;
+  const t = trophyQueue.shift();
+  const d = document.createElement("button"); d.className = "tbanner"; d.setAttribute("aria-live", "polite");
+  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">Trophy unlocked!</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)}</span></span>`;
+  const done = () => { d.remove(); setTimeout(showTrophyBanner, 300); };
+  d.onclick = () => { SFX.tap(); done(); };
+  document.body.appendChild(d);
+  setTimeout(() => { SFX.fanfare(); confetti(120); }, 200);
+  setTimeout(() => d.isConnected && done(), 5000);
+}
+
+/* ============================================================
    7. Top bar
    ============================================================ */
 document.getElementById("brandav").innerHTML = avatar("chiikawa", "happy");
@@ -909,10 +1028,12 @@ function renderTools() {
   document.getElementById("tools").innerHTML = `
     ${S ? `<span class="pill" title="Daily streak">🔥 ${S.current_streak}</span>` : ""}
     ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="Your progress saves automatically on this device">${justSaved ? `✓<span class="lbl"> Saved</span>` : `💾<span class="lbl"> Auto-save</span>`}</span>` : ""}
+    ${S ? `<button class="iconbtn" id="tTrophy" aria-label="Open the Trophy Cabinet">🏆<span class="lbl">Trophies</span></button>` : ""}
     <button class="iconbtn" id="tJournal" aria-label="Open the Study Journal">📓<span class="lbl">Journal</span></button>
     ${S ? `<button class="iconbtn" id="tSave" aria-label="Save and share code">🔑<span class="lbl">Save code</span></button>` : ""}
     <button class="iconbtn" id="tSnd" aria-label="${SFX.on ? "Turn sound off" : "Turn sound on"}">${SFX.on ? "🔊" : "🔇"}</button>`;
   document.getElementById("tJournal").onclick = () => { SFX.init(); SFX.tap(); openJournal(); };
+  const tt = document.getElementById("tTrophy"); if (tt) tt.onclick = () => { SFX.init(); SFX.tap(); openCabinet(); };
   const ts = document.getElementById("tSave"); if (ts) ts.onclick = () => { SFX.init(); SFX.tap(); openSaveModal(); };
   document.getElementById("tSnd").onclick = () => {
     SFX.on = !SFX.on; try { localStorage.setItem(SOUND_KEY, SFX.on ? "on" : "off"); } catch (e) {}
@@ -985,6 +1106,7 @@ function openSaveModal() {
       <button class="btn yellow" id="cpCode">Copy code</button>
       <button class="btn blue" id="cpLink">Copy link</button>
     </div>
+    <p class="small muted" style="text-align:center">🏆 Trophies and play stats stay on this device.</p>
     <p class="small muted" style="text-align:center">Write the code in your notebook ✏️ or send the link to yourself. The link opens the game with your progress ready to load.</p>
     <div class="linkbox" id="linkbox">${esc(link)}</div>
     <hr style="border:0;border-top:2px dashed var(--ink);width:100%;margin:4px 0">
@@ -1017,6 +1139,7 @@ function applyCode(d, name) {
   streakNote = `🔑 Progress loaded from code ${d.code}!`;
   clearHash();
   renderMap();
+  setTimeout(checkTrophies, 800);
 }
 
 /* ----- Resume prompt on reload ----- */
@@ -1121,6 +1244,7 @@ function renderMap() {
         <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? "🎁 Daily snack chest" : "🎁 Opened. Back tomorrow!"}</button>
       </div>
     </section>
+    <section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
     <section class="card">
       <h2>🗺️ Chapter: Light 光</h2>
       <div class="topics">${ROOMS.map((r, i) => {
@@ -1214,11 +1338,12 @@ function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 function enterRoom(id) {
   const room = ROOMS[roomIndex(id)];
   const replay = S.completed_rooms.includes(room.id);
+  if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
   if (replay) { S.room_progress[room.id] = []; S.room_timer[room.id] = ROOM_SECONDS; }
   if (S.room_timer[room.id] == null) S.room_timer[room.id] = ROOM_SECONDS;
   S.current_room = room.id; save();
   if (R) clearTimeout(R.introT);
-  R = { room, replay, attempts: 0, usedHint: false, mood: "normal" };
+  R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0 };
   closeModal(); renderRoom();
   window.scrollTo({ top: 0 });
   stopTimer(); timerId = setInterval(tickTimer, 1000);
@@ -1230,7 +1355,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", "Tap a glowing <b>?</b> to start. Tap 📓 Journal any time for textbook notes!"), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", "Tap a glowing <b>?</b> to start. ⚠️ Careful: every wrong answer costs <b>30 seconds</b>, and guessing <b>jams the lock</b>. Think first, then answer!"), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -1273,6 +1398,7 @@ function renderRoom() {
       <div style="display:grid;justify-items:end;gap:4px">
         <div class="timer ${t < 0 ? "over" : t < 120 ? "low" : ""}" id="timer" role="timer" aria-label="Time left">${t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`}</div>
         <span class="small">🔓 ${solved.length}/5 locks · 🚪 ${solved.length === 5 ? "code ready!" : "door locked"}</span>
+        <span class="strikes" id="strikes" title="Guess strikes: 3 strikes = −1 star, 6 strikes = −2 stars">⚠️ Strikes ${S.room_run[room.id].strikes}</span>
       </div>
     </section>
     <div id="line"></div>
@@ -1319,7 +1445,7 @@ function openPuzzle(i) {
   const line = i === 2 ? room.specialLine : HOTSPOTS[i].line;
   if (solved.includes(i)) { toast(`${hsName}: already solved ✓`); return; }
   SFX.click();
-  R.attempts = 0; R.usedHint = false; R.cur = i;
+  R.cur = i; R.att[i] = R.att[i] || 0; R.openedAt = Date.now();
   const typeLabel = { mc: "Multiple choice", keypad: "Keypad lock", dial: "Combination dials" }[p.type];
   const box = openModal(`
     <span class="kicker">${typeLabel} · Topic ${room.topicNo} ${room.zh}</span>
@@ -1327,12 +1453,38 @@ function openPuzzle(i) {
     ${say("chiikawa", esc(line))}
     <p class="q">${esc(p.q)}</p>
     ${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
+    <div id="jamBox"></div>
     <div id="ans">${answerUi(p)}</div>
     <div class="row"><button class="btn blue" id="hint">💡 Hint from Hachiware</button><button class="btn plain" id="pj">📓 Journal</button></div>
     <div id="pfb"></div>`, { wide: true });
-  document.getElementById("hint").onclick = () => { SFX.hint(); R.usedHint = true; document.getElementById("pfb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
+  document.getElementById("hint").onclick = () => { SFX.hint(); markHint(i); document.getElementById("pfb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
   document.getElementById("pj").onclick = () => { SFX.tap(); openJournal(room.id, (p.terms || []).map(t => t[0])); };
   wireAnswer(p, box);
+  if (R.jam[i] > Date.now()) startJam(i, 0);
+}
+function markHint(i) { R.hinted[i] = true; S.room_run[R.room.id].hints = true; save(); }
+/* Anti-guessing: a lock jams for a while after a guess, and Hachiware's hint must be read. */
+function startJam(i, secs, reason) {
+  if (secs) R.jam[i] = Date.now() + secs * 1000;
+  const ans = document.getElementById("ans"), jb = document.getElementById("jamBox");
+  if (!ans || !jb) return;
+  ans.inert = true; ans.classList.add("jammed");
+  const p = R.room.puzzles[i];
+  const tick = () => {
+    if (R.cur !== i || !document.getElementById("jamBox")) return;
+    const left = Math.ceil((R.jam[i] - Date.now()) / 1000);
+    if (left <= 0) { ans.inert = false; ans.classList.remove("jammed"); jb.innerHTML = ""; SFX.click(); return; }
+    jb.innerHTML = `<div class="jam" role="status"><b>🔒 ${esc(reason || R.jamReason || "Lock jammed!")}</b><span class="jt">${left}s</span>
+      <span class="small">Use this time to read Hachiware's hint below or open the 📓 Journal.</span></div>`;
+    setTimeout(tick, 250);
+  };
+  R.jamReason = reason || R.jamReason;
+  tick();
+}
+function penaltyFlash(text) {
+  if (reduced()) { toast(text); return; }
+  const d = document.createElement("div"); d.className = "penalty"; d.textContent = text;
+  document.body.appendChild(d); setTimeout(() => d.remove(), 1150);
 }
 function answerUi(p) {
   if (p.type === "mc") return `<div class="choices">${p.choices.map((c, i) => `<button class="choice" data-i="${i}"><b>${"ABCD"[i]}</b><span>${esc(c)}</span></button>`).join("")}</div>`;
@@ -1361,7 +1513,7 @@ function wireAnswer(p, box) {
       else { miss(box); v = ""; show(); }
     };
     document.getElementById("kok").onclick = ok;
-    box.onkeydown = e => { if (/^[0-9.]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter" && e.target.id !== "collect") { e.preventDefault(); ok(); } };
+    box.onkeydown = e => { if (R.jam[R.cur] > Date.now()) return; if (/^[0-9.]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter" && e.target.id !== "collect") { e.preventDefault(); ok(); } };
   } else {
     const pos = p.dials.map(() => 0);
     box.querySelectorAll(".arr").forEach(b => b.onclick = () => {
@@ -1373,18 +1525,42 @@ function wireAnswer(p, box) {
   }
 }
 function miss(box) {
-  R.attempts++; SFX.wrong(); setMood("cry", 2500);
+  const i = R.cur, id = R.room.id, now = Date.now(), p = R.room.puzzles[i], run = S.room_run[id];
+  R.att[i] = (R.att[i] || 0) + 1; S.stats.run = 0;
+  // Guessing = a wrong answer within 5 s of opening the lock, or within 4 s of the last wrong answer
+  const fast = now - R.openedAt < 5000 || (R.lastWrongAt && now - R.lastWrongAt < 4000);
+  R.lastWrongAt = now;
+  SFX.wrong(); setMood("cry", 2500);
   box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-  const p = R.room.puzzles[R.cur];
-  document.getElementById("pfb").innerHTML = `<div class="fb no">${say("chiikawa", "Wah...! 😭 The lock didn't open...", "cry")}${say("hachiware", `Don't worry! We can figure this out together. 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
+  // Penalty 1: every wrong answer costs 30 seconds
+  S.room_timer[id] -= 30; penaltyFlash("−30s ⏱️");
+  const tEl = document.getElementById("timer");
+  if (tEl) { const t = S.room_timer[id]; tEl.textContent = t >= 0 ? fmt(t) : `OVERTIME ${fmt(t)}`; tEl.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : ""); }
+  // Penalty 2: guessing or a second miss on the same lock jams it and adds a strike
+  let jam = 0, reason = "";
+  if (fast) { jam = 30; reason = "Guessing detected! Lock jammed"; }
+  else if (R.att[i] >= 2) { jam = Math.min(45, 15 * (R.att[i] - 1)); reason = `Wrong again! Lock jammed`; }
+  if (jam) { run.strikes += 1; markHint(i); SFX.door(); }
+  save();
+  const st = document.getElementById("strikes"); if (st) st.textContent = `⚠️ Strikes ${run.strikes}`;
+  const warn = run.strikes >= 6 ? "You've lost 2 stars in this room." : run.strikes >= 3 ? "3+ strikes: this room loses 1 star." : `${3 - run.strikes} more strike${3 - run.strikes === 1 ? "" : "s"} and this room loses a star.`;
+  document.getElementById("pfb").innerHTML = `<div class="fb no">
+    ${say("chiikawa", jam ? (fast ? "Wah...! That was too fast! Did we guess? 😭" : "Wah...! Wrong again... 😭") : "Wah...! 😭 The lock didn't open... (−30 seconds)", "cry")}
+    ${jam ? `<div class="rules"><b>⚠️ Guess strike +1</b> (total ${run.strikes}). ${warn}</div>` : ""}
+    ${say("hachiware", `${jam ? "Let's slow down and read carefully." : "Don't worry! We can figure this out together."} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
+  if (jam) startJam(i, jam, reason);
 }
 function solve() {
   const { room } = R, i = R.cur, p = room.puzzles[i];
-  const firstTry = R.attempts === 0 && !R.usedHint, pid = `${room.id}-${i}`;
+  const firstTry = !R.att[i] && !R.hinted[i], pid = `${room.id}-${i}`, run = S.room_run[room.id];
   if (firstTry && !S.mastered_puzzles.includes(pid)) S.mastered_puzzles.push(pid);
+  if (firstTry && !run.firsts.includes(i)) run.firsts.push(i);
+  S.stats.correct += 1;
+  S.stats.run = firstTry ? S.stats.run + 1 : 0; S.stats.bestRun = Math.max(S.stats.bestRun, S.stats.run);
   const solved = S.room_progress[room.id] || []; if (!solved.includes(i)) solved.push(i); S.room_progress[room.id] = solved;
   recomputeMastery(); save(true);
   SFX.right(); setTimeout(() => yaha(), 150); setMood("happy", 4000);
+  setTimeout(checkTrophies, 1400);
   if (firstTry) confetti(40);
   document.getElementById("hint").hidden = true;
   document.getElementById("pfb").innerHTML = `<div class="fb ok">
@@ -1440,9 +1616,15 @@ function escapeRoom() {
   const tLeft = S.room_timer[room.id], used = ROOM_SECONDS - tLeft;
   const first = !S.completed_rooms.includes(room.id);
   if (first) { S.completed_rooms.push(room.id); S.chiikawa_badges.push(room.badge); S.inventory.push(room.item); }
-  const n = room.puzzles.filter((_, i) => S.mastered_puzzles.includes(`${room.id}-${i}`)).length;
-  const stars = n === 5 ? 3 : n >= 3 ? 2 : 1;
+  const run = S.room_run[room.id] || freshRun();
+  const n = run.firsts.length, base = n === 5 ? 3 : n >= 3 ? 2 : 1;
+  const lost = run.strikes >= 6 ? 2 : run.strikes >= 3 ? 1 : 0;
+  const stars = Math.max(1, base - lost);
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
+  if (!first) S.stats.replays += 1;
+  if (tLeft >= 0 && run.strikes === 0) S.stats.cleanEscapes += 1;
+  if (!run.hints) S.stats.noHintEscapes += 1;
+  S.room_run[room.id] = freshRun();
   S.room_timer[room.id] = ROOM_SECONDS;
   const ni = nextRoomIndex(); S.current_room = ni === -1 ? room.id : ROOMS[ni].id;
   recomputeMastery(); save(true);
@@ -1456,13 +1638,15 @@ function escapeRoom() {
       <h2>🎉 You escaped ${esc(room.name)}!</h2>
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
       <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} of 3 stars">${starStr(stars)}</div>
-      <p style="text-align:center"><b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime is fine!)" : ""}</p>
+      <p style="text-align:center"><b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}</p>
+      ${lost ? `<div class="rules">Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!</div>` : ""}
       ${first ? say("momonga", `You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, "happy") : say("kurimanju", "Replay complete. Practice makes the brain strong. 🍵", "happy")}
       <section class="card cream jsec"><h3>📖 Textbook recap: ${esc(room.topic)} <span class="zh">${room.zh}</span></h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>
       ${say("hachiware", ni === -1 ? "That was the final room. You've mastered Light! 🌟" : `That's today's mission done! 🌱 Next time: <b>Topic ${ROOMS[ni].topicNo}: ${esc(ROOMS[ni].topic)}</b>.`, "happy", "hint")}
       <div class="row"><button class="btn big" id="eMap">Back to the map</button><button class="btn yellow" id="eCode">🔑 Get my save code</button></div>`, { onClose: renderMap });
     document.getElementById("eMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
     document.getElementById("eCode").onclick = () => { SFX.tap(); renderMap(); openSaveModal(); };
+    setTimeout(checkTrophies, 1800);
   }, reduced() ? 100 : 1000);
 }
 

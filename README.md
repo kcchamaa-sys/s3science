@@ -36,6 +36,17 @@ Each room has 5 locks (puzzles). Wrong answers are safe: Hachiware gives a hint 
 - **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Reopening the game shows a **Resume game** prompt.
 - **🔑 Save code:** a 5-character code (e.g. `K7Q2M`) or a link ending in `#K7Q2M` moves progress to another device with no account needed. It stores stars per room, locks solved in the current room, streak and shields. The game shows what a code contains before loading it.
 
+## Trophies 🏆
+
+10 hard trophies in the **Trophy Cabinet** (map screen and 🏆 button). They reward effort over many days: 7- and 30-day streaks, 20 play days, 15 first-try answers in a row, 100 locks opened, all rooms escaped, 3★ everywhere, 5 clean escapes, 5 no-hint escapes, 10 replays. Locked trophies show a progress bar.
+
+## Anti-guessing rules ⚠️
+
+- Every wrong answer costs **30 seconds** on the room timer.
+- **Guessing** (a wrong answer within 5 s of opening a lock or of the last wrong answer) jams the lock for 30 s.
+- A **second wrong answer** on the same lock jams it for 15 s, rising to 45 s.
+- Each jam adds a **guess strike**: 3 strikes = −1 star, 6 strikes = −2 stars for that escape (minimum 1★).
+
 ## Daily streak
 
 - 🔥 +1 for each day in a row. 🛡️ Shields cover missed days (earn one every 7 days, max 3). 🎁 Daily snack chest.
