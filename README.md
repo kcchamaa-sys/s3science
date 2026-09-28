@@ -21,6 +21,14 @@ A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Lig
 
 Puzzles are multiple choice or combination dials. 🎵 Soft background music is generated in the browser (music-box tune on the map, calmer mysterious tune in rooms) and can be turned off with the 🎵 button.
 
+## Question bank and incidents
+
+- **40 questions per room** (280 in total, English + 繁中), spread across **Bloom's taxonomy levels 1–6**: Remember, Understand, Apply, Analyse, Evaluate, Create.
+- Every visit picks **5 fresh questions** climbing from level 1–2 up to 5–6, avoiding the ones seen recently. Answer choices are shuffled each time.
+- Mastery counts how many of a room's 40 questions you've answered right first time. The first replay each day earns a 📚 revision bonus (+20 🌰).
+- **Random incidents** (up to 3 per visit, more likely on replays) add a spooky, friendly twist:
+  🌑 blackout · 🐾 a wolverine takes an item (answer its riddle to get it back) · 👻 a shadow hides a lock · 🌫️ fog hides answers for 6 s · ⏩ the clock runs double speed · 😴 sleepy spores block hints · 🦉 an owl's bonus riddle (+45 s, +5 🌰) · 🍵 Kuri-Manju's tea break freezes the timer.
+
 ## How a room works
 
 - Tap the glowing **?** objects (bookshelf, wall clock, room object, locked box, safe). Each opens a puzzle: multiple choice or combination dials.

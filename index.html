@@ -336,6 +336,26 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .lb tr.me td { background: var(--yellow); font-weight: 800; }
 .lb .rk { font-size: 1.2rem; width: 42px; }
 .lb-wrap { overflow-x: auto; background: #fff; border: var(--line); border-radius: 16px; padding: 6px; }
+/* Incidents */
+.incident { background: #221a2b; color: #F4EEFB; border-color: #000; box-shadow: 0 0 0 3px #6B4E8C, 0 0 40px rgba(155,90,220,.45); animation: flickerIn .9s ease-out; }
+.incident .kicker { color: #C9A0FF; }
+.incident .creature { display: flex; justify-content: center; }
+.incident .creature svg { width: 150px; height: auto; animation: lurk 2.4s ease-in-out infinite; overflow: visible; }
+.incident .effect { background: rgba(255,255,255,.08); border: 2px dashed #C9A0FF; border-radius: 12px; padding: 8px 12px; }
+.incident.good { background: #1f2a2a; box-shadow: 0 0 0 3px #4fae7f, 0 0 40px rgba(120,220,170,.35); }
+.incident .btn { color: var(--ink); }
+.incident .choice { color: var(--ink); }
+.scene.blackout .hs { opacity: .3; }
+.scene.blackout { animation: flicker 1.4s steps(2, start) 3; }
+.hs.wolv { background: #C98F6B; animation: wiggle 1s ease-in-out infinite; }
+.slot.stolen { border-style: solid; border-color: #6B4E8C; background: #EDE3F7; }
+.timer.warp { color: #C9A0FF; text-shadow: 0 0 10px rgba(201,160,255,.9); animation: blink .5s steps(2, start) infinite; }
+.timer.frozen { color: #A0E7FF; text-shadow: 0 0 10px rgba(160,231,255,.9); }
+#ans.fogged { filter: blur(7px); opacity: .6; }
+.jam.fogbox { background: #5b5f73; }
+@keyframes flickerIn { 0% { opacity: 0; } 10% { opacity: 1; } 20% { opacity: .2; } 35% { opacity: 1; } 45% { opacity: .5; } 60%, 100% { opacity: 1; } }
+@keyframes flicker { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(.4); } }
+@keyframes lurk { 0%, 100% { transform: translateX(0) scale(1); } 50% { transform: translateX(6px) scale(1.04); } }
 @keyframes shine { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg) translateY(-2px); } }
 @keyframes drop { 0% { transform: translate(-50%, -120%); } 70% { transform: translate(-50%, 6px); } 100% { transform: translate(-50%, 0); } }
 @keyframes rise { 0% { transform: translate(-50%, 20px) scale(.7); opacity: 0; } 20% { transform: translate(-50%, 0) scale(1.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, -40px); opacity: 0; } }
@@ -465,6 +485,7 @@ const SFX = {
   hint() { this.tone(1046, .3, { vol: .09 }); this.tone(1568, .4, { vol: .05, at: .08 }); },
   door() { this.tone(110, .9, { type: "sawtooth", vol: .05, to: 70 }); this.tone(180, .7, { type: "triangle", vol: .06, at: .2, to: 120 }); },
   tick() { this.tone(1800, .02, { type: "square", vol: .03 }); },
+  creepy() { this.tone(92, 1.6, { vol: .09, to: 70 }); this.tone(97, 1.6, { vol: .07, to: 73 }); this.tone(1250, .9, { type: "triangle", vol: .03, at: .3, to: 880 }); this.tone(740, .7, { type: "triangle", vol: .025, at: .9, to: 520 }); },
   fanfare() {
     [[523, 0], [659, .12], [784, .24], [1046, .36], [784, .52], [1046, .64]].forEach(([f, a]) => this.tone(f, .26, { type: "triangle", at: a, vol: .13 }));
     this.tone(1319, .8, { at: .8, vol: .11 });
@@ -1029,6 +1050,531 @@ const MIX_ZH = [["紅光 + 綠光 = ？", "Yellow"], ["紅光 + 藍光 = ？", "
   ["白色恤衫在藍光下看起來是……", "Blue"], ["紅玫瑰在綠光下看起來是……", "Black"], ["黃色香蕉在紅光下看起來是……", "Red"], ["綠葉在紅光下看起來是……", "Black"]];
 const ZH_RUSH_LABELS = ["選擇題", "是非題", "配對", "排序", "找不同", "填充", "調色"];
 
+/* ============================================================
+   5c. Question bank: 35 extra questions per room, Bloom levels 1–6.
+   Format: [bloom, question, choices (correct first; shown shuffled), hint, explanation,
+            中文題目, 中文選項, 中文提示, 中文解說]
+   ============================================================ */
+const BANK = {
+room1: [
+[1,"Which of these is a luminous object?",["A glowing firefly","A bicycle reflector","A silver spoon","A white wall"],"Which one makes its own light?","A glowing firefly produces its own light. The others only reflect light.",
+ "以下哪一項是發光體？",["發光的螢火蟲","單車反光片","銀色匙羹","白色牆壁"],"哪一個會自己發光？","發光的螢火蟲自己產生光，其他只會反射光。"],
+[1,"Which of these is NON-luminous?",["A mirror","The Sun","A switched-on TV screen","A lit match"],"Which one never makes its own light?","A mirror does not give out its own light; it only reflects light.",
+ "以下哪一項是非發光體？",["鏡子","太陽","開着的電視屏幕","點着的火柴"],"哪一個從不自己發光？","鏡子不會自行發光，它只會反射光。"],
+[1,"Light travels in ___ lines.",["straight","curved","zig-zag","circular"],"Think about sharp shadows.","Light travels in straight lines.",
+ "光沿 ___ 傳播。",["直線","曲線","之字形線","圓形線"],"想想清晰的影子。","光沿直線傳播。"],
+[1,"What do we call rays that spread out from a point?",["A divergent beam","A parallel beam","A convergent beam","A normal"],"Diverge = spread out.","Rays spreading out from a point form a divergent beam.",
+ "從一點散開的光線叫甚麼？",["發散光束","平行光束","會聚光束","法線"],"發散 = 散開。","從一點散開的光線形成發散光束。"],
+[1,"What do we call rays that come together to a point?",["A convergent beam","A divergent beam","A parallel beam","A shadow"],"Converge = come together.","Rays coming together to a point form a convergent beam.",
+ "聚合到一點的光線叫甚麼？",["會聚光束","發散光束","平行光束","影子"],"會聚 = 聚合。","聚合到一點的光線形成會聚光束。"],
+[1,"What is a shadow?",["A dark area where light is blocked by an opaque object","Light that has been reflected","A kind of luminous object","Light that has bent"],"What happens when light meets something it can't pass through?","A shadow is the dark region behind an opaque object, where light is blocked.",
+ "影子是甚麼？",["不透明物體擋住光而形成的暗區","被反射的光","一種發光體","屈折了的光"],"光遇到不能穿過的東西會怎樣？","影子是不透明物體後面、光被擋住的暗區。"],
+[2,"Why can we see a red apple in a bright room?",["Light reflected from the apple enters our eyes","The apple gives out red light by itself","Our eyes send light to the apple","The apple absorbs all light"],"Is an apple luminous?","The apple is non-luminous. Light from the room reflects off it into our eyes.",
+ "為甚麼在明亮的房間裏可以看見紅蘋果？",["蘋果反射的光進入我們的眼睛","蘋果自己發出紅光","眼睛向蘋果發出光","蘋果吸收了所有光"],"蘋果是發光體嗎？","蘋果是非發光體，房間的光被它反射進我們的眼睛。"],
+[2,"Why do we see the Moon at night?",["It reflects sunlight towards the Earth","It burns like a star","It glows because it is hot","Light from our eyes lights it up"],"Where does moonlight really come from?","The Moon is non-luminous. It reflects sunlight towards us.",
+ "為甚麼晚上可以看見月亮？",["月亮把太陽光反射到地球","月亮像恆星一樣燃燒","月亮因為很熱而發光","眼睛的光照亮了月亮"],"月光其實從哪裏來？","月亮是非發光體，它把太陽光反射到我們這裏。"],
+[2,"Why does a shadow form behind an opaque object?",["Light travels in straight lines and cannot bend around the object","Light is absorbed by the air","The object gives out darkness","Light travels slower behind objects"],"Could light curve around the object?","Light travels in straight lines, so the object blocks it and leaves a dark area behind.",
+ "為甚麼不透明物體後面會形成影子？",["光沿直線傳播，不能繞過物體","光被空氣吸收","物體會發出黑暗","光在物體後面走得較慢"],"光能繞過物體嗎？","光沿直線傳播，所以物體擋住光，在後面留下暗區。"],
+[2,"Which describes a parallel beam?",["Rays stay side by side and never meet","Rays spread out","Rays meet at a point","Rays form a circle"],"Think of train tracks.","In a parallel beam the rays stay side by side.",
+ "以下哪一項描述平行光束？",["光線並排，永不相交","光線散開","光線在一點相交","光線形成圓圈"],"想想火車路軌。","平行光束中的光線保持並排。"],
+[2,"Why can't you see a white book in a completely dark room?",["No light reaches the book to be reflected into your eyes","The book absorbs all colours in the dark","White objects are luminous only in daytime","Books become transparent at night"],"We see non-luminous objects by reflected light. Is there any light?","With no light source, there is no light to reflect from the book into your eyes.",
+ "為甚麼在完全黑暗的房間裏看不見白色的書？",["沒有光照到書上再反射進眼睛","書本在黑暗中吸收所有顏色","白色物體只在白天發光","書本晚上會變透明"],"我們靠反射光看見非發光體。這裏有光嗎？","沒有光源，就沒有光從書本反射進眼睛。"],
+[2,"How is seeing a torch different from seeing a chair?",["Torch light enters the eye directly; the chair is seen by reflected light","Both are seen by reflected light","Both give out their own light","The chair gives out light and the torch reflects it"],"Which one is luminous?","We see luminous objects by their own light directly, and non-luminous objects by reflected light.",
+ "看見電筒和看見椅子有甚麼分別？",["電筒的光直接進入眼睛；椅子是靠反射光看見的","兩者都靠反射光看見","兩者都會自行發光","椅子發光，電筒反射光"],"哪一個是發光體？","發光體的光直接進入眼睛；非發光體要靠反射光才能看見。"],
+[2,"What is the difference between a divergent and a convergent beam?",["Divergent rays spread out; convergent rays come together","Divergent rays are faster","Convergent rays are always red","There is no difference"],"Think 'spread' and 'meet'.","Divergent beams spread apart; convergent beams meet at a point.",
+ "發散光束和會聚光束有甚麼分別？",["發散光線散開；會聚光線聚合","發散光線較快","會聚光線一定是紅色","沒有分別"],"想想「散開」和「相交」。","發散光束的光線散開；會聚光束的光線相交於一點。"],
+[3,"You put your hand in a torch beam shining on a wall. What appears?",["A dark shadow shaped like your hand","A bright copy of your hand","A rainbow","Nothing changes"],"Your hand is opaque.","Your hand blocks the straight-line light, so a hand-shaped shadow appears.",
+ "你把手放進照向牆壁的電筒光束中，會出現甚麼？",["手形的黑影","發亮的手的複製品","彩虹","沒有變化"],"手是不透明的。","手擋住了沿直線傳播的光，所以出現手形的影子。"],
+[3,"A laser pointer's beam stays thin over a long distance. Which beam is it closest to?",["Parallel","Divergent","Convergent","No beam at all"],"Does it spread out much?","A laser beam hardly spreads, so it is very close to a parallel beam.",
+ "激光筆的光束在很長距離內仍然很幼。它最接近哪種光束？",["平行","發散","會聚","根本不是光束"],"它散開很多嗎？","激光光束幾乎不散開，非常接近平行光束。"],
+[3,"Sunlight passes through a magnifying glass and meets at a bright spot. What beam forms after the lens?",["Convergent","Divergent","Parallel","Reflected"],"The rays meet at a spot.","After the lens the rays come together: a convergent beam.",
+ "陽光穿過放大鏡後聚合成一個光點。透鏡後的是甚麼光束？",["會聚","發散","平行","反射"],"光線在一點相交。","光線在透鏡後聚合：這是會聚光束。"],
+[3,"Light from a bare bulb spreads out in all directions. What beam leaves the bulb?",["Divergent","Parallel","Convergent","None"],"Spreading out = ?","Light spreading out from the bulb forms divergent beams.",
+ "燈泡的光向四方八面散開。離開燈泡的是甚麼光束？",["發散","平行","會聚","都不是"],"散開 = ？","從燈泡散開的光形成發散光束。"],
+[3,"A friend stands close to you. How do rays from your friend reach your eye?",["Diverging","Parallel","Converging","They don't reach"],"Near object or distant object?","Rays from a near object are still spreading out (diverging) when they reach your eye.",
+ "朋友站在你旁邊。朋友的光線怎樣到達你的眼睛？",["發散","平行","會聚","不會到達"],"是近物還是遠物？","近物的光線到達眼睛時仍在散開（發散）。"],
+[3,"In a dark cinema, why can you see dust in the projector beam?",["Dust particles reflect some light into your eyes","Dust is luminous","The beam bends around the dust","Dust makes light travel in curves"],"Dust is non-luminous.","The dust reflects some of the beam's light towards your eyes, so the beam's path shows up.",
+ "在黑暗的戲院裏，為甚麼可以看見投影光束中的塵埃？",["塵埃把一些光反射進你的眼睛","塵埃是發光體","光束繞過塵埃","塵埃令光沿曲線走"],"塵埃是非發光體。","塵埃把光束的一些光反射到你的眼睛，所以看見光的路徑。"],
+[3,"Which light source gives the sharpest-edged shadow?",["A tiny, point-like torch","A large window of sky light","A big glowing panel","A cloudy sky"],"Smaller source → sharper edge.","A very small source sends light from almost one point, so the shadow edge is sharp.",
+ "哪種光源產生的影子邊緣最清晰？",["細小如一點的電筒","一大片窗外天光","大型發光板","陰天的天空"],"光源越小，邊緣越清晰。","細小光源的光幾乎來自同一點，所以影子邊緣清晰。"],
+[4,"A student says: 'We see the Moon because it gives out light.' What is wrong?",["The Moon is non-luminous; it reflects sunlight","Nothing is wrong","The Moon absorbs light only at night","The Moon reflects light from our eyes"],"Is the Moon luminous?","The Moon does not produce light. It reflects sunlight.",
+ "一位同學說：「我們看見月亮，是因為月亮會發光。」哪裏錯了？",["月亮是非發光體，它反射太陽光","沒有錯","月亮只在晚上吸收光","月亮反射我們眼睛的光"],"月亮是發光體嗎？","月亮不會自己發光，它反射太陽光。"],
+[4,"One shadow is sharp and another is blurry-edged. What is the most likely reason?",["The light sources are different sizes","The objects are different colours","One object is luminous","Light travels in curves for one of them"],"Compare the light sources.","Small sources give sharp shadows; large sources give blurry edges.",
+ "一個影子邊緣清晰，另一個邊緣模糊。最可能的原因是甚麼？",["光源大小不同","物體顏色不同","其中一個物體是發光體","其中一邊的光沿曲線走"],"比較兩個光源。","細小光源產生清晰影子；大光源產生模糊邊緣。"],
+[4,"Why does a lit candle look bright from every direction around it?",["It gives out divergent light in all directions","It gives out one parallel beam","It reflects light from the room","Light only travels upward"],"Where does candle light go?","A candle sends divergent light out in all directions, so every viewer receives some.",
+ "為甚麼從四周任何方向看，點着的蠟燭都很亮？",["它向所有方向發出發散的光","它只發出一束平行光","它反射房間的光","光只會向上走"],"燭光往哪裏走？","蠟燭向所有方向發出發散光，所以每個人都收到一些光。"],
+[4,"Sunlight comes through a window but doesn't hit the corner table directly. You can still see the table. Why?",["Light is reflected from walls and objects around the room","The table glows","Light curves around to reach it","Your eyes light it up"],"Light bounces around the room.","Walls and objects reflect light all around the room, so some reaches the table and then your eyes.",
+ "陽光從窗射入，但沒有直接照到角落的枱。你仍然看見那張枱。為甚麼？",["牆壁和房間內的物件把光反射到四周","枱會發光","光繞彎照到它","你的眼睛照亮了它"],"光在房間內反射。","牆壁和物件把光反射到房間各處，一些光照到枱再進入你的眼睛。"],
+[4,"Which pair are BOTH seen by reflected light?",["The Moon and a mirror","The Sun and a candle","A firefly and a lamp","A TV screen and the Sun"],"Find two non-luminous objects.","The Moon and a mirror are both non-luminous, so we see them by reflected light.",
+ "以下哪一對都是靠反射光看見的？",["月亮和鏡子","太陽和蠟燭","螢火蟲和燈","電視屏幕和太陽"],"找出兩個非發光體。","月亮和鏡子都是非發光體，所以靠反射光看見。"],
+[4,"As you walk further away from a lamp, what happens to the rays reaching your eye?",["They become closer to parallel","They become more convergent","They stop travelling straight","They bend towards you"],"Near → divergent. Far → ?","The further away the source, the closer to parallel the rays entering your eye.",
+ "你離燈越來越遠，進入眼睛的光線會怎樣？",["越來越接近平行","越來越會聚","不再沿直線走","向你屈折"],"近 → 發散。遠 → ？","光源越遠，進入眼睛的光線越接近平行。"],
+[5,"Four students explain why we see a book. Which explanation is BEST?",["Light from a source reflects off the book and enters our eyes","Our eyes send out rays to the book","The book stores light from the day","The book gives out weak light"],"Which one follows source → object → eye?","The correct path is: light source → book (reflection) → eye.",
+ "四位同學解釋為甚麼我們看見書本。哪一個解釋最好？",["光源的光被書本反射後進入眼睛","眼睛向書本發出光線","書本儲存了日間的光","書本發出微弱的光"],"哪一個符合「光源 → 物體 → 眼睛」？","正確路徑是：光源 → 書本（反射）→ 眼睛。"],
+[5,"Which is the best evidence that light travels in straight lines?",["Sharp shadows form behind opaque objects","Rainbows appear after rain","Mirrors reflect light","Light is very fast"],"Which observation depends on straight paths?","Sharp-edged shadows only happen because light cannot bend around the object.",
+ "以下哪一項最能證明光沿直線傳播？",["不透明物體後形成清晰的影子","雨後出現彩虹","鏡子反射光","光速很快"],"哪個現象取決於直線路徑？","清晰的影子只會出現，因為光不能繞過物體。"],
+[5,"A student claims 'a shiny mirror is luminous because it looks very bright.' Evaluate.",["Incorrect: its brightness is reflected light, not its own light","Correct: anything bright is luminous","Correct: mirrors store light","Incorrect: mirrors absorb all light"],"Does the mirror make light?","Looking bright isn't enough. A mirror only reflects light from a source.",
+ "有同學說：「光亮的鏡子是發光體，因為它看起來很亮。」評論這個說法。",["不正確：它的亮光是反射光，不是自己發的光","正確：任何明亮的東西都是發光體","正確：鏡子會儲存光","不正確：鏡子吸收所有光"],"鏡子會產生光嗎？","看起來亮並不足夠。鏡子只是反射光源的光。"],
+[5,"What is the SAFEST way to show where a laser beam travels in a class demo?",["Use a little mist or chalk dust so particles reflect light, and never look into the beam","Look straight into the laser","Aim it at a classmate's face","Point it at the Sun"],"Safety first!","Particles reflect some light so the path shows. Never look into a laser beam.",
+ "課堂示範時，怎樣最安全地顯示激光的路徑？",["用少量水霧或粉筆灰令粒子反射光，並且絕不直視光束","直視激光","對準同學的臉","對準太陽"],"安全第一！","粒子反射部分光，路徑就會顯示出來。絕對不要直視激光。"],
+[5,"Which statement about beams is correct?",["A torch usually gives a slightly divergent beam","Every torch gives a perfect parallel beam","Convergent beams spread out forever","Divergent beams meet at a point"],"Does a torch's circle of light grow on a far wall?","A torch beam spreads out a little, so it is slightly divergent.",
+ "以下哪一項關於光束的描述正確？",["電筒通常發出略為發散的光束","所有電筒都發出完美的平行光束","會聚光束會永遠散開","發散光束會在一點相交"],"電筒照在遠處牆上的光圈會變大嗎？","電筒光束會稍為散開，所以是略為發散的。"],
+[6,"Design a quick test to show light travels in straight lines. Which plan works?",["Line up three cards with holes; you see the torch only when the holes are in a straight line","Shine a torch into water","Put a torch in a box and close it","Look at yourself in a mirror"],"Think about lining things up.","If light only passes when the holes line up, it must travel in straight lines.",
+ "設計一個簡單測試，證明光沿直線傳播。哪個方案可行？",["把三張有孔的卡紙排好，只有孔成一直線時才看到電筒","把電筒照進水中","把電筒放進盒子再關上","照鏡子"],"想想把東西排成一線。","只有孔成一直線時光才能通過，證明光沿直線傳播。"],
+[6,"You want a shadow puppet with a very sharp outline. Which set-up would you choose?",["A small bright light and the puppet close to the screen","A large dim light and the puppet near the light","Sunlight on a cloudy day","Two big lamps from different sides"],"Small source, puppet near screen.","A small source with the puppet close to the screen gives the sharpest shadow.",
+ "你想做一個輪廓非常清晰的影子戲。你會選哪個安排？",["細小明亮的光源，戲偶靠近屏幕","大而暗的光源，戲偶靠近光源","陰天的陽光","從不同方向照射的兩盞大燈"],"細小光源、戲偶靠近屏幕。","細小光源加上戲偶靠近屏幕，影子最清晰。"],
+[6,"You need to light up a whole room evenly. Which kind of beam should your lamp give out?",["Divergent","Parallel","Convergent","No beam"],"You want light to spread everywhere.","A divergent beam spreads light over the whole room.",
+ "你要把整個房間均勻照亮。燈應該發出哪種光束？",["發散","平行","會聚","沒有光束"],"你想光散到各處。","發散光束會把光散佈到整個房間。"],
+[6,"You design a lighthouse beam that must reach far out to sea. Which beam is best?",["A nearly parallel beam","A widely divergent beam","A convergent beam that meets near the lamp","A beam that bends around the island"],"You don't want it to spread and fade.","A nearly parallel beam stays concentrated over a long distance.",
+ "你設計的燈塔光束要照到很遠的海面。哪種光束最好？",["接近平行的光束","非常發散的光束","在燈附近相交的會聚光束","繞過小島的光束"],"你不想它散開變弱。","接近平行的光束在長距離內仍保持集中。"]
+],
+room2: [
+[1,"What is the line at right angles to a mirror, where light hits it?",["The normal","The incident ray","The reflected ray","The principal axis"],"It is drawn dashed in diagrams.","The normal is the line at right angles to the surface at the point where light hits.",
+ "在光射到鏡面的位置，垂直於鏡面的線叫甚麼？",["法線","入射線","反射線","主軸"],"圖中通常用虛線表示。","法線是在光射到的位置、垂直於表面的線。"],
+[1,"The ray travelling towards a mirror is called the...",["incident ray","reflected ray","normal","refracted ray"],"It comes IN.","The incident ray is the ray arriving at the mirror.",
+ "射向鏡面的光線叫……",["入射線","反射線","法線","折射線"],"它是「射入」的。","入射線是射向鏡面的光線。"],
+[1,"The ray that bounces off a mirror is called the...",["reflected ray","incident ray","normal","principal ray"],"It bounces back.","The reflected ray leaves the mirror after reflection.",
+ "從鏡面反彈的光線叫……",["反射線","入射線","法線","主光線"],"它會反彈。","反射線是反射後離開鏡面的光線。"],
+[1,"By the law of reflection, the angle of incidence is ___ the angle of reflection.",["equal to","larger than","smaller than","unrelated to"],"i = r","The angle of incidence equals the angle of reflection.",
+ "根據反射定律，入射角 ___ 反射角。",["等於","大於","小於","與……無關"],"i = r","入射角等於反射角。"],
+[1,"The image in a plane mirror is...",["virtual","real","upside down","magnified"],"Can it be caught on a screen?","A plane mirror forms a virtual image.",
+ "平面鏡所成的像是……",["虛像","實像","上下倒轉","放大"],"它能投射在屏幕上嗎？","平面鏡形成虛像。"],
+[1,"Which device uses two plane mirrors to see over a wall?",["Periscope","Magnifying glass","Projector","Optical fibre"],"Used in submarines too.","A periscope uses two parallel plane mirrors.",
+ "哪種裝置用兩面平面鏡看過牆？",["潛望鏡","放大鏡","投影機","光纖"],"潛艇也會用。","潛望鏡使用兩面平行的平面鏡。"],
+[2,"Why is a plane mirror image called 'virtual'?",["Light only seems to come from behind the mirror, so it can't be caught on a screen","It is very small","It is upside down","It is brighter than the object"],"Where do the rays really meet?","The rays don't really meet behind the mirror; they only appear to, so the image is virtual.",
+ "為甚麼平面鏡的像叫「虛像」？",["光只是看似從鏡後發出，所以不能投射在屏幕上","它很細小","它上下倒轉","它比物體更亮"],"光線真的在哪裏相交？","光線並沒有真的在鏡後相交，只是看似如此，所以是虛像。"],
+[2,"What does 'laterally inverted' mean?",["Left and right are swapped","Top and bottom are swapped","The image is smaller","The image is further away"],"Raise your right hand in a mirror.","Laterally inverted means left and right are swapped.",
+ "「左右倒轉」是甚麼意思？",["左右互換","上下互換","像較細小","像較遠"],"在鏡前舉起右手試試。","左右倒轉即左和右互換。"],
+[2,"Why are angles of reflection measured from the normal?",["The normal gives the same right-angle reference for every ray","The mirror surface is invisible","It makes the angles bigger","There is no reason"],"A fixed reference line helps compare angles.","Measuring from the normal gives a consistent reference, so i = r always holds.",
+ "為甚麼反射角要從法線量度？",["法線為每條光線提供相同的直角參考線","鏡面是看不見的","這樣角度會較大","沒有原因"],"固定的參考線方便比較角度。","從法線量度提供一致的參考，所以 i = r 永遠成立。"],
+[2,"If you move closer to a plane mirror, what happens to your image?",["It moves closer to the mirror too and stays the same size","It gets bigger","It moves further away","It turns upside down"],"Image distance = object distance.","The image is always as far behind the mirror as you are in front, and the same size.",
+ "如果你走近平面鏡，你的像會怎樣？",["也走近鏡面，而且大小不變","變大","走得更遠","上下倒轉"],"像距 = 物距。","像永遠在鏡後與你在鏡前相同距離，而且大小相同。"],
+[2,"How does a driving mirror help a driver?",["It reflects light from cars behind into the driver's eyes","It gives out light","It bends light around corners","It magnifies the road ahead"],"Where does the light come from?","Light from cars behind reflects off the mirror into the driver's eyes.",
+ "倒後鏡怎樣幫助司機？",["把後面車輛的光反射進司機的眼睛","它會發光","把光繞過轉角","放大前面的路"],"光從哪裏來？","後面車輛的光經鏡面反射進入司機的眼睛。"],
+[2,"A ray hits a mirror along the normal. Where does it go?",["Straight back along the normal","Along the mirror surface","Through the mirror","It disappears"],"Angle of incidence is zero.","With a zero angle of incidence, the angle of reflection is also zero, so it goes straight back.",
+ "一條光線沿法線射向鏡面，它會往哪裏？",["沿法線直接反射回去","沿鏡面前進","穿過鏡子","消失"],"入射角是零。","入射角是零，反射角也是零，所以光直接反射回去。"],
+[2,"Why can you see yourself in a smooth mirror but not in a sheet of paper?",["The mirror reflects light regularly; rough paper scatters it in all directions","Paper is luminous","Paper absorbs all light","Mirrors give out light"],"Smooth vs rough surfaces.","A smooth mirror keeps reflected rays in order, forming an image. Rough paper scatters them.",
+ "為甚麼你在光滑的鏡中看到自己，但在紙上看不到？",["鏡子規則地反射光；粗糙的紙把光散射到各方向","紙是發光體","紙吸收所有光","鏡子會發光"],"光滑與粗糙表面。","光滑的鏡子令反射光線保持整齊，形成像；粗糙的紙把光散射開。"],
+[3,"You raise your RIGHT hand in front of a mirror. Your image seems to raise its...",["left hand","right hand","both hands","no hand"],"Lateral inversion!","Because of lateral inversion, your image appears to raise its left hand.",
+ "你在鏡前舉起右手，你的像看來舉起……",["左手","右手","兩隻手","沒有舉手"],"左右倒轉！","由於左右倒轉，你的像看來舉起左手。"],
+[3,"You stand in front of a mirror. Your image is ___ the mirror.",["as far behind","closer to","twice as far behind","in front of"],"Image distance = object distance.","The image is as far behind the mirror as you are in front of it.",
+ "你站在鏡前，你的像在鏡 ___。",["後，距離與你在鏡前相同","較接近鏡面","後，距離是兩倍","前"],"像距 = 物距。","像在鏡後，距離等於你在鏡前的距離。"],
+[3,"A ray hits a mirror with a small angle of incidence. The reflected ray is...",["also close to the normal","along the mirror","far from the normal","absorbed"],"i = r","Since i = r, a small angle of incidence gives a small angle of reflection.",
+ "一條光線以小入射角射向鏡面，反射線會……",["也接近法線","沿鏡面走","遠離法線","被吸收"],"i = r","因為 i = r，入射角小，反射角也小。"],
+[3,"If you increase the angle of incidence, what happens to the angle of reflection?",["It increases by the same amount","It decreases","It stays the same","It becomes zero"],"They are always equal.","The angles stay equal, so both increase together.",
+ "如果增加入射角，反射角會怎樣？",["增加相同的量","減少","不變","變成零"],"兩者永遠相等。","兩個角永遠相等，所以一同增加。"],
+[3,"Which word would look the SAME in a plane mirror?",["TOOT","BOOK","READ","SUN"],"Each letter must look the same when flipped, and the word must read the same backwards.","TOOT uses letters that look the same when flipped and reads the same backwards.",
+ "哪一個英文字在平面鏡中看起來一樣？",["TOOT","BOOK","READ","SUN"],"每個字母左右翻轉後要一樣，而且倒讀也要一樣。","TOOT 的字母左右翻轉後一樣，倒讀也一樣。"],
+[3,"A dentist uses a small mirror to see the back of your teeth. Which idea is used?",["Reflection lets light from hidden places reach the dentist's eyes","The mirror magnifies by refraction","The mirror gives out light","Total internal reflection in the mirror"],"The dentist can't see directly.","Light from the back of the teeth reflects off the mirror into the dentist's eyes.",
+ "牙醫用小鏡子看你牙齒的後面，用了甚麼原理？",["反射令隱藏位置的光到達牙醫的眼睛","鏡子靠折射放大","鏡子會發光","鏡內的全內反射"],"牙醫不能直接看到。","牙齒後面的光經鏡子反射進入牙醫的眼睛。"],
+[3,"A mirror is fixed at a blind corner of a car park. What does it help drivers do?",["See cars coming around the corner by reflected light","Drive faster","Make the car park luminous","See through walls"],"Light from around the corner.","Light from cars around the corner reflects off the mirror to the driver.",
+ "停車場的盲角裝了一面鏡子。它幫助司機做甚麼？",["靠反射光看見轉角駛來的車","駕駛得更快","令停車場發光","看穿牆壁"],"轉角處的光。","轉角車輛的光經鏡子反射到司機的眼睛。"],
+[4,"Your image stays the same size as you walk backwards from a mirror, but moves further away. What does this show?",["Image distance equals object distance","The image shrinks","The mirror is curved","Light slows down"],"Compare distances.","The image always stays as far behind the mirror as you are in front, and the same size.",
+ "你向後退離鏡子，像的大小不變，但越來越遠。這說明甚麼？",["像距等於物距","像縮小了","鏡子是彎曲的","光變慢了"],"比較距離。","像永遠在鏡後與你相同距離，大小也不變。"],
+[4,"The two mirrors in a periscope are NOT parallel. What happens?",["Light is not sent down to the eye, so you can't see over the wall","The view becomes magnified","Nothing changes","The image becomes real"],"Both turns must match.","Both mirrors must turn the light the same way; otherwise it misses the eye.",
+ "潛望鏡的兩面鏡子沒有互相平行，會怎樣？",["光不能傳到眼睛，所以看不到牆外","景物被放大","沒有變化","像變成實像"],"兩次轉向必須配合。","兩面鏡要以相同方式轉光，否則光會錯過眼睛。"],
+[4,"Which correctly compares a plane mirror image with the object?",["Same size, same distance from the mirror, left–right swapped","Bigger, closer, upside down","Smaller, farther, same way round","Real, same size, upside down"],"Remember the four features.","A plane mirror image is the same size, equally far behind the mirror and laterally inverted.",
+ "以下哪一項正確比較平面鏡的像和物體？",["大小相同、與鏡的距離相同、左右倒轉","較大、較近、上下倒轉","較小、較遠、方向相同","實像、大小相同、上下倒轉"],"記住四個特徵。","平面鏡的像大小相同、在鏡後相同距離、左右倒轉。"],
+[4,"Which pair of angles is always equal in reflection?",["Angle of incidence and angle of reflection","Angle of incidence and the angle to the mirror","Angle of reflection and a right angle","No two angles are equal"],"Law of reflection.","The law of reflection: angle of incidence = angle of reflection.",
+ "反射時，哪一對角永遠相等？",["入射角和反射角","入射角和與鏡面的夾角","反射角和直角","沒有相等的角"],"反射定律。","反射定律：入射角 = 反射角。"],
+[4,"Why do two parallel mirrors in a lift seem to show a tunnel of images?",["Light reflects back and forth between them, making many images","The mirrors are luminous","Light is trapped by total internal reflection","The mirrors are lenses"],"Images of images!","Each mirror reflects the other's images again and again, making a long row of images.",
+ "為甚麼升降機內兩面平行的鏡子好像出現一條由像組成的隧道？",["光在兩面鏡之間來回反射，形成很多個像","鏡子是發光體","光被全內反射困住","鏡子是透鏡"],"像的像！","每面鏡不斷反射對面鏡中的像，形成一長串像。"],
+[4,"A student draws the reflected ray on the SAME side of the normal as the incident ray. What is wrong?",["The reflected ray should be on the other side of the normal","It should lie along the mirror","It should overlap the normal","Nothing is wrong"],"Picture a ball bouncing.","The reflected ray is on the opposite side of the normal, at an equal angle.",
+ "一位同學把反射線畫在法線的同一邊，錯在哪裏？",["反射線應在法線的另一邊","應沿鏡面畫","應與法線重疊","沒有錯"],"想像皮球反彈。","反射線在法線的另一邊，與法線成相等的角。"],
+[5,"What is the best reason for a submarine to use a periscope?",["To see above the water while staying underwater","To magnify fish","To make light brighter","To see in total darkness"],"Where is the crew?","A periscope lets the crew see above the surface while the submarine stays hidden below.",
+ "潛艇使用潛望鏡最好的理由是甚麼？",["留在水下時看見水面上的情況","放大魚","令光更亮","在完全黑暗中看見東西"],"船員在哪裏？","潛望鏡讓船員在水下也能看見水面上的情況。"],
+[5,"A student says 'my mirror image is real because I can see it clearly.' Evaluate.",["Wrong: seeing it clearly doesn't make it real; it can't form on a screen","Right: clear images are real","Right: all mirror images are real","Wrong: mirror images are upside down"],"What makes an image 'real'?","A real image can be caught on a screen. A plane mirror image can't, so it's virtual.",
+ "有同學說：「我看得很清楚，所以鏡中的像是實像。」評論這個說法。",["錯：看得清楚不代表是實像；它不能投射在屏幕上","對：清晰的像就是實像","對：所有鏡像都是實像","錯：鏡像是上下倒轉的"],"甚麼令像成為「實像」？","實像可以投射在屏幕上。平面鏡的像不能，所以是虛像。"],
+[5,"Three students predict where a candle's image is in a plane mirror. Which is correct?",["Behind the mirror, as far behind as the candle is in front","On the mirror surface","In front of the mirror, halfway to the candle"],"Image distance = object distance.","The image appears behind the mirror at the same distance as the candle is in front.",
+ "三位同學預測蠟燭在平面鏡中的像的位置。哪一個正確？",["在鏡後，距離等於蠟燭在鏡前的距離","在鏡面上","在鏡前，蠟燭與鏡的中間"],"像距 = 物距。","像出現在鏡後，距離等於蠟燭在鏡前的距離。"],
+[5,"Which statement about the law of reflection is FALSE?",["It only works for flat mirrors, never other surfaces","The angle of incidence equals the angle of reflection","The incident ray, reflected ray and normal lie in the same plane","Angles are measured from the normal"],"The law works at every point where light reflects.","The law of reflection applies wherever light reflects, not only on flat mirrors.",
+ "以下哪一項關於反射定律的說法是錯的？",["只適用於平面鏡，不適用於其他表面","入射角等於反射角","入射線、反射線和法線在同一平面","角度從法線量度"],"反射定律適用於每個反射點。","光在任何地方反射都遵守反射定律，不只是平面鏡。"],
+[5,"Where is the most sensible place for a safety mirror in a school corridor?",["At a blind corner where people can't see each other","In the middle of a straight corridor","On the floor","Inside a cupboard"],"Where do people bump into each other?","At a blind corner the mirror lets people see who is coming around.",
+ "學校走廊的安全鏡最適合裝在哪裏？",["看不見對方的盲角","筆直走廊的中間","地上","櫃裏面"],"人們在哪裏容易相撞？","在盲角裝鏡子，可以看見轉角走來的人。"],
+[6,"You want to see what's behind you while facing forward. What would you build?",["A mirror in front of you, tilted to reflect light from behind into your eyes","A convex lens","A prism facing the ground","A black screen"],"Driving mirrors do this.","A tilted plane mirror reflects light from behind into your eyes, like a driving mirror.",
+ "你想面向前方時看見身後的情況，會製作甚麼？",["在面前放一面傾斜的鏡，把後方的光反射進眼睛","凸透鏡","面向地面的三稜鏡","黑色屏幕"],"倒後鏡正是這樣。","傾斜的平面鏡把後方的光反射進眼睛，就像倒後鏡。"],
+[6,"Design a simple periscope. Which arrangement works?",["Two mirrors at the ends of a tube, parallel and facing each other, each tilted at 45°","One mirror lying flat at the bottom","Two mirrors facing the same way side by side","Two lenses and no mirrors"],"Light must turn twice.","Two parallel mirrors at 45° turn the light down and then into your eye.",
+ "設計一個簡單的潛望鏡。哪個安排可行？",["在管的兩端放兩面互相平行並相對、各傾斜 45° 的鏡","一面鏡平放在底部","兩面鏡並排朝同一方向","兩塊透鏡，不用鏡"],"光要轉向兩次。","兩面平行、傾斜 45° 的鏡把光先向下轉，再轉進眼睛。"],
+[6,"You want a small bedroom to look more spacious. Which idea uses plane mirrors best?",["A large mirror on one wall, creating an image of the room behind it","A mirror on the floor facing down","A mirror covered with paper","A lens on the wall"],"Where does the image appear?","The image of the room appears behind the mirror, so the room seems bigger.",
+ "你想細小的睡房看起來更寬敞。哪個方法最能善用平面鏡？",["在一幅牆上裝大鏡子，在鏡後形成房間的像","把鏡子面向下放在地上","用紙蓋住鏡子","在牆上裝透鏡"],"像出現在哪裏？","房間的像出現在鏡後，所以房間看起來更大。"],
+[6,"You must send a light signal around two corners of a maze. What's the best plan?",["Place a mirror at each corner, angled to reflect the beam along the next path","Use one lens","Shine the torch harder","Use a coloured filter"],"Each corner needs a turn.","A mirror at each corner turns the beam, just like a periscope.",
+ "你要把光訊號繞過迷宮的兩個轉角。最好的方法是甚麼？",["在每個轉角放一面傾斜的鏡，把光反射到下一段路","用一塊透鏡","把電筒照得更用力","用色濾片"],"每個轉角都要轉向。","在每個轉角放鏡子轉光，就像潛望鏡一樣。"]
+],
+room3: [
+[1,"What is refraction?",["The bending of light when it passes from one medium into another","Light bouncing off a mirror","Light being absorbed","Light giving out heat"],"It happens at a boundary.","Refraction is the bending of light when it crosses into another medium.",
+ "甚麼是折射？",["光由一種介質進入另一種介質時的屈折","光從鏡面反彈","光被吸收","光發出熱"],"它在界面發生。","折射是光進入另一種介質時發生的屈折。"],
+[1,"Glass has a ___ refractive index than air.",["higher","lower","the same"],"Light slows down in glass.","Glass has a higher refractive index than air.",
+ "玻璃的折射率比空氣 ___。",["高","低","一樣"],"光在玻璃中會變慢。","玻璃的折射率比空氣高。"],
+[1,"Light going from air into water bends ___ the normal.",["towards","away from","along"],"Into a higher refractive index...","Entering a medium with a higher refractive index, light bends towards the normal.",
+ "光從空氣進入水時會 ___ 法線。",["偏向","偏離","沿着"],"進入折射率較高的介質……","進入折射率較高的介質時，光偏向法線。"],
+[1,"Light going from water into air bends ___ the normal.",["away from","towards","along"],"Into a lower refractive index...","Entering a medium with a lower refractive index, light bends away from the normal.",
+ "光從水進入空氣時會 ___ 法線。",["偏離","偏向","沿着"],"進入折射率較低的介質……","進入折射率較低的介質時，光偏離法線。"],
+[1,"A ray travelling along the normal into glass...",["does not bend","bends towards the normal","bends away from the normal","is totally reflected"],"There is no angle to bend by.","A ray along the normal crosses the boundary without changing direction.",
+ "沿法線射進玻璃的光線會……",["不屈折","偏向法線","偏離法線","全部反射"],"沒有角度可以屈折。","沿法線的光線穿過界面時方向不變。"],
+[1,"Which is caused by refraction?",["A straw looking bent in a drink","Seeing yourself in a mirror","A shadow","An echo"],"Light crossing water and air.","A straw looks bent because light refracts at the water surface.",
+ "以下哪一項是由折射造成的？",["飲管在飲品中看起來彎曲","在鏡中看見自己","影子","回聲"],"光穿過水和空氣。","飲管看起來彎曲，是因為光在水面折射。"],
+[2,"Why does light bend when it enters glass at an angle?",["Its speed changes as it enters a different medium","Glass is luminous","Glass reflects all light","Light becomes a different colour"],"What changes at the boundary?","Light changes speed in a new medium, which makes it change direction.",
+ "為甚麼光斜射進玻璃時會屈折？",["進入不同介質時速度改變","玻璃是發光體","玻璃反射所有光","光變成另一種顏色"],"界面上甚麼改變了？","光在新介質中速度改變，令方向改變。"],
+[2,"What does a higher refractive index tell us about a medium?",["Light slows down more in it and bends more towards the normal on entering","Light speeds up in it","It is more luminous","It absorbs more colours"],"Think about glass vs air.","A higher refractive index means light slows more and bends more towards the normal.",
+ "介質的折射率較高代表甚麼？",["光在其中減速更多，進入時更偏向法線","光在其中加速","它更會發光","它吸收更多顏色"],"想想玻璃和空氣。","折射率較高代表光減速更多，進入時更偏向法線。"],
+[2,"Why do fish in a pond look closer to the surface than they really are?",["Light from the fish bends away from the normal as it leaves the water","Fish swim upward when watched","Water magnifies fish","Light bends towards the normal as it leaves the water"],"Water → air: towards or away?","Light leaving the water bends away from the normal; our eyes trace it back to a higher point.",
+ "為甚麼池塘裏的魚看起來比實際更接近水面？",["魚的光離開水面時偏離法線","魚被看着時會游上來","水放大了魚","光離開水面時偏向法線"],"水 → 空氣：偏向還是偏離？","光離開水面時偏離法線，眼睛沿直線追溯到較高的位置。"],
+[2,"Light enters a medium with a LOWER refractive index at an angle. What happens?",["It bends away from the normal","It bends towards the normal","It stops","It goes straight on"],"Lower index → ?","Going into a lower refractive index, light bends away from the normal.",
+ "光斜射進折射率較低的介質，會怎樣？",["偏離法線","偏向法線","停止","直線前進"],"較低折射率 → ？","進入折射率較低的介質時，光偏離法線。"],
+[2,"Why is there no bending when you look straight down into water along the normal?",["Rays along the normal don't change direction","Water is transparent","Light doesn't enter water","Refraction only happens at night"],"What angle do the rays have?","Rays along the normal have zero angle of incidence, so they pass straight through.",
+ "為甚麼沿法線垂直望入水中不會看到屈折？",["沿法線的光線不會改變方向","水是透明的","光不會進入水","折射只在晚上發生"],"光線的角度是多少？","沿法線的光線入射角是零，所以直線穿過。"],
+[2,"What is the 'normal' at a boundary?",["A line at right angles to the boundary where the ray hits","The boundary itself","The bent ray","A ray along the surface"],"Same idea as for mirrors.","The normal is at right angles to the boundary at the point where the ray hits.",
+ "界面上的「法線」是甚麼？",["在光線射到的位置，垂直於界面的線","界面本身","屈折了的光線","沿表面的光線"],"和鏡子的法線一樣。","法線是在光線射到的位置、垂直於界面的線。"],
+[2,"A ray goes from glass into air at an angle. Compared with the ray in glass, the ray in air is...",["further from the normal","closer to the normal","along the normal","reflected back"],"Glass → air is higher → lower.","From glass into air, the ray bends away from the normal.",
+ "光線從玻璃斜射進空氣。與玻璃中的光線相比，空氣中的光線……",["離法線更遠","更接近法線","沿法線","反射回去"],"玻璃 → 空氣是高 → 低。","從玻璃進入空氣，光線偏離法線。"],
+[3,"A coin lies at the bottom of a cup of water. Where does it appear to be?",["Higher than its real position","Lower than its real position","Exactly where it is","It disappears"],"Like a shallow-looking pool.","Refraction makes the coin appear higher than it really is.",
+ "一個硬幣在一杯水的底部。它看起來在哪裏？",["比實際位置高","比實際位置低","剛好在實際位置","消失"],"就像水池看起來較淺。","折射令硬幣看起來比實際位置高。"],
+[3,"Chopsticks in a bowl of soup look...",["bent at the surface","longer","invisible","straight but higher"],"Light from the underwater part refracts.","The underwater part appears higher, so the chopsticks look bent at the surface.",
+ "放在湯碗中的筷子看起來……",["在湯面位置彎曲","較長","看不見","筆直但較高"],"水中部分的光會折射。","水中部分看起來較高，所以筷子在湯面位置看起來彎曲。"],
+[3,"A ray enters one side of a rectangular glass block at an angle and leaves the opposite side. The outgoing ray is...",["parallel to the incoming ray but shifted sideways","bent back the other way","along the normal","reflected"],"It bends in, then bends out by the same amount.","It bends towards the normal entering and away from it leaving, so it comes out parallel but shifted.",
+ "一條光線斜射進長方形玻璃磚的一面，再從對面射出。射出的光線……",["與射入的光線平行，但向旁邊移開了","反方向屈折","沿法線","被反射"],"進入時屈折，離開時以相同程度屈折回來。","進入時偏向法線，離開時偏離法線，所以射出光線平行但移開了。"],
+[3,"You want to scoop a coin from the bottom of a pool with a net. Where should you reach?",["Deeper than where the coin appears","Exactly where it appears","Shallower than where it appears","Behind you"],"The coin looks higher than it really is.","Because of refraction the coin is really deeper than it looks.",
+ "你想用網撈起泳池底的硬幣，應該伸到哪裏？",["比硬幣看起來的位置更深","剛好在看起來的位置","比看起來的位置更淺","你的身後"],"硬幣看起來比實際高。","由於折射，硬幣實際上比看起來更深。"],
+[3,"Light passes from water into air at an angle. What happens to its speed and direction?",["Speeds up and bends away from the normal","Slows down and bends towards the normal","Speeds up and goes straight","Stops"],"Lower refractive index in air.","In air light travels faster, so it bends away from the normal.",
+ "光斜射由水進入空氣，速度和方向會怎樣？",["加速並偏離法線","減速並偏向法線","加速並直線前進","停止"],"空氣的折射率較低。","光在空氣中較快，所以偏離法線。"],
+[3,"Why can a pool be more dangerous than it looks for a young child?",["It is deeper than it appears because of refraction","Water is heavier","Pools are luminous","Light is absorbed by water"],"Apparent depth vs real depth.","Refraction makes the pool look shallower than it really is.",
+ "為甚麼對小朋友來說，泳池可能比看起來更危險？",["由於折射，泳池比看起來更深","水比較重","泳池是發光體","光被水吸收"],"視深與實深。","折射令泳池看起來比實際淺。"],
+[4,"A ray bends TOWARDS the normal when crossing a boundary. What can you conclude?",["It entered a medium with a higher refractive index","It entered a medium with a lower refractive index","It was totally reflected","It travelled along the normal"],"Towards = into higher index.","Bending towards the normal means the new medium has a higher refractive index.",
+ "一條光線穿過界面時偏向法線。你可以得出甚麼結論？",["它進入了折射率較高的介質","它進入了折射率較低的介質","它被全部反射","它沿法線前進"],"偏向 = 進入較高折射率。","偏向法線代表新介質的折射率較高。"],
+[4,"At the same angle from air, light bends MORE entering X than entering Y. Which has the higher refractive index?",["X","Y","Both the same","Cannot tell"],"More bending = ?","A bigger bend towards the normal means a higher refractive index.",
+ "光以相同角度從空氣進入 X 和 Y，進入 X 時屈折得較多。哪一個折射率較高？",["X","Y","兩者相同","無法判斷"],"屈折越多 = ？","偏向法線越多，折射率越高。"],
+[4,"A pencil looks broken in water from the side, but not when viewed from directly above. Why?",["From directly above, the rays travel almost along the normal, so they hardly bend","The pencil gets shorter","The water becomes clearer","Light is reflected instead"],"Think about the angle of the rays.","Rays nearly along the normal hardly bend, so there is little effect when looking straight down.",
+ "從側面看水中的鉛筆好像斷了，但從正上方看卻不會。為甚麼？",["從正上方看，光線幾乎沿法線，所以幾乎不屈折","鉛筆變短了","水變得更清","光被反射"],"想想光線的角度。","幾乎沿法線的光線幾乎不屈折，所以垂直向下看影響很小。"],
+[4,"A student draws light going from glass into air bending TOWARDS the normal. What's wrong?",["It should bend away from the normal","It should not bend at all","It should reflect","Nothing is wrong"],"Glass → air is higher → lower.","From glass into air the light should bend away from the normal.",
+ "一位同學把光由玻璃進入空氣畫成偏向法線，錯在哪裏？",["應該偏離法線","應該完全不屈折","應該反射","沒有錯"],"玻璃 → 空氣是高 → 低。","光由玻璃進入空氣應該偏離法線。"],
+[4,"Which correctly compares reflection and refraction?",["Reflection: light bounces back; refraction: light enters a new medium and bends","Both mean light bouncing back","Refraction only happens with mirrors","Reflection only happens in water"],"Bounce vs bend.","Reflection sends light back; refraction bends light as it passes into a new medium.",
+ "以下哪一項正確比較反射和折射？",["反射：光反彈；折射：光進入新介質並屈折","兩者都是光反彈","折射只在鏡子發生","反射只在水中發生"],"反彈與屈折。","反射把光彈回；折射令光進入新介質時屈折。"],
+[4,"Why does the Sun look slightly higher in the sky at sunset than it really is?",["The air refracts sunlight as it enters the atmosphere","The Sun moves up","Clouds reflect it","The Sun is luminous"],"Air is a medium too.","The atmosphere bends sunlight, so the Sun appears a little higher.",
+ "為甚麼日落時太陽看起來比實際位置稍高？",["陽光進入大氣層時被空氣折射","太陽向上移","雲層反射了它","太陽是發光體"],"空氣也是介質。","大氣層令陽光屈折，所以太陽看起來稍高。"],
+[5,"A student says 'Light bends because the water pushes it.' Evaluate.",["Incorrect: light bends because its speed changes at the boundary","Correct","Incorrect: light bends because water is luminous","Correct: water attracts light"],"What really causes refraction?","Refraction is caused by the change of speed when light enters a new medium.",
+ "有同學說：「光會屈折，是因為水推動它。」評論這個說法。",["不正確：光屈折是因為在界面速度改變","正確","不正確：因為水是發光體","正確：水會吸引光"],"折射的真正原因是甚麼？","折射是由光進入新介質時速度改變造成的。"],
+[5,"Which observation best shows refraction?",["A straight straw looks bent at the water surface","A shadow behind a tree","Your face in a mirror","An echo in a hall"],"Which one involves crossing a boundary?","The bent-looking straw is caused by light refracting at the water surface.",
+ "以下哪一項觀察最能顯示折射？",["筆直的飲管在水面位置看起來彎曲","樹後的影子","鏡中的臉","禮堂的回聲"],"哪一個涉及穿過界面？","看起來彎曲的飲管是由光在水面折射造成的。"],
+[5,"At the same angle, light bends more entering glass than entering water. Which conclusion is justified?",["Glass has a higher refractive index than water","Water always bends light more","Light is faster in glass","The experiment must be wrong"],"More bending...","More bending towards the normal means glass has the higher refractive index.",
+ "以相同角度射入，光進入玻璃比進入水屈折得多。哪個結論合理？",["玻璃的折射率比水高","水一定令光屈折得更多","光在玻璃中較快","實驗一定錯了"],"屈折越多……","偏向法線更多，代表玻璃的折射率較高。"],
+[5,"Which warning sign would be most useful at a swimming pool?",["\"The water is deeper than it looks\"","\"The water is shallower than it looks\"","\"The water is luminous\"","\"Do not look at the water\""],"Refraction makes pools look...","Pools look shallower than they really are, so the useful warning is that they're deeper than they look.",
+ "泳池最需要哪一個警告牌？",["「水比看起來深」","「水比看起來淺」","「水會發光」","「不要看水」"],"折射令泳池看起來……","泳池看起來比實際淺，所以有用的警告是「水比看起來深」。"],
+[5,"Which statement is FALSE?",["Light always bends when it crosses a boundary, whatever the angle","A ray along the normal does not bend","Refraction happens because speed changes","Air → glass bends light towards the normal"],"Think about the normal.","A ray along the normal does not bend, so 'always bends' is false.",
+ "以下哪一項是錯的？",["無論角度如何，光穿過界面時一定屈折","沿法線的光線不屈折","折射是因為速度改變","空氣 → 玻璃時光偏向法線"],"想想法線。","沿法線的光線不屈折，所以「一定屈折」是錯的。"],
+[6,"Plan a quick class demo of refraction with everyday items. Which works?",["Put a pencil in a glass of water and look from the side","Shine a torch at a mirror","Look at your shadow","Blow up a balloon"],"You need light crossing water and air.","A pencil in water, viewed from the side, looks bent: refraction.",
+ "用日常物品設計一個折射的簡單示範。哪個可行？",["把鉛筆放進一杯水，從側面看","用電筒照鏡子","看自己的影子","吹氣球"],"需要光穿過水和空氣。","從側面看水中的鉛筆好像彎了：這就是折射。"],
+[6,"A coin in an empty cup is just hidden behind the rim. How can you make it appear without moving your head?",["Pour water in: refraction bends light from the coin over the rim to your eye","Add a mirror to the bottom","Turn off the lights","Shake the cup"],"Water bends light leaving it.","With water in the cup, light from the coin bends away from the normal at the surface and reaches your eye.",
+ "空杯底的硬幣剛好被杯邊擋住。怎樣可以不移動頭部就看到它？",["倒水進杯：折射令硬幣的光越過杯邊進入眼睛","在杯底加一面鏡","關燈","搖動杯子"],"水令離開的光屈折。","杯中有水時，硬幣的光在水面偏離法線，就能到達你的眼睛。"],
+[6,"You design a glass-bottom boat for viewing fish. What should visitors be told?",["Fish look closer than they really are","Fish look further away than they are","Fish look upside down","Fish look bigger because of reflection"],"Apparent depth.","Refraction makes the fish appear closer to the surface than they really are.",
+ "你設計了一艘玻璃底觀魚船。應該提醒遊客甚麼？",["魚看起來比實際近","魚看起來比實際遠","魚看起來上下倒轉","魚因反射看起來較大"],"視深。","折射令魚看起來比實際更接近水面。"],
+[6,"You plan a fair test to compare how much different liquids bend light. What must stay the same?",["The angle at which the ray enters each liquid","The type of liquid","Nothing needs to stay the same","The number of students watching"],"Only change one thing at a time.","Keep the angle of incidence the same so only the liquid changes.",
+ "你計劃一個公平測試，比較不同液體令光屈折的程度。甚麼必須保持不變？",["光線射入每種液體的角度","液體種類","不需要保持任何東西不變","觀看的學生人數"],"每次只改變一樣東西。","保持入射角不變，只改變液體。"]
+],
+room4: [
+[1,"What does TIR stand for?",["Total internal reflection","Total inside refraction","True image reflection","Thin internal ray"],"T... I... R...","TIR = total internal reflection.",
+ "TIR 是甚麼的縮寫？",["全內反射","全內折射","真實影像反射","細小內部光線"],"T……I……R……","TIR = 全內反射。"],
+[1,"TIR can only happen when light goes from a ___ refractive index to a ___ one.",["higher; lower","lower; higher","equal; equal"],"Glass → air.","Light must travel from a higher to a lower refractive index.",
+ "只有當光從折射率 ___ 的介質射向 ___ 的介質時，才可能發生全內反射。",["較高；較低","較低；較高","相同；相同"],"玻璃 → 空氣。","光必須從折射率較高射向較低的介質。"],
+[1,"For TIR, the angle of incidence must be ___ the critical angle.",["greater than","smaller than","equal to half of"],"A large angle.","The angle of incidence must be greater than the critical angle.",
+ "要發生全內反射，入射角必須 ___ 臨界角。",["大於","小於","等於一半"],"大角度。","入射角必須大於臨界角。"],
+[1,"Which carries internet data using TIR?",["Optical fibre","Copper nail","Plane mirror","Concave lens"],"A thin glass thread.","Optical fibres carry data as light using TIR.",
+ "哪一項利用全內反射傳送互聯網數據？",["光纖","銅釘","平面鏡","凹透鏡"],"一條幼玻璃絲。","光纖利用全內反射以光傳送數據。"],
+[1,"Which gemstone sparkles strongly because of TIR?",["Diamond","Chalk","Wood","Clay"],"The most famous sparkle.","A diamond's sparkle comes from light being totally internally reflected inside it.",
+ "哪種寶石因全內反射而閃閃生輝？",["鑽石","粉筆","木","泥"],"最著名的閃爍。","鑽石的閃爍來自光在內部發生全內反射。"],
+[1,"In binoculars, what uses TIR to turn light?",["Triangular prisms","Plane mirrors","Concave lenses","Colour filters"],"Glass shapes with three sides.","Triangular prisms in binoculars turn light by TIR.",
+ "雙筒望遠鏡用甚麼以全內反射轉光？",["三稜鏡","平面鏡","凹透鏡","色濾片"],"有三條邊的玻璃。","雙筒望遠鏡內的三稜鏡利用全內反射轉光。"],
+[2,"What is the critical angle?",["The angle of incidence beyond which TIR happens, for light going into a lower refractive index","The angle between a mirror and the normal","The angle when light travels along the normal","The angle at which a lens bends light"],"Beyond it, no light escapes.","Beyond the critical angle, light going into a lower refractive index is totally reflected.",
+ "甚麼是臨界角？",["光射向折射率較低的介質時，入射角超過它便會發生全內反射的角","鏡面與法線之間的角","光沿法線前進的角","透鏡屈折光的角"],"超過它，光就逃不出去。","入射角超過臨界角時，射向較低折射率介質的光會全部反射。"],
+[2,"Why can't TIR happen when light goes from air into water?",["Air has a lower refractive index, so the light bends towards the normal and enters","Water is too dark","Air absorbs light","TIR needs mirrors"],"Check condition 1.","Going from lower to higher refractive index, light always enters, so no TIR.",
+ "為甚麼光由空氣射進水時不會發生全內反射？",["空氣的折射率較低，光偏向法線並進入水中","水太暗","空氣吸收光","全內反射需要鏡子"],"檢查條件一。","由低折射率到高折射率，光總會進入，不會發生全內反射。"],
+[2,"What happens to light in an optical fibre when it hits the side?",["It is totally internally reflected and stays inside","It leaks out every time","It stops","It turns into sound"],"Remember the zig-zag.","The light keeps being totally internally reflected, so it stays inside the fibre.",
+ "光纖內的光射到側面時會怎樣？",["發生全內反射，留在光纖內","每次都漏出去","停止","變成聲音"],"記得之字形路徑。","光不斷發生全內反射，所以留在光纖內。"],
+[2,"Why is TIR better than a mirror in some devices?",["Almost all the light is reflected, so images are brighter, with no coating to wear off","Mirrors are luminous","TIR only works in the dark","Mirrors bend light"],"Total means...","TIR reflects almost all the light and needs no silver coating.",
+ "為甚麼在某些裝置中，全內反射比鏡子好？",["幾乎所有光都被反射，影像更亮，又沒有塗層會磨損","鏡子是發光體","全內反射只在黑暗中有效","鏡子會屈折光"],"「全」代表……","全內反射幾乎反射所有光，而且不需要鍍銀。"],
+[2,"Inside glass, the angle of incidence is smaller than the critical angle. What mostly happens?",["Light refracts out into the air","Total internal reflection","The light stops","The light bends towards the normal"],"Condition 2 isn't met.","Below the critical angle, most light refracts out (bending away from the normal).",
+ "在玻璃內，入射角小於臨界角。大部分光會怎樣？",["折射進入空氣","全內反射","停止","偏向法線"],"條件二不符合。","小於臨界角時，大部分光折射出去（偏離法線）。"],
+[2,"Why does a diamond sparkle so much?",["Light is totally internally reflected many times inside before it leaves","It gives out light","It is a mirror","It absorbs all light"],"Light bounces inside.","Light reflects around inside the diamond by TIR before leaving through the top.",
+ "為甚麼鑽石如此閃爍？",["光在內部多次全內反射後才射出","它會發光","它是鏡子","它吸收所有光"],"光在內部反彈。","光在鑽石內多次全內反射，然後從頂部射出。"],
+[2,"What does 'internal' mean in total internal reflection?",["The reflection happens inside the denser medium, at its boundary","It happens inside your eye","It happens in air only","It happens inside a mirror's metal"],"Where is the light?","The light is reflected back inside the material with the higher refractive index.",
+ "全內反射中的「內」是甚麼意思？",["反射在較密介質的內部、在界面上發生","在眼睛內發生","只在空氣中發生","在鏡子的金屬內發生"],"光在哪裏？","光在折射率較高的物質內部被反射回去。"],
+[3,"A doctor uses an endoscope to see inside a patient's stomach. How does light travel along it?",["By TIR along optical fibres","By refraction through one lens only","By bouncing off the stomach walls","By radio waves"],"An endoscope contains fibres.","Light travels along the endoscope's optical fibres by TIR.",
+ "醫生用內窺鏡觀察病人的胃部。光怎樣沿內窺鏡傳送？",["在光纖中以全內反射傳送","只靠一塊透鏡折射","在胃壁上反彈","以無線電波傳送"],"內窺鏡內有光纖。","光在內窺鏡的光纖中以全內反射傳送。"],
+[3,"Under water, a diver looks up at the surface at a large angle (greater than the critical angle). What does the diver see there?",["A reflection of things under the water, like a mirror","The clear sky","Nothing at all","A rainbow"],"Water → air at a large angle.","The surface totally reflects light from below, acting like a mirror.",
+ "潛水員在水中以大角度（大於臨界角）向上望水面，會看見甚麼？",["像鏡子一樣，看見水中物件的倒影","清晰的天空","甚麼也看不見","彩虹"],"水 → 空氣，大角度。","水面把下方的光全部反射，像一面鏡子。"],
+[3,"A ray inside a glass block hits the surface at exactly the critical angle. The refracted ray travels...",["along the surface of the block","straight up along the normal","back along the incident ray","into the glass at a right angle"],"It's the borderline case.","At the critical angle, the refracted ray just skims along the surface.",
+ "玻璃磚內的光線剛好以臨界角射向表面，折射線會……",["沿玻璃磚的表面前進","沿法線直上","沿入射線返回","以直角射入玻璃"],"這是臨界情況。","在臨界角時，折射線剛好貼着表面前進。"],
+[3,"An optical fibre is gently bent round a corner. Does light still travel along it?",["Yes: it keeps hitting the sides at large angles and reflects inside","No: light can't turn corners","Only if it's straight","Only if a mirror is added"],"Large angles at the sides.","In a gently bent fibre, light still hits the sides at angles bigger than the critical angle.",
+ "光纖被輕輕彎過轉角，光還能沿它傳送嗎？",["能：光仍以大角度射向側面，在內部反射","不能：光不能轉彎","只在筆直時可以","要加鏡子才可以"],"側面的大角度。","輕輕彎曲的光纖內，光射向側面的角度仍大於臨界角。"],
+[3,"A prism periscope turns light through a right angle. What happens inside each prism?",["Light hits the long face at more than the critical angle and is totally reflected","Light splits into colours","Light is absorbed","Light goes straight through"],"Prisms can act like perfect mirrors.","Inside each prism, light is totally internally reflected at the long face.",
+ "稜鏡潛望鏡把光轉一個直角。每塊稜鏡內發生甚麼事？",["光以大於臨界角射向長邊，發生全內反射","光分成多種顏色","光被吸收","光直線穿過"],"稜鏡可以像完美的鏡子。","在每塊稜鏡內，光在長邊發生全內反射。"],
+[3,"Light in glass reaches air at an angle bigger than the critical angle. Which ray exists?",["Only a reflected ray inside the glass","Only a refracted ray in air","Both, equally strong","Neither"],"Total means total.","All the light is reflected back into the glass.",
+ "玻璃中的光以大於臨界角的角度射向空氣，會出現哪條光線？",["只有玻璃內的反射線","只有空氣中的折射線","兩條一樣強","都沒有"],"「全」就是全部。","所有光都反射回玻璃內。"],
+[3,"Which situation could give TIR?",["Light in water heading up to the surface at a large angle","Light in air heading into water","Light hitting a brick wall","Light hitting a mirror in air"],"Check both conditions.","Water → air at a large angle meets both conditions.",
+ "以下哪個情況可能發生全內反射？",["水中的光以大角度射向水面","空氣中的光射進水","光射向磚牆","空氣中的光射向鏡子"],"檢查兩個條件。","水 → 空氣並且角度大，符合兩個條件。"],
+[4,"A ray in glass partly refracts out and partly reflects. What can you say about its angle of incidence?",["It is smaller than the critical angle","It is greater than the critical angle","It must be zero"],"Some light escapes.","If some light refracts out, the angle is below the critical angle.",
+ "玻璃中的光線部分折射出去、部分反射。它的入射角怎樣？",["小於臨界角","大於臨界角","一定是零"],"有些光逃了出去。","有光折射出去，代表入射角小於臨界角。"],
+[4,"Why is an optical fibre's core surrounded by cladding with a lower refractive index?",["So light going from core to cladding can be totally internally reflected","To make the fibre colourful","To slow the light down to zero","To absorb the light"],"Condition 1 again.","Core (higher) → cladding (lower) lets TIR keep light in the core.",
+ "為甚麼光纖的纖芯外面包着折射率較低的包層？",["令光由纖芯射向包層時可以發生全內反射","令光纖更色彩繽紛","令光速降至零","吸收光"],"又是條件一。","纖芯（較高）→ 包層（較低），全內反射把光留在纖芯。"],
+[4,"Compare a mirror periscope and a prism periscope. What is an advantage of prisms?",["Prisms reflect nearly all the light by TIR, giving a brighter image","Prisms are cheaper than paper","Prisms split light into colours for better views","Prisms make images real"],"Total reflection.","TIR reflects almost all light, so prism periscopes give brighter, clearer images.",
+ "比較鏡子潛望鏡和稜鏡潛望鏡。稜鏡的優點是甚麼？",["稜鏡以全內反射反射幾乎所有光，影像更亮","稜鏡比紙便宜","稜鏡把光分色，看得更清楚","稜鏡形成實像"],"全部反射。","全內反射幾乎反射所有光，所以稜鏡潛望鏡的影像更亮更清晰。"],
+[4,"Which case will NOT give TIR?",["Light going from glass to air at a small angle","Light going from glass to air at a large angle","Light going from water to air at a large angle"],"Check the angle.","At a small angle, condition 2 fails, so light refracts out.",
+ "哪個情況不會發生全內反射？",["光以小角度由玻璃射向空氣","光以大角度由玻璃射向空氣","光以大角度由水射向空氣"],"檢查角度。","角度小時條件二不符合，光會折射出去。"],
+[4,"Light sent into an optical fibre at too steep an angle leaks out of the side. Why?",["At the side, its angle of incidence was smaller than the critical angle","The fibre was too long","The light was too bright","The fibre was luminous"],"Steep entry → small angle at the side.","A steep ray hits the side at a small angle of incidence, below the critical angle, so it escapes.",
+ "光以太斜的角度射進光纖，從側面漏了出去。為甚麼？",["光射到側面時入射角小於臨界角","光纖太長","光太亮","光纖是發光體"],"射入太斜 → 在側面的角度小。","太斜的光線以小入射角射向側面，小於臨界角，所以逃了出去。"],
+[4,"Which material would sparkle more like a diamond: higher or lower refractive index?",["Higher, because its critical angle is smaller so TIR happens more easily","Lower, because light passes straight through","It makes no difference","A metal, which has no refraction"],"Smaller critical angle → ?","A higher refractive index gives a smaller critical angle, so more light is trapped and sparkles.",
+ "哪種物料會像鑽石般更閃爍：折射率較高還是較低？",["較高，因為臨界角較小，更容易發生全內反射","較低，因為光直接穿過","沒有分別","金屬，因為沒有折射"],"臨界角較小 → ？","折射率較高，臨界角較小，更多光被困住而閃爍。"],
+[5,"A student claims 'TIR is just ordinary reflection from a mirror.' Evaluate.",["Wrong: TIR happens at a boundary inside a transparent material, with no mirror coating","Right","Wrong: TIR only happens in air","Right: all reflections are total"],"Where does TIR happen?","TIR happens at the boundary of a transparent material; no mirror is involved.",
+ "有同學說：「全內反射只是普通的鏡面反射。」評論這個說法。",["錯：全內反射在透明物料內的界面發生，不需要鏡面塗層","對","錯：全內反射只在空氣中發生","對：所有反射都是全反射"],"全內反射在哪裏發生？","全內反射在透明物料的界面發生，並不涉及鏡子。"],
+[5,"What is the strongest reason optical fibres replace copper wires for internet?",["They carry huge amounts of data as light by TIR with little loss","They are luminous","They split light into colours","They are heavier"],"Light, TIR, very little loss.","Fibres carry large amounts of data as light, trapped by TIR, over long distances.",
+ "光纖取代銅線傳送互聯網數據，最有力的理由是甚麼？",["以光和全內反射傳送大量數據，損耗少","它們是發光體","它們把光分色","它們較重"],"光、全內反射、損耗少。","光纖以全內反射困住光，可遠距離傳送大量數據。"],
+[5,"Which statement about the two TIR conditions is correct?",["Both must be met at the same time","Only one is needed","Neither matters","They contradict each other"],"Two conditions...","TIR needs both conditions together.",
+ "以下哪一項關於全內反射兩個條件的說法正確？",["兩個條件必須同時符合","只需要一個","兩個都不重要","兩個互相矛盾"],"兩個條件……","全內反射需要兩個條件同時符合。"],
+[5,"An engineer wants a fibre that keeps light in even when bent more tightly. What helps?",["Make the core's refractive index much higher than the cladding's","Make them equal","Remove the cladding and paint the fibre black","Make the fibre shorter"],"Smaller critical angle traps more light.","A bigger difference in refractive index gives a smaller critical angle, so TIR happens even at tighter bends.",
+ "工程師想光纖彎得更緊時仍能把光留住。怎樣做有幫助？",["令纖芯的折射率比包層高得多","令兩者相等","除去包層並塗黑光纖","令光纖更短"],"臨界角越小，困住的光越多。","折射率相差越大，臨界角越小，彎得更緊也能發生全內反射。"],
+[5,"Which device would STOP working if TIR stopped happening?",["An optical fibre network","A plane bathroom mirror","A torch","A pinhole camera"],"Which one relies on TIR?","Optical fibre networks depend on TIR to keep light inside.",
+ "如果全內反射不再發生，哪個裝置會失效？",["光纖網絡","浴室平面鏡","電筒","針孔照相機"],"哪一個依賴全內反射？","光纖網絡依靠全內反射把光留在光纖內。"],
+[6,"Design a 'light pipe' to bring sunlight into a dark basement. What's the best idea?",["Use bundles of optical fibres so the light stays inside by TIR","Use a long black tube","Use a concave lens on the roof only","Use coloured filters"],"Think endoscope for sunlight.","Optical fibres guide the light down by TIR with little loss.",
+ "設計一條「光管」把陽光帶進黑暗的地庫。最好的方法是甚麼？",["用一束束光纖，以全內反射把光留在內","用一條長黑管","只在屋頂裝凹透鏡","用色濾片"],"想想為陽光設計的內窺鏡。","光纖以全內反射把光引導下去，損耗少。"],
+[6,"You want light to zig-zag along a curved plastic rod for a science fair. What must you make sure of?",["Light hits the rod's sides at angles greater than the critical angle","Light enters along the normal of the sides","The rod is painted black inside","The rod is very short"],"Condition 2.","If the light always meets the sides above the critical angle, it stays trapped.",
+ "你想在科學展令光沿彎曲的膠棒左右來回走。必須確保甚麼？",["光射向膠棒側面的角度大於臨界角","光沿側面的法線射入","膠棒內部塗黑","膠棒非常短"],"條件二。","只要光射向側面的角度總大於臨界角，光就會被困住。"],
+[6,"Create a periscope WITHOUT mirrors. What would you use?",["Two right-angled glass prisms using TIR","Two concave lenses","Two coloured filters","Two sheets of paper"],"Prisms can reflect totally.","Two prisms turn the light by TIR, just like mirrors but brighter.",
+ "不用鏡子製作潛望鏡，你會用甚麼？",["兩塊利用全內反射的直角玻璃稜鏡","兩塊凹透鏡","兩塊色濾片","兩張紙"],"稜鏡可以全反射。","兩塊稜鏡以全內反射轉光，就像鏡子，但影像更亮。"],
+[6,"You design a fountain with lights shining up inside the water jets. Why does the light follow the curved streams?",["TIR keeps the light inside the water jet as it curves","Water is luminous","The jet absorbs the light","Gravity pulls the light down"],"Water jets act like fibres.","Light inside the jet keeps hitting the water–air boundary at large angles and is totally reflected.",
+ "你設計的噴泉在水柱內向上打燈。為甚麼光會跟着彎曲的水柱走？",["全內反射令光留在彎曲的水柱內","水是發光體","水柱吸收了光","重力把光拉下"],"水柱像光纖一樣。","水柱內的光以大角度射向水與空氣的界面，不斷全內反射。"]
+]
+};
+
+Object.assign(BANK, {
+room5: [
+[1,"A convex lens is ___ in the middle.",["thicker","thinner","the same thickness"],"Picture a magnifying glass.","A convex lens is thicker in the middle.",
+ "凸透鏡中間 ___。",["較厚","較薄","厚度一樣"],"想像放大鏡。","凸透鏡中間較厚。"],
+[1,"A concave lens is also called a ___ lens.",["diverging","converging","magnifying"],"It spreads light out.","A concave lens diverges light, so it is a diverging lens.",
+ "凹透鏡又叫 ___ 透鏡。",["發散","會聚","放大"],"它把光散開。","凹透鏡令光發散，所以叫發散透鏡。"],
+[1,"Where do parallel rays meet after passing through a convex lens?",["At the principal focus","At the optical centre","They never meet"],"Principal ___.","A convex lens converges parallel rays to the principal focus F.",
+ "平行光線穿過凸透鏡後在哪裏相交？",["主焦點","光心","永不相交"],"主……","凸透鏡把平行光線會聚到主焦點 F。"],
+[1,"The line through the centre of a lens at right angles to it is the...",["principal axis","normal ray","focal length"],"Principal ___.","The principal axis passes through the optical centre at right angles to the lens.",
+ "穿過透鏡中心並垂直於透鏡的線叫……",["主軸","法線光線","焦距"],"主……","主軸穿過光心並垂直於透鏡。"],
+[1,"Which lens is used in a magnifying glass?",["Convex","Concave","Neither"],"It makes things look bigger.","A magnifying glass uses a convex lens.",
+ "放大鏡使用哪種透鏡？",["凸透鏡","凹透鏡","都不是"],"它令東西看起來更大。","放大鏡使用凸透鏡。"],
+[1,"Which kind of image can be formed on a screen?",["A real image","A virtual image","Both","Neither"],"Where rays really meet.","Only real images can be caught on a screen.",
+ "哪種像可以投射在屏幕上？",["實像","虛像","兩者都可以","兩者都不可以"],"光線真的相交的地方。","只有實像可以投射在屏幕上。"],
+[2,"What does 'erect' mean for an image?",["It is the right way up","It is upside down","It is bigger","It is real"],"Erect = upright.","An erect image is the right way up.",
+ "像是「正立」代表甚麼？",["方向正確（不倒轉）","上下倒轉","較大","是實像"],"正立 = 直立。","正立的像方向正確，沒有倒轉。"],
+[2,"Why can't a concave lens form a real image of a real object?",["It spreads rays out, so they never actually meet","It is too thick","It only works in the dark","It reflects all light"],"Real images need rays to meet.","A concave lens diverges rays, so they never really meet to form a real image.",
+ "為甚麼凹透鏡不能為實物形成實像？",["它把光線散開，光線永遠不會真正相交","它太厚","它只在黑暗中有效","它反射所有光"],"實像需要光線相交。","凹透鏡令光線發散，光線永遠不會真正相交形成實像。"],
+[2,"What is the difference between a real image and a virtual image?",["Real: rays actually meet and it can be caught on a screen; virtual: it can't","Real images are always bigger","Virtual images are always upside down","There is no difference"],"Screen test.","Real images form where rays meet and appear on a screen; virtual images don't.",
+ "實像和虛像有甚麼分別？",["實像：光線真的相交，可投射在屏幕上；虛像不可以","實像一定較大","虛像一定倒轉","沒有分別"],"用屏幕測試。","實像在光線相交處形成並可投射在屏幕上，虛像則不可以。"],
+[2,"Why is the image on a camera's sensor upside down?",["The rays cross after passing through the convex lens","The sensor is upside down","Light travels in curves","The lens is concave"],"Rays from the top go to the bottom.","Rays from the top of the object cross over and land at the bottom, so the image is inverted.",
+ "為甚麼相機感光元件上的像是倒轉的？",["光線穿過凸透鏡後交叉","感光元件倒轉安裝","光沿曲線走","透鏡是凹透鏡"],"頂部的光線去了底部。","物體頂部的光線交叉後落在底部，所以像是倒立的。"],
+[2,"What does 'diminished' mean?",["Smaller than the object","Bigger than the object","The same size","Upside down"],"Diminish = reduce.","A diminished image is smaller than the object.",
+ "「縮小」是甚麼意思？",["比物體小","比物體大","大小相同","上下倒轉"],"縮小 = 變細。","縮小的像比物體小。"],
+[2,"After a concave lens, parallel rays appear to come from which point?",["The focus F' on the same side as the incoming light","The focus on the far side","The optical centre","Nowhere"],"Trace the spreading rays backwards.","Traced back, the diverging rays appear to come from F' on the same side as the light comes from.",
+ "平行光線穿過凹透鏡後，看似從哪一點發出？",["與入射光同一邊的焦點 F'","另一邊的焦點","光心","沒有任何一點"],"把散開的光線向後延長。","把發散光線向後延長，它們看似從入射光同一邊的 F' 發出。"],
+[2,"Which lens could start a fire by focusing sunlight (so never leave one in the sun)?",["Convex lens","Concave lens","Plane glass"],"Which one converges light?","A convex lens converges sunlight to a hot spot. Keep lenses out of strong sunlight!",
+ "哪種透鏡聚焦陽光時可能引起火警（所以切勿放在陽光下）？",["凸透鏡","凹透鏡","平面玻璃"],"哪一種會會聚光？","凸透鏡會把陽光會聚成熱點。切勿把透鏡放在強烈陽光下！"],
+[3,"You hold a convex lens very close to an ant. What image do you see?",["Virtual, erect, magnified","Real, inverted, diminished","Real, erect, same size","No image"],"This is a magnifying glass.","With the ant closer than F, the lens forms a virtual, erect, magnified image.",
+ "你把凸透鏡放在螞蟻很近的位置，會看到甚麼像？",["虛像、正立、放大","實像、倒立、縮小","實像、正立、大小相同","沒有像"],"這就是放大鏡。","螞蟻比 F 更近時，透鏡形成虛像、正立、放大的像。"],
+[3,"A camera photographs a tall tree far away. The image on the sensor is...",["Real, inverted, diminished","Virtual, erect, magnified","Real, erect, magnified","Virtual, inverted, same size"],"A big tree fits on a small sensor.","A far object gives a real, inverted, diminished image.",
+ "相機拍攝遠處的一棵大樹。感光元件上的像是……",["實像、倒立、縮小","虛像、正立、放大","實像、正立、放大","虛像、倒立、大小相同"],"一棵大樹放進細小的感光元件。","遠處物體形成實像、倒立、縮小的像。"],
+[3,"Through a door peephole, visitors look small but upright. Which lens is used?",["Concave","Convex","A plane mirror"],"Small and upright...","A concave lens gives a small, upright, virtual image of the whole doorway.",
+ "從防盜眼看出去，訪客看起來細小但正立。用的是哪種透鏡？",["凹透鏡","凸透鏡","平面鏡"],"細小又正立……","凹透鏡為整個門口形成細小、正立的虛像。"],
+[3,"A short-sighted student can't see the board clearly. Which lens helps?",["A concave lens","A convex lens","A prism"],"Short-sight spectacles...","Short-sight spectacles use concave lenses.",
+ "一位近視的同學看不清黑板。哪種透鏡能幫忙？",["凹透鏡","凸透鏡","三稜鏡"],"近視眼鏡……","近視眼鏡使用凹透鏡。"],
+[3,"You look at distant hills through a concave lens. They look...",["upright and smaller","upside down and bigger","upside down and smaller","upright and bigger"],"Concave images are always...","A concave lens always gives upright, diminished, virtual images.",
+ "你透過凹透鏡看遠處的山，山看起來……",["正立而較小","倒立而較大","倒立而較小","正立而較大"],"凹透鏡的像永遠……","凹透鏡永遠形成正立、縮小的虛像。"],
+[3,"Rays parallel to the principal axis enter a concave lens. After the lens they...",["spread out","meet at F","stay parallel","reflect back"],"Diverging lens.","A concave lens makes parallel rays spread out.",
+ "平行於主軸的光線射進凹透鏡，穿過後會……",["散開","在 F 相交","保持平行","反射回去"],"發散透鏡。","凹透鏡令平行光線散開。"],
+[3,"A projector shows a small slide as a big picture on a screen. The image is...",["Real, inverted, magnified","Virtual, erect, diminished","Virtual, erect, magnified","Real, erect, same size"],"On a screen, and bigger.","A projector forms a real, inverted, magnified image.",
+ "投影機把細小的幻燈片投射成屏幕上的大畫面。這個像是……",["實像、倒立、放大","虛像、正立、縮小","虛像、正立、放大","實像、正立、大小相同"],"在屏幕上，而且較大。","投影機形成實像、倒立、放大的像。"],
+[4,"An object far from a convex lens is moved closer (still beyond F). What happens to the real image?",["It moves further from the lens and gets bigger","It moves closer and gets smaller","It becomes virtual straight away","Nothing changes"],"Camera → projector.","As the object approaches F, the real image moves further away and grows.",
+ "一件遠離凸透鏡的物體被移近（仍在 F 以外）。實像會怎樣？",["離透鏡更遠，並且變大","更接近透鏡，並且變小","立即變成虛像","沒有變化"],"相機 → 投影機。","物體移近 F 時，實像移得更遠並變大。"],
+[4,"Why can a convex lens form both real and virtual images, but a concave lens can't?",["A convex lens converges rays so they can meet; a concave lens always diverges them","Convex lenses are bigger","Concave lenses are mirrors","Only convex lenses are made of glass"],"Can the rays meet?","Converging rays can meet (real image); diverging rays never meet (only virtual).",
+ "為甚麼凸透鏡可形成實像和虛像，凹透鏡卻不能？",["凸透鏡會聚光線，光線可以相交；凹透鏡永遠令光線發散","凸透鏡較大","凹透鏡是鏡子","只有凸透鏡是玻璃做的"],"光線能相交嗎？","會聚的光線可以相交（實像）；發散的光線永不相交（只有虛像）。"],
+[4,"An image is upright and bigger than the object. What can you conclude?",["It is a virtual image from a convex lens, with the object closer than F","It is a real image","It is from a concave lens","It is from a plane mirror"],"Upright + magnified.","Only a convex lens with the object inside F gives an upright, magnified image.",
+ "一個像正立並且比物體大。你可以得出甚麼結論？",["是凸透鏡形成的虛像，物體比 F 更近","是實像","來自凹透鏡","來自平面鏡"],"正立 + 放大。","只有物體在 F 以內的凸透鏡才形成正立、放大的像。"],
+[4,"Compare a projector and a camera. Which is correct?",["Both form real, inverted images; the projector's is magnified, the camera's diminished","Both form virtual images","The projector's image is diminished","The camera's image is magnified"],"Big picture vs small sensor.","Both give real, inverted images, but a projector enlarges and a camera shrinks.",
+ "比較投影機和相機。哪一項正確？",["兩者都形成實像、倒立；投影機的像放大，相機的像縮小","兩者都形成虛像","投影機的像縮小","相機的像放大"],"大畫面與細小感光元件。","兩者都形成實像、倒立，但投影機放大，相機縮小。"],
+[4,"An inverted image forms on a screen. Which lens and image type?",["Convex; real","Concave; virtual","Concave; real","Convex; virtual"],"On a screen = ?","A screen image is real, and only a convex lens can form one.",
+ "一個倒立的像形成在屏幕上。是哪種透鏡和哪種像？",["凸透鏡；實像","凹透鏡；虛像","凹透鏡；實像","凸透鏡；虛像"],"在屏幕上 = ？","屏幕上的像是實像，只有凸透鏡能形成。"],
+[4,"Why is a more strongly curved convex lens called 'stronger'?",["It bends light more, so the rays meet closer to the lens","It is heavier","It reflects more light","It is darker"],"More bending...","A more curved lens bends light more, bringing the focus closer to the lens.",
+ "為甚麼較彎曲的凸透鏡叫「較強」？",["它令光屈折更多，光線在更接近透鏡處相交","它較重","它反射更多光","它較暗"],"屈折更多……","較彎曲的透鏡令光屈折更多，焦點更接近透鏡。"],
+[5,"A student says 'a concave lens can magnify small print.' Evaluate.",["Wrong: a concave lens always makes images smaller","Right","Right: all lenses magnify","Wrong: concave lenses turn images upside down"],"Concave images are...","A concave lens always forms diminished images, so it can't magnify.",
+ "有同學說：「凹透鏡可以放大細字。」評論這個說法。",["錯：凹透鏡的像永遠縮小","對","對：所有透鏡都會放大","錯：凹透鏡令像倒轉"],"凹透鏡的像……","凹透鏡永遠形成縮小的像，所以不能放大。"],
+[5,"Which is the best lens for a front-door peephole, and why?",["Concave: it gives a wide, upright view of the whole visitor","Convex: it makes the visitor huge","Plane glass: no change","A prism: it splits colours"],"You want to see the whole person.","A concave lens gives a small, upright view that fits the whole doorway.",
+ "大門防盜眼最適合用哪種透鏡？為甚麼？",["凹透鏡：可看見整個訪客、闊而正立的影像","凸透鏡：令訪客變得巨大","平面玻璃：沒有變化","三稜鏡：把顏色分開"],"你想看見整個人。","凹透鏡形成細小、正立的影像，能看見整個門口。"],
+[5,"Why is leaving a magnifying glass on a sunny windowsill dangerous?",["It can converge sunlight to a hot spot and start a fire","It turns into a mirror","It makes the room darker","It gives out gamma rays"],"Convex lenses converge light.","A convex lens can focus sunlight onto a small hot spot that may burn things.",
+ "為甚麼把放大鏡留在陽光充足的窗台上很危險？",["它可能把陽光會聚成熱點，引起火警","它會變成鏡子","它令房間變暗","它會發出 γ 射線"],"凸透鏡會聚光。","凸透鏡可以把陽光聚焦成一個細小熱點，可能燒着東西。"],
+[5,"Which evidence proves an image is real?",["It can be caught on a screen","It looks bright","It is upright","It is small"],"The screen test.","Only a real image can appear on a screen.",
+ "哪項證據可證明一個像是實像？",["它可以投射在屏幕上","它看起來很亮","它是正立的","它很細小"],"屏幕測試。","只有實像可以出現在屏幕上。"],
+[5,"Which statement about lenses is FALSE?",["A concave lens can form a real image of a real object on a screen","A convex lens converges parallel rays","A concave lens is thinner in the middle","A magnifying glass is a convex lens"],"Concave images are always virtual.","A concave lens never forms a real image of a real object.",
+ "以下哪一項關於透鏡的說法是錯的？",["凹透鏡可以把實物的實像投射在屏幕上","凸透鏡會聚平行光線","凹透鏡中間較薄","放大鏡是凸透鏡"],"凹透鏡的像永遠是虛像。","凹透鏡永遠不能為實物形成實像。"],
+[6,"You want to project a phone video onto a wall using a shoebox and a lens. Which set-up works?",["A convex lens, with the phone between F and 2F, placed upside down","A concave lens with the phone far away","A plane mirror only","A convex lens with the phone closer than F"],"Projector rules.","Object between F and 2F gives a real, inverted, magnified image, so the phone goes in upside down.",
+ "你想用鞋盒和透鏡把手機影片投射到牆上。哪個安排可行？",["用凸透鏡，手機放在 F 與 2F 之間，並倒轉放置","用凹透鏡，手機放得很遠","只用平面鏡","用凸透鏡，手機比 F 更近"],"投影機原理。","物體在 F 與 2F 之間形成實像、倒立、放大的像，所以手機要倒轉放。"],
+[6,"You upgrade a pinhole camera so the image is brighter AND sharp. What do you put in the hole?",["A convex lens","A concave lens","A small mirror","Tinted glass"],"Let in more light but still focus it.","A convex lens lets in more light and focuses it into a sharp real image.",
+ "你改良針孔照相機，令影像更亮又清晰。應該在孔中放甚麼？",["凸透鏡","凹透鏡","小鏡子","有色玻璃"],"讓更多光進入，但仍能聚焦。","凸透鏡讓更多光進入，並把光聚焦成清晰的實像。"],
+[6,"You need to read tiny writing on a stamp. How should you use a convex lens?",["Hold it close, so the stamp is nearer to the lens than F","Hold it very far away","Use it as a mirror","Look through its edge"],"Magnifying glass position.","With the stamp inside F, you see a virtual, erect, magnified image.",
+ "你要閱讀郵票上的細小文字，應該怎樣使用凸透鏡？",["放近一點，令郵票比 F 更接近透鏡","放得很遠","當作鏡子用","從邊緣看"],"放大鏡的位置。","郵票在 F 以內時，你會看到虛像、正立、放大的像。"],
+[6,"Your torch gives a divergent beam, but you want a small, bright spot of light. Which lens helps?",["A convex lens to converge the light","A concave lens","A plane mirror behind you","A red filter"],"You need rays to come together.","A convex lens converges the spreading light into a small bright spot.",
+ "你的電筒發出發散光束，但你想要一個細小明亮的光點。哪種透鏡能幫忙？",["凸透鏡，把光會聚","凹透鏡","身後的平面鏡","紅色濾色片"],"你需要光線聚合。","凸透鏡把散開的光會聚成細小明亮的光點。"]
+],
+room6: [
+[1,"What happens when white light passes through a prism?",["It splits into a spectrum of colours","It turns red","It disappears","It becomes a parallel beam only"],"Rainbow!","A prism disperses white light into a spectrum.",
+ "白光穿過三稜鏡會怎樣？",["分成由多種顏色組成的光譜","變成紅色","消失","只變成平行光束"],"彩虹！","三稜鏡把白光色散成光譜。"],
+[1,"What is the splitting of white light into colours called?",["Dispersion","Reflection","Absorption","Diffusion"],"Dis...","This is called dispersion.",
+ "把白光分成多種顏色叫甚麼？",["色散","反射","吸收","擴散"],"色……","這叫做色散。"],
+[1,"Which colour bends the LEAST in a prism?",["Red","Violet","Green","Blue"],"Top of the spectrum.","Red bends the least.",
+ "在三稜鏡中哪種顏色屈折最少？",["紅","紫","綠","藍"],"光譜的頂端。","紅光屈折最少。"],
+[1,"Which colour bends the MOST in a prism?",["Violet","Red","Yellow","Orange"],"The end of ROYGBIV.","Violet bends the most.",
+ "在三稜鏡中哪種顏色屈折最多？",["紫","紅","黃","橙"],"紅橙黃綠藍靛紫的最後一個。","紫光屈折最多。"],
+[1,"What are the primary colours of light?",["Red, green and blue","Red, yellow and blue","Cyan, magenta and yellow","Red, orange and violet"],"RGB!","The primary colours of light are red, green and blue.",
+ "光的三原色是甚麼？",["紅、綠、藍","紅、黃、藍","青、品紅、黃","紅、橙、紫"],"RGB！","光的三原色是紅、綠、藍。"],
+[1,"Green light + blue light = ?",["Cyan","Magenta","Yellow","White"],"G + B...","Green + blue light = cyan.",
+ "綠光 + 藍光 = ？",["青","品紅","黃","白"],"綠 + 藍……","綠光 + 藍光 = 青。"],
+[2,"Why does a banana look yellow in white light?",["It reflects red and green light (seen as yellow) and absorbs blue","It gives out yellow light","It absorbs yellow light","It reflects every colour"],"Yellow = red + green.","The banana reflects red and green light, which together look yellow, and absorbs blue.",
+ "為甚麼香蕉在白光下看起來是黃色？",["它反射紅光和綠光（看起來是黃色），吸收藍光","它發出黃光","它吸收黃光","它反射所有顏色"],"黃 = 紅 + 綠。","香蕉反射紅光和綠光，合起來看似黃色，並吸收藍光。"],
+[2,"Why does a black T-shirt look black?",["It absorbs almost all colours of light","It reflects all colours","It gives out black light","It reflects only black light"],"Little light comes back.","A black object absorbs nearly all light, so very little reaches your eyes.",
+ "為甚麼黑色 T 恤看起來是黑色？",["它吸收幾乎所有顏色的光","它反射所有顏色","它發出黑光","它只反射黑光"],"很少光反射回來。","黑色物體吸收幾乎所有光，所以很少光進入眼睛。"],
+[2,"Why does a white object look white in sunlight?",["It reflects all colours of light","It absorbs all colours","It gives out white light","It reflects only white light"],"White light is a mixture.","A white object reflects all the colours, which mix back into white.",
+ "為甚麼白色物體在陽光下看起來是白色？",["它反射所有顏色的光","它吸收所有顏色","它發出白光","它只反射白光"],"白光是混合光。","白色物體反射所有顏色，混合起來就是白色。"],
+[2,"What does a green filter do to white light?",["Lets green light through and absorbs the other colours","Paints every colour green","Reflects only green light","Blocks green light"],"Filters let their own colour pass.","A green filter transmits green light and absorbs the rest.",
+ "綠色濾色片對白光有甚麼作用？",["讓綠光通過，吸收其他顏色","把所有顏色塗成綠色","只反射綠光","阻擋綠光"],"濾色片讓自己的顏色通過。","綠色濾色片讓綠光通過，吸收其餘顏色。"],
+[2,"Why do we see a rainbow after rain?",["Water droplets disperse sunlight into colours","Clouds paint the sky","Rain is luminous","The Sun changes colour"],"Tiny prisms in the sky.","Raindrops act like tiny prisms and disperse sunlight.",
+ "為甚麼雨後會看見彩虹？",["水點把陽光色散成多種顏色","雲把天空塗上顏色","雨是發光體","太陽變了顏色"],"天空中的小三稜鏡。","雨點像細小的三稜鏡，把陽光色散。"],
+[2,"Red light + blue light = ?",["Magenta","Cyan","Yellow","Green"],"R + B...","Red + blue light = magenta.",
+ "紅光 + 藍光 = ？",["品紅","青","黃","綠"],"紅 + 藍……","紅光 + 藍光 = 品紅。"],
+[2,"Why is white light called a 'mixture'?",["It contains all the colours of the spectrum together","It is a mix of dust and light","It is only red and blue","It has no colours in it"],"A prism shows what's inside.","White light contains all the spectrum colours mixed together.",
+ "為甚麼白光被稱為「混合光」？",["它包含光譜中所有顏色","它是塵埃和光的混合","它只有紅和藍","它沒有任何顏色"],"三稜鏡顯示了它的成分。","白光包含光譜中所有顏色的混合。"],
+[3,"A blue car is lit by red light only. What colour does it look?",["Black","Blue","Red","Purple"],"Is there blue light to reflect?","The blue car absorbs red and has no blue to reflect, so it looks black.",
+ "一輛藍色汽車只被紅光照射，看起來是甚麼顏色？",["黑","藍","紅","紫"],"有藍光可以反射嗎？","藍色汽車吸收紅光，又沒有藍光可反射，所以看起來是黑色。"],
+[3,"A yellow T-shirt is lit by green light only. What colour does it look?",["Green","Yellow","Black","Red"],"Yellow objects reflect red and green.","It can reflect the green light, so it looks green.",
+ "一件黃色 T 恤只被綠光照射，看起來是甚麼顏色？",["綠","黃","黑","紅"],"黃色物體反射紅光和綠光。","它可以反射綠光，所以看起來是綠色。"],
+[3,"A sheet of white paper is lit by magenta light. What colour does it look?",["Magenta","White","Black","Cyan"],"White reflects whatever shines on it.","White paper reflects the red and blue light, so it looks magenta.",
+ "一張白紙被品紅色光照射，看起來是甚麼顏色？",["品紅","白","黑","青"],"白色會反射照在它身上的光。","白紙反射紅光和藍光，所以看起來是品紅色。"],
+[3,"White light passes through a red filter and then a blue filter. What comes out?",["No light (black)","Red","Blue","Magenta"],"What passes the first filter?","Only red passes the red filter; the blue filter absorbs red, so nothing gets through.",
+ "白光先穿過紅色濾色片，再穿過藍色濾色片。最後射出甚麼？",["沒有光（黑色）","紅光","藍光","品紅色光"],"第一塊濾色片讓甚麼通過？","只有紅光通過紅色濾色片；藍色濾色片吸收紅光，所以沒有光通過。"],
+[3,"A green leaf is lit by cyan light. What colour does it look?",["Green","Cyan","Blue","Black"],"Cyan = green + blue.","The leaf reflects the green part of the cyan light and absorbs the blue.",
+ "一塊綠葉被青色光照射，看起來是甚麼顏色？",["綠","青","藍","黑"],"青 = 綠 + 藍。","綠葉反射青光中的綠光，吸收藍光。"],
+[3,"Which two coloured lights mix to make yellow?",["Red and green","Blue and green","Red and blue","Blue and yellow"],"Not like paint!","Red + green light = yellow.",
+ "哪兩種色光混合成黃色？",["紅和綠","藍和綠","紅和藍","藍和黃"],"和顏料不同！","紅光 + 綠光 = 黃。"],
+[3,"Red, green and blue spotlights all shine on the same white wall. The wall looks...",["White","Black","Brown","Grey-green"],"All three primaries.","Red + green + blue light = white.",
+ "紅、綠、藍三盞射燈同時照在白牆上，牆看起來是……",["白色","黑色","啡色","灰綠色"],"三種原色。","紅 + 綠 + 藍光 = 白。"],
+[4,"A red apple looks black on stage. Which light could be shining on it?",["Blue light only","Red light only","White light","Yellow light"],"Which light has no red in it?","With no red light to reflect, the apple looks black. Blue light has no red.",
+ "舞台上的紅蘋果看起來是黑色。照着它的可能是甚麼光？",["只有藍光","只有紅光","白光","黃光"],"哪種光不含紅光？","沒有紅光可反射，蘋果就看似黑色。藍光不含紅光。"],
+[4,"An object looks red in white light and black in green light. What can you conclude?",["It reflects only red and absorbs green","It reflects green","It is white","It gives out red light"],"What does it reflect?","It reflects red only; under green light there is nothing it can reflect.",
+ "一件物體在白光下是紅色，在綠光下是黑色。你可以得出甚麼結論？",["它只反射紅光，吸收綠光","它反射綠光","它是白色的","它發出紅光"],"它反射甚麼？","它只反射紅光；在綠光下沒有光可以反射。"],
+[4,"A cyan object is lit by white light. Which colour does it absorb?",["Red","Green","Blue","None"],"Cyan = green + blue.","It reflects green and blue (cyan), so it absorbs red.",
+ "一件青色物體被白光照射，它吸收哪種顏色？",["紅","綠","藍","都不吸收"],"青 = 綠 + 藍。","它反射綠光和藍光（青色），所以吸收紅光。"],
+[4,"Why does violet light bend more than red light in a prism?",["Glass slows violet light slightly more, so it refracts more","Violet light is heavier","Red light is absorbed","Violet light is luminous"],"More slowing = more bending.","Glass has a slightly higher refractive index for violet, so violet bends more.",
+ "為甚麼在三稜鏡中紫光比紅光屈折得多？",["玻璃令紫光減速稍多，所以折射更多","紫光較重","紅光被吸收","紫光是發光體"],"減速越多，屈折越多。","玻璃對紫光的折射率稍高，所以紫光屈折更多。"],
+[4,"White light passes through a yellow filter, then a cyan filter. What colour comes out?",["Green","White","Black","Blue"],"Yellow passes R + G; cyan passes G + B.","Only green passes both filters.",
+ "白光先穿過黃色濾色片，再穿過青色濾色片。射出甚麼顏色？",["綠","白","黑","藍"],"黃色讓紅 + 綠通過；青色讓綠 + 藍通過。","只有綠光能通過兩塊濾色片。"],
+[4,"Mixing paints and mixing LIGHT give different results. Which is true for light?",["Adding more coloured lights makes it brighter, towards white","Adding more lights makes it darker, towards black","Red + green light = brown","Light mixes exactly like paint"],"Lights add together.","Mixing coloured lights adds light, heading towards white.",
+ "混合顏料和混合色光的結果不同。以下哪一項對色光正確？",["加入更多色光會更亮，趨向白色","加入更多色光會更暗，趨向黑色","紅光 + 綠光 = 啡色","色光混合和顏料完全一樣"],"色光會相加。","混合色光是把光加起來，趨向白色。"],
+[5,"A student says 'a red rose looks red because it absorbs red light.' Evaluate.",["Wrong: it reflects red light and absorbs the others","Right","Wrong: it gives out red light","Right: objects absorb their own colour"],"Seen colour = reflected colour.","We see the colour that is reflected. The rose reflects red and absorbs the rest.",
+ "有同學說：「紅玫瑰看起來是紅色，因為它吸收紅光。」評論這個說法。",["錯：它反射紅光，吸收其他顏色","對","錯：它發出紅光","對：物體吸收自己的顏色"],"看見的顏色 = 反射的顏色。","我們看見被反射的顏色。玫瑰反射紅光，吸收其餘顏色。"],
+[5,"A fruit stall wants its strawberries to look bright red. Which lighting works best?",["Light with plenty of red in it","Blue light only","Green light only","No light"],"Strawberries reflect red.","They need red light to reflect, so light rich in red makes them look bright red.",
+ "水果檔想士多啤梨看起來鮮紅。哪種燈光最好？",["含大量紅光的燈光","只有藍光","只有綠光","沒有燈光"],"士多啤梨反射紅光。","要有紅光可反射，所以含大量紅光的燈光令它們看起來鮮紅。"],
+[5,"Which evidence best supports 'white light is a mixture of colours'?",["A prism splits white light into a spectrum","White paper looks bright","Shadows are dark","Mirrors reflect white light"],"Take white light apart.","A prism separates white light into its colours, showing they were mixed in it.",
+ "哪項證據最能支持「白光是多種顏色的混合」？",["三稜鏡把白光分成光譜","白紙看起來很亮","影子是暗的","鏡子反射白光"],"把白光拆開。","三稜鏡把白光分成各種顏色，證明它們本來混在一起。"],
+[5,"Which statement is FALSE?",["A green object looks green under red light","Red + green light gives yellow","Violet bends more than red in a prism","A white object reflects all colours"],"Can a green object reflect red?","A green object absorbs red, so under red light it looks black, not green.",
+ "以下哪一項是錯的？",["綠色物體在紅光下看起來是綠色","紅光 + 綠光 = 黃","在三稜鏡中紫光比紅光屈折得多","白色物體反射所有顏色"],"綠色物體能反射紅光嗎？","綠色物體吸收紅光，在紅光下看起來是黑色，不是綠色。"],
+[5,"For a school play, which spotlights make a white costume look cyan?",["Green and blue","Red and green","Red and blue","Red only"],"Cyan = ?","A white costume reflects green + blue light, which looks cyan.",
+ "學校話劇中，哪些射燈能令白色戲服看起來是青色？",["綠和藍","紅和綠","紅和藍","只有紅"],"青 = ？","白色戲服反射綠光 + 藍光，看起來是青色。"],
+[6,"Design a way to make a rainbow at home on a sunny day. Which works?",["Spray a fine water mist with the Sun behind you","Shine a torch at a mirror in the dark","Mix red and blue paints","Stare at a black wall"],"Make your own raindrops.","Water droplets disperse sunlight; with the Sun behind you, you'll see a rainbow.",
+ "設計一個在晴天在家製造彩虹的方法。哪個可行？",["背向太陽噴出細水霧","在黑暗中用電筒照鏡子","混合紅色和藍色顏料","盯着黑色牆壁"],"自己製造雨點。","水點把陽光色散；背向太陽就能看見彩虹。"],
+[6,"You want a message written in red ink on white paper to become invisible. Which light should you use?",["Red light: the paper and the ink both look red","Blue light","Green light","Complete darkness"],"Make the paper and ink the same colour.","Under red light, white paper reflects red and red ink reflects red, so they match.",
+ "你想令寫在白紙上的紅色字消失。應該用哪種光？",["紅光：紙和墨水都看似紅色","藍光","綠光","完全黑暗"],"令紙和墨水變成同一顏色。","在紅光下，白紙和紅墨水都反射紅光，所以顏色一樣。"],
+[6,"Design a colour-changing lamp using only three coloured LEDs. Which three?",["Red, green and blue","Red, yellow and blue","Cyan, magenta and yellow","White, black and grey"],"The primary colours of light.","Red, green and blue LEDs can mix to make many colours, including white.",
+ "只用三粒彩色 LED 設計一盞變色燈。應選哪三種顏色？",["紅、綠、藍","紅、黃、藍","青、品紅、黃","白、黑、灰"],"光的三原色。","紅、綠、藍 LED 可混合出很多顏色，包括白色。"],
+[6,"For a magic trick you want a green leaf to look black. Which light should you use?",["Red or blue light (no green)","Green light","White light","Cyan light"],"Take away the green.","Without green light to reflect, the leaf looks black.",
+ "魔術表演中，你想令綠葉看起來是黑色。應該用哪種光？",["紅光或藍光（不含綠光）","綠光","白光","青光"],"把綠光拿走。","沒有綠光可反射，葉就看起來是黑色。"]
+],
+room7: [
+[1,"Which EM wave has the longest wavelength?",["Radio waves","Gamma rays","X-rays","Ultraviolet"],"Start of the spectrum.","Radio waves have the longest wavelength.",
+ "哪種電磁波的波長最長？",["無線電波","γ 射線","X 射線","紫外線"],"波譜的開端。","無線電波的波長最長。"],
+[1,"Which EM wave has the shortest wavelength?",["Gamma rays","Radio waves","Microwaves","Infrared"],"End of the spectrum.","Gamma rays have the shortest wavelength.",
+ "哪種電磁波的波長最短？",["γ 射線","無線電波","微波","紅外線"],"波譜的末端。","γ 射線的波長最短。"],
+[1,"Which wave is used in ovens to heat food quickly?",["Microwaves","X-rays","Gamma rays","Ultraviolet"],"The oven is named after it.","Microwave ovens use microwaves.",
+ "哪種電磁波用於快速加熱食物的爐具？",["微波","X 射線","γ 射線","紫外線"],"爐具以它命名。","微波爐使用微波。"],
+[1,"Which wave do thermal imaging cameras detect?",["Infrared","Ultraviolet","Radio waves","Gamma rays"],"Heat.","Thermal cameras detect infrared from warm objects.",
+ "熱成像相機探測哪種電磁波？",["紅外線","紫外線","無線電波","γ 射線"],"熱。","熱成像相機探測溫暖物體發出的紅外線。"],
+[1,"Which EM wave can our eyes see?",["Visible light","Infrared","Ultraviolet","Microwaves"],"The clue is in the name.","Only visible light can be seen by our eyes.",
+ "我們的眼睛能看見哪種電磁波？",["可見光","紅外線","紫外線","微波"],"答案就在名字裏。","只有可見光能被眼睛看見。"],
+[1,"Which wave is used to check whether banknotes are real?",["Ultraviolet","Radio waves","Microwaves","Infrared"],"Hidden ink glows.","UV makes special ink on real banknotes glow.",
+ "哪種電磁波用來檢查鈔票真偽？",["紫外線","無線電波","微波","紅外線"],"隱藏油墨會發光。","紫外線令真鈔上的特殊油墨發光。"],
+[2,"From radio waves to gamma rays, the wavelength...",["decreases","increases","stays the same"],"Radio longest, gamma shortest.","Wavelength decreases from radio waves to gamma rays.",
+ "由無線電波到 γ 射線，波長……",["遞減","遞增","不變"],"無線電波最長，γ 射線最短。","由無線電波到 γ 射線，波長遞減。"],
+[2,"From radio waves to gamma rays, the energy...",["increases","decreases","stays the same"],"Shorter wavelength, more energy.","Energy increases from radio waves to gamma rays.",
+ "由無線電波到 γ 射線，能量……",["遞增","遞減","不變"],"波長越短，能量越高。","由無線電波到 γ 射線，能量遞增。"],
+[2,"Why can too much UV be harmful?",["It has high energy and can damage skin cells","It is too cold","It is visible","It has the longest wavelength"],"Sunburn.","UV has high energy that can damage skin cells and cause sunburn.",
+ "為甚麼過量紫外線有害？",["它能量高，可損害皮膚細胞","它太冷","它是可見的","它的波長最長"],"曬傷。","紫外線能量高，可損害皮膚細胞並導致曬傷。"],
+[2,"Why do radiographers stand behind a screen when taking X-rays?",["To reduce their exposure to X-rays, which can damage cells","To keep warm","Because X-rays are loud","To see better"],"They take X-rays every day.","Repeated X-ray exposure can damage cells, so staff shield themselves.",
+ "為甚麼放射技師拍 X 光時要站在屏障後面？",["減少接觸可損害細胞的 X 射線","保暖","因為 X 射線很吵","看得更清楚"],"他們每天都拍 X 光。","重複接觸 X 射線可損害細胞，所以職員要保護自己。"],
+[2,"Where is visible light in the EM spectrum?",["Between infrared and ultraviolet","Between X-rays and gamma rays","After gamma rays","Before radio waves"],"Infra = below red; ultra = beyond violet.","Visible light sits between infrared and ultraviolet.",
+ "可見光在電磁波譜的哪個位置？",["紅外線與紫外線之間","X 射線與 γ 射線之間","γ 射線之後","無線電波之前"],"紅外 = 紅色以外；紫外 = 紫色以外。","可見光位於紅外線與紫外線之間。"],
+[2,"Why are gamma rays used to kill cancer cells?",["They carry very high energy that can destroy cells","They are visible","They heat food","They have low energy"],"Most energetic wave.","Gamma rays have enough energy to destroy cancer cells.",
+ "為甚麼用 γ 射線殺死癌細胞？",["它們帶有極高能量，可以摧毀細胞","它們是可見的","它們能加熱食物","它們能量低"],"能量最高的波。","γ 射線有足夠能量摧毀癌細胞。"],
+[2,"What do infrared cameras detect?",["Infrared given out by warm objects","Sound","Only ultraviolet","X-rays"],"Warm things glow in infrared.","Warm objects give out infrared, which the camera detects.",
+ "紅外線相機探測甚麼？",["溫暖物體發出的紅外線","聲音","只有紫外線","X 射線"],"溫暖的東西會發出紅外線。","溫暖物體發出紅外線，相機把它探測出來。"],
+[3,"Wi-Fi connects your tablet to the internet. Which EM wave does your textbook group it with?",["Radio waves","X-rays","Gamma rays","Ultraviolet"],"Same family as Bluetooth and Octopus cards.","Your textbook groups Wi-Fi with radio waves, like Bluetooth and Octopus cards.",
+ "Wi-Fi 把平板電腦連接互聯網。課本把它歸入哪種電磁波？",["無線電波","X 射線","γ 射線","紫外線"],"與藍牙和八達通卡同一類。","課本把 Wi-Fi 歸入無線電波，與藍牙和八達通卡一樣。"],
+[3,"Firefighters look for people in thick smoke with a special camera. Which wave does it use?",["Infrared","Gamma rays","X-rays","Ultraviolet"],"People are warm.","A thermal camera detects the infrared given out by warm bodies.",
+ "消防員用特別的相機在濃煙中尋找人。它使用哪種電磁波？",["紅外線","γ 射線","X 射線","紫外線"],"人是溫暖的。","熱成像相機探測溫暖身體發出的紅外線。"],
+[3,"Airport security checks luggage without opening it. Which wave?",["X-rays","Radio waves","Visible light","Infrared"],"It sees through the bag.","X-rays pass through bags and show what's inside.",
+ "機場保安不用打開行李就能檢查。用的是哪種電磁波？",["X 射線","無線電波","可見光","紅外線"],"它能看穿行李。","X 射線穿過行李，顯示裏面的物件。"],
+[3,"Hospitals need to sterilise surgical tools. Which wave can be used?",["Gamma rays","Radio waves","Infrared","Microwaves"],"It kills germs with high energy.","Gamma rays have enough energy to kill germs on medical equipment.",
+ "醫院需要為手術工具消毒。可以用哪種電磁波？",["γ 射線","無線電波","紅外線","微波"],"以高能量殺死細菌。","γ 射線有足夠能量殺死醫療器材上的細菌。"],
+[3,"The Observatory tracks rain clouds with radar. Which wave does radar use?",["Microwaves","Gamma rays","Ultraviolet","Visible light"],"Radar and cooking share this wave.","Radar uses microwaves.",
+ "天文台用雷達追蹤雨雲。雷達使用哪種電磁波？",["微波","γ 射線","紫外線","可見光"],"雷達和烹調使用同一種波。","雷達使用微波。"],
+[3,"Why should you wear sunscreen on a sunny beach day?",["To protect skin from UV that can cause sunburn","To block radio waves","To see better","To keep microwaves away"],"Sunburn is caused by...","Sunscreen cuts down the UV reaching your skin.",
+ "為甚麼在陽光充沛的沙灘要塗防曬？",["保護皮膚免受可導致曬傷的紫外線傷害","阻擋無線電波","看得更清楚","阻擋微波"],"曬傷是由……引起的。","防曬減少到達皮膚的紫外線。"],
+[3,"A lamp inside a water filter kills germs. Which wave does it most likely use?",["Ultraviolet","Radio waves","Infrared","Microwaves"],"Sterilisation lamp.","UV lamps are used to sterilise water.",
+ "濾水器內的燈能殺菌。它最可能使用哪種電磁波？",["紫外線","無線電波","紅外線","微波"],"消毒燈。","紫外線燈用於為水消毒。"],
+[4,"Which pair is in order of INCREASING energy?",["Infrared → ultraviolet","Ultraviolet → visible light","X-rays → microwaves","Gamma rays → radio waves"],"Move towards gamma.","Infrared has less energy than ultraviolet, so infrared → UV is increasing.",
+ "以下哪一對按能量遞增排列？",["紅外線 → 紫外線","紫外線 → 可見光","X 射線 → 微波","γ 射線 → 無線電波"],"向 γ 射線方向移動。","紅外線能量比紫外線低，所以紅外線 → 紫外線是遞增。"],
+[4,"A wave has a longer wavelength than visible light but shorter than microwaves. What is it?",["Infrared","Ultraviolet","X-rays","Radio waves"],"Look between microwaves and visible.","Infrared sits between microwaves and visible light.",
+ "某電磁波的波長比可見光長，但比微波短。它是甚麼？",["紅外線","紫外線","X 射線","無線電波"],"看看微波和可見光之間。","紅外線位於微波和可見光之間。"],
+[4,"A wave has more energy than UV but less than gamma rays. What is it?",["X-rays","Infrared","Visible light","Microwaves"],"Look between UV and gamma.","X-rays sit between ultraviolet and gamma rays.",
+ "某電磁波的能量比紫外線高，但比 γ 射線低。它是甚麼？",["X 射線","紅外線","可見光","微波"],"看看紫外線和 γ 射線之間。","X 射線位於紫外線和 γ 射線之間。"],
+[4,"Which group are ALL lower in energy than visible light?",["Radio waves, microwaves, infrared","Ultraviolet, X-rays, gamma rays","Visible light, ultraviolet, X-rays","Gamma rays, radio waves, X-rays"],"Which side of visible light?","Radio waves, microwaves and infrared are all on the low-energy side.",
+ "哪一組的能量全部比可見光低？",["無線電波、微波、紅外線","紫外線、X 射線、γ 射線","可見光、紫外線、X 射線","γ 射線、無線電波、X 射線"],"在可見光的哪一邊？","無線電波、微波和紅外線都在低能量那邊。"],
+[4,"Why can radio waves be used around people every day?",["They have low energy, so they don't damage cells in normal use","They are visible","They have the shortest wavelength","They are gamma rays"],"Low energy end.","Radio waves have low energy and are safe in normal everyday use.",
+ "為甚麼無線電波可以每天在人們身邊使用？",["它們能量低，一般使用下不會損害細胞","它們是可見的","它們的波長最短","它們是 γ 射線"],"低能量那一端。","無線電波能量低，日常一般使用是安全的。"],
+[4,"Which feature links ultraviolet, X-rays and gamma rays?",["Short wavelength and high energy","Long wavelength and low energy","They are all visible","They are all used for cooking"],"Which end of the spectrum?","All three are short-wavelength, high-energy waves.",
+ "紫外線、X 射線和 γ 射線有甚麼共通點？",["波長短、能量高","波長長、能量低","全部可見","全部用於烹調"],"在波譜的哪一端？","三者都是波長短、能量高的波。"],
+[5,"A student says 'all EM waves are dangerous.' Evaluate.",["Wrong: low-energy waves like radio waves are safe in normal use; high-energy ones need care","Right","Wrong: only visible light is dangerous","Right: they all cause sunburn"],"Think about energy.","Danger depends on energy. Radio waves are safe in normal use; UV, X-rays and gamma need care.",
+ "有同學說：「所有電磁波都很危險。」評論這個說法。",["錯：無線電波等低能量波一般使用下安全；高能量波才需小心","對","錯：只有可見光危險","對：它們全都會導致曬傷"],"想想能量。","危險取決於能量。無線電波一般使用下安全；紫外線、X 射線和 γ 射線需要小心。"],
+[5,"Which is the best choice to see the bones in a broken arm?",["X-rays: they pass through soft tissue more easily than bone","Visible light","Radio waves","Infrared, because bones are warm"],"Bone blocks it more than skin.","X-rays pass through flesh but less through bone, so bones show up clearly.",
+ "要看見骨折手臂內的骨頭，最好用甚麼？",["X 射線：它較容易穿過軟組織，較難穿過骨骼","可見光","無線電波","紅外線，因為骨頭是暖的"],"骨頭比皮膚更能阻擋它。","X 射線穿過肌肉但較難穿過骨骼，所以骨頭清楚顯示。"],
+[5,"Which is the most sensible safety rule for a UV lamp in a lab?",["Don't look directly at it, and cover your skin","Stare at it to check it works","Use it to warm your hands","Put it under your pillow"],"UV can damage eyes and skin.","UV can harm eyes and skin, so avoid looking at it and cover up.",
+ "實驗室裏紫外線燈最合理的安全守則是甚麼？",["不要直視，並遮蓋皮膚","盯着它看看是否運作","用它暖手","放在枕頭下"],"紫外線可傷害眼睛和皮膚。","紫外線可傷害眼睛和皮膚，所以不要直視並遮蓋皮膚。"],
+[5,"Which statement is FALSE?",["Gamma rays have the longest wavelength","Radio waves have the lowest energy","Visible light lies between infrared and ultraviolet","X-rays are used for bone images"],"Which end is gamma?","Gamma rays have the SHORTEST wavelength.",
+ "以下哪一項是錯的？",["γ 射線的波長最長","無線電波的能量最低","可見光位於紅外線與紫外線之間","X 射線用於骨骼影像"],"γ 射線在哪一端？","γ 射線的波長最短。"],
+[5,"Why are the number of X-ray scans for a patient kept low?",["X-rays have high energy, and too many scans can harm cells","X-rays are too cold","X-rays are visible","X-rays are noisy"],"High energy...","Each scan gives a small dose of high-energy radiation, so doctors avoid unnecessary scans.",
+ "為甚麼醫生會盡量減少病人照 X 光的次數？",["X 射線能量高，照太多次可能傷害細胞","X 射線太冷","X 射線是可見的","X 射線很吵"],"高能量……","每次掃描都有少量高能量輻射，所以醫生避免不必要的掃描。"],
+[6,"Design a way to find a lost cat in a dark garden at night. Which tool is best?",["An infrared (thermal) camera","An X-ray machine","A UV lamp","A gamma-ray source"],"The cat is warm.","A thermal camera shows the infrared from the warm cat, even in the dark.",
+ "設計一個在黑暗花園中尋找走失貓咪的方法。哪個工具最好？",["紅外線（熱成像）相機","X 光機","紫外線燈","γ 射線源"],"貓咪是暖的。","熱成像相機即使在黑暗中也能顯示貓咪發出的紅外線。"],
+[6,"You design a sun-safety poster for students. Which advice is correct?",["Use sunscreen, a hat and sunglasses to cut UV","Only worry about radio waves","Stare at the Sun to train your eyes","UV is harmless"],"Protect skin and eyes.","Sunscreen, hats and sunglasses reduce UV reaching your skin and eyes.",
+ "你為同學設計防曬海報。哪個建議正確？",["用防曬、帽子和太陽眼鏡減少紫外線","只需要擔心無線電波","盯着太陽訓練眼睛","紫外線無害"],"保護皮膚和眼睛。","防曬、帽子和太陽眼鏡減少到達皮膚和眼睛的紫外線。"],
+[6,"You plan a secret-message game with invisible ink that glows. What would you shine on it?",["Ultraviolet","Radio waves","Microwaves","X-rays"],"Like checking banknotes.","UV makes special invisible ink glow, just like banknote checks.",
+ "你設計一個用隱形墨水寫秘密訊息的遊戲，墨水會發光。你會用甚麼照它？",["紫外線","無線電波","微波","X 射線"],"就像驗鈔一樣。","紫外線令特殊的隱形墨水發光，就像驗鈔一樣。"],
+[6,"You design a hospital poster about gamma rays. Which pair of facts should it show?",["Used to kill cancer cells and sterilise tools; high energy, so handled with care","Used for Wi-Fi; totally harmless","Used for cooking; low energy","Visible to the eye; used for selfies"],"Uses + safety.","Gamma rays treat cancer and sterilise equipment, but their high energy needs careful handling.",
+ "你設計一張關於 γ 射線的醫院海報。應展示哪一對事實？",["用於殺死癌細胞和消毒工具；能量高，需小心處理","用於 Wi-Fi；完全無害","用於烹調；能量低","肉眼可見；用於自拍"],"用途 + 安全。","γ 射線用於治療癌症和消毒器材，但能量高，需要小心處理。"]
+]
+});
+BANK.room3.push([3,"Light enters a glass block at an angle, then leaves it into the air. At the second boundary it bends...",["away from the normal","towards the normal","not at all","back into the glass"],"Glass → air.","Leaving glass for air (higher → lower refractive index), light bends away from the normal.",
+ "光斜射進玻璃磚，再離開玻璃進入空氣。在第二個界面，光會……",["偏離法線","偏向法線","完全不屈折","返回玻璃內"],"玻璃 → 空氣。","離開玻璃進入空氣（高 → 低折射率）時，光偏離法線。"]);
+
+const CORE_BLOOM = { room1: [1, 2, 2, 3, 2], room2: [1, 3, 2, 3, 3], room3: [1, 3, 2, 3, 2], room4: [1, 3, 3, 2, 4], room5: [1, 2, 3, 3, 3], room6: [3, 1, 3, 3, 4], room7: [1, 3, 3, 1, 2] };
+const BLOOM = [null, ["Remember", "記憶"], ["Understand", "理解"], ["Apply", "應用"], ["Analyse", "分析"], ["Evaluate", "評鑑"], ["Create", "創造"]];
+// Each room's pool = its 5 core puzzles + 35 bank questions, in the current language
+function buildPools() {
+  const zh = LANG === "zh";
+  ROOMS.forEach(r => {
+    r.puzzles.forEach((p, i) => { p.id = "c" + i; p.b = CORE_BLOOM[r.id][i]; });
+    r.pool = r.puzzles.concat(BANK[r.id].map((q, j) => ({ id: "b" + j, b: q[0], type: "mc", q: zh ? q[5] : q[1], choices: zh ? q[6] : q[2], answer: 0, hint: zh ? q[7] : q[3], explain: zh ? q[8] : q[4] })));
+  });
+}
 const ROOM_SECONDS = 15 * 60;
 const CHEERS = ["Yaha!", "Ura!", "Puru puru!", "好嘢!"];
 const SNACKS = ["🍡 Chestnut bun", "🍘 Rice cracker", "🍮 Pudding", "🍙 Onigiri", "🍜 Ramen ticket", "🧋 Bubble tea", "🥚 Egg tart 蛋撻", "🧇 Egg waffle 雞蛋仔", "🍍 Pineapple bun 菠蘿包"];
@@ -1051,14 +1597,14 @@ const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
 function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0 }; }
-function freshRun() { return { firsts: [], strikes: 0, hints: false }; }
+function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null }; }
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function freshState() {
   return {
     v: 2, player_name: "Student", current_streak: 0, longest_streak: 0, last_login_date: null,
     completed_rooms: [], current_room: ROOMS[0].id, streak_shields: 1, chiikawa_badges: [], inventory: [],
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
-    room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null,
+    room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
     coins: 0, owned: [], equip: { hat: null, face: null, ribbon: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
     rush: { best: 0, lastDay: null }, player_id: newId(), lb_last: 0
@@ -1068,7 +1614,9 @@ function normalise(obj) {
   const s = Object.assign(freshState(), obj || {});
   s.physics_mastery = Object.assign(freshState().physics_mastery, (obj && obj.physics_mastery) || {});
   s.stats = Object.assign(freshStats(), (obj && obj.stats) || {});
-  s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run);
+  s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run); s.seen = Object.assign({}, s.seen);
+  // older saves used roomX-N for the 5 core puzzles
+  s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
   s.equip = Object.assign({ hat: null, face: null, ribbon: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
   s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
@@ -1106,7 +1654,7 @@ const CODE_KINV = modInv(CODE_K, CODE_M);
 function roomStars(r) {
   if (!S.completed_rooms.includes(r.id)) return 0;
   if (S.room_stars[r.id]) return S.room_stars[r.id];
-  const n = r.puzzles.filter((_, i) => S.mastered_puzzles.includes(`${r.id}-${i}`)).length;
+  const n = r.puzzles.filter((_, i) => S.mastered_puzzles.includes(`${r.id}:c${i}`)).length;
   return n === 5 ? 3 : n >= 3 ? 2 : 1;
 }
 function makeCode() {
@@ -1147,7 +1695,7 @@ function stateFromCode(d, name) {
     s.completed_rooms.push(r.id); s.chiikawa_badges.push(r.badge); s.inventory.push(r.item);
     s.room_stars[r.id] = d.stars[i];
     const m = d.stars[i] === 3 ? 5 : d.stars[i] === 2 ? 3 : 0;
-    for (let k = 0; k < m; k++) s.mastered_puzzles.push(`${r.id}-${k}`);
+    for (let k = 0; k < m; k++) s.mastered_puzzles.push(`${r.id}:c${k}`);
   });
   if (d.escaped < 7) { s.room_progress[ROOMS[d.escaped].id] = Array.from({ length: d.lock }, (_, i) => i); s.current_room = ROOMS[d.escaped].id; }
   s.current_streak = d.streak; s.longest_streak = d.streak; s.streak_shields = d.shields; s.last_login_date = today();
@@ -1181,9 +1729,9 @@ function checkIn() {
 }
 function recomputeMastery() {
   const tot = {}, got = {};
-  ROOMS.forEach(r => r.puzzles.forEach((_, i) => {
+  ROOMS.forEach(r => r.pool.forEach(p => {
     tot[r.mastery] = (tot[r.mastery] || 0) + 1;
-    if (S.mastered_puzzles.includes(`${r.id}-${i}`)) got[r.mastery] = (got[r.mastery] || 0) + 1;
+    if (S.mastered_puzzles.includes(`${r.id}:${p.id}`)) got[r.mastery] = (got[r.mastery] || 0) + 1;
   }));
   for (const k in S.physics_mastery) S.physics_mastery[k] = tot[k] ? Math.round(100 * (got[k] || 0) / tot[k]) : 0;
 }
@@ -1521,7 +2069,7 @@ const ORDER_BANK = [
 ];
 function subseq(arr, n) { const idx = shuffle(arr.map((_, i) => i)).slice(0, n).sort((a, b) => a - b); return idx.map(i => arr[i]); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-const MC_POOL = () => ROOMS.flatMap(r => r.puzzles.filter(p => p.type === "mc" && !p.svg));
+const MC_POOL = () => ROOMS.flatMap(r => r.pool.filter(p => p.type === "mc" && !p.svg));
 
 const RUSH_MAKERS = [
   { w: 2, label: "Multiple choice", make() { const p = pick(MC_POOL()); const order = shuffle(p.choices.map((_, i) => i));
@@ -1673,6 +2221,7 @@ function applyLang() {
   Object.keys(CHAR).forEach(k => { CHAR[k].name = zh ? ZH_CHAR[k] : EN.chars[k]; });
   Object.keys(TOPIC_LABELS).forEach(k => { TOPIC_LABELS[k] = zh ? ZH_TOPIC_LABELS[k] : EN.topicLabels[k]; });
   RUSH_MAKERS.forEach((m, i) => { m.label = zh ? ZH_RUSH_LABELS[i] : EN.labels[i]; });
+  buildPools();
   swap(CHEERS, zh ? ["呀哈！", "嗚啦！", "噗嚕噗嚕！", "好嘢！"] : EN.cheers);
   RAR.bronze[2] = L("Bronze", "銅"); RAR.silver[2] = L("Silver", "銀"); RAR.gold[2] = L("Gold", "金"); RAR.legend[2] = L("Legendary", "傳說");
   document.title = L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫");
@@ -1697,7 +2246,7 @@ function setLang(l) {
   applyLang(); $journal.innerHTML = "";
   if (RU) { renderTools(); return; }
   closeModal();
-  if (R) { renderRoom(); } else if (S) renderMap(); else renderWelcome();
+  if (R) { R.qs = runQs(R.room); renderRoom(); } else if (S) renderMap(); else renderWelcome();
 }
 applyLang();
 
@@ -1955,12 +2504,14 @@ function renderMap() {
           <span class="tnum">${topicNo(r.topicNo)}</span>
           <span class="tname">${topicHtml(r)}</span>
           <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>
+          ${open ? `<span class="small">📚 ${masteredIn(r)}/${r.pool.length} ${L("questions mastered", "題已掌握")}</span>` : ""}
+          ${done ? `<span class="small"><b>🔁 ${L("Revise: new questions & incidents every visit", "溫習：每次都有新題目和新事件")}</b></span>` : ""}
           <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 ${L("locks", "把鎖")}` : L("Escape the room before", "先逃出上一個房間")}</span>
         </button>`; }).join("")}</div>
     </section>
     <section class="card">
       <h2>📈 ${L("Physics mastery", "物理掌握度")}</h2>
-      <p class="small muted">${L("Goes up when you open a lock on the first try without a hint.", "一次答對、不用提示打開鎖，掌握度就會上升。")}</p>
+      <p class="small muted">${L("Each room has 40 questions (Bloom levels 1–6). Mastery goes up when you answer one right on the first try without a hint. Replay cleared rooms to master them all! The first replay each day earns a 📚 revision bonus.", "每個房間有 40 題（布魯姆 1 至 6 級）。一次答對而不用提示，掌握度就會上升。重玩已逃出的房間把全部題目掌握吧！每天第一次重玩可獲 📚 溫習獎勵。")}</p>
       ${Object.entries(S.physics_mastery).map(([k, v]) => `<div><div class="row" style="justify-content:space-between"><b class="small">${TOPIC_LABELS[k]}</b><b class="small">${v}%</b></div>
         <div style="height:14px;border:2px solid var(--ink);border-radius:999px;background:var(--cream);overflow:hidden"><i style="display:block;height:100%;width:${v}%;background:var(--pink)"></i></div></div>`).join("")}
     </section>
@@ -2038,6 +2589,18 @@ function sceneSvg(r, solvedCount) {
 }
 
 let R = null, timerId = null, moodTimer = null;
+const masteredIn = r => r.pool.filter(p => S.mastered_puzzles.includes(`${r.id}:${p.id}`)).length;
+function pickRun(room) {
+  const seen = S.seen[room.id] || [], chosen = [];
+  [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]].forEach(([lo, hi]) => {
+    const cands = room.pool.filter(p => p.b >= lo && p.b <= hi && !chosen.includes(p.id));
+    const fresh = cands.filter(p => !seen.includes(p.id));
+    chosen.push(pick(fresh.length ? fresh : cands).id);
+  });
+  S.seen[room.id] = seen.concat(chosen).slice(-30);
+  return chosen;
+}
+const runQs = room => S.room_run[room.id].qids.map(id => room.pool.find(p => p.id === id) || room.puzzles[0]);
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
 function enterRoom(id) {
@@ -2045,11 +2608,14 @@ function enterRoom(id) {
   const room = ROOMS[roomIndex(id)];
   const replay = S.completed_rooms.includes(room.id);
   if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
+  if (!S.room_run[room.id].qids) S.room_run[room.id].qids = pickRun(room);
   if (replay) { S.room_progress[room.id] = []; S.room_timer[room.id] = ROOM_SECONDS; }
   if (S.room_timer[room.id] == null) S.room_timer[room.id] = ROOM_SECONDS;
   S.current_room = room.id; save(); MUSIC.setMode("room");
   if (R) clearTimeout(R.introT);
-  R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0 };
+  if (R) clearTimeout(R.incT);
+  R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0, qs: runQs(room), incidents: 0, used: [], stolen: null, hiddenHs: null };
+  const me = R; R.incT = setTimeout(() => tryIncident(me), (replay ? 25 : 40) * 1000 + Math.random() * 40000);
   closeModal(); renderRoom();
   window.scrollTo({ top: 0 });
   stopTimer(); timerId = setInterval(tickTimer, 1000);
@@ -2061,7 +2627,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first!", "點擊發光的 <b>?</b> 開始。⚠️ 小心：答錯會<b>扣 20 秒</b>並打亂鎖；亂猜會<b>卡住鎖</b>、扣 🌰 栗子，還可能令燈光變暗。先想清楚！")), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first! And watch out for strange happenings in the dark... 👀", "點擊發光的 <b>?</b> 開始。⚠️ 小心：答錯會<b>扣 20 秒</b>並打亂鎖；亂猜會<b>卡住鎖</b>、扣 🌰 栗子，還可能令燈光變暗。先想清楚！小心房間裏的奇怪事情……👀")), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -2078,15 +2644,17 @@ function setMood(m, ms) {
 }
 function tickTimer() {
   if (!R || document.hidden) return;
-  const id = R.room.id;
-  S.room_timer[id] -= 1;
+  const id = R.room.id, now = Date.now();
+  const frozen = R.freezeUntil > now, warp = R.warpUntil > now;
+  if (!frozen) S.room_timer[id] -= warp ? 2 : 1;
   const t = S.room_timer[id];
   const el = document.getElementById("timer");
-  if (el) { el.textContent = t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`; el.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : ""); }
+  if (el) { el.textContent = t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`; el.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : "") + (frozen ? " frozen" : warp ? " warp" : ""); }
   if (t === 120) { setMood("cry"); setLine("chiikawa", L("Wah! Only 2 minutes left! 😖", "哇！只剩 2 分鐘！😖"), "cry"); }
   if (t === 0) setLine("hachiware", L("Time's up, but don't worry! We can keep going in overtime. No penalty! 🌱", "時間到了，但別擔心！可以超時繼續，不會扣分！🌱"));
   if (t > 0 && t <= 10) SFX.tick();
   if (t % 5 === 0) save();
+  if (R.blackUntil && now > R.blackUntil) { R.blackUntil = 0; const sc = document.getElementById("scene"); if (sc) { sc.classList.remove("blackout"); sc.style.setProperty("--dim", R.room.dim); } }
 }
 function renderRoom() {
   renderTools();
@@ -2109,13 +2677,15 @@ function renderRoom() {
     </section>
     <div id="line"></div>
     <section class="scene-wrap">
-      <div class="scene" id="scene" style="--dim:${room.dim}">
+      <div class="scene ${R.blackUntil > Date.now() ? "blackout" : ""}" id="scene" style="--dim:${R.blackUntil > Date.now() ? .94 : room.dim}">
         ${sceneSvg(room, solved.length)}
         <div class="dark"></div>
         ${HOTSPOTS.map((h, i) => {
           const nm = i === 2 ? room.specialName : h.name, done = solved.includes(i);
+          if (R.hiddenHs === i && !done) return "";
           return `<button class="hs ${done ? "done" : ""}" data-hs="${i}" style="left:${h.x}%;top:${h.y}%" aria-label="${esc(nm)}${done ? L(" (solved)", "（已解開）") : ""}">${done ? "✓" : "?"}<span class="lbl">${esc(nm)}</span></button>`;
         }).join("")}
+        ${R.stolen !== null ? `<button class="hs wolv" data-wolf="1" style="left:${R.wolfX}%;top:${R.wolfY}%" aria-label="${L("Catch the wolverine", "捉住狼獾")}">🐾<span class="lbl">${L("Wolverine!", "狼獾！")}</span></button>` : ""}
         <button class="hs door" data-hs="door" style="left:${DOOR.x}%;top:${DOOR.y}%" aria-label="${L("Exit door", "出口大門")}">🚪<span class="lbl">${L("Exit door", "出口大門")}</span></button>
       </div>
     </section>
@@ -2128,6 +2698,7 @@ function renderRoom() {
   const move = e => { const b = scene.getBoundingClientRect(); scene.style.setProperty("--sx", `${((e.clientX - b.left) / b.width) * 100}%`); scene.style.setProperty("--sy", `${((e.clientY - b.top) / b.height) * 100}%`); };
   scene.addEventListener("pointermove", move); scene.addEventListener("pointerdown", move);
   $app.querySelectorAll("[data-hs]").forEach(el => el.addEventListener("click", () => { SFX.init(); el.dataset.hs === "door" ? openDoor() : openPuzzle(Number(el.dataset.hs)); }));
+  const wolf = $app.querySelector("[data-wolf]"); if (wolf) wolf.onclick = () => { SFX.init(); chaseWolverine(); };
   wireSlots();
   document.getElementById("toMap").onclick = () => { SFX.tap(); save(); renderMap(); };
   document.getElementById("openJ").onclick = () => { SFX.tap(); openJournal(room.id); };
@@ -2137,7 +2708,9 @@ function wireSlots() { $app.querySelectorAll(".slot.full").forEach(el => el.oncl
 function itemName(i) { return i === 2 ? R.room.specialName + L(" charm", "護符") : HOTSPOTS[i].itemName; }
 function invHtml(newIdx = -1) {
   const solved = S.room_progress[R.room.id] || [];
-  return HOTSPOTS.map((h, i) => solved.includes(i)
+  return HOTSPOTS.map((h, i) => R.stolen === i
+    ? `<div class="slot stolen" aria-label="${L("Taken by the wolverine", "被狼獾拿走了")}"><span style="font-size:1.5rem">🐾</span><span>${L("Taken!", "被拿走了！")}</span><span class="code">#${i + 1} = ?</span></div>`
+    : solved.includes(i)
     ? `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))}: ${L("code digit", "密碼數字")} #${i + 1} = ${R.room.code[i]}" aria-label="${esc(itemName(i))}: #${i + 1} = ${R.room.code[i]}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">#${i + 1} = ${R.room.code[i]}</span></button>`
     : `<div class="slot" aria-label="${L("Empty slot", "空格")} ${i + 1}"><span class="muted">#${i + 1}<br>?</span></div>`).join("");
 }
@@ -2146,15 +2719,16 @@ function invHtml(newIdx = -1) {
 function openPuzzle(i) {
   const { room } = R;
   const solved = S.room_progress[room.id] || [];
-  const p = room.puzzles[i];
+  const p = R.qs[i];
   const hsName = i === 2 ? room.specialName : HOTSPOTS[i].name;
   const line = i === 2 ? room.specialLine : HOTSPOTS[i].line;
   if (solved.includes(i)) { toast(`${hsName}: ${L("already solved ✓", "已解開 ✓")}`); return; }
   SFX.click();
   R.cur = i; R.att[i] = R.att[i] || 0; R.openedAt = Date.now();
+  if (R.hiddenHs === i) { R.hiddenHs = null; toast(L("🔦 Found the hidden lock!", "🔦 找到了被藏起來的鎖！")); }
   const typeLabel = { mc: L("Multiple choice", "選擇題"), keypad: L("Keypad lock", "數字鎖"), dial: L("Combination dials", "密碼盤") }[p.type];
   const box = openModal(`
-    <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh}</span>
+    <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh} · 🧠 ${L("Bloom", "布魯姆")} ${p.b}: ${BLOOM[p.b][LANG === "zh" ? 1 : 0]}</span>
     <h2>${esc(hsName)}</h2>
     ${say("chiikawa", esc(line))}
     <p class="q">${esc(p.q)}</p>
@@ -2169,6 +2743,20 @@ function openPuzzle(i) {
   document.getElementById("pj").onclick = () => { SFX.tap(); openJournal(room.id, (p.terms || []).map(t => t[0])); };
   wireAnswer(p, box);
   if (R.jam[i] > Date.now()) startJam(i, 0);
+  if (R.noHintUntil > Date.now()) { const h = document.getElementById("hint"); h.disabled = true; h.textContent = L("😴 Hachiware is sleepy...", "😴 小八很睏……"); }
+  if (R.fog) { R.fog = false; fogAnswers(); }
+}
+function fogAnswers() {
+  const ans = document.getElementById("ans"), jb = document.getElementById("jamBox"); if (!ans) return;
+  ans.inert = true; ans.classList.add("fogged"); let left = 6;
+  const tick = () => {
+    if (!document.getElementById("ans")) return;
+    if (left <= 0) { ans.classList.remove("fogged"); if (!(R.jam[R.cur] > Date.now())) ans.inert = false; if (jb && jb.dataset.fog) { jb.innerHTML = ""; delete jb.dataset.fog; } return; }
+    if (jb && !jb.innerHTML) jb.dataset.fog = "1";
+    if (jb && jb.dataset.fog) jb.innerHTML = `<div class="jam fogbox"><b>🌫️ ${L("The fog is clearing...", "迷霧正在散去……")}</b><span class="jt">${left}s</span><span class="small">${L("Read the question carefully while you wait.", "趁這段時間細心閱讀題目。")}</span></div>`;
+    left--; setTimeout(tick, 1000);
+  };
+  tick();
 }
 function renderPwr(p, i) {
   const el = document.getElementById("pwr"); if (!el) return;
@@ -2218,7 +2806,7 @@ function startJam(i, secs, reason) {
   const ans = document.getElementById("ans"), jb = document.getElementById("jamBox");
   if (!ans || !jb) return;
   ans.inert = true; ans.classList.add("jammed");
-  const p = R.room.puzzles[i];
+  const p = R.qs[i];
   const tick = () => {
     if (R.cur !== i || !document.getElementById("jamBox")) return;
     const left = Math.ceil((R.jam[i] - Date.now()) / 1000);
@@ -2236,7 +2824,8 @@ function penaltyFlash(text) {
   document.body.appendChild(d); setTimeout(() => d.remove(), 1150);
 }
 function answerUi(p) {
-  if (p.type === "mc") return `<div class="choices">${p.choices.map((c, i) => `<button class="choice" data-i="${i}"><b>${"ABCD"[i]}</b><span>${esc(c)}</span></button>`).join("")}</div>`;
+  if (p.type === "mc") { const order = p.svg ? p.choices.map((_, i) => i) : shuffle(p.choices.map((_, i) => i));
+    return `<div class="choices">${order.map((i, n) => `<button class="choice" data-i="${i}"><b>${"ABCD"[n]}</b><span>${esc(p.choices[i])}</span></button>`).join("")}</div>`; }
   if (p.type === "keypad") return `<div class="keypad"><div class="kdisplay" aria-live="polite"><span id="kd">_</span>${p.unit ? `<span class="u">${esc(p.unit)}</span>` : ""}</div>
     <div class="keys">${["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0", "⌫"].map(k => `<button class="key ${k === "⌫" ? "del" : ""}" data-k="${k}" aria-label="${k === "⌫" ? "Delete" : k === "." ? "Decimal point" : k}">${k}</button>`).join("")}</div>
     <button class="btn" id="kok" style="width:min(208px,100%)">Unlock 🔓</button></div>`;
@@ -2274,7 +2863,7 @@ function wireAnswer(p, box) {
   }
 }
 function miss(box) {
-  const i = R.cur, id = R.room.id, now = Date.now(), p = R.room.puzzles[i], run = S.room_run[id];
+  const i = R.cur, id = R.room.id, now = Date.now(), p = R.qs[i], run = S.room_run[id];
   R.att[i] = (R.att[i] || 0) + 1; S.stats.run = 0;
   box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
   // Guard charm: blocks every penalty for this one wrong answer
@@ -2319,8 +2908,8 @@ function miss(box) {
   if (jam) startJam(i, jam, reason);
 }
 function solve() {
-  const { room } = R, i = R.cur, p = room.puzzles[i];
-  const firstTry = !R.att[i] && !R.hinted[i], pid = `${room.id}-${i}`, run = S.room_run[room.id];
+  const { room } = R, i = R.cur, p = R.qs[i];
+  const firstTry = !R.att[i] && !R.hinted[i], pid = `${room.id}:${p.id}`, run = S.room_run[room.id];
   if (firstTry && !S.mastered_puzzles.includes(pid)) S.mastered_puzzles.push(pid);
   if (firstTry && !run.firsts.includes(i)) run.firsts.push(i);
   S.stats.correct += 1;
@@ -2348,6 +2937,7 @@ function collect(i) {
   SFX.item(); closeModal(); renderRoom();
   document.getElementById("inv").innerHTML = invHtml(i); wireSlots();
   const n = (S.room_progress[R.room.id] || []).length;
+  if (n < 5 && R.incidents < 3 && Math.random() < (R.replay ? 0.55 : 0.4)) { const me = R; setTimeout(() => tryIncident(me), 1500); }
   if (n === 5) setLine("hachiware", L("All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!", "5 個密碼數字都找到了！點擊 🚪 <b>出口大門</b>輸入密碼！"));
   else setLine("chiikawa", L(`Ya...! ${5 - n} more lock${5 - n === 1 ? "" : "s"} to go! 🔍`, `呀……！還有 ${5 - n} 把鎖！🔍`), "happy");
 }
@@ -2356,6 +2946,7 @@ function collect(i) {
 function openDoor() {
   const { room } = R;
   const solved = S.room_progress[room.id] || [];
+  if (R.stolen !== null) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", L(`The wolverine still has item #${R.stolen + 1}! Tap the 🐾 to catch it first.`, `狼獾還拿着物品 #${R.stolen + 1}！先點擊 🐾 捉住牠。`), "cry"); return; }
   if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", L(`The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, `大門需要 5 位數密碼……我們只有 ${solved.length}/5 個數字。再開多些鎖吧！🔍`), "cry"); return; }
   SFX.click();
   const box = openModal(`
@@ -2390,7 +2981,8 @@ function escapeRoom() {
   const stars = Math.max(1, base - lost);
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
   if (!first) S.stats.replays += 1;
-  const earned = first ? 15 : 5; S.coins = (S.coins || 0) + earned;
+  const revise = !first && S.last_revise_day !== today(); if (revise) S.last_revise_day = today();
+  const earned = first ? 15 : revise ? 20 : 5; S.coins = (S.coins || 0) + earned; R.done = true; clearTimeout(R.incT);
   if (tLeft >= 0 && run.strikes === 0) S.stats.cleanEscapes += 1;
   if (!run.hints) S.stats.noHintEscapes += 1;
   S.room_run[room.id] = freshRun();
@@ -2408,7 +3000,7 @@ function escapeRoom() {
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
       <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} / 3 ★">${starStr(stars)}</div>
       <p style="text-align:center">${L(`<b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}`, `一次答對 <b>${n}/5</b> 把鎖 · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? "（超時）" : ""} · ⚠️ ${run.strikes} 次警告`)}</p>
-      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}</span></p>
+      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}${revise ? L(" · 📚 daily revision bonus!", " · 📚 每日溫習獎勵！") : ""}</span>${R.incidents ? ` <span class="pill">👻 ${L("Incidents survived", "經歷事件")}: ${R.incidents}</span>` : ""}</p>
       ${lost ? `<div class="rules">${L(`Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!`, `猜測警告令你這次失去 <b>${lost} 粒星</b>。重玩房間、先想後答就能贏回來！`)}</div>` : ""}
       ${first ? say("momonga", L(`You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, `你獲得了<b>${esc(room.badge)}</b>和<b>${esc(room.item)}</b>！💜`), "happy") : say("kurimanju", L("Replay complete. Practice makes the brain strong. 🍵", "重玩完成。多練習令腦袋更強壯。🍵"), "happy")}
       <section class="card cream jsec"><h3>📖 ${L("Textbook recap", "課本重溫")}: ${topicHtml(room)}</h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>
@@ -2418,6 +3010,86 @@ function escapeRoom() {
     document.getElementById("eCode").onclick = () => { SFX.tap(); renderMap(); openSaveModal(); };
     setTimeout(checkTrophies, 1800); lbSubmit(true);
   }, reduced() ? 100 : 1000);
+}
+
+/* ============================================================
+   9b. Random incidents: spooky-but-friendly events that change the rules for a while
+   ============================================================ */
+const CREATURES = {
+  wolverine: `<svg viewBox="0 0 160 110" aria-hidden="true"><ellipse cx="80" cy="72" rx="58" ry="30" fill="#6B4A36" stroke="${INK}" stroke-width="3"/><path d="M40 60 Q80 40 120 60" stroke="#E8C79A" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="36" cy="58" r="24" fill="#6B4A36" stroke="${INK}" stroke-width="3"/><circle cx="24" cy="38" r="7" fill="#6B4A36" stroke="${INK}" stroke-width="3"/><circle cx="46" cy="37" r="7" fill="#6B4A36" stroke="${INK}" stroke-width="3"/><circle cx="28" cy="56" r="4" fill="#FDFFB6"/><circle cx="44" cy="56" r="4" fill="#FDFFB6"/><circle cx="36" cy="66" r="3" fill="${INK}"/><path d="M130 70 q22 -4 24 -18" stroke="#6B4A36" stroke-width="10" fill="none" stroke-linecap="round"/><rect x="92" y="84" width="22" height="16" rx="4" fill="#FDFFB6" stroke="${INK}" stroke-width="2.5"/></svg>`,
+  shadow: `<svg viewBox="0 0 160 120" aria-hidden="true"><path d="M30 110 Q20 30 80 18 Q140 30 130 110 Q115 98 105 110 Q92 96 80 110 Q68 96 55 110 Q45 98 30 110Z" fill="#120e17" stroke="#6B4E8C" stroke-width="3"/><ellipse cx="62" cy="56" rx="9" ry="12" fill="#fff"/><ellipse cx="98" cy="56" rx="9" ry="12" fill="#fff"/><circle cx="64" cy="58" r="4" fill="#C9A0FF"/><circle cx="100" cy="58" r="4" fill="#C9A0FF"/></svg>`,
+  owl: `<svg viewBox="0 0 140 130" aria-hidden="true"><ellipse cx="70" cy="75" rx="45" ry="48" fill="#A98B6B" stroke="${INK}" stroke-width="3"/><path d="M30 40 L40 18 L55 35 M110 40 L100 18 L85 35" fill="#A98B6B" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><circle cx="52" cy="62" r="17" fill="#FFFDF0" stroke="${INK}" stroke-width="3"/><circle cx="88" cy="62" r="17" fill="#FFFDF0" stroke="${INK}" stroke-width="3"/><circle cx="52" cy="62" r="8" fill="${INK}"/><circle cx="88" cy="62" r="8" fill="${INK}"/><circle cx="55" cy="59" r="3" fill="#fff"/><circle cx="91" cy="59" r="3" fill="#fff"/><path d="M64 80 L70 92 L76 80Z" fill="#F5C542" stroke="${INK}" stroke-width="2"/><path d="M48 100 q22 12 44 0" stroke="#E8D5B7" stroke-width="6" fill="none"/></svg>`,
+  bulb: `<svg viewBox="0 0 120 130" aria-hidden="true"><circle cx="60" cy="52" r="36" fill="#3A3145" stroke="#6B4E8C" stroke-width="3"/><path d="M44 50 l8 10 8 -14 8 14 8 -10" stroke="#FF6B6B" stroke-width="3" fill="none"/><rect x="44" y="88" width="32" height="22" rx="4" fill="#7A6A66" stroke="${INK}" stroke-width="3"/><path d="M20 20 l10 8 M100 20 l-10 8 M60 4 v10" stroke="#C9A0FF" stroke-width="3" stroke-linecap="round"/></svg>`,
+  fog: `<svg viewBox="0 0 160 100" aria-hidden="true"><path d="M20 70 q20 -30 45 -12 q15 -28 45 -8 q30 -6 30 20 q10 20 -15 22 H30 q-22 -2 -10 -22Z" fill="#8E93A8" stroke="#C9CCD8" stroke-width="3"/><circle cx="60" cy="62" r="4" fill="#fff"/><circle cx="84" cy="62" r="4" fill="#fff"/><path d="M10 92 h140 M30 100 h100" stroke="#C9CCD8" stroke-width="3" stroke-linecap="round"/></svg>`,
+  clock: `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="46" fill="#FFFDF0" stroke="${INK}" stroke-width="4"/><path d="M60 60 m-26 0 a26 26 0 1 1 26 26 a18 18 0 1 1 -18 -18 a10 10 0 1 1 10 10" fill="none" stroke="#6B4E8C" stroke-width="3"/><path d="M60 60 L60 22 M60 60 L88 76" stroke="${INK}" stroke-width="5" stroke-linecap="round"/></svg>`,
+  shroom: `<svg viewBox="0 0 140 120" aria-hidden="true"><path d="M20 62 Q70 -4 120 62Z" fill="#C9A0FF" stroke="${INK}" stroke-width="3"/><rect x="58" y="62" width="24" height="42" rx="8" fill="#FFFDF0" stroke="${INK}" stroke-width="3"/><circle cx="50" cy="44" r="6" fill="#fff"/><circle cx="80" cy="36" r="5" fill="#fff"/><circle cx="96" cy="50" r="4" fill="#fff"/>${[[28, 18], [110, 22], [18, 44], [124, 40], [70, 8]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#FDFFB6"/>`).join("")}</svg>`
+};
+const INCIDENTS = [
+  { id: "blackout", w: 3, art: "bulb", title: ["Blackout!", "停電！"], text: ["The lights flicker... and go out! Only a little torchlight is left for 25 seconds.", "燈光閃了幾下……熄滅了！25 秒內只剩下一點電筒光。"], effect: ["🌑 The room is almost dark and the glowing marks are hard to see.", "🌑 房間幾乎全黑，發光記號很難看見。"],
+    run() { R.blackUntil = Date.now() + 25000; const sc = document.getElementById("scene"); if (sc) { sc.classList.add("blackout"); sc.style.setProperty("--dim", .94); } } },
+  { id: "wolverine", w: 3, art: "wolverine", cond: () => (S.room_progress[R.room.id] || []).length >= 1, title: ["A wolverine sneaks in!", "一隻狼獾溜了進來！"], text: ["Something fluffy with glowing eyes darts across the floor... It grabs one of your items and hides it in the shadows!", "一團毛茸茸、眼睛發光的東西在地上竄過……牠搶走了你的一件物品，躲進了陰影裏！"], effect: ["🐾 One code digit is hidden until you catch it: tap the 🐾 and answer its riddle.", "🐾 一個密碼數字被藏起來了：點擊 🐾 並答對牠的謎題才能取回。"],
+    run() { const solved = S.room_progress[R.room.id] || []; R.stolen = pick(solved); R.wolfX = 20 + Math.random() * 55; R.wolfY = 72 + Math.random() * 14; } },
+  { id: "shadow", w: 3, art: "shadow", cond: () => HOTSPOTS.filter((_, i) => !(S.room_progress[R.room.id] || []).includes(i)).length >= 2, title: ["Something is watching...", "有東西在盯着你……"], text: ["A shadow creature slides along the wall and swallows one of the glowing marks. Two white eyes blink... then it's gone.", "一團影子生物沿着牆滑過，吞掉了其中一個發光記號。兩隻白色的眼睛眨了眨……然後消失了。"], effect: ["🔦 One lock is now hidden. Search the room by tapping the objects themselves!", "🔦 有一把鎖被藏起來了。直接點擊房間裏的物件去搜尋吧！"],
+    run() { const un = HOTSPOTS.map((_, i) => i).filter(i => !(S.room_progress[R.room.id] || []).includes(i)); R.hiddenHs = pick(un); } },
+  { id: "fog", w: 2, art: "fog", title: ["Mysterious fog", "神秘迷霧"], text: ["Cold, grey fog rolls in under the door. You can hear whispering...", "冰冷的灰霧從門縫湧進來。你聽到一陣低語……"], effect: ["🌫️ The answers in your next lock will be hidden in fog for 6 seconds. Read the question first!", "🌫️ 下一把鎖的答案會被霧遮住 6 秒。先讀題！"],
+    run() { R.fog = true; } },
+  { id: "clock", w: 2, art: "clock", title: ["The clock goes haywire!", "時鐘失控了！"], text: ["Tick... tick... TICKTICKTICK! The wall clock's hands start spinning by themselves.", "滴答……滴答……滴滴答答！掛牆鐘的指針自己轉個不停。"], effect: ["⏩ For 30 seconds, time runs twice as fast.", "⏩ 30 秒內，時間會加倍快。"],
+    run() { R.warpUntil = Date.now() + 30000; } },
+  { id: "spores", w: 2, art: "shroom", title: ["Sleepy spores", "催眠孢子"], text: ["Glowing mushrooms pop up in the corner and puff out sparkly spores. Hachiware yawns... and dozes off.", "角落長出發光的蘑菇，噴出閃閃的孢子。小八打了個呵欠……睡着了。"], effect: ["😴 Hints are unavailable for 45 seconds.", "😴 45 秒內不能使用提示。"],
+    run() { R.noHintUntil = Date.now() + 45000; } },
+  { id: "owl", w: 2, good: true, art: "owl", title: ["A wise night owl appears", "一隻聰明的貓頭鷹出現了"], text: ["Hoo... hoo... A big owl lands on the bookshelf, eyes glowing in the dark. It has a riddle for you.", "咕……咕……一隻大貓頭鷹停在書架上，雙眼在黑暗中發光。牠有一道謎題給你。"], effect: ["🦉 Answer its bonus question for +45 seconds and 5 🌰.", "🦉 答對獎勵題可得 +45 秒和 5 顆 🌰。"],
+    run() { setTimeout(owlQuiz, 300); } },
+  { id: "tea", w: 2, good: true, art: null, title: ["Kuri-Manju's tea break", "栗子饅頭的茶點時間"], text: ["Out of nowhere, Kuri-Manju pours a cup of warm tea. The room feels calm for a moment.", "栗子饅頭突然出現，倒了一杯暖暖的茶。房間暫時變得平靜。"], effect: ["🍵 The timer freezes for 30 seconds. Relax and think!", "🍵 計時器停頓 30 秒。放鬆想一想！"],
+    run() { R.freezeUntil = Date.now() + 30000; } }
+];
+function tryIncident(me) {
+  if (!R || R !== me || R.done || R.incidents >= 3) return;
+  if ($modal.innerHTML || $journal.innerHTML || document.hidden) { R.incT = setTimeout(() => tryIncident(me), 8000); return; }
+  const opts = INCIDENTS.filter(x => !R.used.includes(x.id) && (!x.cond || x.cond()));
+  if (!opts.length) return;
+  const inc = pick(opts.flatMap(x => Array(x.w).fill(x)));
+  R.used.push(inc.id); R.incidents++;
+  if (inc.good) SFX.hint(); else SFX.creepy();
+  openModal(`<span class="kicker">👻 ${L("Incident!", "突發事件！")}</span>
+    <h2>${L(...inc.title)}</h2>
+    <div class="creature">${inc.art ? CREATURES[inc.art] : figure("kurimanju", "happy")}</div>
+    <p>${L(...inc.text)}</p>
+    <div class="effect"><b>${L(...inc.effect)}</b></div>
+    <div class="row"><button class="btn big" id="incOk">${inc.good ? L("Yay! 🎉", "太好了！🎉") : L("Eek... OK! 😖", "嗚……好吧！😖")}</button></div>`, { closable: false });
+  const box = document.getElementById("mbox"); box.classList.add("incident"); if (inc.good) box.classList.add("good");
+  document.getElementById("incOk").onclick = () => { SFX.tap(); closeModal(); inc.run(); if (R && inc.id !== "owl") { renderRoom(); document.getElementById("inv").innerHTML = invHtml(); wireSlots(); setLine(inc.good ? "hachiware" : "chiikawa", L(...inc.effect), inc.good ? "normal" : "cry"); } };
+}
+// A quick question from this room's pool that isn't in the current run
+function sideQuestion(maxB) {
+  const pool = R.room.pool.filter(p => p.type === "mc" && !p.svg && p.b <= maxB && !S.room_run[R.room.id].qids.includes(p.id));
+  return pick(pool.length ? pool : R.room.pool.filter(p => p.type === "mc" && !p.svg));
+}
+function sideQuiz({ kicker, title, art, p, onRight, onWrong }) {
+  const order = shuffle(p.choices.map((_, i) => i));
+  const box = openModal(`<span class="kicker">${kicker}</span><h2>${title}</h2><div class="creature">${CREATURES[art]}</div>
+    <p class="q">${esc(p.q)}</p><div class="choices">${order.map((i, n) => `<button class="choice" data-i="${i}"><b>${"ABCD"[n]}</b><span>${esc(p.choices[i])}</span></button>`).join("")}</div><div id="sfb"></div>`, { closable: false });
+  box.classList.add("incident");
+  box.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+    const ok = Number(b.dataset.i) === p.answer;
+    box.querySelectorAll(".choice").forEach(x => x.disabled = true); b.classList.add(ok ? "right" : "wrong");
+    if (!ok) box.querySelector(`[data-i="${p.answer}"]`).classList.add("right");
+    document.getElementById("sfb").innerHTML = `<div class="effect"><p>${esc(p.explain)}</p></div><div class="row" style="margin-top:10px"><button class="btn" id="sOk">${L("Continue", "繼續")}</button></div>`;
+    ok ? (SFX.right(), onRight()) : (SFX.wrong(), onWrong());
+    document.getElementById("sOk").onclick = () => { closeModal(); if (R) { renderRoom(); document.getElementById("inv").innerHTML = invHtml(); wireSlots(); } };
+  });
+}
+function chaseWolverine() {
+  if (R.wolfUntil > Date.now()) { toast(L(`The wolverine is hiding... try again in ${Math.ceil((R.wolfUntil - Date.now()) / 1000)}s`, `狼獾躲起來了……${Math.ceil((R.wolfUntil - Date.now()) / 1000)} 秒後再試`)); return; }
+  SFX.creepy();
+  sideQuiz({ kicker: `🐾 ${L("Catch the wolverine!", "捉住狼獾！")}`, title: L("Answer its riddle to get your item back", "答對牠的謎題，取回你的物品"), art: "wolverine", p: sideQuestion(3),
+    onRight: () => { const i = R.stolen; R.stolen = null; S.coins += 3; save(true); toast(L(`🐾 Got it back! Item #${i + 1} returned (+3 🌰)`, `🐾 取回了！物品 #${i + 1} 已歸還（+3 🌰）`)); },
+    onWrong: () => { R.wolfUntil = Date.now() + 15000; R.wolfX = 20 + Math.random() * 55; toast(L("It ran off to another corner! Wait 15 s, then try again.", "牠跑到另一個角落了！15 秒後再試。")); } });
+}
+function owlQuiz() {
+  if (!R) return;
+  sideQuiz({ kicker: `🦉 ${L("Owl's bonus riddle", "貓頭鷹的獎勵謎題")}`, title: L("Hoo... can you answer this?", "咕……你答得到嗎？"), art: "owl", p: sideQuestion(6),
+    onRight: () => { S.room_timer[R.room.id] += 45; S.coins += 5; save(true); toast(L("🦉 Wise! +45 s and +5 🌰", "🦉 聰明！+45 秒和 +5 🌰")); },
+    onWrong: () => { toast(L("🦉 Hoo... not quite. No reward this time.", "🦉 咕……不太對。這次沒有獎勵。")); } });
 }
 
 /* ============================================================
