@@ -308,6 +308,9 @@ body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); 
 @media (min-width: 820px) { .homegrid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-areas: "nest stat" "chat streak"; align-items: start; } }
 .nest { padding: 0; overflow: hidden; }
 .scene { position: relative; height: clamp(230px, 46vw, 360px); background: radial-gradient(circle, #F2DFCB 2.2px, transparent 2.8px) 0 0 / 24px 24px, #FFF8EE; }
+.scene .bgart { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sitem .pv.bgpv { width: 110px; height: 80px; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid var(--ink); }
+.sitem .pv.bgpv > svg:last-child { position: absolute; left: 30px; bottom: 2px; width: 50px; height: 50px; }
 .scene .win { position: absolute; right: 7%; top: 7%; width: clamp(80px, 24%, 150px); height: auto; }
 .scene .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(#EED6B7, #E2C39E); border-top: 4px solid #DDBB94; }
 .scene .rug { position: absolute; left: 50%; bottom: 7%; width: 62%; height: 12%; transform: translateX(-50%); background: #FFD6E0; border-radius: 50%; }
@@ -346,7 +349,7 @@ body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); 
 /* Lens Lab */
 .lab .labsvg { width: 100%; height: auto; display: block; border: var(--line); border-radius: 16px; touch-action: none; cursor: ew-resize; }
 .lab .lt { font: 800 21px var(--font); fill: #5B4846; } .lab .lt.sm { font-size: 18px; font-weight: 700; }
-@media (max-width: 600px) { .lab .ax { display: none; } .lab .lt { font-size: 34px; } .lab .lt.sm { font-size: 30px; } .labsvg line, .labsvg path { stroke-width: 6px; } .labsvg .grab { r: 28px; } .lab { padding: 14px; } }
+@media (max-width: 600px) { .lab .ax { display: none; } .lab .lt { font-size: 34px; } .lab .lt.sm { font-size: 30px; } .labsvg > line, .labsvg > path, .labsvg > g:not(.obj) > line, .labsvg > g:not(.obj) > path { stroke-width: 6px; } .labsvg .grab { r: 28px; } .lab { padding: 14px; } }
 .seg { display: inline-flex; border: var(--line); border-radius: 14px; overflow: hidden; }
 .seg button { border: 0; background: #fff; padding: 8px 14px; font-weight: 800; min-height: 44px; }
 .seg button[aria-checked="true"] { background: var(--pink); }
@@ -630,6 +633,40 @@ const SONGS = {
              [81, 0, 79, 0, 76, 0, 0, 0], [74, 0, 72, 0, 69, 0, 0, 0], [72, 0, 0, 74, 76, 0, 0, 0], [74, 0, 0, 0, 0, 0, 0, 0]] }
 };
 SONGS.rush = { bpm: 112, chords: SONGS.map.chords, melody: SONGS.map.melody };
+// Unlockable tracks. Every melody here is original: only the style and tempo nod to the songs students know.
+Object.assign(SONGS, {
+  baby: { bpm: 130, beat: true, lead: "triangle", chords: [[51, 55, 58], [48, 51, 55], [44, 48, 51], [46, 50, 53]],
+    melody: [[63, 67, 70, 0, 72, 70, 67, 0], [67, 0, 63, 0, 60, 63, 0, 0], [68, 72, 75, 0, 72, 0, 70, 68], [70, 0, 0, 0, 65, 67, 70, 0],
+             [75, 0, 74, 0, 72, 0, 70, 0], [72, 0, 70, 0, 67, 0, 0, 63], [65, 0, 67, 0, 68, 70, 72, 0], [70, 0, 0, 0, 0, 0, 0, 0]] },
+  golden: { bpm: 122, beat: true, lead: "sawtooth", chords: [[45, 48, 52], [41, 45, 48], [48, 52, 55], [43, 47, 50]],
+    melody: [[76, 0, 79, 0, 81, 0, 79, 76], [77, 0, 76, 0, 72, 0, 0, 0], [76, 0, 79, 0, 84, 0, 83, 81], [79, 0, 0, 0, 74, 76, 79, 0],
+             [81, 0, 84, 0, 83, 81, 79, 0], [77, 76, 74, 0, 72, 0, 0, 0], [76, 0, 79, 81, 84, 0, 86, 0], [83, 0, 0, 0, 79, 0, 0, 0]] },
+  espresso: { bpm: 104, beat: true, lead: "triangle", chords: [[50, 53, 57, 60], [43, 47, 50, 53], [48, 52, 55, 59], [45, 48, 52, 55]],
+    melody: [[0, 74, 0, 72, 74, 0, 77, 0], [74, 0, 71, 0, 67, 0, 0, 0], [0, 72, 0, 71, 72, 0, 76, 0], [74, 0, 72, 0, 69, 0, 0, 0],
+             [0, 77, 0, 76, 77, 0, 81, 0], [79, 0, 77, 0, 74, 0, 71, 0], [72, 0, 74, 0, 76, 0, 79, 0], [76, 0, 0, 0, 0, 0, 0, 0]] },
+  party: { bpm: 148, beat: true, lead: "square", chords: [[43, 47, 50], [50, 54, 57], [40, 43, 47], [48, 52, 55]],
+    melody: [[67, 67, 0, 67, 69, 0, 67, 0], [66, 0, 66, 0, 64, 0, 62, 0], [64, 64, 0, 64, 67, 0, 64, 0], [60, 0, 62, 0, 64, 0, 0, 0],
+             [71, 71, 0, 71, 72, 0, 71, 0], [69, 0, 69, 0, 66, 0, 62, 0], [67, 0, 64, 0, 67, 0, 71, 0], [67, 0, 0, 0, 0, 0, 0, 0]] },
+  brainrot: { bpm: 138, beat: true, lead: "triangle", chords: [[45, 48, 52], [40, 44, 47], [45, 48, 52], [40, 44, 47], [50, 53, 57], [45, 48, 52], [40, 44, 47], [45, 48, 52]],
+    melody: [[76, 72, 69, 72, 76, 72, 69, 72], [76, 71, 68, 71, 76, 71, 68, 71], [81, 79, 77, 76, 74, 72, 71, 69], [68, 0, 71, 0, 76, 0, 0, 0],
+             [77, 74, 69, 74, 77, 74, 69, 74], [76, 72, 69, 72, 76, 0, 72, 0], [74, 72, 71, 72, 74, 76, 77, 0], [69, 0, 0, 0, 69, 0, 0, 0]] },
+  blocky: { bpm: 116, beat: true, lead: "square", chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]],
+    melody: [[72, 0, 76, 0, 79, 0, 76, 0], [72, 0, 69, 0, 72, 0, 0, 0], [77, 0, 76, 0, 74, 0, 72, 0], [74, 0, 76, 0, 74, 0, 71, 0],
+             [79, 0, 77, 76, 77, 0, 79, 0], [76, 0, 72, 0, 69, 0, 72, 0], [74, 0, 77, 0, 76, 0, 74, 0], [72, 0, 0, 0, 0, 0, 0, 0]] },
+  lofi: { bpm: 76, beat: true, soft: true, lead: "bell", chords: [[50, 53, 57, 60, 64], [43, 53, 57, 59, 64], [48, 52, 55, 59, 62], [45, 49, 52, 55, 59]],
+    melody: [[74, 0, 0, 72, 0, 69, 0, 0], [71, 0, 0, 0, 67, 0, 0, 0], [0, 76, 0, 74, 0, 71, 0, 72], [73, 0, 0, 0, 0, 0, 0, 0],
+             [77, 0, 76, 0, 74, 0, 72, 0], [71, 0, 0, 69, 0, 67, 0, 0], [0, 72, 0, 74, 0, 76, 0, 79], [76, 0, 0, 0, 0, 0, 0, 0]] }
+});
+const TRACKS = [
+  { id: "classic", icon: "🎼", price: 0, en: "Music-box classic", zh: "經典音樂盒", ven: "The original cosy tune", vzh: "原本的溫馨旋律" },
+  { id: "lofi", icon: "🌙", price: 40, en: "Lo-fi study beats", zh: "Lo-fi 溫書節拍", ven: "Chill beats for revising", vzh: "溫習用的輕鬆節拍" },
+  { id: "blocky", icon: "🐔", price: 60, en: "Blocky jockey beat", zh: "方塊雞騎士節拍", ven: "Pixel-game chiptune vibe", vzh: "像素遊戲電子音風格" },
+  { id: "espresso", icon: "☕", price: 80, en: "Summer espresso pop", zh: "夏日特濃流行曲", ven: "Retro disco pop, TikTok summer vibe", vzh: "復古迪斯可流行，TikTok 夏日風" },
+  { id: "brainrot", icon: "🦈", price: 80, en: "Brainrot bounce", zh: "Brainrot 彈跳曲", ven: "Silly Italian-meme dance vibe", vzh: "搞笑意大利迷因舞曲風" },
+  { id: "party", icon: "🎉", price: 90, en: "Party chant beat", zh: "派對口號節拍", ven: "Chant-along TikTok dance-challenge vibe", vzh: "齊聲叫口號的 TikTok 舞蹈挑戰風" },
+  { id: "baby", icon: "🎤", price: 100, en: "Baby-baby pop", zh: "Baby-baby 流行曲", ven: "2010 teen-pop vibe, like a certain \"Baby\" hit", vzh: "2010 年青春流行風，像某首「Baby」金曲" },
+  { id: "golden", icon: "✨", price: 120, en: "Golden idol anthem", zh: "金色偶像主題曲", ven: "Big K-pop idol-hunter movie vibe", vzh: "K-pop 偶像獵人電影的熱血風" }
+];
 const MUSIC = {
   on: true, mode: "map", step: 0, next: 0, timer: null, out: null,
   midi: m => 440 * Math.pow(2, (m - 69) / 12),
@@ -637,7 +674,7 @@ const MUSIC = {
     const ctx = SFX.ctx; if (!ctx) return null;
     if (!this.out) {
       this.out = ctx.createGain(); this.out.gain.value = 0;
-      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600; this.lp = lp;
       this.out.connect(lp).connect(ctx.destination);
     }
     return this.out;
@@ -659,15 +696,47 @@ const MUSIC = {
       o.connect(g).connect(this.out); o.start(t); o.stop(t + dur + .5);
     }));
   },
+  lead(freq, t, type) {
+    const ctx = SFX.ctx, o = ctx.createOscillator(), g = ctx.createGain(), v = type === "triangle" ? .09 : .035;
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(0.0001, t + .3);
+    o.connect(g).connect(this.out); o.start(t); o.stop(t + .32);
+  },
+  bassNote(m, t) {
+    const ctx = SFX.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "triangle"; o.frequency.value = this.midi(m);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.16, t + .01); g.gain.exponentialRampToValueAtTime(0.0001, t + .28);
+    o.connect(g).connect(this.out); o.start(t); o.stop(t + .3);
+  },
+  noise() {
+    if (!this._nb) { const ctx = SFX.ctx, b = ctx.createBuffer(1, ctx.sampleRate * .3, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; this._nb = b; }
+    return this._nb;
+  },
+  hit(kind, t, soft) {
+    const ctx = SFX.ctx, g = ctx.createGain(), k = soft ? .45 : 1;
+    if (kind === "kick") { const o = ctx.createOscillator(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + .12);
+      g.gain.setValueAtTime(.5 * k, t); g.gain.exponentialRampToValueAtTime(.0001, t + .18); o.connect(g).connect(this.out); o.start(t); o.stop(t + .2); return; }
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), v = (kind === "snare" ? .18 : .06) * k, d = kind === "snare" ? .14 : .04;
+    src.buffer = this.noise(); f.type = "highpass"; f.frequency.value = kind === "snare" ? 1200 : 6000;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); src.connect(f).connect(g).connect(this.out); src.start(t); src.stop(t + d + .02);
+  },
   schedule() {
     const ctx = SFX.ctx; if (!ctx || document.hidden) return;
-    const song = SONGS[this.mode], eighth = 30 / song.bpm;
+    const song = (this.mode === "map" && this.track && SONGS[this.track]) || SONGS[this.mode], eighth = 30 / song.bpm;
+    if (this.lp) this.lp.frequency.value = song.beat ? 7000 : 2600;
     if (this.next < ctx.currentTime) this.next = ctx.currentTime + .1;
     while (this.next < ctx.currentTime + .6) {
       const bar = Math.floor(this.step / 8) % song.melody.length, pos = this.step % 8;
-      if (pos === 0) this.pad(song.chords[bar % song.chords.length], this.next, eighth * 8);
+      const chord = song.chords[bar % song.chords.length];
+      if (pos === 0) this.pad(chord, this.next, eighth * 8);
+      if (song.beat) {
+        if (pos === 0 || pos === 4) this.hit("kick", this.next, song.soft);
+        if (pos === 2 || pos === 6) this.hit("snare", this.next, song.soft);
+        this.hit("hat", this.next, song.soft);
+        if ([0, 3, 4, 6].includes(pos)) this.bassNote(chord[0] - 12, this.next);
+      }
       const m = song.melody[bar][pos];
-      if (m) this.bell(this.midi(m), this.next, this.mode === "room" ? .07 : .08);
+      if (m) { if (song.lead && song.lead !== "bell") this.lead(this.midi(m), this.next, song.lead); else this.bell(this.midi(m), this.next, this.mode === "room" ? .07 : .08); }
       this.next += eighth; this.step++;
     }
   },
@@ -682,7 +751,14 @@ const MUSIC = {
     if (this.out && SFX.ctx) this.out.gain.setTargetAtTime(0, SFX.ctx.currentTime, .3);
     clearInterval(this.timer); this.timer = null;
   },
-  setMode(m) { if (this.mode === m) return; this.mode = m; this.step = 0; }
+  setMode(m) { if (this.mode === m) return; this.mode = m; this.step = 0; },
+  track: null,
+  setTrack(t) { const id = t && t !== "classic" ? t : null; if (this.track === id) return; this.track = id; this.step = 0; },
+  preview(t) {
+    if (!this.on) { toast(L("Turn on 🎵 music first", "請先開啟 🎵 音樂")); return; }
+    this.setTrack(t); this.start(); clearTimeout(this._pv);
+    this._pv = setTimeout(() => this.setTrack(S && S.track), 15000);
+  }
 };
 try { MUSIC.on = localStorage.getItem(MUSIC_KEY) !== "off"; } catch (e) {}
 
@@ -1170,9 +1246,9 @@ const ZH_ROOMS = {
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
 const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
-const ZH_WARDROBE = { hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_WARDROBE = { hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "惡魔獵人偶像長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
-const ZH_SLOTS = { hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框" };
+const ZH_SLOTS = { hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框", backdrop: "背景" };
 const ZH_CHAR = { chiikawa: "吉伊卡哇", hachiware: "小八", usagi: "烏薩奇", momonga: "小桃", kurimanju: "栗子饅頭" };
 const ZH_COLOURS = { Red: "紅", Green: "綠", Blue: "藍", Yellow: "黃", Cyan: "藍綠", Magenta: "洋紅", White: "白", Black: "黑" };
 const ZH_TOPIC_LABELS = { light_basics: "來自物體的光線", reflection: "反射", refraction: "折射與全內反射", lenses: "透鏡", colours: "顏色", em_waves: "電磁波譜" };
@@ -1790,8 +1866,8 @@ function freshState() {
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
-    coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], player_id: newId(), lb_last: 0
+    coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null }, power: { torch: 1, crystal: 1, guard: 1 },
+    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -1801,7 +1877,7 @@ function normalise(obj) {
   s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run); s.seen = Object.assign({}, s.seen);
   // older saves used roomX-N for the 5 core puzzles
   s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
-  s.equip = Object.assign({ hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
+  s.equip = Object.assign({ hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
   s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.practice = Object.assign({ best: 0, lastDay: null }, s.practice); s.mistakes = [...(s.mistakes || [])]; s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
@@ -2115,7 +2191,46 @@ const WARDROBE = [
   { id: "prop_boba", slot: "prop", v2: true, name: "Bubble milk tea", price: 50, svg: `<path d="M93 38 L90 56" stroke="${MINK}" stroke-width="6" stroke-linecap="round"/><path d="M93 38 L90 56" stroke="#FF8FB8" stroke-width="3" stroke-linecap="round"/><path d="M81 54 H99 L96 80 H84 Z" fill="#E6C39C" ${MO}/><path d="M81 54 H99" stroke="${MINK}" stroke-width="3.4" stroke-linecap="round"/>${[[86, 75], [90, 77], [94, 75], [88, 72], [92, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9" fill="#3B2B2B"/>`).join("")}` },
   { id: "prop_waffle", slot: "prop", v2: true, name: "Egg-waffle cone", price: 60, svg: `${[[88, 46], [94, 49], [83, 51], [90, 53], [96, 56], [85, 58], [92, 60]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.2" fill="#F4C25B" ${MO}/>`).join("")}<path d="M80 62 L98 58 L92 82 Z" fill="#FFF7EC" ${MO}/><path d="M84 66 L96 63" stroke="#E0567E" stroke-width="1.6"/>` },
   { id: "prop_aura", slot: "prop", v2: true, name: "+1000 Aura sign", price: 150, svg: `<rect x="22" y="0" width="56" height="12" rx="6" fill="#2B2433" ${MO}/><text x="50" y="9" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-weight="800" font-size="8" fill="#FFE14D">+1000 AURA</text><path d="M16 4 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z M84 4 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z" fill="#C9A7F0"/>` },
-  { id: "prop_selfie", slot: "prop", v2: true, name: "Selfie phone", price: 80, svg: `<g transform="rotate(14 90 48)"><rect x="83" y="33" width="15" height="26" rx="3.5" fill="#2B2433" ${MO}/><rect x="85" y="36" width="11" height="19" rx="1.5" fill="#FFD3DD"/><path d="M90.5 49 c-3 -2 -3 -5 0 -4 c3 -1 3 2 0 4z" fill="#E0567E"/></g><circle cx="80" cy="30" r="3" fill="#FFF7B0" opacity=".9"/>` }
+  { id: "prop_selfie", slot: "prop", v2: true, name: "Selfie phone", price: 80, svg: `<g transform="rotate(14 90 48)"><rect x="83" y="33" width="15" height="26" rx="3.5" fill="#2B2433" ${MO}/><rect x="85" y="36" width="11" height="19" rx="1.5" fill="#FFD3DD"/><path d="M90.5 49 c-3 -2 -3 -5 0 -4 c3 -1 3 2 0 4z" fill="#E0567E"/></g><circle cx="80" cy="30" r="3" fill="#FFF7B0" opacity=".9"/>` },
+  // ---- Wave 2: funny wigs, hero masks, movie & meme items, pop-star style (all original drawings) ----
+  { id: "hair_blond", slot: "hair", v2: true, name: "Big blond swoop wig", price: 120, svg: `<path d="M11 55 C7 33 22 13 46 11 C68 9 88 17 92 33 C94 42 89 47 84 44 C78 35 66 30 53 32 C41 34 31 38 23 44 C18 47 14 51 11 55 Z" fill="#F4C542" ${MO}/><path d="M24 30 C38 20 60 18 80 26 M30 24 C46 16 66 16 84 30 M52 32 C64 27 78 29 86 38" stroke="#FFE7A0" stroke-width="2.6" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_purple", slot: "hair", v2: true, name: "Purple idol hair (borahae 💜)", price: 130, svg: `<path d="M14 64 C8 38 26 14 50 14 C74 14 92 38 86 64 L80 56 L78 44 C72 40 64 38 58 42 C54 36 46 36 42 42 C36 38 28 40 22 44 L20 56 Z" fill="#B084F5" ${MO}/><path d="M28 26 C38 20 56 19 70 26 M40 22 C44 30 46 36 46 42" stroke="#DCC4FF" stroke-width="2.6" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_curtain", slot: "hair", v2: true, name: "Blonde curtain-bangs pop wig", price: 120, back: `<path d="M14 40 C4 58 8 80 16 92 L30 88 L24 60 Z M86 40 C96 58 92 80 84 92 L70 88 L76 60 Z" fill="#F6E3A1" ${MO}/>`, svg: `<path d="M15 52 C13 30 30 14 50 14 C70 14 87 30 85 52 C82 44 74 36 62 34 C57 38 53 40 50 44 C47 40 43 38 38 34 C26 36 18 44 15 52 Z" fill="#F6E3A1" ${MO}/><path d="M50 44 C46 32 42 26 34 22 M50 44 C54 32 58 26 66 22" stroke="#E6C66E" stroke-width="2.2" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_pony", slot: "hair", v2: true, name: "Sky-high ponytail", price: 100, svg: `<path d="M50 20 C58 4 74 -6 84 2 C76 4 68 10 64 20 Z" fill="#4A2F2A" ${MO}/><path d="M16 48 C15 30 30 17 50 17 C70 17 85 30 84 48 C76 38 64 33 50 33 C36 33 24 38 16 48 Z" fill="#4A2F2A" ${MO}/><path d="M52 18 L58 11 L60 20 L66 15 L63 23 Z" fill="#fff" ${MO}/><path d="M30 26 q10 -6 22 -6" stroke="#8A6158" stroke-width="2.4" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_roots", slot: "hair", v2: true, name: "Neon-roots hair", price: 90, svg: (() => { const id = "nr" + (++clipN); const cap = "M14 62 C9 36 26 15 50 15 C74 15 91 36 86 62 C82 52 78 46 70 42 C62 40 38 40 30 42 C22 46 18 52 14 62 Z";
+      return `<clipPath id="${id}"><path d="${cap}"/></clipPath><path d="${cap}" fill="#1E1A1D"/><rect clip-path="url(#${id})" x="0" y="0" width="100" height="28" fill="#B6F23B"/><path d="${cap}" fill="none" ${MO}/>`; })() },
+  { id: "hair_einstein", slot: "hair", v2: true, name: "Mad-scientist hair", price: 70, svg: `<path d="M20 44 L6 34 L18 30 L8 16 L24 20 L26 4 L38 16 L50 0 L60 16 L74 4 L74 20 L92 14 L82 30 L96 36 L80 44 C74 34 62 30 50 30 C38 30 26 34 20 44 Z" fill="#EDEDED" ${MO}/><path d="M30 34 q-6 -8 -2 -16 M70 34 q6 -8 2 -16" stroke="#BDBDBD" stroke-width="2" fill="none"/>` },
+  { id: "hair_braid", slot: "hair", v2: true, name: "Demon-hunter idol braid", price: 140, svg: `<path d="M15 52 C13 30 30 15 50 15 C70 15 87 30 85 52 C78 40 64 34 50 36 C38 36 24 42 15 52 Z" fill="#4B2A7B" ${MO}/>${[0, 1, 2, 3, 4].map(k => `<ellipse cx="${84 + k * .8}" cy="${50 + k * 9}" rx="5.6" ry="5" fill="#4B2A7B" ${MO}/>`).join("")}<circle cx="88" cy="94" r="3" fill="#FFD84D" ${MO}/><path d="M30 24 q12 -7 26 -6" stroke="#8B63C9" stroke-width="2.4" fill="none" stroke-linecap="round"/>` },
+  { id: "hat_witch", slot: "hat", v2: true, name: "Emerald witch hat", price: 110, svg: `<path d="M32 26 L52 -16 L60 -12 L68 26 Z" fill="#1E1A1D" ${MO}/><path d="M34 20 H67 V26 H34 Z" fill="#3FBF6A"/><ellipse cx="50" cy="27" rx="34" ry="6" fill="#1E1A1D" ${MO}/>` },
+  { id: "hat_alien", slot: "hat", v2: true, name: "Blue alien ears", price: 90, svg: `<path d="M34 26 C22 20 8 8 4 -2 C16 0 30 8 40 20 Z M66 26 C78 20 92 8 96 -2 C84 0 70 8 60 20 Z" fill="#5B8FE0" ${MO}/><path d="M32 22 C22 16 14 8 11 3 C20 6 28 10 36 18 Z M68 22 C78 16 86 8 89 3 C80 6 72 10 64 18 Z" fill="#F7A8C4"/><path d="M8 4 l5 2 M92 4 l-5 2" stroke="${MINK}" stroke-width="2"/><path d="M26 24 Q50 14 74 24" stroke="#5B8FE0" stroke-width="4" fill="none"/>` },
+  { id: "hat_chicken", slot: "hat", v2: true, name: "Chicken-jockey rider", price: 150, svg: `<g shape-rendering="crispEdges" stroke="${MINK}" stroke-width="1.6"><rect x="36" y="4" width="24" height="16" fill="#fff"/><rect x="52" y="-8" width="12" height="14" fill="#fff"/><rect x="64" y="-3" width="6" height="5" fill="#F2B233"/><rect x="56" y="-12" width="6" height="4" fill="#E03A3A"/><rect x="60" y="3" width="4" height="4" fill="#E03A3A"/><rect x="40" y="20" width="4" height="6" fill="#F2B233"/><rect x="52" y="20" width="4" height="6" fill="#F2B233"/><rect x="30" y="8" width="6" height="8" fill="#EDEDED"/></g><rect x="57" y="-5" width="3" height="3" fill="#1E1A1D"/>` },
+  { id: "face_spider", slot: "face", v2: true, name: "Web-slinger mask", price: 170, svg: (() => { const m = "M14 60 C11 37 26 20 50 20 C74 20 89 37 86 60 C74 67 26 67 14 60 Z";
+      const cid = "sm" + (++clipN);
+      return `<clipPath id="${cid}"><path d="${m}"/></clipPath><path d="${m}" fill="#D8262F" ${MO}/><g clip-path="url(#${cid})" stroke="#7A1016" stroke-width="1.2" fill="none">${[0, 30, 60, 90, 120, 150].map(a => { const r = a * Math.PI / 180; return `<path d="M${(50 - 40 * Math.cos(r)).toFixed(1)} ${(46 - 30 * Math.sin(r)).toFixed(1)} L${(50 + 40 * Math.cos(r)).toFixed(1)} ${(46 + 30 * Math.sin(r)).toFixed(1)}"/>`; }).join("")}<ellipse cx="50" cy="46" rx="14" ry="10"/><ellipse cx="50" cy="46" rx="26" ry="18"/></g>
+        <path d="M30 44 C34 38 44 42 44 50 C38 54 32 52 30 44 Z M70 44 C66 38 56 42 56 50 C62 54 68 52 70 44 Z" fill="#fff" stroke="#1E1A1D" stroke-width="2.4"/>`; })() },
+  { id: "face_iron", slot: "face", v2: true, name: "Iron-armour helmet", price: 180, svg: `<path d="M14 60 C11 37 26 20 50 20 C74 20 89 37 86 60 C74 67 26 67 14 60 Z" fill="#C8262F" ${MO}/><path d="M26 40 C26 30 38 28 50 32 C62 28 74 30 74 40 L72 60 C62 64 38 64 28 60 Z" fill="#F2C230" ${MO}/><path d="M31 46 h13 l-2 4 h-10 Z M56 46 h13 l-1 4 h-10 Z" fill="#9FF3FF" stroke="${MINK}" stroke-width="1.4"/><path d="M42 58 h16" stroke="${MINK}" stroke-width="2"/>` },
+  { id: "face_merc", slot: "face", v2: true, name: "Red merc mask", price: 160, svg: `<path d="M14 60 C11 37 26 20 50 20 C74 20 89 37 86 60 C74 67 26 67 14 60 Z" fill="#B3121B" ${MO}/><path d="M50 21 V65" stroke="#7A0B11" stroke-width="2"/><path d="M26 46 C28 38 42 38 46 48 C40 56 28 54 26 46 Z M74 46 C72 38 58 38 54 48 C60 56 72 54 74 46 Z" fill="#1E1A1D"/><path d="M31 47 C34 44 40 45 42 48 C38 50 34 50 31 47 Z M69 47 C66 44 60 45 58 48 C62 50 66 50 69 47 Z" fill="#fff"/>` },
+  { id: "face_panther", slot: "face", v2: true, name: "Panther-king mask", price: 170, svg: `<path d="M26 26 L28 12 L38 22 Z M74 26 L72 12 L62 22 Z" fill="#1E1A1D" ${MO}/><path d="M14 60 C11 37 26 20 50 20 C74 20 89 37 86 60 C74 67 26 67 14 60 Z" fill="#26222B" ${MO}/><path d="M50 22 V40 M30 30 L42 42 M70 30 L58 42 M24 56 C34 52 40 56 50 60 C60 56 66 52 76 56" stroke="#B9C0CC" stroke-width="1.8" fill="none"/><path d="M30 46 C34 42 42 44 44 49 C38 51 33 50 30 46 Z M70 46 C66 42 58 44 56 49 C62 51 67 50 70 46 Z" fill="#E8F0FF"/>` },
+  { id: "out_tour", slot: "outfit", v2: true, name: "Sparkly tour bodysuit", price: 150, svg: `<defs><linearGradient id="tourg" x1="0" x2="1"><stop offset="0" stop-color="#F7A8C4"/><stop offset=".5" stop-color="#C9A7F0"/><stop offset="1" stop-color="#9FD0FF"/></linearGradient></defs><path d="M0 63 C28 69 72 69 100 63 L100 100 L0 100 Z" fill="url(#tourg)"/>${Array.from({ length: 26 }, (_, k) => `<circle cx="${(k * 37) % 88 + 6}" cy="${68 + (k * 13) % 26}" r="1.6" fill="#fff" opacity=".9"/>`).join("")}` },
+  { id: "out_giant", slot: "outfit", v2: true, name: "Green giant muscles", price: 160, arm: "#6DBB45", svg: `<path d="M0 60 C28 67 72 67 100 60 L100 100 L0 100 Z" fill="#6DBB45"/><path d="M40 70 q4 3 0 6 M60 70 q-4 3 0 6 M44 80 h12 M50 70 v18" stroke="#3F7F2A" stroke-width="1.8" fill="none"/><path d="M0 86 L12 90 L20 84 L30 91 L40 85 L50 92 L60 85 L70 91 L80 84 L90 90 L100 86 L100 100 L0 100 Z" fill="#7B3FA0"/>` },
+  { id: "out_cape", slot: "outfit", v2: true, name: "Caped hero suit", price: 160, arm: "#2E5BD6", back: `<path d="M18 58 C8 76 10 92 16 98 L84 98 C90 92 92 76 82 58 Z" fill="#D8262F" ${MO}/>`, svg: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#2E5BD6"/><path d="M50 67 L60 74 L50 86 L40 74 Z" fill="#FFD84D" stroke="#D8262F" stroke-width="2"/><path d="M52 70 L46 77 H51 L48 83 L55 75 H50 Z" fill="#D8262F"/>` },
+  { id: "out_boat", slot: "outfit", v2: true, name: "Aura-farming boat outfit", price: 130, arm: "#1E1A1D", svg: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#1E1A1D"/><path d="M30 64 L70 96" stroke="#E0B84A" stroke-width="5"/><path d="M36 66 H64" stroke="#E0B84A" stroke-width="2"/><path d="M0 92 H100" stroke="#E0B84A" stroke-width="2"/>` },
+  { id: "prop_hammer", slot: "prop", v2: true, name: "Thunder hammer", price: 160, svg: `<path d="M91 54 L88 76" stroke="${MINK}" stroke-width="6" stroke-linecap="round"/><path d="M91 54 L88 76" stroke="#8A5A3B" stroke-width="3.4" stroke-linecap="round"/><rect x="80" y="38" width="20" height="16" rx="2" fill="#AEB4BF" ${MO}/><path d="M82 42 h16 M82 50 h16" stroke="#8C929C" stroke-width="1.4"/><path d="M76 30 l-4 7 h4 l-3 7" stroke="#FFD84D" stroke-width="2.4" fill="none" stroke-linecap="round"/>` },
+  { id: "prop_shield", slot: "prop", v2: true, name: "Star shield", price: 160, svg: `<circle cx="87" cy="64" r="14" fill="#D8262F" ${MO}/><circle cx="87" cy="64" r="10.5" fill="#fff"/><circle cx="87" cy="64" r="7.5" fill="#D8262F"/><circle cx="87" cy="64" r="5" fill="#2E5BD6"/><path d="M87 60 l1.2 2.6 2.8 .3 -2.1 1.9 .6 2.8 -2.5 -1.4 -2.5 1.4 .6 -2.8 -2.1 -1.9 2.8 -.3z" fill="#fff"/>` },
+  { id: "prop_claws", slot: "prop", v2: true, name: "Metal claws", price: 150, svg: `${[[98, 46], [100, 54], [99, 62]].map(([x, y]) => `<path d="M85 66 L${x} ${y}" stroke="${MINK}" stroke-width="4.4" stroke-linecap="round"/><path d="M85 66 L${x} ${y}" stroke="#DDE3EA" stroke-width="2.2" stroke-linecap="round"/>`).join("")}` },
+  { id: "prop_bracelets", slot: "prop", v2: true, name: "Friendship bracelets", price: 60, svg: `${[[13, 66], [87, 66]].map(([x, y]) => [0, 1, 2, 3, 4].map(k => `<circle cx="${x - 5 + k * 2.5}" cy="${y + (k % 2) * 1.2}" r="2" fill="${["#FF8FB8", "#FFD84D", "#9FD0FF", "#C9A7F0", "#B6F23B"][k]}" stroke="${MINK}" stroke-width=".8"/>`).join("")).join("")}` },
+  { id: "prop_dubai", slot: "prop", v2: true, name: "Dubai chocolate bar", price: 80, svg: `<g transform="rotate(-18 88 62)"><rect x="78" y="52" width="20" height="22" rx="2" fill="#6B3E26" ${MO}/><path d="M78 60 H98" stroke="#4A2718" stroke-width="1.4"/><path d="M78 66 H98" stroke="#4A2718" stroke-width="1.4"/><path d="M78 52 L84 47 L88 51 L93 46 L98 52 Z" fill="#9BCB5A" ${MO}/><path d="M82 50 l2 -2 M88 49 l2 -1 M93 49 l2 -1" stroke="#E6C27A" stroke-width="1.2"/></g>` },
+  { id: "prop_charm", slot: "prop", v2: true, name: "Toothy monster charm", price: 110, svg: `<path d="M88 58 V64" stroke="${MINK}" stroke-width="1.6"/><path d="M82 66 L80 54 L85 62 Z M94 66 L96 54 L91 62 Z" fill="#C9A98C" ${MO}/><circle cx="88" cy="71" r="8" fill="#C9A98C" ${MO}/><circle cx="85" cy="69" r="1.3" fill="${MINK}"/><circle cx="91" cy="69" r="1.3" fill="${MINK}"/><path d="M83 73 Q88 78 93 73 Z" fill="#fff" stroke="${MINK}" stroke-width="1.2"/><path d="M85 73 v2 M87.5 73 v2.6 M90 73 v2.4" stroke="${MINK}" stroke-width=".8"/>` },
+  { id: "prop_lightstick", slot: "prop", v2: true, name: "K-pop lightstick", price: 90, svg: `<path d="M89 76 L92 56" stroke="${MINK}" stroke-width="5" stroke-linecap="round"/><path d="M89 76 L92 56" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="93" cy="48" r="9" fill="#E7D6FF" ${MO}/><path d="M93 52 c-4 -3 -4 -7 0 -5.5 c4 -1.5 4 2.5 0 5.5z" fill="#B084F5"/><circle cx="93" cy="48" r="12" fill="none" stroke="#C9A7F0" stroke-width="1.4" opacity=".6"/>` },
+  // ---- Backdrops for Chiikawa's room (400 × 300) ----
+  { id: "bg_brat", slot: "backdrop", name: "Brat-green summer wall", price: 80, bg: `<rect width="400" height="300" fill="#8ACE00"/><text x="200" y="130" text-anchor="middle" font-family="Arial Narrow, Arial, sans-serif" font-size="70" fill="#111" style="filter:blur(1.4px)">brat</text><rect y="220" width="400" height="80" fill="#7AB800"/>` },
+  { id: "bg_mongkok", slot: "backdrop", name: "Mong Kok neon street", price: 120, bg: `<rect width="400" height="300" fill="#1B1B3A"/>${[[0, 70, 90, 150], [95, 40, 80, 180], [180, 90, 70, 130], [255, 30, 90, 190], [350, 80, 60, 140]].map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h + 40}" fill="#2A2A4E"/>`).join("")}${[[20, 100, "#FF4FA3", "茶餐廳"], [110, 70, "#3FE0E8", "旺角"], [270, 60, "#FFD84D", "好正"], [190, 120, "#8CFF6A", "HK"]].map(([x, y, c, t]) => `<rect x="${x}" y="${y}" width="64" height="30" rx="6" fill="none" stroke="${c}" stroke-width="3" style="filter:drop-shadow(0 0 5px ${c})"/><text x="${x + 32}" y="${y + 21}" text-anchor="middle" font-size="15" font-weight="800" fill="${c}">${t}</text>`).join("")}<rect y="230" width="400" height="70" fill="#35355A"/><path d="M0 250 H400" stroke="#FFD84D" stroke-width="3" stroke-dasharray="20 14"/>` },
+  { id: "bg_harbour", slot: "backdrop", name: "Victoria Harbour at night", price: 120, bg: `<defs><linearGradient id="hbg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#101838"/><stop offset="1" stop-color="#3A3F7A"/></linearGradient></defs><rect width="400" height="300" fill="url(#hbg)"/>${[[10, 120, 30], [45, 90, 26], [75, 60, 22], [100, 100, 30], [135, 40, 26], [165, 110, 34], [205, 75, 28], [238, 20, 24], [265, 95, 30], [300, 65, 26], [330, 105, 34], [368, 85, 32]].map(([x, y, w]) => `<rect x="${x}" y="${y + 40}" width="${w}" height="${200 - y}" fill="#1D2250"/>${Array.from({ length: 6 }, (_, k) => `<rect x="${x + 4 + (k % 2) * (w / 2)}" y="${y + 50 + Math.floor(k / 2) * 18}" width="4" height="6" fill="#FFE27A" opacity=".85"/>`).join("")}`).join("")}<rect y="228" width="400" height="72" fill="#16305E"/>${[40, 120, 200, 280, 360].map(x => `<path d="M${x} 240 v40" stroke="#FFE27A" stroke-width="3" opacity=".35" stroke-dasharray="6 5"/>`).join("")}<path d="M300 236 h40 l-6 8 h-28 Z" fill="#E8E8E8"/><rect x="310" y="228" width="18" height="8" fill="#2F7A4B"/>` },
+  { id: "bg_blocky", slot: "backdrop", name: "Blocky pixel world", price: 100, bg: `<g shape-rendering="crispEdges"><rect width="400" height="300" fill="#8CC8FF"/><rect x="40" y="40" width="80" height="20" fill="#fff"/><rect x="60" y="30" width="40" height="10" fill="#fff"/><rect x="260" y="60" width="100" height="20" fill="#fff"/>${Array.from({ length: 20 }, (_, k) => `<rect x="${k * 20}" y="210" width="20" height="10" fill="#5DB33A"/><rect x="${k * 20}" y="220" width="20" height="80" fill="#8B5A2B"/><rect x="${k * 20 + (k % 3) * 5}" y="${235 + (k % 4) * 12}" width="6" height="6" fill="#6E4520"/>`).join("")}<rect x="310" y="130" width="16" height="80" fill="#6E4520"/><rect x="280" y="90" width="76" height="50" fill="#3E8E2E"/><rect x="296" y="70" width="44" height="24" fill="#3E8E2E"/></g>` },
+  { id: "bg_stage", slot: "backdrop", name: "Stadium tour stage", price: 140, bg: `<rect width="400" height="300" fill="#23163A"/>${[[60, "#FF8FB8"], [200, "#C9A7F0"], [340, "#9FD0FF"]].map(([x, c]) => `<path d="M${x} 0 L${x - 70} 230 H${x + 70} Z" fill="${c}" opacity=".22"/>`).join("")}<rect y="210" width="400" height="90" fill="#3B2A5C"/><rect y="206" width="400" height="8" fill="#FFD84D"/>${Array.from({ length: 40 }, (_, k) => `<circle cx="${(k * 53) % 400}" cy="${250 + (k * 17) % 45}" r="2.6" fill="${["#FF8FB8", "#9FD0FF", "#FFE27A", "#B6F23B"][k % 4]}"/>`).join("")}` },
+  { id: "bg_space", slot: "backdrop", name: "Outer space", price: 110, bg: `<defs><radialGradient id="spg" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#3B2A7A"/><stop offset="1" stop-color="#0E0B24"/></radialGradient></defs><rect width="400" height="300" fill="url(#spg)"/>${Array.from({ length: 50 }, (_, k) => `<circle cx="${(k * 83) % 400}" cy="${(k * 47) % 300}" r="${k % 5 ? 1 : 2}" fill="#fff" opacity=".85"/>`).join("")}<circle cx="320" cy="80" r="34" fill="#F4A261"/><ellipse cx="320" cy="80" rx="56" ry="12" fill="none" stroke="#FFE27A" stroke-width="4" transform="rotate(-18 320 80)"/><circle cx="70" cy="60" r="14" fill="#E8E8F0"/><ellipse cx="200" cy="300" rx="260" ry="70" fill="#5A4E8C"/>` },
+  { id: "bg_herocity", slot: "backdrop", name: "Hero city at dusk", price: 130, bg: `<defs><linearGradient id="hcg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F59E6B"/><stop offset=".6" stop-color="#8E5BD0"/><stop offset="1" stop-color="#3B2A6A"/></linearGradient></defs><rect width="400" height="300" fill="url(#hcg)"/>${[[0, 110, 60], [55, 70, 50], [100, 130, 46], [140, 40, 64], [200, 100, 50], [245, 60, 58], [300, 120, 44], [340, 80, 60]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${300 - y}" fill="#2B2046"/>`).join("")}<rect x="160" y="20" width="24" height="20" fill="#2B2046"/><circle cx="172" cy="52" r="7" fill="#9FF3FF" style="filter:drop-shadow(0 0 6px #9FF3FF)"/><path d="M40 60 q60 -30 120 -10" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/><rect y="240" width="400" height="60" fill="#241A3A"/>` },
+  { id: "bg_emerald", slot: "backdrop", name: "Emerald city road", price: 110, bg: `<defs><linearGradient id="emg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C9F2D8"/><stop offset="1" stop-color="#6FCF97"/></linearGradient></defs><rect width="400" height="300" fill="url(#emg)"/>${[[120, 60, 30], [160, 30, 34], [205, 50, 30], [245, 80, 26], [95, 100, 22], [280, 110, 22]].map(([x, y, w]) => `<path d="M${x} 200 V${y + 20} L${x + w / 2} ${y} L${x + w} ${y + 20} V200 Z" fill="#2E9E5B" opacity=".85"/>`).join("")}<rect y="200" width="400" height="100" fill="#8FD69E"/><path d="M170 300 L190 200 H214 L240 300 Z" fill="#FFD84D"/>${[220, 245, 270, 290].map(y => `<path d="M${200 - (y - 200) * .35} ${y} H${204 + (y - 200) * .45}" stroke="#E0B42E" stroke-width="2"/>`).join("")}${Array.from({ length: 14 }, (_, k) => `<path d="M${(k * 61) % 400} ${(k * 37) % 180} l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fff" opacity=".8"/>`).join("")}` }
 ];
 WARDROBE.forEach(w => { if (!w.tier) w.tier = w.price <= 60 ? "common" : w.price <= 130 ? "rare" : "epic"; });
 const TIERS = { common: ["Common", "普通"], rare: ["✦ Rare", "✦ 稀有"], epic: ["💎 Epic", "💎 史詩"], legend: ["👑 Legendary", "👑 傳說"] };
@@ -2124,7 +2239,7 @@ let itemQueue = [];
 function checkItems() {
   WARDROBE.forEach(w => { if (!w.earn || S.owned.includes(w.id)) return; const [c, g] = w.earn(); if (c >= g) { S.owned.push(w.id); trophyQueue.push({ item: w }); } });
 }
-const SLOT_NAMES = { hair: "Wigs", hat: "Hats", face: "Glasses", ribbon: "Hair clips", outfit: "Outfits", prop: "Props", frame: "Frames" };
+const SLOT_NAMES = { hair: "Wigs", hat: "Hats", face: "Glasses", ribbon: "Hair clips", outfit: "Outfits", prop: "Props", frame: "Frames", backdrop: "Backdrops" };
 const POWERUPS = [
   { id: "torch", icon: "🔦", name: "Torch", price: 25, desc: "Removes one wrong answer, or sets one dial correctly. (Counts as a hint.)" },
   { id: "crystal", icon: "⏳", name: "Time crystal", price: 30, desc: "Adds 60 seconds to the room timer." },
@@ -2141,7 +2256,7 @@ function dressLayers(eq) {
   const it = k => eq[k] && itemById(eq[k]);
   const o = it("outfit"), id = "oc" + (++clipN);
   return {
-    back: it("hair") && it("hair").back || "",
+    back: (it("hair") && it("hair").back || "") + (o && o.back || ""),
     outfit: o && !o.over ? `<clipPath id="${id}"><path d="${BODY}"/></clipPath><g clip-path="url(#${id})">${o.svg}</g>` : "",
     arm: o && o.arm,
     front: (o && o.over ? o.svg : "") + ["hair", "face", "hat", "ribbon", "prop"].map(k => it(k) ? itemSvg(it(k)) : "").join("")
@@ -2901,9 +3016,15 @@ function showChat(kind) { const el = document.getElementById("chat"); if (el) el
    Hub: bottom tabs (Home · Rooms · Lens Lab · Dress up · Collection) so nothing needs a long scroll
    ============================================================ */
 let HUB_TAB = "home";
-const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Lens Lab", "透鏡實驗室"], ["dress", "👗", "Dress up", "換裝"], ["collect", "🏆", "Collection", "收藏"]];
+const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Light Lab", "光學實驗室"], ["dress", "👗", "Dress up", "換裝"], ["collect", "🏆", "Collection", "收藏"]];
 const PET_LINES = [["Yaha!", "呀哈！"], ["Hehe~ 🥰", "嘻嘻～🥰"], ["Let's learn about light!", "一起學光吧！"], ["Pat pat... ☺️", "摸摸頭……☺️"], ["Do I look cute today?", "我今天可愛嗎？"], ["One room a day! 🌱", "每天一個房間！🌱"]];
+const bgItem = () => S && S.equip.backdrop && itemById(S.equip.backdrop);
+const bgSvg = w => `<svg class="bgart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${w.bg}</svg>`;
 function sceneHtml(mood) {
+  const bg = bgItem();
+  if (bg) return `<div class="scene">${bgSvg(bg)}<div class="rug" style="opacity:.35"></div>
+    <button class="pet" id="pet" aria-label="${L("Pat Chiikawa", "摸摸吉伊卡哇")}">${figure("chiikawa", mood)}</button>
+    <span class="petsay" id="petsay" hidden></span></div>`;
   return `<div class="scene">
     <svg class="win" viewBox="0 0 120 106" aria-hidden="true"><rect x="6" y="4" width="108" height="90" rx="16" fill="#fff"/><rect x="14" y="12" width="92" height="74" rx="9" fill="#CFE6FA"/><circle cx="38" cy="32" r="10" fill="#FFE27A"/><ellipse cx="80" cy="64" rx="17" ry="6.5" fill="#fff"/><path d="M60 12 V86 M14 49 H106" stroke="#fff" stroke-width="6"/><rect x="0" y="92" width="120" height="11" rx="5.5" fill="#E7C9A6"/></svg>
     <div class="floor"></div><div class="rug"></div>
@@ -2950,7 +3071,7 @@ function homeHtml() {
         ${allDone ? act("aRooms", "pink", "🗺️", L("Revise a room", "重溫房間"), L("New questions!", "新題目！")) : act("aGo", "pink", "▶️", L("Enter room", "進入房間"), esc(ROOMS[ni].name), `data-room="${ROOMS[ni].id}"`)}
         ${act("mRush", "purple", "⚡", L("Light Rush", "光速挑戰"), S.rush.lastDay !== today() ? L("×2 today!", "今天雙倍！") : `${L("Best", "最高")} ${S.rush.best}`)}
         ${act("mPrac", "green", "🔁", L("Practice", "練習"), mk ? L(`${mk} to fix`, `${mk} 題待修正`) : L(`${PRACTICE_GOAL} in a row`, `連對 ${PRACTICE_GOAL} 題`))}
-        ${act("aLab", "blue", "🔭", L("Lens Lab", "透鏡實驗室"), L("Try it!", "動手試！"))}
+        ${act("aLab", "blue", "🔭", L("Light Lab", "光學實驗室"), L("Lenses · mirror · TIR", "透鏡 · 鏡 · 全內反射"))}
         ${act("mShop", "white", "👗", L("Dress up", "換裝"), `🌰 ${S.coins}`)}
         ${act("chest", "yellow", "🎁", chestReady ? L("Snack chest", "零食寶箱") : L("Back tomorrow", "明天再來"), "", chestReady ? "" : "disabled")}
       </div>
@@ -2988,22 +3109,29 @@ function collectHtml() {
 }
 /* ----- Dress-up ----- */
 let DRESS_SLOT = "hair";
-const SLOT_ICON = { hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", power: "🎒" };
+const SLOT_ICON = { hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", backdrop: "🏞️", power: "🎒", music: "🎵" };
 function wardrobeHtml(slot) {
-  const eq = S.equip, tabs = Object.keys(SLOT_NAMES).concat("power");
-  const grid = slot === "power"
+  const eq = S.equip, tabs = Object.keys(SLOT_NAMES).concat("power", "music");
+  const grid = slot === "music"
+    ? `<p class="small muted">${L("Unlock background music for your home. Every tune is an original melody made in the style of songs you know. Tap ▶ to hear 15 seconds.", "為小窩解鎖背景音樂。每首都是原創旋律，只是模仿大家熟悉的歌曲風格。按 ▶ 試聽 15 秒。")}</p>
+       <div class="shopgrid">${TRACKS.map(t => { const own = S.tracks.includes(t.id), on = (S.track || "classic") === t.id, tier = t.price >= 100 ? "rare" : "common";
+         return `<div class="sitem ${tier} ${on ? "on" : ""}">${tierPill(tier)}<div style="font-size:2.2rem">${t.icon}</div><b class="small">${L(t.en, t.zh)}</b><span class="small muted">${L(t.ven, t.vzh)}</span>
+           <button class="btn plain" data-prev="${t.id}">▶ ${L("Preview", "試聽")}</button>
+           ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-track="${t.id}" ${on ? "disabled" : ""}>${on ? L("🎵 Playing", "🎵 播放中") : L("Play at home", "在小窩播放")}</button>`
+                 : `<button class="btn yellow" data-tbuy="${t.id}" ${S.coins < t.price ? "disabled" : ""}>🌰 ${t.price}</button>`}</div>`; }).join("")}</div>`
+    : slot === "power"
     ? `<p class="small muted">${L(`Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.`, `道具可在密室中使用：在任何一把鎖的 🎒 欄使用。每種最多持有 ${MAX_POWER} 個。`)}</p>
        <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
          <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
          <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🌰 ${u.price}</button></div>`).join("")}</div>`
     : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
         const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
-        return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
+        return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
           <b class="small">${esc(w.name)}</b>
           ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
                 : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
                 : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`;
-  return `<div class="slotbar" role="tablist">${tabs.map(k => `<button class="tab" role="tab" aria-selected="${k === slot}" data-slot="${k}">${SLOT_ICON[k]} ${k === "power" ? L("Power-ups", "道具") : SLOT_NAMES[k]}</button>`).join("")}</div>${grid}`;
+  return `<div class="slotbar" role="tablist">${tabs.map(k => `<button class="tab" role="tab" aria-selected="${k === slot}" data-slot="${k}">${SLOT_ICON[k]} ${k === "power" ? L("Power-ups", "道具") : k === "music" ? L("Music", "音樂") : SLOT_NAMES[k]}</button>`).join("")}</div>${grid}`;
 }
 function wireWardrobe(root, redraw) {
   root.querySelectorAll("[data-slot]").forEach(b => b.onclick = () => { SFX.tap(); DRESS_SLOT = b.dataset.slot; redraw(); });
@@ -3013,6 +3141,12 @@ function wireWardrobe(root, redraw) {
   });
   root.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
     const w = itemById(b.dataset.wear); S.equip[w.slot] = S.equip[w.slot] === w.id ? null : w.id; save(true); SFX.item(); redraw(); refreshPlayer();
+  });
+  root.querySelectorAll("[data-prev]").forEach(b => b.onclick = () => { SFX.init(); MUSIC.preview(b.dataset.prev); toast(L("▶ Previewing for 15 seconds", "▶ 試聽 15 秒")); });
+  root.querySelectorAll("[data-track]").forEach(b => b.onclick = () => { SFX.init(); S.track = b.dataset.track; save(true); clearTimeout(MUSIC._pv); MUSIC.setTrack(S.track); MUSIC.start(); SFX.item(); redraw(); });
+  root.querySelectorAll("[data-tbuy]").forEach(b => b.onclick = () => {
+    const t = TRACKS.find(x => x.id === b.dataset.tbuy); if (S.coins < t.price) return;
+    S.coins -= t.price; S.tracks.push(t.id); S.track = t.id; save(true); SFX.fanfare(); confetti(50); clearTimeout(MUSIC._pv); MUSIC.setTrack(t.id); MUSIC.start(); redraw(); renderTools();
   });
   root.querySelectorAll("[data-pbuy]").forEach(b => b.onclick = () => {
     const u = POWERUPS.find(x => x.id === b.dataset.pbuy); if (S.coins < u.price) return;
@@ -3048,7 +3182,7 @@ function openShop(slot) {
 }
 function renderMap(tab) {
   const moved = tab && tab !== HUB_TAB; if (tab) HUB_TAB = tab;
-  stopRush(); stopPractice(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
+  stopRush(); stopPractice(); MUSIC.setMode("map"); MUSIC.setTrack(S.track); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
   $app.innerHTML = `<div class="hub">${body}</div>
     <nav class="bnav" aria-label="${L("Main sections", "主要部分")}">${HUB_TABS.map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${i}</span>${L(en, zh)}</button>`).join("")}</nav>`;
@@ -3077,16 +3211,35 @@ function renderMap(tab) {
 /* ============================================================
    Lens Lab: drag the object and watch the three textbook rays form the image
    ============================================================ */
-const LAB = { kind: "convex", u: 3, rays: [true, true, true] };
+const LAB = { tab: "lens", kind: "convex", u: 3, rays: [true, true, true], obj: "arrow", d: 3, eye: 200, mat: "glass", ang: 30 };
 const LX = 400, AY = 215, FPX = 80, OBJ_H = 60, LH = 400;   // lens position, principal axis, focal length (px), object height (px)
+const OBJ_KINDS = [["arrow", "➡️", "Arrow", "箭號"], ["pencil", "✏️", "Pencil", "鉛筆"], ["doll", "🎤", "Pop-star doll", "歌星公仔"]];
+// Objects are drawn standing on y = 0 and reaching up to y = −60, so they can be scaled or flipped into images
+function objShape(kind, col) {
+  const k = `stroke="${MINK}" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"`;
+  if (kind === "pencil") return `<path d="M-7 -46 L0 -60 L7 -46 Z" fill="#F2C9A0" ${k}/><path d="M-2.4 -55 L0 -60 L2.4 -55 Z" fill="#3B3B3B"/><rect x="-7" y="-46" width="14" height="36" fill="#FFD84D" ${k}/><rect x="-7" y="-46" width="4.5" height="36" fill="#F2A900"/><rect x="-7" y="-10" width="14" height="4" fill="#C9CFE0" ${k}/><rect x="-7" y="-6" width="14" height="6" rx="2" fill="#FF8FB8" ${k}/>`;
+  if (kind === "doll") return `<ellipse cx="-5" cy="-2" rx="5" ry="2.6" fill="#fff" ${k}/><ellipse cx="5" cy="-2" rx="5" ry="2.6" fill="#fff" ${k}/><path d="M-11 -6 C-12 -22 -8 -30 0 -30 C8 -30 12 -22 11 -6 Z" fill="#8E6BE0" ${k}/><path d="M-4 -28 L0 -22 L4 -28" fill="none" ${k}/><path d="M11 -18 L17 -26" ${k}/><circle cx="18" cy="-28" r="3.4" fill="#3B3B3B" ${k}/><circle cx="0" cy="-42" r="12" fill="#FFE3CC" ${k}/><path d="M-12 -43 C-13 -54 -4 -58 4 -57 C12 -56 16 -50 14 -44 C8 -50 0 -50 -6 -46 Z" fill="#8A5A3B" ${k}/><circle cx="-4" cy="-40" r="1.4" fill="${MINK}"/><circle cx="4" cy="-40" r="1.4" fill="${MINK}"/><path d="M-2 -35 q2 2 4 0" fill="none" ${k}/>`;
+  return `<line x1="0" y1="0" x2="0" y2="-57" stroke="${col}" stroke-width="5" vector-effect="non-scaling-stroke"/><path d="M-9 -47 L0 -59 L9 -47" fill="none" stroke="${col}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M0 -42 L12 -38 L0 -34 Z" fill="${col}"/>`;
+}
+const placeObj = (x, y, sx, sy, col, op = 1) => `<g class="obj" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${sx.toFixed(3)} ${sy.toFixed(3)})" opacity="${op}">${objShape(LAB.obj, col)}</g>`;
+const svgLine = (x1, y1, x2, y2, c, dash, w = 3) => `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="${w}" ${dash ? `stroke-dasharray="8 7"` : ""} stroke-linecap="round"/>`;
+const svgMid = (x1, y1, x2, y2, c) => { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, a = Math.atan2(y2 - y1, x2 - x1), k = 11;
+  return `<path d="M${(mx - k * Math.cos(a - .45)).toFixed(1)} ${(my - k * Math.sin(a - .45)).toFixed(1)} L${mx.toFixed(1)} ${my.toFixed(1)} L${(mx - k * Math.cos(a + .45)).toFixed(1)} ${(my - k * Math.sin(a + .45)).toFixed(1)}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`; };
 const LAB_MISSIONS = [
-  { id: "cam", kind: "convex", en: "Make a real, inverted, <b>diminished</b> image (like a camera).", zh: "形成實像、倒立、<b>縮小</b>的像（像相機）。", ok: s => s.real && s.size === "dim" },
-  { id: "same", kind: "convex", en: "Make a real, inverted image the <b>same size</b> as the object.", zh: "形成實像、倒立、與物體<b>大小相同</b>的像。", ok: s => s.real && s.size === "same" },
-  { id: "proj", kind: "convex", en: "Make a real, inverted, <b>magnified</b> image (like a projector).", zh: "形成實像、倒立、<b>放大</b>的像（像投影機）。", ok: s => s.real && s.size === "mag" },
-  { id: "inf", kind: "convex", en: "Put the object where <b>no clear image</b> forms.", zh: "把物體放在<b>不能形成清晰的像</b>的位置。", ok: s => s.inf },
-  { id: "mag", kind: "convex", en: "Make a <b>virtual, erect, magnified</b> image (like a magnifying glass).", zh: "形成<b>虛像、正立、放大</b>的像（像放大鏡）。", ok: s => s.virt && s.size === "mag" },
-  { id: "con", kind: "concave", en: "Use the lens that <b>spreads light out</b>. What image does it always form?", zh: "使用令光線<b>發散</b>的透鏡。它形成的像總是怎樣的？", ok: s => s.kind === "concave" }
+  { id: "cam", tab: "lens", kind: "convex", en: "Make a real, inverted, <b>diminished</b> image (like a camera).", zh: "形成實像、倒立、<b>縮小</b>的像（像相機）。", ok: s => s.real && s.size === "dim" },
+  { id: "same", tab: "lens", kind: "convex", en: "Make a real, inverted image the <b>same size</b> as the object.", zh: "形成實像、倒立、與物體<b>大小相同</b>的像。", ok: s => s.real && s.size === "same" },
+  { id: "proj", tab: "lens", kind: "convex", en: "Make a real, inverted, <b>magnified</b> image (like a projector).", zh: "形成實像、倒立、<b>放大</b>的像（像投影機）。", ok: s => s.real && s.size === "mag" },
+  { id: "inf", tab: "lens", kind: "convex", en: "Put the object where <b>no clear image</b> forms.", zh: "把物體放在<b>不能形成清晰的像</b>的位置。", ok: s => s.inf },
+  { id: "mag", tab: "lens", kind: "convex", en: "Make a <b>virtual, erect, magnified</b> image (like a magnifying glass).", zh: "形成<b>虛像、正立、放大</b>的像（像放大鏡）。", ok: s => s.virt && s.size === "mag" },
+  { id: "con", tab: "lens", kind: "concave", en: "Use the lens that <b>spreads light out</b>. What image does it always form?", zh: "使用令光線<b>發散</b>的透鏡。它形成的像總是怎樣的？", ok: s => s.kind === "concave" },
+  { id: "mir1", tab: "mirror", en: "Put the object <b>1 square</b> from the mirror. Where is the image?", zh: "把物體放在離鏡子 <b>1 格</b>的位置。像在哪裏？", ok: s => Math.abs(s.d - 1) < .05 },
+  { id: "mir2", tab: "mirror", en: "Pick the ✏️ pencil or 🎤 doll and spot the <b>lateral inversion</b>.", zh: "選 ✏️ 鉛筆或 🎤 公仔，找出<b>橫向倒置</b>。", ok: s => s.obj !== "arrow" },
+  { id: "mir3", tab: "mirror", en: "Move the eye or object until the angle of incidence is <b>more than 45°</b>. Is r still equal to i?", zh: "移動眼睛或物體，令入射角<b>大於 45°</b>。r 仍然等於 i 嗎？", ok: s => s.i > 45 },
+  { id: "tir1", tab: "tir", en: "In <b>water</b>, find the critical angle: the refracted ray skims along the surface.", zh: "在<b>水</b>中找出臨界角：折射線剛好沿水面前進。", ok: s => s.mat === "water" && s.state === "crit" },
+  { id: "tir2", tab: "tir", en: "Make <b>total internal reflection</b> happen in a <b>diamond</b>.", zh: "令<b>鑽石</b>中發生<b>全內反射</b>。", ok: s => s.mat === "diamond" && s.state === "tir" },
+  { id: "tir3", tab: "tir", en: "In <b>glass</b>, make the light <b>refract out</b> into the air.", zh: "在<b>玻璃</b>中令光<b>折射</b>進入空氣。", ok: s => s.mat === "glass" && s.state === "ref" && s.i > 5 }
 ];
+/* ---------- Lenses ---------- */
 function labSolve() {
   const u = LAB.u, f = 1, cv = LAB.kind === "convex", eps = 0.03;
   if (cv && Math.abs(u - f) < eps) return { kind: LAB.kind, u, inf: true };
@@ -3112,10 +3265,7 @@ function labUse(s) {
 }
 function labSvg() {
   const s = labSolve(), cv = LAB.kind === "convex", xo = LX - LAB.u * FPX, yo = AY - OBJ_H;
-  const C1 = "#F08A24", C2 = "#2E9E5B", C3 = "#2F6FD6", IMG = "#7A4BD8", far = 2600;
-  const line = (x1, y1, x2, y2, c, dash) => `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="3" ${dash ? `stroke-dasharray="8 7"` : ""} stroke-linecap="round"/>`;
-  const mid = (x1, y1, x2, y2, c) => { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, a = Math.atan2(y2 - y1, x2 - x1), k = 11;
-    return `<path d="M${(mx - k * Math.cos(a - .45)).toFixed(1)} ${(my - k * Math.sin(a - .45)).toFixed(1)} L${mx.toFixed(1)} ${my.toFixed(1)} L${(mx - k * Math.cos(a + .45)).toFixed(1)} ${(my - k * Math.sin(a + .45)).toFixed(1)}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`; };
+  const C1 = "#F08A24", C2 = "#2E9E5B", C3 = "#2F6FD6", IMG = "#7A4BD8", far = 2600, line = svgLine, mid = svgMid;
   const out = (px, py, dx, dy, c) => { const n = Math.hypot(dx, dy) || 1; return line(px, py, px + dx / n * far, py + dy / n * far, c) + mid(px, py, px + dx / n * 160, py + dy / n * 160, c); };
   const Fp = LX - FPX, F = LX + FPX, ix = s.inf ? null : LX + s.v * FPX, iy = s.inf ? null : AY + OBJ_H * s.v / LAB.u;
   let rays = "";
@@ -3134,15 +3284,14 @@ function labSvg() {
     } }
   // Rule 3: through the optical centre, no bending
   if (LAB.rays[2]) { rays += line(xo, yo, LX, AY, C3) + mid(xo, yo, LX, AY, C3) + out(LX, AY, LX - xo, AY - yo, C3); if (s.virt) rays += line(LX, AY, ix, iy, C3, true); }
-  const arrow = (x, yTop, c, dash, label, left) => { const up = yTop < AY, hd = up ? 12 : -12;
-    return `<line x1="${x}" y1="${AY}" x2="${x}" y2="${yTop}" stroke="${c}" stroke-width="5" ${dash ? `stroke-dasharray="9 6"` : ""}/><path d="M${x - 9} ${yTop + hd} L${x} ${yTop} L${x + 9} ${yTop + hd}" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
-      <text x="${left ? x - 14 : x + 14}" y="${up ? yTop + 8 : yTop - 2}" ${left ? `text-anchor="end"` : ""} class="lt sm" fill="${c}">${label}</text>`; };
+  const label = (x, y, t, c, left) => `<text x="${left ? x - 18 : x + 18}" y="${y}" ${left ? `text-anchor="end"` : ""} class="lt sm" fill="${c}">${t}</text>`;
   const lens = cv ? `<path d="M${LX} 42 Q${LX + 46} ${AY} ${LX} 368 Q${LX - 46} ${AY} ${LX} 42 Z" fill="rgba(160,196,255,.45)" stroke="${MINK}" stroke-width="3"/>`
                   : `<path d="M${LX - 20} 42 H${LX + 20} Q${LX + 2} ${AY} ${LX + 20} 368 H${LX - 20} Q${LX - 2} ${AY} ${LX - 20} 42 Z" fill="rgba(160,196,255,.45)" stroke="${MINK}" stroke-width="3"/>`;
   const mark = (x, t) => `<line x1="${x}" y1="${AY - 7}" x2="${x}" y2="${AY + 7}" stroke="${MINK}" stroke-width="3"/><text x="${x}" y="${AY + 32}" text-anchor="middle" class="lt">${t}</text>`;
   const onScreen = !s.inf && ix > 8 && ix < 792 && iy > 6 && iy < LH - 20;
-  const dimU = `<g class="dim"><line x1="${xo}" y1="${LH - 22}" x2="${LX}" y2="${LH - 22}" stroke="#E0567E" stroke-width="3"/><text x="${(xo + LX) / 2}" y="${LH - 30}" text-anchor="middle" class="lt sm" fill="#E0567E">u</text></g>`;
-  const dimV = !s.inf && onScreen ? `<g class="dim"><line x1="${LX}" y1="${LH - 8}" x2="${ix}" y2="${LH - 8}" stroke="${IMG}" stroke-width="3"/><text x="${(ix + LX) / 2}" y="${LH - 13}" text-anchor="middle" class="lt sm" fill="${IMG}">v</text></g>` : "";
+  const dimU = `<line x1="${xo}" y1="${LH - 22}" x2="${LX}" y2="${LH - 22}" stroke="#E0567E" stroke-width="3"/><text x="${(xo + LX) / 2}" y="${LH - 30}" text-anchor="middle" class="lt sm" fill="#E0567E">u</text>`;
+  const dimV = !s.inf && onScreen ? `<line x1="${LX}" y1="${LH - 8}" x2="${ix}" y2="${LH - 8}" stroke="${IMG}" stroke-width="3"/><text x="${(ix + LX) / 2}" y="${LH - 13}" text-anchor="middle" class="lt sm" fill="${IMG}">v</text>` : "";
+  const sy = s.inf ? 0 : (iy - AY) / -OBJ_H;   // image scale: negative = inverted
   return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Ray diagram", "光線圖")}">
     <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>
     <line x1="0" y1="${AY}" x2="800" y2="${AY}" stroke="${MINK}" stroke-width="2" stroke-dasharray="3 5"/>
@@ -3150,8 +3299,8 @@ function labSvg() {
     ${lens}${mark(LX - FPX, "F'")}${mark(LX - 2 * FPX, "2F'")}${mark(LX + FPX, "F")}${mark(LX + 2 * FPX, "2F")}
     <circle cx="${LX}" cy="${AY}" r="4.5" fill="${MINK}"/><text x="${LX + 10}" y="${AY + 22}" class="lt sm">C</text>
     ${rays}
-    ${arrow(xo, yo, "#E0567E", false, L("object", "物體"), true)}
-    ${onScreen ? arrow(ix, iy, IMG, s.virt, L(s.virt ? "virtual image" : "real image", s.virt ? "虛像" : "實像"), ix > 600) : ""}
+    ${placeObj(xo, AY, 1, 1, "#E0567E")}${label(xo, yo + 8, L("object", "物體"), "#E0567E", true)}
+    ${onScreen ? placeObj(ix, AY, Math.abs(sy) < .01 ? .01 : 1 * Math.abs(sy), sy, IMG, s.virt ? .5 : .9) + label(ix, iy + (sy < 0 ? -4 : 8), L(s.virt ? "virtual image" : "real image", s.virt ? "虛像" : "實像"), IMG, ix > 600) : ""}
     ${dimU}${dimV}
     ${!s.inf && !onScreen ? `<text x="790" y="30" text-anchor="end" class="lt sm" fill="${IMG}">${L("The image is very far away (off the screen)", "像在很遠處（超出畫面）")}</text>` : ""}
     <circle class="grab" cx="${xo}" cy="${AY}" r="16" fill="#E0567E" opacity=".25"/>
@@ -3171,14 +3320,12 @@ function labInfo() {
     <div><span class="lk">${L("Everyday use", "日常應用")}</span><b>${labUse(s)}</b></div>
   </div>`;
 }
-function lensLabHtml() {
-  const done = S.lab_done || [];
-  return `<section class="card lab">
-    <div class="row" style="justify-content:space-between"><h2>🔭 ${L("Lens Lab", "透鏡實驗室")}</h2><span class="small muted">${L("14.5 Convex lenses · 14.6 Concave lenses", "14.5 凸透鏡 · 14.6 凹透鏡")}</span></div>
-    <div class="row"><div class="seg" role="radiogroup" aria-label="${L("Lens", "透鏡")}">
+function lensSection() {
+  return `<div class="row"><div class="seg" role="radiogroup" aria-label="${L("Lens", "透鏡")}">
       <button role="radio" aria-checked="${LAB.kind === "convex"}" data-lens="convex">${L("Convex lens", "凸透鏡")}</button>
       <button role="radio" aria-checked="${LAB.kind === "concave"}" data-lens="concave">${L("Concave lens", "凹透鏡")}</button></div>
       ${["Rule 1", "Rule 2", "Rule 3"].map((t, i) => `<label class="rchk r${i + 1}"><input type="checkbox" data-ray="${i}" ${LAB.rays[i] ? "checked" : ""}> ${L(t, `規則 ${i + 1}`)}</label>`).join("")}</div>
+    ${objPicker()}
     <div id="labSvg">${labSvg()}</div>
     <label class="labslide"><span>${L("Drag the object (or this slider) to change the object distance", "拖動物體（或這條滑桿）改變物距")}</span>
       <input type="range" id="labU" min="0.3" max="4" step="0.05" value="${LAB.u}" aria-label="${L("Object distance", "物距")}"></label>
@@ -3192,37 +3339,163 @@ function lensLabHtml() {
         <p><b class="r2">${L("Rule 2", "規則 2")}</b> ${L("A ray heading towards F comes out parallel to the principal axis.", "射向主焦點 F 的光線通過凹透鏡後會與主軸平行。")}</p>`}
         <p><b class="r3">${L("Rule 3", "規則 3")}</b> ${L("A ray through the optical centre C goes straight on.", "穿過光心 C 的光線方向不變。")}</p>
         <p class="small muted">${L("Solid lines = real rays. Dashed lines = virtual rays (where the rays only seem to come from).", "實線 = 真實光線；虛線 = 虛擬光線（光線看似來自的地方）。")}</p>
-      </div></div>
-    <div class="missions"><h3>🎯 ${L("Lab missions", "實驗任務")} <span class="small muted">${done.length}/${LAB_MISSIONS.length} · +5 🌰 ${L("each", "每個")}</span></h3>
-      ${LAB_MISSIONS.map(m => `<div class="mission ${done.includes(m.id) ? "done" : ""}" data-m="${m.id}">${done.includes(m.id) ? "✅" : "⬜"} ${L(m.en, m.zh)}</div>`).join("")}</div>
+      </div></div>`;
+}
+const objPicker = () => `<div class="row" role="radiogroup" aria-label="${L("Object", "物體")}"><span class="small"><b>${L("Object", "物體")}:</b></span>${OBJ_KINDS.map(([k, i, en, zh]) => `<button class="tab" role="radio" aria-selected="${LAB.obj === k}" aria-checked="${LAB.obj === k}" data-obj="${k}">${i} ${L(en, zh)}</button>`).join("")}</div>`;
+/* ---------- Plane mirror ---------- */
+const MX = 520, FY = 330, UNIT = 60, MS = 1.5;   // mirror x, floor y, one square (px), object scale
+function mirSolve() {
+  const xo = MX - LAB.d * UNIT, ty = FY - 60 * MS, ix = 2 * MX - xo, ex = 60, ey = LAB.eye;
+  const py = ty + (ey - ty) * (MX - ix) / (ex - ix);   // where the ray to the eye hits the mirror (aimed back at the image)
+  const i = Math.atan2(Math.abs(py - ty), MX - xo) * 180 / Math.PI;
+  return { d: LAB.d, obj: LAB.obj, xo, ty, ix, ex, ey, py, i };
+}
+function mirSvg() {
+  const s = mirSolve(), RC = "#F08A24", IMG = "#7A4BD8";
+  let rays = "";
+  [-7, 7].forEach((o, k) => { const ey = s.ey + o, py = s.ty + (ey - s.ty) * (MX - s.ix) / (s.ex - s.ix);
+    rays += svgLine(s.xo, s.ty, MX, py, RC) + svgMid(s.xo, s.ty, MX, py, RC) + svgLine(MX, py, s.ex + 14, ey, RC) + svgMid(MX, py, s.ex + 14, ey, RC) + svgLine(MX, py, s.ix, s.ty, IMG, true);
+    if (!k) rays += svgLine(MX - 90, py, MX, py, MINK, true, 2) + `<text x="${MX - 92}" y="${py - 8}" class="lt sm">${L("normal", "法線")}</text>
+      <text x="${MX - 34}" y="${py - 10}" class="lt sm" fill="${RC}">i</text><text x="${MX - 34}" y="${py + 26}" class="lt sm" fill="${RC}">r</text>`; });
+  const hatch = Array.from({ length: 14 }, (_, k) => `<line x1="${MX + 4}" y1="${70 + k * 19}" x2="${MX + 16}" y2="${58 + k * 19}" stroke="${MINK}" stroke-width="2"/>`).join("");
+  const eye = `<g transform="translate(${s.ex} ${s.ey})"><path d="M-18 0 Q0 -14 18 0 Q0 14 -18 0 Z" fill="#fff" stroke="${MINK}" stroke-width="3"/><circle cx="7" cy="0" r="5.5" fill="${MINK}"/></g>`;
+  return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Plane mirror ray diagram", "平面鏡光線圖")}">
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>
+    <rect x="${MX}" y="0" width="280" height="${LH}" fill="#EEF3FF" opacity=".6"/>
+    ${Array.from({ length: 13 }, (_, k) => `<line x1="${MX - k * UNIT}" y1="${FY}" x2="${MX - k * UNIT}" y2="${FY + 8}" stroke="#C9BFB2" stroke-width="2"/>`).join("")}
+    <line x1="0" y1="${FY}" x2="800" y2="${FY}" stroke="${MINK}" stroke-width="2"/>
+    ${rays}
+    <line x1="${MX}" y1="50" x2="${MX}" y2="${FY}" stroke="#7FA7E8" stroke-width="7"/>${hatch}
+    <text x="${MX + 22}" y="44" class="lt sm">${L("plane mirror", "平面鏡")}</text>
+    ${eye}
+    ${placeObj(s.xo, FY, MS, MS, "#E0567E")}${placeObj(s.ix, FY, -MS, MS, IMG, .5)}
+    <text x="${s.xo}" y="${s.ty - 12}" text-anchor="middle" class="lt sm" fill="#E0567E">${L("object", "物體")}</text>
+    <text x="${s.ix}" y="${s.ty - 12}" text-anchor="middle" class="lt sm" fill="${IMG}">${L("virtual image", "虛像")}</text>
+    <line x1="${s.xo}" y1="${FY + 26}" x2="${MX}" y2="${FY + 26}" stroke="#E0567E" stroke-width="3"/><text x="${(s.xo + MX) / 2}" y="${FY + 52}" text-anchor="middle" class="lt sm" fill="#E0567E">u = ${s.d.toFixed(1)}</text>
+    <line x1="${MX}" y1="${FY + 26}" x2="${s.ix}" y2="${FY + 26}" stroke="${IMG}" stroke-width="3" stroke-dasharray="8 6"/><text x="${(s.ix + MX) / 2}" y="${FY + 52}" text-anchor="middle" class="lt sm" fill="${IMG}">v = ${s.d.toFixed(1)}</text>
+    <circle class="grab" cx="${s.xo}" cy="${FY}" r="18" fill="#E0567E" opacity=".25"/>
+  </svg>`;
+}
+function mirInfo() {
+  const s = mirSolve();
+  return `<div class="labfacts">
+    <div><span class="lk">${L("Law of reflection", "反射定律")}</span><b>i ≈ ${s.i.toFixed(0)}° · r ≈ ${s.i.toFixed(0)}° → r = i</b></div>
+    <div><span class="lk">${L("Object distance u · image distance v (squares)", "物距 u · 像距 v（格）")}</span><b>u = ${s.d.toFixed(1)} · v = ${s.d.toFixed(1)} → ${L("image distance = object distance", "像距 = 物距")}</b></div>
+    <div><span class="lk">${L("Nature of the image", "像的性質")}</span><span>${[L("Same size", "大小相同"), L("Laterally inverted", "橫向倒置"), L("Virtual", "虛像"), L("Behind the mirror", "在鏡後")].map(t => `<span class="chip">${t}</span>`).join(" ")}</span></div>
+    <div><span class="lk">${L("Why virtual?", "為甚麼是虛像？")}</span><b>${L("The dashed lines behind the mirror are not real light: the rays only seem to come from there.", "鏡後的虛線不是真實光線，光線只是看似從那裏發出。")}</b></div>
+  </div>`;
+}
+function mirrorSection() {
+  return `${objPicker()}<div id="labSvg">${mirSvg()}</div>
+    <label class="labslide"><span>${L("Drag the object (or this slider): object distance", "拖動物體（或這條滑桿）：物距")}</span><input type="range" id="labD" min="0.5" max="7" step="0.1" value="${LAB.d}"></label>
+    <label class="labslide"><span>${L("Move the eye up or down", "上下移動眼睛")}</span><input type="range" id="labEye" min="60" max="320" step="2" value="${LAB.eye}"></label>
+    <div class="labgrid"><div id="labInfo">${mirInfo()}</div><div class="labrules"><h3>${L("Plane mirror images", "平面鏡成像")}</h3>
+      <p>${L("Rays from the object reflect off the mirror into the eye. Trace the reflected rays back (dashed lines): they meet at the image.", "物體的光線經鏡子反射進入眼睛。把反射線向後延長（虛線），它們在像的位置相交。")}</p>
+      <p>${L("The image is the same size, laterally inverted (left and right swapped), virtual, behind the mirror, and as far behind as the object is in front.", "像與物體大小相同、橫向倒置（左右互換）、是虛像、位於鏡後，而且像距等於物距。")}</p></div></div>`;
+}
+/* ---------- Total internal reflection ---------- */
+const TIR_MATS = { water: [1.33, "Water", "水"], glass: [1.5, "Glass", "玻璃"], diamond: [2.42, "Diamond", "鑽石"] };
+const OX = 400, OY = 190, RAD = 175;
+function tirSolve() {
+  const n = TIR_MATS[LAB.mat][0], C = Math.asin(1 / n) * 180 / Math.PI, i = LAB.ang, sr = n * Math.sin(i * Math.PI / 180);
+  const state = Math.abs(i - C) < .6 ? "crit" : i > C ? "tir" : "ref";
+  return { mat: LAB.mat, n, C, i, state, r: state === "ref" ? Math.asin(Math.min(1, sr)) * 180 / Math.PI : state === "crit" ? 90 : null };
+}
+function tirSvg() {
+  const s = tirSolve(), rad = d => d * Math.PI / 180, RC = "#E0567E";
+  const sx = OX - RAD * Math.sin(rad(s.i)), sy = OY + RAD * Math.cos(rad(s.i));
+  const rx = OX + RAD * Math.sin(rad(s.i)), ry = OY + RAD * Math.cos(rad(s.i));
+  const cx = OX - (RAD + 10) * Math.sin(rad(s.C)), cy = OY + (RAD + 10) * Math.cos(rad(s.C));
+  let out = "";
+  if (s.state === "ref") { const ox = OX + 230 * Math.sin(rad(s.r)), oy = OY - 230 * Math.cos(rad(s.r)); out = svgLine(OX, OY, ox, oy, RC, false, 5) + svgMid(OX, OY, ox, oy, RC); }
+  if (s.state === "crit") out = svgLine(OX, OY - 2, OX + 300, OY - 2, RC, false, 5) + svgMid(OX, OY - 2, OX + 300, OY - 2, RC);
+  const reflOp = s.state === "tir" ? 1 : s.state === "crit" ? .55 : .25;
+  const arc = (a1, a2, r, c) => { const p = a => [OX + r * Math.sin(rad(a)), OY + r * Math.cos(rad(a))]; const [x1, y1] = p(a1), [x2, y2] = p(a2); return `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 0 ${a1 > a2 ? 1 : 0} ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${c}" stroke-width="2.5"/>`; };
+  const laser = `<g transform="translate(${sx.toFixed(1)} ${sy.toFixed(1)}) rotate(${(s.i - 90).toFixed(1)})"><rect x="-34" y="-11" width="40" height="22" rx="5" fill="#3B3B4F" stroke="${MINK}" stroke-width="2"/><rect x="2" y="-5" width="8" height="10" fill="#E0567E"/></g>`;
+  return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Semicircular block ray diagram", "半圓形玻璃塊光線圖")}">
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#F4FAFF"/>
+    <text x="24" y="44" class="lt sm">${L("air (lower refractive index)", "空氣（折射率較低）")}</text>
+    <path d="M${OX - RAD} ${OY} A${RAD} ${RAD} 0 0 0 ${OX + RAD} ${OY} Z" fill="${LAB.mat === "diamond" ? "rgba(214,236,255,.9)" : LAB.mat === "water" ? "rgba(120,180,255,.35)" : "rgba(160,196,255,.55)"}" stroke="${MINK}" stroke-width="3"/>
+    <text x="24" y="${LH - 20}" class="lt sm">${L(TIR_MATS[LAB.mat][1], TIR_MATS[LAB.mat][2])} (n = ${s.n})</text>
+    <line x1="${OX}" y1="30" x2="${OX}" y2="${OY + RAD + 20}" stroke="${MINK}" stroke-width="2" stroke-dasharray="6 6"/><text x="${OX + 8}" y="46" class="lt sm">${L("normal", "法線")}</text>
+    <line x1="${OX}" y1="${OY}" x2="${cx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="#7A4BD8" stroke-width="2" stroke-dasharray="3 6"/><text x="24" y="76" class="lt sm" fill="#7A4BD8">${L("critical angle", "臨界角")} C = ${s.C.toFixed(1)}° (⋯)</text>
+    ${svgLine(sx, sy, OX, OY, RC, false, 5)}${svgMid(sx, sy, OX, OY, RC)}
+    <g opacity="${reflOp}">${svgLine(OX, OY, rx, ry, RC, false, 5)}${svgMid(OX, OY, rx, ry, RC)}</g>
+    ${out}
+    ${arc(-s.i, 0, 46, RC)}<text x="${(OX - 30).toFixed(1)}" y="${OY + 70}" class="lt sm" fill="${RC}">i</text>
+    ${s.r != null ? `${arc(180, 180 - s.r, 46, RC)}<text x="${OX + 22}" y="${OY - 54}" class="lt sm" fill="${RC}">r</text>` : ""}
+    <circle cx="${OX}" cy="${OY}" r="4" fill="${MINK}"/>${laser}
+    <text x="776" y="${LH - 20}" text-anchor="end" class="lt" fill="${s.state === "tir" ? "#23804A" : s.state === "crit" ? "#7A4BD8" : RC}">${s.state === "tir" ? L("Total internal reflection!", "全內反射！") : s.state === "crit" ? L("At the critical angle", "剛好在臨界角") : L("Refraction (+ weak reflection)", "折射（及微弱反射）")}</text>
+  </svg>`;
+}
+function tirInfo() {
+  const s = tirSolve();
+  return `<div class="labfacts">
+    <div><span class="lk">${L("Angle of incidence i · critical angle C", "入射角 i · 臨界角 C")}</span><b>i = ${s.i.toFixed(0)}° · C = ${s.C.toFixed(1)}°</b></div>
+    <div><span class="lk">${L("Angle of refraction r", "折射角 r")}</span><b>${s.r == null ? L("No refracted ray", "沒有折射線") : `${s.r.toFixed(0)}°${s.state === "crit" ? L(" (along the surface)", "（沿交界面）") : L(" (bends away from the normal)", "（偏離法線）")}`}</b></div>
+    <div><span class="lk">${L("Condition 1: higher → lower refractive index", "條件一：折射率高 → 低")}</span><b>✅ ${L(`${TIR_MATS[s.mat][1]} → air`, `${TIR_MATS[s.mat][2]} → 空氣`)}</b></div>
+    <div><span class="lk">${L("Condition 2: angle of incidence > critical angle", "條件二：入射角 > 臨界角")}</span><b>${s.state === "tir" ? "✅" : "❌"} ${s.i.toFixed(0)}° ${s.state === "tir" ? ">" : s.state === "crit" ? "=" : "<"} ${s.C.toFixed(1)}°</b></div>
+    <div><span class="lk">${L("Result", "結果")}</span><b>${s.state === "tir" ? L("All the light is reflected back inside.", "所有光都反射回介質內。") : s.state === "crit" ? L("The refracted ray skims along the surface (r = 90°).", "折射線沿交界面前進（r = 90°）。") : L("Most light refracts out into the air; a little is reflected.", "大部分光折射進入空氣，只有少量反射。")}</b></div>
+  </div>`;
+}
+function tirSection() {
+  return `<div class="row"><div class="seg" role="radiogroup" aria-label="${L("Material", "物質")}">${Object.entries(TIR_MATS).map(([k, [n, en, zh]]) => `<button role="radio" aria-checked="${LAB.mat === k}" data-mat="${k}">${L(en, zh)} ${n}</button>`).join("")}</div></div>
+    <div id="labSvg">${tirSvg()}</div>
+    <label class="labslide"><span>${L("Drag the laser around the curved side (or this slider): angle of incidence", "沿弧形邊拖動激光（或這條滑桿）：入射角")}</span><input type="range" id="labAng" min="0" max="85" step="0.5" value="${LAB.ang}"></label>
+    <div class="labgrid"><div id="labInfo">${tirInfo()}</div><div class="labrules"><h3>${L("Semicircular block", "半圓形玻璃塊")}</h3>
+      <p>${L("The laser aims at the centre of the flat face, so it enters the curved side along a radius without bending.", "激光射向平面的中心，沿半徑進入弧形邊，所以不會偏折。")}</p>
+      <p>${L("The higher the refractive index, the smaller the critical angle: water 48.8°, glass 41.8°, diamond 24.4°.", "折射率愈高，臨界角愈小：水 48.8°、玻璃 41.8°、鑽石 24.4°。")}</p></div></div>`;
+}
+/* ---------- Lab shell ---------- */
+function lensLabHtml() {
+  const done = S.lab_done || [], mine = LAB_MISSIONS.filter(m => m.tab === LAB.tab);
+  const tabs = [["lens", "🔍", "Lenses", "透鏡", "14.5–14.6"], ["mirror", "🪞", "Plane mirror", "平面鏡", "14.2"], ["tir", "💎", "Total internal reflection", "全內反射", "14.4"]];
+  return `<section class="card lab">
+    <div class="row" style="justify-content:space-between"><h2>🔭 ${L("Light Lab", "光學實驗室")}</h2><span class="small muted">${L("Missions", "任務")}: ${done.length}/${LAB_MISSIONS.length} · +5 🌰 ${L("each", "每個")}</span></div>
+    <div class="slotbar" role="tablist">${tabs.map(([k, i, en, zh, sec]) => `<button class="tab" role="tab" aria-selected="${LAB.tab === k}" data-labtab="${k}">${i} ${L(en, zh)} <span class="small muted">${sec}</span></button>`).join("")}</div>
+    ${{ lens: lensSection, mirror: mirrorSection, tir: tirSection }[LAB.tab]()}
+    <div class="missions"><h3>🎯 ${L("Lab missions", "實驗任務")}</h3>
+      ${mine.map(m => `<div class="mission ${done.includes(m.id) ? "done" : ""}" data-m="${m.id}">${done.includes(m.id) ? "✅" : "⬜"} ${L(m.en, m.zh)}</div>`).join("")}</div>
   </section>`;
 }
 function labUpdate() {
-  document.getElementById("labSvg").innerHTML = labSvg(); document.getElementById("labInfo").innerHTML = labInfo();
+  const t = LAB.tab;
+  document.getElementById("labSvg").innerHTML = t === "lens" ? labSvg() : t === "mirror" ? mirSvg() : tirSvg();
+  document.getElementById("labInfo").innerHTML = t === "lens" ? labInfo() : t === "mirror" ? mirInfo() : tirInfo();
   wireLabDrag();
-  const s = labSolve(); S.lab_done = S.lab_done || [];
+  const s = t === "lens" ? labSolve() : t === "mirror" ? mirSolve() : tirSolve(); S.lab_done = S.lab_done || [];
   LAB_MISSIONS.forEach(m => {
-    if (S.lab_done.includes(m.id) || m.kind !== LAB.kind || !m.ok(s)) return;
-    S.lab_done.push(m.id); S.coins += 5; save(true); SFX.right(); yaha(L("Mission done!", "任務完成！")); confetti(60);
+    if (S.lab_done.includes(m.id) || m.tab !== t || (m.kind && m.kind !== LAB.kind) || !m.ok(s)) return;
+    S.lab_done.push(m.id); S.coins += 5; save(true); checkTrophies(); SFX.right(); yaha(L("Mission done!", "任務完成！")); confetti(60);
     const el = document.querySelector(`.mission[data-m="${m.id}"]`); if (el) { el.classList.add("done"); el.innerHTML = `✅ ${L(m.en, m.zh)}`; }
-    const h = document.querySelector(".missions h3 .small"); if (h) h.textContent = `${S.lab_done.length}/${LAB_MISSIONS.length} · +5 🌰 ${L("each", "每個")}`;
     toast(L("🎯 Mission complete! +5 🌰", "🎯 任務完成！+5 🌰"));
   });
 }
 function wireLabDrag() {
   const svg = document.querySelector(".labsvg"); if (!svg) return;
-  const setFrom = e => { const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 800;
-    const u = Math.max(0.3, Math.min(4, Math.round((LX - x) / FPX / 0.05) * 0.05)); if (u === LAB.u) return; LAB.u = +u.toFixed(2); document.getElementById("labU").value = LAB.u; labUpdate(); };
-  svg.onpointerdown = e => { const r = svg.getBoundingClientRect(); if ((e.clientX - r.left) / r.width * 800 > LX - 10) return; e.preventDefault(); LAB.drag = true; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); setFrom(e); };
+  const pos = e => { const r = svg.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 800, (e.clientY - r.top) / r.height * LH]; };
+  const setFrom = e => {
+    const [x, y] = pos(e);
+    if (LAB.tab === "lens") { const u = +Math.max(0.3, Math.min(4, Math.round((LX - x) / FPX / 0.05) * 0.05)).toFixed(2); if (u === LAB.u) return; LAB.u = u; document.getElementById("labU").value = u; }
+    else if (LAB.tab === "mirror") { const d = +Math.max(0.5, Math.min(7, Math.round((MX - x) / UNIT * 10) / 10)).toFixed(1); if (d === LAB.d) return; LAB.d = d; document.getElementById("labD").value = d; }
+    else { const a = Math.max(0, Math.min(85, Math.round(Math.atan2(OX - x, Math.max(1, y - OY)) * 180 / Math.PI * 2) / 2)); if (a === LAB.ang) return; LAB.ang = a; document.getElementById("labAng").value = a; }
+    labUpdate();
+  };
+  svg.onpointerdown = e => { const [x] = pos(e); if ((LAB.tab === "lens" && x > LX - 10) || (LAB.tab === "mirror" && x > MX - 10)) return; e.preventDefault(); LAB.drag = true; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); setFrom(e); };
   svg.onpointermove = e => { if (LAB.drag) setFrom(e); };
   svg.onpointerup = svg.onpointercancel = () => { LAB.drag = false; };
 }
 function wireLensLab() {
   const root = document.querySelector(".lab"); if (!root) return;
-  root.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { SFX.tap(); LAB.kind = b.dataset.lens; renderMap("lab"); labUpdate(); });
+  const rerender = () => { renderMap("lab"); labUpdate(); };
+  root.querySelectorAll("[data-labtab]").forEach(b => b.onclick = () => { SFX.tap(); LAB.tab = b.dataset.labtab; rerender(); });
+  root.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { SFX.tap(); LAB.kind = b.dataset.lens; rerender(); });
+  root.querySelectorAll("[data-obj]").forEach(b => b.onclick = () => { SFX.tap(); LAB.obj = b.dataset.obj; rerender(); });
+  root.querySelectorAll("[data-mat]").forEach(b => b.onclick = () => { SFX.tap(); LAB.mat = b.dataset.mat; rerender(); });
   root.querySelectorAll("[data-ray]").forEach(c => c.onchange = () => { LAB.rays[+c.dataset.ray] = c.checked; labUpdate(); });
   root.querySelectorAll("[data-u]").forEach(b => b.onclick = () => { SFX.tap(); LAB.u = +b.dataset.u; document.getElementById("labU").value = LAB.u; labUpdate(); });
-  document.getElementById("labU").oninput = e => { LAB.u = +(+e.target.value).toFixed(2); labUpdate(); };
+  const inp = (id, fn) => { const el = document.getElementById(id); if (el) el.oninput = e => { fn(+e.target.value); labUpdate(); }; };
+  inp("labU", v => LAB.u = +v.toFixed(2)); inp("labD", v => LAB.d = +v.toFixed(1)); inp("labEye", v => LAB.eye = v); inp("labAng", v => LAB.ang = v);
   wireLabDrag();
 }
 
