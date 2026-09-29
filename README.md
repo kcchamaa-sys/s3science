@@ -43,6 +43,11 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 
 ## ⚡ Light Rush, 👗 Wardrobe and 🏅 Leaderboard
 
+- **🏠 Tabbed hub:** a bottom bar (Home · Rooms · Lens Lab · Dress up · Collection) replaces the long map page, so students hardly need to scroll. Home shows Chiikawa in a cosy room, progress meters, action tiles, the streak and the chat card.
+- **🍡 Mochi-style characters:** all five friends are redrawn as soft, round mochi bodies with tiny arms and feet.
+- **👗 Dress-up page:** new wig, outfit and prop slots with 22 Gen Z / Hong Kong items (swoop wig, K-pop wolf cut, moonwalk fedora, sparkly glove, "six-seven" jersey, deal-with-it shades, +1000 aura sign, bubble tea, egg waffle, red-white-blue poncho…).
+- **🔭 Lens Lab:** drag an object in front of a convex or concave lens. The three textbook rules draw the rays, and the lab shows the image position, its nature, u, v, magnification and everyday uses, with six missions (+5 🌰 each).
+- **📘 Textbook alignment:** rooms follow sections 14.1–14.8 of "光、顏色和光譜以外", with notes rewritten from each 重點 and the textbook's terms (橫向倒置, 後視鏡, 藍綠, 洋紅, 紅外輻射, 紫外輻射, 伽瑪射線…). 33 bank questions were replaced with textbook examples (光酥餅, 貓眼石, 單車反光板, 紅外線體溫計, 快易通, 食物保存…).
 - **💬 Chat card:** on the map, the Chiikawa friends take turns sharing 💡 light facts from Hong Kong life (Symphony of Lights, convex road mirrors, optical-fibre broadband…) and 💪 personal cheers (streak, mistakes waiting, nearest trophy, next room). It changes every 20 s.
 - **🔥 Streak pop-up and bonus:** an animated pop-up each new day (streak up, shield saved, welcome back). Every 3 days in a row adds +10% chestnuts, up to ×1.5.
 - **✦ 💎 👑 Rarity tiers:** wardrobe items are Common, Rare, Epic or Legendary. There are new Hong Kong items (pineapple-bun hat, egg-tart clip, neon-sign frame). Five special items can't be bought; students earn them through steady effort (3★ in 3 rooms, fix 30 mistakes, master 140 questions, finish 20 practice rounds, all 21★ + 250 mastered).
