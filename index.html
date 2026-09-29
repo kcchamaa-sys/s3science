@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#2b2433">
-<title>Chiikawa Physics Escape</title>
-<meta name="description" content="A Chiikawa-style escape room game for HK S3 Science: Light.">
+<title>Puff's Physics Escape</title>
+<meta name="description" content="A cute escape room game for HK S3 Science: Light.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Noto+Sans+HK:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* Single deliberate look: Chiikawa picture-book cream + dim escape-room scenes. */
+/* Single deliberate look: Puff picture-book cream + dim escape-room scenes. */
 :root {
   color-scheme: light;
   --cream: #FFFDF0;
@@ -280,11 +280,19 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .jam { border: var(--line); border-radius: 16px; background: #2B2433; color: #fff; padding: 12px; display: grid; gap: 6px; text-align: center; }
 .jam .jt { color: var(--led); font-weight: 800; font-size: 1.6rem; font-variant-numeric: tabular-nums; text-shadow: 0 0 8px rgba(255,107,107,.8); }
 #ans.jammed { opacity: .35; filter: grayscale(1); }
+.hearts { font-size: 1.05rem; letter-spacing: 1px; }
+.hearts.shake { animation: shake .45s; }
+.scene.danger { box-shadow: inset 0 0 0 4px #FF4D4D, 0 0 18px rgba(255,77,77,.6); animation: dangerPulse 1s ease-in-out infinite; }
+@keyframes dangerPulse { 50% { box-shadow: inset 0 0 0 4px #FF4D4D, 0 0 34px rgba(255,77,77,.9); } }
+.scene.gameover { filter: grayscale(1) brightness(.4); transition: filter .8s; }
+.govr { display: grid; gap: 10px; text-align: center; justify-items: center; }
+.govr .creature svg { width: 150px; height: auto; }
+@media (prefers-reduced-motion: reduce) { .scene.danger { animation: none; } }
 .strikes { font-weight: 800; font-size: .85rem; background: rgba(255,107,107,.2); border: 2px solid var(--led); border-radius: 999px; padding: 0 8px; }
 .penalty { position: fixed; left: 50%; top: 30%; transform: translateX(-50%); z-index: 96; pointer-events: none; font-size: 2.4rem; font-weight: 800; color: #fff; background: #D64545; border: var(--line); border-radius: 18px; padding: 0 16px; box-shadow: var(--shadow); animation: rise 1.1s ease-out forwards; }
 .rules { background: #FFF0F0; border: 2px dashed var(--ink); border-radius: 12px; padding: 8px 12px; font-size: .9rem; }
 .rules ul { margin: 4px 0 0; padding-left: 20px; }
-/* Frames around the player's Chiikawa */
+/* Frames around the player's Puff */
 .fr-rainbow { border-radius: 50%; background: conic-gradient(#FFB7C5, #FDFFB6, #B9F3C9, #A0C4FF, #C9C3F0, #FFB7C5); padding: 4px; }
 .fr-laser { border-radius: 50%; background: #2B2433; padding: 4px; box-shadow: 0 0 0 2px #39FF14, 0 0 12px #39FF14; }
 .fr-sakura { border-radius: 50%; background: radial-gradient(circle, #FFE3EA 60%, #FFB7C5 61%); padding: 4px; }
@@ -364,6 +372,17 @@ body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); 
 .labrules { display: grid; gap: 6px; align-content: start; font-size: .92rem; }
 .missions { display: grid; gap: 6px; } .mission { border: 2px dashed var(--ink); border-radius: 12px; padding: 6px 10px; font-size: .92rem; background: #fff; }
 .mission.done { border-style: solid; background: var(--green); }
+.seg.big button { min-height: 48px; font-size: 1rem; padding: 8px 18px; }
+.topic.study { background: #F2FFF5; }
+.escinfo { background: #FFF0F0; }
+.krules { display: grid; gap: 8px; } .krule { border: 2px solid var(--ink); border-radius: 12px; padding: 6px 12px; font-weight: 800; background: var(--cream-2); }
+.notes { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.rushhead.studyhead { background: #24463A; background-image: radial-gradient(circle at 90% 0, rgba(185,243,201,.4), transparent 55%); }
+.studydone { justify-items: center; text-align: center; }
+.modes2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.mode2 { border: var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; display: grid; gap: 6px; text-align: left; justify-items: start; }
+.mode2 .ic { font-size: 2.2rem; } .mode2 b { font-size: 1.2rem; }
+.mode2.study { background: #DDF6E4; } .mode2.escape { background: #2B2433; color: #fff; background-image: radial-gradient(circle at 90% 0, rgba(255,107,107,.5), transparent 55%); }
 /* pronunciation buttons */
 .spk { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
 .spkb { min-width: 36px; min-height: 36px; border: 2px solid var(--ink); border-radius: 10px; background: var(--blue-2); font-size: .95rem; line-height: 1; padding: 0 4px; }
@@ -483,11 +502,11 @@ body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); 
   <filter id="sketch"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <header class="top">
-  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt" id="brandText">Chiikawa Physics Escape</span></button>
+  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt" id="brandText">Puff's Physics Escape</span></button>
   <div class="tools" id="tools"></div>
 </header>
 <main id="app"></main>
-<footer id="footText">Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.</footer>
+<footer id="footText">Study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. All characters are original.</footer>
 <div id="modal"></div>
 <div id="journal"></div>
 <div id="toast" class="toast" hidden></div>
@@ -495,7 +514,7 @@ body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); 
 
 <script>
 /* ============================================================
-   1. Characters: original Chiikawa-style SVG drawings
+   1. Characters: original Puff-style SVG drawings
    mood: "normal" | "happy" | "cry"
    ============================================================ */
 /* Language: "en" or "zh" (Traditional Chinese). L(en, zh) picks the text for the current language. */
@@ -535,29 +554,29 @@ function capped(id, shape, fill, capFill, capPath) {
   return `<clipPath id="${id}"><path d="${shape}"/></clipPath><path d="${shape}" fill="${fill}"/><path clip-path="url(#${id})" d="${capPath}" fill="${capFill}"/>`;
 }
 const CHAR = {
-  chiikawa: { name: "Chiikawa", color: "#FFFFFF",
+  chiikawa: { name: "Puff", color: "#FFFFFF",
     back: () => `<circle cx="27" cy="26" r="9" fill="#fff" ${MO}/><circle cx="73" cy="26" r="9" fill="#fff" ${MO}/><circle cx="27" cy="26.5" r="4.4" fill="#FFD3DD"/><circle cx="73" cy="26.5" r="4.4" fill="#FFD3DD"/>`,
     body: () => `<path d="${BODY}" fill="#fff"/>${belly()}`,
     face: m => `${mBlush()}${mEyes(m)}${mMouth(m)}` },
-  hachiware: { name: "Hachiware", color: "#FFFFFF",
+  hachiware: { name: "Berry", color: "#FFFFFF",
     back: () => `<path d="M20 36 L22 11 L41 24 Z" fill="#A8C8F5" ${MO}/><path d="M80 36 L78 11 L59 24 Z" fill="#A8C8F5" ${MO}/><path d="M25 29 L26 17 L35 24 Z" fill="#FFD3DD"/><path d="M75 29 L74 17 L65 24 Z" fill="#FFD3DD"/>`,
     body: () => { const id = "hc" + (++clipN); return capped(id, BODY, "#fff", "#A8C8F5", "M0 44 L0 0 L100 0 L100 44 L63 44 L50 27 L37 44 Z") + belly(); },
     face: m => `${mBlush(58)}${mEyes(m, false, 51)}${mMouth(m, false, 57)}` },
-  usagi: { name: "Usagi", color: "#FFF1A8",
+  usagi: { name: "Mango", color: "#FFF1A8",
     back: () => `<ellipse cx="38" cy="12" rx="7" ry="17" fill="#FFF1A8" ${MO} transform="rotate(-8 38 12)"/><ellipse cx="62" cy="12" rx="7" ry="17" fill="#FFF1A8" ${MO} transform="rotate(8 62 12)"/><ellipse cx="38" cy="12" rx="2.8" ry="11" fill="#FFC6D3" transform="rotate(-8 38 12)"/><ellipse cx="62" cy="12" rx="2.8" ry="11" fill="#FFC6D3" transform="rotate(8 62 12)"/>`,
     body: () => `<path d="${BODY}" fill="#FFF1A8"/>${belly("#FFF9D6")}`,
     face: m => `${mBlush()}${mEyes(m)}${mMouth(m, true)}` },
-  momonga: { name: "Momonga", color: "#FFFFFF",
+  momonga: { name: "Taro", color: "#FFFFFF",
     back: () => `<circle cx="17" cy="36" r="10" fill="#CFC6F5" ${MO}/><circle cx="83" cy="36" r="10" fill="#CFC6F5" ${MO}/><circle cx="17" cy="36" r="5" fill="#FFD3DD"/><circle cx="83" cy="36" r="5" fill="#FFD3DD"/>`,
     body: () => { const id = "mc" + (++clipN); return capped(id, BODY, "#fff", "#CFC6F5", "M0 42 Q50 28 100 42 L100 0 L0 0 Z") + belly(); },
     face: m => `${mBlush(58)}${mEyes(m, true, 50)}${mMouth(m, false, 58)}` },
-  kurimanju: { name: "Kuri-Manju", color: "#F4DDB6",
+  kurimanju: { name: "Chestnut", color: "#F4DDB6",
     back: () => "",
     body: () => { const id = "kc" + (++clipN); return capped(id, CHESTNUT, "#F4DDB6", "#B07846", "M0 42 Q50 30 100 42 L100 0 L0 0 Z") + belly("#FAEBD0"); },
     face: m => `${mBlush()}${m === "normal" ? `<path d="M34 50 h9 M57 50 h9" stroke="${MINK}" stroke-width="2.8" stroke-linecap="round"/>` : mEyes(m)}${mMouth(m)}` }
 };
 CHAR.kurimanju.shape = CHESTNUT;
-// the whole character in one 100 × 100 drawing; Chiikawa also wears the player's outfit
+// the whole character in one 100 × 100 drawing; Puff also wears the player's outfit
 function mochi(who, mood = "normal", eq, ground) {
   const c = CHAR[who], shape = c.shape || BODY, dress = who === "chiikawa" ? dressLayers(eq) : {};
   return `${ground ? `<ellipse cx="50" cy="95" rx="32" ry="4.5" fill="${MINK}" opacity=".12"/>` : ""}${dress.back || ""}${c.back()}${limbs(c.color)}${c.body()}${dress.outfit || ""}
@@ -828,7 +847,7 @@ const ROOMS = [
     id: "room1", topicNo: 1, sec: "14.1", name: "The Dark Cavern", topic: "Light from objects", zh: "來自物體的光線", mastery: "light_basics",
     tint: "#6E6784", floor: "#4E4760", dim: .72, special: "candle", specialName: "Candle", specialLine: "An unlit candle. Maybe the right answer will light it...",
     code: "30812", badge: "🏮 Cavern Lantern Badge", item: "✨ Glow Stone",
-    intro: [["chiikawa", "cry", "Ya...! It's so dark in here... 😖"], ["hachiware", "normal", "Don't worry! Tap the glowing things in the room. Each one hides a light puzzle!"], ["usagi", "happy", "Yaha! Ura! 🔦"]],
+    intro: [["chiikawa", "cry", "Ya...! It's so dark in here... 😖"], ["hachiware", "normal", "Don't worry! Tap the glowing things in the room. Each one hides a light puzzle!"], ["usagi", "happy", "Wahoo! Woo! 🔦"]],
     notes: [
       "We can see an object only when light from it enters our eyes.",
       "<b>Luminous objects</b> give out light by themselves, e.g. the Sun, a candle flame, a pedestrian crossing light, a switched-on smartphone screen, an LED scoreboard, a firefly, red-hot charcoal, a moon-shaped lamp.",
@@ -844,22 +863,22 @@ const ROOMS = [
         hint: "Luminous objects give out light by THEMSELVES. Which one is doing that?",
         explain: "A lit candle is a luminous object: it gives out light by itself. The Moon, a mirror and paper are non-luminous objects. They only reflect light.",
         terms: [["luminous object", "發光體"], ["non-luminous object", "非發光體"]] },
-      { type: "mc", q: "Once the candle is lit, Chiikawa can see a book on the floor. How does the light reach Chiikawa's eyes?",
-        choices: ["Light from Chiikawa's eyes hits the book", "The book gives out light by itself", "Light from the candle is reflected by the book into Chiikawa's eyes", "The book absorbs all the light"], answer: 2,
+      { type: "mc", q: "Once the candle is lit, Puff can see a book on the floor. How does the light reach Puff's eyes?",
+        choices: ["Light from Puff's eyes hits the book", "The book gives out light by itself", "Light from the candle is reflected by the book into Puff's eyes", "The book absorbs all the light"], answer: 2,
         hint: "Follow the light: light source → object → ?",
-        explain: "The book is non-luminous. Light from the candle is reflected by the book and travels into Chiikawa's eyes. (We see the candle itself because its light enters our eyes directly.)",
+        explain: "The book is non-luminous. Light from the candle is reflected by the book and travels into Puff's eyes. (We see the candle itself because its light enters our eyes directly.)",
         terms: [["light source", "光源"], ["reflect", "反射"]] },
       { type: "dial", q: "Three beams of light are painted on the wall (see diagram). Set each dial to name the beam.", svg: "beams",
         labels: ["Beam A", "Beam B", "Beam C"], dials: [["Parallel", "Divergent", "Convergent"], ["Parallel", "Divergent", "Convergent"], ["Parallel", "Divergent", "Convergent"]], answer: [1, 0, 2],
         hint: "Divergent = spreading out. Convergent = coming together. Parallel = side by side, never meeting.",
         explain: "A spreads out from a point (divergent), B's rays stay side by side (parallel), and C's rays come together to a point (convergent).",
         terms: [["parallel beam", "平行光束"], ["divergent beam", "發散光束"], ["convergent beam", "會聚光束"]] },
-      { type: "mc", q: "Chiikawa looks at a candle nearby, then at a star far away. Which statement is correct?",
+      { type: "mc", q: "Puff looks at a candle nearby, then at a star far away. Which statement is correct?",
         choices: ["Rays from both reach the eye as convergent beams", "Rays from the nearby candle reach the eye diverging; rays from the distant star arrive almost parallel", "Rays from the candle arrive parallel; rays from the star diverge", "Only the star's light travels in straight lines"], answer: 1,
         hint: "Rays spread out from every point of an object. Over a huge distance, the few rays that reach your small eye are almost side by side.",
         explain: "Rays from a near object are still spreading out (divergent) when they reach the eye. Rays from a very distant object have travelled so far that they arrive almost parallel.",
         terms: [["near object", "近處物體"], ["distant object", "遠處物體"]] },
-      { type: "mc", q: "Chiikawa's bedroom has a moon-shaped lamp (switched on). Through the window, the real Moon shines in the sky. Which statement is correct?",
+      { type: "mc", q: "Puff's bedroom has a moon-shaped lamp (switched on). Through the window, the real Moon shines in the sky. Which statement is correct?",
         choices: ["Both are luminous objects", "The moon-shaped lamp is luminous; the Moon in the sky is non-luminous", "Both are non-luminous objects", "The Moon in the sky is luminous; the lamp is non-luminous"], answer: 1,
         hint: "Which one makes its own light, and which one only reflects sunlight?",
         explain: "The switched-on moon-shaped lamp gives out its own light, so it is luminous. The Moon in the sky gives out no light of its own; it reflects sunlight, so it is non-luminous.",
@@ -868,9 +887,9 @@ const ROOMS = [
   },
   {
     id: "room2", topicNo: 2, sec: "14.2", name: "The Hall of Mirrors", topic: "Reflection", zh: "反射", mastery: "reflection",
-    tint: "#CFE0FF", floor: "#A9B8D9", dim: .45, special: "mirror", specialName: "Magic mirror", specialLine: "A tall mirror. Chiikawa waves... the reflection waves back!",
+    tint: "#CFE0FF", floor: "#A9B8D9", dim: .45, special: "mirror", specialName: "Magic mirror", specialLine: "A tall mirror. Puff waves... the reflection waves back!",
     code: "90460", badge: "👑 Mirror Crown Badge", item: "🔷 Silver Mirror Shard",
-    intro: [["chiikawa", "cry", "Fuwa...! There are SO many Chiikawas! 😳"], ["hachiware", "normal", "They're just images in plane mirrors! The law of reflection will get us out."], ["usagi", "happy", "Puru! Puru! 🪞"]],
+    intro: [["chiikawa", "cry", "Fuwa...! There are SO many Puffs! 😳"], ["hachiware", "normal", "They're just images in plane mirrors! The law of reflection will get us out."], ["usagi", "happy", "Boing! Boing! 🪞"]],
     notes: [
       "<b>Reflection</b>: light hits a surface, changes direction and returns into the same medium (e.g. plane mirrors, smooth metal, water, glass).",
       "Terms: <b>incident ray</b>, <b>reflected ray</b>, <b>normal</b> (an imaginary line at right angles to the surface at the point of incidence), <b>angle of incidence</b> <i>i</i> and <b>angle of reflection</b> <i>r</i>, both measured from the normal.",
@@ -891,7 +910,7 @@ const ROOMS = [
         hint: "Look at the angle between the incident ray and the dashed normal. The reflected ray makes the SAME angle on the other side of the normal.",
         explain: "Ray B makes the same angle with the normal as the incident ray, on the other side. That's the law of reflection.",
         terms: [["incident ray", "入射線"], ["reflected ray", "反射線"]] },
-      { type: "dial", q: "Set the dials to describe the image of Chiikawa in a plane mirror.",
+      { type: "dial", q: "Set the dials to describe the image of Puff in a plane mirror.",
         labels: ["Type", "Left–right", "Size"], dials: [["Real", "Virtual"], ["Not reversed", "Laterally inverted"], ["Magnified", "Same size", "Diminished"]], answer: [1, 1, 1],
         hint: "Can you catch your mirror image on paper? Does your raised right hand look like a left hand? Is your image bigger than you?",
         explain: "The image is virtual (it can't be caught on a screen), laterally inverted (left and right swapped) and the same size. That's why AMBULANCE is printed reversed: drivers read it correctly in their rear-view mirror.",
@@ -901,7 +920,7 @@ const ROOMS = [
         hint: "Where does a plane mirror image appear: in front of, on, or behind the mirror?",
         explain: "Images in a plane mirror appear as far behind the mirror as the objects are in front. The mirror shows a 'second room' behind the wall, so the café looks deeper.",
         terms: [["interior design", "室內設計"], ["image distance", "像距"]] },
-      { type: "mc", q: "Usagi builds a periscope to peek over a wall. How are its two plane mirrors arranged?",
+      { type: "mc", q: "Mango builds a periscope to peek over a wall. How are its two plane mirrors arranged?",
         choices: ["Facing each other and parallel, each tilted at 45°", "Both lying flat on the floor", "At right angles to each other, facing away", "One mirror is enough; the second one is decoration"], answer: 0,
         hint: "Light enters the top, turns down, then turns again into your eye. Both turns happen the same way.",
         explain: "The two mirrors are parallel, each tilted at 45°. Each mirror turns the light through a right angle, so light from above the wall reaches your eye below.",
@@ -912,7 +931,7 @@ const ROOMS = [
     id: "room3", topicNo: 3, sec: "14.3", name: "The Bent Pool", topic: "Refraction", zh: "折射", mastery: "refraction",
     tint: "#C3ECE8", floor: "#94C9C4", dim: .45, special: "tank", specialName: "Water tank", specialLine: "There's a key at the bottom of the tank... but it looks closer than it really is!",
     code: "15320", badge: "💧 Droplet Diver Badge", item: "💎 Water Droplet Gem",
-    intro: [["usagi", "happy", "Ura! *dives for the key in the tank and misses*"], ["hachiware", "normal", "The key looks closer than it is... That's refraction! Light bends when it crosses into a different medium."], ["chiikawa", "normal", "Ya... I'll hold the towel. 🫧"]],
+    intro: [["usagi", "happy", "Woo! *dives for the key in the tank and misses*"], ["hachiware", "normal", "The key looks closer than it is... That's refraction! Light bends when it crosses into a different medium."], ["chiikawa", "normal", "Ya... I'll hold the towel. 🫧"]],
     notes: [
       "<b>Refraction</b>: light changes direction when it passes from one <b>medium</b> into another (e.g. air, water, glass).",
       "Going into a medium with a <b>higher refractive index</b> (e.g. air → water or glass), light bends <b>towards the normal</b>.",
@@ -938,7 +957,7 @@ const ROOMS = [
         hint: "Light going from water into air bends which way? Our eyes trace rays back in straight lines.",
         explain: "Light from the bottom bends away from the normal as it leaves the water. Our eyes trace the rays back in straight lines, so the bottom seems higher: the tank looks shallower.",
         terms: [["real depth", "實深"], ["apparent depth", "視深"]] },
-      { type: "mc", q: "Chiikawa puts chopsticks in a bowl of water. They look bent at the water surface. Why?",
+      { type: "mc", q: "Puff puts chopsticks in a bowl of water. They look bent at the water surface. Why?",
         choices: ["The water really bends the chopsticks", "Light from the part under water is refracted as it leaves the water, so that part appears higher", "The chopsticks absorb light under water", "Light travels in curves inside water"], answer: 1,
         hint: "Same idea as the shallow-looking tank!",
         explain: "Light from the underwater part bends away from the normal as it leaves the water. That part appears higher than it really is, so the chopsticks look bent at the surface.",
@@ -954,7 +973,7 @@ const ROOMS = [
     id: "room4", topicNo: 4, sec: "14.4", name: "The Crystal Fibre Tunnel", topic: "Total internal reflection", zh: "全內反射", mastery: "refraction",
     tint: "#DCD4FF", floor: "#B2A7E0", dim: .55, special: "crystal", specialName: "Crystal", specialLine: "Light is zig-zagging inside this crystal. It's trapped!",
     code: "41848", badge: "🌟 Fibre Guardian Badge", item: "🧵 Glowing Fibre Thread",
-    intro: [["chiikawa", "happy", "Wah... the light is zig-zagging inside the crystal! ✨"], ["hachiware", "normal", "That's total internal reflection! It's how optical fibres carry data."], ["usagi", "happy", "Yaha! 💫"]],
+    intro: [["chiikawa", "happy", "Wah... the light is zig-zagging inside the crystal! ✨"], ["hachiware", "normal", "That's total internal reflection! It's how optical fibres carry data."], ["usagi", "happy", "Wahoo! 💫"]],
     notes: [
       "<b>Total internal reflection (TIR)</b>: light travelling towards a medium of lower refractive index is completely reflected back into the original medium.",
       "The <b>critical angle</b> <i>C</i> is the angle of incidence when the angle of refraction is 90°.",
@@ -995,7 +1014,7 @@ const ROOMS = [
     id: "room5", topicNo: 5, sec: "14.5–14.6", name: "The Lens Workshop", topic: "Convex and concave lenses", zh: "凸透鏡和凹透鏡", mastery: "lenses",
     tint: "#FFE9C7", floor: "#E3C79C", dim: .42, special: "lens", specialName: "Lens bench", specialLine: "A big lens on a stand. Everything looks different through it!",
     code: "23005", badge: "🔭 Lens Crafter Badge", item: "🔍 Magnifying Glass",
-    intro: [["hachiware", "normal", "A workshop full of lenses! Let's focus the light onto each lock."], ["chiikawa", "happy", "Fuwa... everything looks big through this one! 👀"], ["usagi", "happy", "Ura! Ura! 🔎"]],
+    intro: [["hachiware", "normal", "A workshop full of lenses! Let's focus the light onto each lock."], ["chiikawa", "happy", "Fuwa... everything looks big through this one! 👀"], ["usagi", "happy", "Woo! Woo! 🔎"]],
     notes: [
       "<b>Convex lens</b> (converging lens): thicker at the centre than at the edges. Rays parallel to the <b>principal axis</b> converge to the <b>principal focus F</b>. A ray through the <b>optical centre C</b> does not change direction.",
       "The <b>focal length</b> <i>f</i> is the distance between C and a principal focus. A lens has a principal focus on each side (F and F').",
@@ -1058,7 +1077,7 @@ const ROOMS = [
         hint: "ROY G BIV!",
         explain: "Red, orange, yellow, green, blue, indigo, violet. White light is a mixture of all of them.",
         terms: [["visible spectrum", "可見光譜"], ["white light", "白光"]] },
-      { type: "dial", q: "Kuri-Manju shines two coloured spotlights onto a white wall. Set each dial to the colour that appears.",
+      { type: "dial", q: "Chestnut shines two coloured spotlights onto a white wall. Set each dial to the colour that appears.",
         labels: ["Red + Green", "Green + Blue", "Red + Blue"], dials: [["White", "Yellow", "Cyan", "Magenta"], ["White", "Yellow", "Cyan", "Magenta"], ["White", "Yellow", "Cyan", "Magenta"]], answer: [1, 2, 3],
         hint: "Mixing LIGHT is not like mixing paint! R + G = Y, G + B = C, R + B = M.",
         explain: "Red + green = yellow, green + blue = cyan, red + blue = magenta. All three primary colours together make white.",
@@ -1079,7 +1098,7 @@ const ROOMS = [
     id: "room7", topicNo: 7, sec: "14.8", name: "The Wave Observatory", topic: "Beyond the visible spectrum", zh: "可見光譜以外", mastery: "em_waves",
     tint: "#26304F", floor: "#1B223A", dim: .6, special: "telescope", specialName: "Telescope", specialLine: "A telescope pointing at the stars. The dial shows wave names!",
     code: "31405", badge: "🛰️ Wave Master Badge", item: "📡 Tiny Radio Antenna",
-    intro: [["hachiware", "normal", "The final room! Visible light is just one member of a big family: the electromagnetic spectrum."], ["usagi", "happy", "Yaha! *spins the telescope dial wildly* 🔭"], ["chiikawa", "cry", "We're almost free... Ya...! 🥹"]],
+    intro: [["hachiware", "normal", "The final room! Visible light is just one member of a big family: the electromagnetic spectrum."], ["usagi", "happy", "Wahoo! *spins the telescope dial wildly* 🔭"], ["chiikawa", "cry", "We're almost free... Ya...! 🥹"]],
     notes: [
       "Visible light is only a small part of the <b>electromagnetic (EM) spectrum</b>. From long to short wavelength: radio waves → microwaves → infrared radiation → visible light → ultraviolet radiation → X-rays → gamma rays.",
       "The shorter the wavelength, the higher the energy, and usually the more dangerous the radiation.",
@@ -1095,7 +1114,7 @@ const ROOMS = [
         hint: "Radio waves have the LONGEST wavelength; gamma rays have the SHORTEST (and the most energy).",
         explain: "Decreasing wavelength / increasing energy: radio waves → microwaves → infrared → visible light → ultraviolet → X-rays → gamma rays.",
         terms: [["electromagnetic spectrum", "電磁波譜"], ["wavelength", "波長"], ["energy", "能量"]] },
-      { type: "mc", q: "Chiikawa taps an Octopus card on the MTR gate. Which EM wave does the card reader use?",
+      { type: "mc", q: "Puff taps an Octopus card on the MTR gate. Which EM wave does the card reader use?",
         choices: ["Radio waves", "X-rays", "Ultraviolet radiation", "Gamma rays"], answer: 0,
         hint: "It's the same family used for Wi-Fi and Bluetooth.",
         explain: "Octopus cards, Wi-Fi and Bluetooth all use radio waves.",
@@ -1126,7 +1145,7 @@ const WAVES_ZH = ["無線電波", "微波", "紅外輻射", "可見光", "紫外
 const IMG3_ZH = [["實像", "虛像"], ["正立", "倒立"], ["放大", "大小相同", "縮小"]];
 const ZH_ROOMS = {
   room1: { name: "黑暗洞穴", specialName: "蠟燭", specialLine: "一枝未點着的蠟燭。也許答對問題就能點亮它……", badge: "🏮 洞穴燈籠徽章", item: "✨ 發光石",
-    intro: [["chiikawa", "cry", "呀……！這裏好黑呀……😖"], ["hachiware", "normal", "別擔心！點擊房間裏發光的東西，每樣都藏着一道光學謎題！"], ["usagi", "happy", "呀哈！嗚啦！🔦"]],
+    intro: [["chiikawa", "cry", "呀……！這裏好黑呀……😖"], ["hachiware", "normal", "別擔心！點擊房間裏發光的東西，每樣都藏着一道光學謎題！"], ["usagi", "happy", "嘩呼！嘩！🔦"]],
     notes: [
       "只有當來自物體的光進入我們的眼睛時，我們才能看見物體。",
       "會自行發光的物體稱為<b>發光體</b>，例如太陽、燭光、行人過路燈、使用中的智能電話屏幕、LED 數碼記分牌、螢火蟲、燒紅的炭、月亮燈飾。",
@@ -1138,12 +1157,12 @@ const ZH_ROOMS = {
     rules: ["發光體 → 光 → 眼睛", "光源 → 非發光體 → 反射 → 眼睛", "近處物體 → 發散 · 遠處物體 → 平行"],
     puzzles: [
       { q: "發光的牌子寫着：「只有發光體才能打開這裏。」以下哪一項是發光體？", choices: ["月亮", "點着的蠟燭", "平面鏡", "一張白紙"], hint: "發光體會自行發光。哪一個正在這樣做？", explain: "點着的蠟燭是發光體：它會自行發光。月亮、鏡子和紙都是非發光體，它們只會反射光。" },
-      { q: "蠟燭點着後，吉伊卡哇看見地上的一本書。光是怎樣到達吉伊卡哇的眼睛？", choices: ["吉伊卡哇眼睛發出的光照到書上", "書本自行發光", "蠟燭的光被書本反射進吉伊卡哇的眼睛", "書本吸收了所有光"], hint: "跟着光走：光源 → 物體 → ？", explain: "書本是非發光體。蠟燭的光被書本反射，再進入吉伊卡哇的眼睛。（我們看見蠟燭本身，是因為它的光直接進入眼睛。）" },
+      { q: "蠟燭點着後，泡芙看見地上的一本書。光是怎樣到達泡芙的眼睛？", choices: ["泡芙眼睛發出的光照到書上", "書本自行發光", "蠟燭的光被書本反射進泡芙的眼睛", "書本吸收了所有光"], hint: "跟着光走：光源 → 物體 → ？", explain: "書本是非發光體。蠟燭的光被書本反射，再進入泡芙的眼睛。（我們看見蠟燭本身，是因為它的光直接進入眼睛。）" },
       { q: "牆上畫了三束光（見圖）。轉動每個密碼盤，說出光束的名稱。", labels: ["光束 A", "光束 B", "光束 C"], dials: [["平行", "發散", "會聚"], ["平行", "發散", "會聚"], ["平行", "發散", "會聚"]], hint: "發散 = 散開；會聚 = 聚合；平行 = 並排、永不相交。", explain: "A 從一點散開（發散），B 的光線並排（平行），C 的光線聚合到一點（會聚）。" },
-      { q: "吉伊卡哇先看附近的蠟燭，再看遠處的星星。以下哪項正確？", choices: ["兩者的光線都以會聚光束到達眼睛", "附近蠟燭的光線以發散方式到達眼睛；遠處星星的光線到達時幾乎平行", "蠟燭的光線平行到達；星星的光線發散", "只有星星的光沿直線傳播"], hint: "光線從物體上每一點散開。經過極遠的距離後，進入小小眼睛的幾條光線幾乎並排。", explain: "近處物體的光線到達眼睛時仍在散開（發散）。遠處物體的光線走了很遠，到達時幾乎平行。" },
-      { q: "吉伊卡哇的睡房有一盞亮着的月亮燈飾，窗外天上也有月亮。以下哪項正確？", choices: ["兩者都是發光體", "月亮燈飾是發光體；天上的月亮是非發光體", "兩者都是非發光體", "天上的月亮是發光體；月亮燈飾是非發光體"], hint: "哪一個自己發光？哪一個只反射太陽光？", explain: "亮着的月亮燈飾會自行發光，是發光體。天上的月亮本身不會發光，只會反射太陽光，所以是非發光體。" }] },
-  room2: { name: "鏡子大廳", specialName: "魔法鏡", specialLine: "一面高高的鏡子。吉伊卡哇揮揮手……鏡中人也揮手！", badge: "👑 鏡之皇冠徽章", item: "🔷 銀色鏡子碎片",
-    intro: [["chiikawa", "cry", "呼哇……！有好多個吉伊卡哇！😳"], ["hachiware", "normal", "那些只是平面鏡的像！用反射定律就能逃出去。"], ["usagi", "happy", "噗嚕！噗嚕！🪞"]],
+      { q: "泡芙先看附近的蠟燭，再看遠處的星星。以下哪項正確？", choices: ["兩者的光線都以會聚光束到達眼睛", "附近蠟燭的光線以發散方式到達眼睛；遠處星星的光線到達時幾乎平行", "蠟燭的光線平行到達；星星的光線發散", "只有星星的光沿直線傳播"], hint: "光線從物體上每一點散開。經過極遠的距離後，進入小小眼睛的幾條光線幾乎並排。", explain: "近處物體的光線到達眼睛時仍在散開（發散）。遠處物體的光線走了很遠，到達時幾乎平行。" },
+      { q: "泡芙的睡房有一盞亮着的月亮燈飾，窗外天上也有月亮。以下哪項正確？", choices: ["兩者都是發光體", "月亮燈飾是發光體；天上的月亮是非發光體", "兩者都是非發光體", "天上的月亮是發光體；月亮燈飾是非發光體"], hint: "哪一個自己發光？哪一個只反射太陽光？", explain: "亮着的月亮燈飾會自行發光，是發光體。天上的月亮本身不會發光，只會反射太陽光，所以是非發光體。" }] },
+  room2: { name: "鏡子大廳", specialName: "魔法鏡", specialLine: "一面高高的鏡子。泡芙揮揮手……鏡中人也揮手！", badge: "👑 鏡之皇冠徽章", item: "🔷 銀色鏡子碎片",
+    intro: [["chiikawa", "cry", "呼哇……！有好多個泡芙！😳"], ["hachiware", "normal", "那些只是平面鏡的像！用反射定律就能逃出去。"], ["usagi", "happy", "噗嚕！噗嚕！🪞"]],
     notes: [
       "光射到物體表面後改變方向，返回原來介質的現象稱為<b>反射</b>（例如平面鏡、光滑金屬面、水面、玻璃表面）。",
       "詞語：<b>入射線</b>、<b>反射線</b>、<b>法線</b>（在入射點與反射面垂直的假想線）、<b>入射角</b> <i>i</i> 和<b>反射角</b> <i>r</i>（兩者都與法線量度）。",
@@ -1156,11 +1175,11 @@ const ZH_ROOMS = {
     puzzles: [
       { q: "以下哪一項是反射定律？", choices: ["入射角等於反射角", "反射線永遠沿鏡面前進", "入射線和反射線永遠平行", "角度從鏡面量度"], hint: "法線是垂直於鏡面的線。兩個角的大小有甚麼關係？", explain: "入射角 = 反射角，兩者都從法線量度。" },
       { q: "一條光線射向平面鏡（見圖）。A、B、C 中哪一條是反射線？", choices: ["光線 A", "光線 B", "光線 C", "都不是"], hint: "看看入射線與虛線法線之間的角。反射線在法線另一邊形成相同的角。", explain: "光線 B 在法線另一邊與法線形成相同的角，這就是反射定律。" },
-      { q: "轉動密碼盤，描述吉伊卡哇在平面鏡中的像。", labels: ["種類", "左右", "大小"], dials: [["實像", "虛像"], ["沒有倒置", "橫向倒置"], ["放大", "大小相同", "縮小"]], hint: "你能把鏡中的像投射在紙上嗎？你舉起右手時，鏡中像看來像舉起左手嗎？像比你大嗎？", explain: "像是虛像（不能投射在屏幕上）、橫向倒置、大小相同。所以救護車車頭的字是反轉印刷的：前面的司機從後視鏡看便會看到正確的字。" },
+      { q: "轉動密碼盤，描述泡芙在平面鏡中的像。", labels: ["種類", "左右", "大小"], dials: [["實像", "虛像"], ["沒有倒置", "橫向倒置"], ["放大", "大小相同", "縮小"]], hint: "你能把鏡中的像投射在紙上嗎？你舉起右手時，鏡中像看來像舉起左手嗎？像比你大嗎？", explain: "像是虛像（不能投射在屏幕上）、橫向倒置、大小相同。所以救護車車頭的字是反轉印刷的：前面的司機從後視鏡看便會看到正確的字。" },
       { q: "一間小咖啡店用一大面鏡子鋪滿整幅牆。為甚麼咖啡店看起來大了很多？", choices: ["鏡子把枱放大了", "房間的像出現在鏡後，距離與房間在鏡前一樣，所以房間看來深了約一倍", "鏡子增加了光，令房間變大", "鏡中的像是實像，客人可以走進去"], hint: "平面鏡的像出現在鏡前、鏡上，還是鏡後？", explain: "平面鏡的像出現在鏡後，距離等於物體在鏡前的距離。鏡子「多出」一個房間，所以咖啡店看起來更深。" },
-      { q: "烏薩奇做了一個潛望鏡，想從牆後偷看。兩面平面鏡是怎樣擺放的？", choices: ["互相平行並相對，各傾斜 45°", "兩面都平放在地上", "互成直角，背對背", "一面就夠了，另一面只是裝飾"], hint: "光從頂部進入，向下轉，再轉入你的眼睛。兩次轉向的方式相同。", explain: "兩面鏡互相平行，各傾斜 45°。每面鏡把光轉一個直角，所以牆上方的光能到達下方的眼睛。" }] },
+      { q: "芒芒做了一個潛望鏡，想從牆後偷看。兩面平面鏡是怎樣擺放的？", choices: ["互相平行並相對，各傾斜 45°", "兩面都平放在地上", "互成直角，背對背", "一面就夠了，另一面只是裝飾"], hint: "光從頂部進入，向下轉，再轉入你的眼睛。兩次轉向的方式相同。", explain: "兩面鏡互相平行，各傾斜 45°。每面鏡把光轉一個直角，所以牆上方的光能到達下方的眼睛。" }] },
   room3: { name: "彎曲水池", specialName: "水缸", specialLine: "水缸底有一條鎖匙……但它看起來比實際近！", badge: "💧 水滴潛水員徽章", item: "💎 水滴寶石",
-    intro: [["usagi", "happy", "嗚啦！*撲向水缸裏的鎖匙，撲空了*"], ["hachiware", "normal", "鎖匙看起來比實際近……這是折射！光進入另一種介質時會偏折。"], ["chiikawa", "normal", "呀……我來拿毛巾吧。🫧"]],
+    intro: [["usagi", "happy", "嘩！*撲向水缸裏的鎖匙，撲空了*"], ["hachiware", "normal", "鎖匙看起來比實際近……這是折射！光進入另一種介質時會偏折。"], ["chiikawa", "normal", "呀……我來拿毛巾吧。🫧"]],
     notes: [
       "光由一種<b>介質</b>進入另一種介質時，傳播方向發生偏折，稱為<b>折射</b>（介質例如空氣、水、玻璃）。",
       "光進入<b>折射率較高</b>的介質（例如空氣 → 水或玻璃）時，會<b>偏向法線</b>。",
@@ -1174,10 +1193,10 @@ const ZH_ROOMS = {
       { q: "一條光線斜斜地從空氣射進玻璃。玻璃的折射率較高。會發生甚麼事？", choices: ["偏離法線", "偏向法線", "完全不偏折", "一定會全部反射"], hint: "進入折射率較高的介質……偏向還是偏離法線？", explain: "進入折射率較高的介質（空氣 → 玻璃）時，光會偏向法線。" },
       { q: "玻璃磚內的光線到達頂面（見圖）。在空氣中它會走 A、B 還是 C？", choices: ["路徑 A", "路徑 B", "路徑 C", "停在表面"], hint: "玻璃 → 空氣是進入折射率較低的介質。偏向還是偏離虛線法線？", explain: "路徑 A 偏離法線，這正是光從玻璃進入空氣時發生的事。路徑 B 完全沒有偏折；路徑 C 偏折方向錯了。" },
       { q: "為甚麼水缸看起來比實際淺？", choices: ["缸底的光離開水面時偏離法線，所以缸底看來較高", "水吸收了紅光", "光離開水面時偏向法線", "水面反射了所有光"], hint: "光從水進入空氣時向哪邊偏折？眼睛會沿直線追溯光線。", explain: "缸底的光離開水面時偏離法線。眼睛沿直線追溯光線，所以缸底看來較高：水缸看起來較淺。" },
-      { q: "吉伊卡哇把筷子放進一碗水裏，筷子在水面位置看起來彎了。為甚麼？", choices: ["水真的把筷子弄彎了", "水中部分的光離開水面時折射，所以那部分看來較高", "筷子在水中吸收了光", "光在水中沿曲線傳播"], hint: "和水缸看起來較淺的原理一樣！", explain: "水中部分的光離開水面時偏離法線，那部分看來比實際高，所以筷子在水面位置看起來彎曲。" },
+      { q: "泡芙把筷子放進一碗水裏，筷子在水面位置看起來彎了。為甚麼？", choices: ["水真的把筷子弄彎了", "水中部分的光離開水面時折射，所以那部分看來較高", "筷子在水中吸收了光", "光在水中沿曲線傳播"], hint: "和水缸看起來較淺的原理一樣！", explain: "水中部分的光離開水面時偏離法線，那部分看來比實際高，所以筷子在水面位置看起來彎曲。" },
       { q: "一條光線沿法線射向玻璃磚。會發生甚麼事？", choices: ["偏向法線", "偏離法線", "直線穿過，不會偏折", "發生全內反射"], hint: "如果光線已經沿法線前進，它可以向哪邊偏折？", explain: "沿法線前進的光線穿過界面時方向不變。" }] },
   room4: { name: "水晶光纖隧道", specialName: "水晶", specialLine: "光在這塊水晶裏來回曲折。它被困住了！", badge: "🌟 光纖守護者徽章", item: "🧵 發光光纖線",
-    intro: [["chiikawa", "happy", "哇……光在水晶裏左右來回走！✨"], ["hachiware", "normal", "這是全內反射！光纖就是這樣傳送數據的。"], ["usagi", "happy", "呀哈！💫"]],
+    intro: [["chiikawa", "happy", "哇……光在水晶裏左右來回走！✨"], ["hachiware", "normal", "這是全內反射！光纖就是這樣傳送數據的。"], ["usagi", "happy", "嘩呼！💫"]],
     notes: [
       "光從折射率較高的介質射向折射率較低的介質時，完全反射回原來介質中，稱為<b>全內反射</b>。",
       "當折射角等於 90° 時的入射角，稱為<b>臨界角</b> <i>C</i>。",
@@ -1193,7 +1212,7 @@ const ZH_ROOMS = {
       { q: "光纖怎樣把互聯網數據以光的形式傳送到很遠的地方？", choices: ["光在每個彎位被吸收再重新產生", "光在光纖內不斷發生全內反射", "光纖外面鋪了平面鏡", "光自己會沿曲線走"], hint: "記得在水晶內來回曲折的光嗎？", explain: "光纖內的光射向界面時，入射角一直大於臨界角，所以不斷發生全內反射，光就留在光纖內。" },
       { q: "以下哪一項沒有利用全內反射？", choices: ["雙筒望遠鏡內的三稜鏡", "光纖", "鑽石的閃爍", "浴室的平面鏡"], hint: "其中一項是靠光亮的金屬塗層反射光。", explain: "浴室鏡子靠鍍銀表面反射光（普通反射）。雙筒望遠鏡和潛望鏡的三稜鏡、光纖和鑽石都利用全內反射。" }] },
   room5: { name: "透鏡工房", specialName: "透鏡架", specialLine: "架上有一塊大透鏡，透過它看甚麼都不一樣！", badge: "🔭 透鏡工匠徽章", item: "🔍 放大鏡",
-    intro: [["hachiware", "normal", "這裏有很多透鏡！把光聚焦在每把鎖上吧。"], ["chiikawa", "happy", "呼哇……透過這塊看，甚麼都變大了！👀"], ["usagi", "happy", "嗚啦！嗚啦！🔎"]],
+    intro: [["hachiware", "normal", "這裏有很多透鏡！把光聚焦在每把鎖上吧。"], ["chiikawa", "happy", "呼哇……透過這塊看，甚麼都變大了！👀"], ["usagi", "happy", "嘩！嘩！🔎"]],
     notes: [
       "<b>凸透鏡</b>（會聚透鏡）：中心比邊緣厚。與<b>主軸</b>平行的光線穿過後會聚於<b>主焦點 F</b>；穿過<b>光心 C</b> 的光線方向不變。",
       "<b>焦距</b> <i>f</i> 是光心與主焦點之間的距離。透鏡兩側各有一個主焦點（F 和 F'）。",
@@ -1223,11 +1242,11 @@ const ZH_ROOMS = {
     puzzles: [
       { q: "白光穿過三稜鏡（見圖）。在 B 處、偏折最多的是哪種顏色？", choices: ["紅", "綠", "黃", "紫"], hint: "紅橙黃綠藍靛紫：紅光偏折最少，另一端的顏色偏折最多。", explain: "紫光偏折最多，紅光最少。把白光分成各種顏色叫做色散。" },
       { q: "以下哪一項是可見光譜的正確次序？", choices: ["紅、橙、黃、綠、藍、靛、紫", "紅、黃、橙、綠、靛、藍、紫", "紫、綠、紅、橙、黃、藍、靛", "藍、紅、綠、黃、橙、紫、靛"], hint: "紅橙黃綠藍靛紫！", explain: "紅、橙、黃、綠、藍、靛、紫。白光是所有這些顏色的混合。" },
-      { q: "栗子饅頭把兩盞色光射向白牆。轉動每個密碼盤，選出出現的顏色。", labels: ["紅 + 綠", "綠 + 藍", "紅 + 藍"], dials: [["白", "黃", "藍綠", "洋紅"], ["白", "黃", "藍綠", "洋紅"], ["白", "黃", "藍綠", "洋紅"]], hint: "混合色光和混合顏料不同！紅 + 綠 = 黃，綠 + 藍 = 藍綠，紅 + 藍 = 洋紅。", explain: "紅 + 綠 = 黃，綠 + 藍 = 藍綠，紅 + 藍 = 洋紅。三原色加在一起就是白色。" },
+      { q: "栗子伯把兩盞色光射向白牆。轉動每個密碼盤，選出出現的顏色。", labels: ["紅 + 綠", "綠 + 藍", "紅 + 藍"], dials: [["白", "黃", "藍綠", "洋紅"], ["白", "黃", "藍綠", "洋紅"], ["白", "黃", "藍綠", "洋紅"]], hint: "混合色光和混合顏料不同！紅 + 綠 = 黃，綠 + 藍 = 藍綠，紅 + 藍 = 洋紅。", explain: "紅 + 綠 = 黃，綠 + 藍 = 藍綠，紅 + 藍 = 洋紅。三原色加在一起就是白色。" },
       { q: "一朵紅玫瑰只被藍光照射。它看起來是甚麼顏色？", choices: ["紅", "藍", "紫", "黑"], hint: "紅色物體只反射紅光。這裏有紅光嗎？", explain: "玫瑰吸收藍光，而且沒有紅光可以反射，所以看起來是黑色。" },
       { q: "一件白色 T 恤同時被紅光和綠光照射。它看起來是甚麼顏色？", choices: ["白", "黃", "紅", "黑"], hint: "白色物體會反射照在它身上的所有顏色。現在有哪些顏色？", explain: "白色物體反射所有照射在它身上的光。紅光和綠光都被反射，而紅 + 綠 = 黃。" }] },
   room7: { name: "電波天文台", specialName: "望遠鏡", specialLine: "一支指向星空的望遠鏡。轉盤上寫着各種波的名稱！", badge: "🛰️ 電波大師徽章", item: "📡 迷你天線",
-    intro: [["hachiware", "normal", "最後一個房間！可見光只是大家族「電磁波譜」的其中一員。"], ["usagi", "happy", "呀哈！*瘋狂地轉動望遠鏡轉盤* 🔭"], ["chiikawa", "cry", "快要逃出去了……呀……！🥹"]],
+    intro: [["hachiware", "normal", "最後一個房間！可見光只是大家族「電磁波譜」的其中一員。"], ["usagi", "happy", "嘩呼！*瘋狂地轉動望遠鏡轉盤* 🔭"], ["chiikawa", "cry", "快要逃出去了……呀……！🥹"]],
     notes: [
       "可見光只是<b>電磁波譜</b>的一小部分。由長波長至短波長：無線電波 → 微波 → 紅外輻射 → 可見光 → 紫外輻射 → X 射線 → 伽瑪射線。",
       "波長愈短，能量愈高，危險性通常也愈高。",
@@ -1239,17 +1258,17 @@ const ZH_ROOMS = {
     rules: ["無線電波 → 微波 → 紅外輻射 → 可見光 → 紫外輻射 → X 射線 → 伽瑪射線：波長 ↓、能量 ↑", "波長愈短 → 能量愈高 → 通常愈危險", "風險取決於強度 · 暴露時間 · 能量"],
     puzzles: [
       { q: "以下哪一項按波長遞減（能量遞增）的次序列出電磁波譜？", choices: [WAVES_ZH.join("、"), WAVES_ZH.slice().reverse().join("、"), "可見光、紫外輻射、紅外輻射、X 射線、伽瑪射線、無線電波、微波", "無線電波、紅外輻射、微波、可見光、X 射線、紫外輻射、伽瑪射線"], hint: "無線電波的波長最長；伽瑪射線的波長最短（能量最高）。", explain: "波長遞減／能量遞增：無線電波 → 微波 → 紅外輻射 → 可見光 → 紫外輻射 → X 射線 → 伽瑪射線。" },
-      { q: "吉伊卡哇在港鐵閘機拍八達通卡。讀卡器用的是哪種電磁波？", choices: ["無線電波", "X 射線", "紫外輻射", "伽瑪射線"], hint: "Wi-Fi 和藍牙也屬於這一類。", explain: "八達通卡、Wi-Fi 和藍牙都使用無線電波。" },
+      { q: "泡芙在港鐵閘機拍八達通卡。讀卡器用的是哪種電磁波？", choices: ["無線電波", "X 射線", "紫外輻射", "伽瑪射線"], hint: "Wi-Fi 和藍牙也屬於這一類。", explain: "八達通卡、Wi-Fi 和藍牙都使用無線電波。" },
       { q: "望遠鏡密碼鎖問：每項工作用哪種電磁波？轉動密碼盤。", labels: ["電視遙控器", "驗鈔", "骨骼影像"], dials: [WAVES_ZH, WAVES_ZH, WAVES_ZH], hint: "遙控器發出看不見的「熱」光；驗鈔機令隱藏油墨發光；骨骼影像的波能穿過肌肉。", explain: "遙控器用紅外輻射，驗鈔機用紫外輻射，骨骼影像用 X 射線。" },
       { q: "醫院用哪種電磁波治療癌症和為醫療器材消毒？", choices: ["無線電波", "微波", "可見光", "伽瑪射線"], hint: "就是能量最高的那種。", explain: "伽瑪射線能量最高，可以殺死癌細胞和為醫療器材消毒。" },
       { q: "哪一組電磁波可導致細胞受損、曬傷或基因突變？", choices: ["無線電波、微波和紅外輻射", "紫外輻射、X 射線和 伽瑪射線", "只有可見光", "所有電磁波的危害都一樣"], hint: "危險來自高能量和短波長。", explain: "紫外輻射、X 射線和 伽瑪射線是高能量、短波長的波，可損害細胞、導致曬傷（紫外輻射）或突變。所以我們要塗防曬，放射技師要用鉛屏障。" }] }
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
 const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
-const ZH_WARDROBE = { hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "惡魔獵人偶像長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_WARDROBE = { cos_gym: "健身兄", cos_fish: "釣魚兄", cos_performative: "文青兄（Performative）", cos_finance: "金融兄", cos_sorcerer: "蒙眼術師 ♾️", hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "惡魔獵人偶像長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
-const ZH_SLOTS = { hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框", backdrop: "背景" };
-const ZH_CHAR = { chiikawa: "吉伊卡哇", hachiware: "小八", usagi: "烏薩奇", momonga: "小桃", kurimanju: "栗子饅頭" };
+const ZH_SLOTS = { costume: "密室限定服裝", hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框", backdrop: "背景" };
+const ZH_CHAR = { chiikawa: "泡芙", hachiware: "莓莓", usagi: "芒芒", momonga: "芋圓", kurimanju: "栗子伯" };
 const ZH_COLOURS = { Red: "紅", Green: "綠", Blue: "藍", Yellow: "黃", Cyan: "藍綠", Magenta: "洋紅", White: "白", Black: "黑" };
 const ZH_TOPIC_LABELS = { light_basics: "來自物體的光線", reflection: "反射", refraction: "折射與全內反射", lenses: "透鏡", colours: "顏色", em_waves: "電磁波譜" };
 const TF_ZH = [
@@ -1835,8 +1854,8 @@ function buildPools() {
     r.pool = r.puzzles.concat(BANK[r.id].map((q, j) => ({ id: "b" + j, b: q[0], type: "mc", q: zh ? q[5] : q[1], choices: zh ? q[6] : q[2], answer: 0, hint: zh ? q[7] : q[3], explain: zh ? q[8] : q[4] })));
   });
 }
-const ROOM_SECONDS = 15 * 60;
-const CHEERS = ["Yaha!", "Ura!", "Puru puru!", "好嘢!"];
+const ROOM_SECONDS = 10 * 60, MAX_HEARTS = 3;
+const CHEERS = ["Wahoo!", "Woo!", "Boing boing!", "好嘢!"];
 const SNACKS = ["🍡 Chestnut bun", "🍘 Rice cracker", "🍮 Pudding", "🍙 Onigiri", "🍜 Ramen ticket", "🧋 Bubble tea", "🥚 Egg tart 蛋撻", "🧇 Egg waffle 雞蛋仔", "🍍 Pineapple bun 菠蘿包"];
 const TOPIC_LABELS = { light_basics: "Light from objects 來自物體的光線", reflection: "Reflection 反射", refraction: "Refraction & TIR 折射", lenses: "Lenses 透鏡", colours: "Colours 顏色", em_waves: "EM spectrum 電磁波譜" };
 
@@ -1856,8 +1875,10 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
-function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0, fixed: 0 }; }
-function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null }; }
+function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0, fixed: 0, flawless: 0, speedEscapes: 0, gameOvers: 0 }; }
+function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null, hearts: MAX_HEARTS }; }
+const heartsOf = run => (run && run.hearts != null ? run.hearts : MAX_HEARTS);
+const heartsHtml = n => `${"❤️".repeat(Math.max(0, n))}${"🖤".repeat(Math.max(0, MAX_HEARTS - n))}`;
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function freshState() {
   return {
@@ -1866,8 +1887,8 @@ function freshState() {
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
-    coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", player_id: newId(), lb_last: 0
+    coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null, costume: null }, power: { torch: 1, crystal: 1, guard: 1 },
+    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", play_mode: null, study: {}, player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -1877,7 +1898,7 @@ function normalise(obj) {
   s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run); s.seen = Object.assign({}, s.seen);
   // older saves used roomX-N for the 5 core puzzles
   s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
-  s.equip = Object.assign({ hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
+  s.equip = Object.assign({ hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null, costume: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
   s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.practice = Object.assign({ best: 0, lastDay: null }, s.practice); s.mistakes = [...(s.mistakes || [])]; s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
@@ -1978,7 +1999,7 @@ function checkIn() {
     if (gap === 1) { S.current_streak += 1; streakNote = L(`🔥 Streak up! ${S.current_streak} days in a row.`, `🔥 連續紀錄 +1！已連續 ${S.current_streak} 天。`); }
     else if (gap > 1) {
       const missed = gap - 1;
-      if (S.streak_shields >= missed) { S.streak_shields -= missed; S.current_streak += 1; streakNote = L(`🛡️ Hachiware used ${missed} shield${missed > 1 ? "s" : ""} to protect your streak! Now ${S.current_streak} days.`, `🛡️ 小八用了 ${missed} 個護盾保護你的連續紀錄！現在是 ${S.current_streak} 天。`); }
+      if (S.streak_shields >= missed) { S.streak_shields -= missed; S.current_streak += 1; streakNote = L(`🛡️ Berry used ${missed} shield${missed > 1 ? "s" : ""} to protect your streak! Now ${S.current_streak} days.`, `🛡️ 莓莓用了 ${missed} 個護盾保護你的連續紀錄！現在是 ${S.current_streak} 天。`); }
       else { S.current_streak = 1; streakNote = L("🌱 Welcome back! Your streak restarted at 1.", "🌱 歡迎回來！連續紀錄由 1 重新開始。"); }
     }
     if (S.current_streak % 7 === 0 && S.streak_shields < 3) { S.streak_shields += 1; streakNote += L(" 🛡️ 7-day milestone: +1 shield!", " 🛡️ 7 天里程碑：+1 護盾！"); }
@@ -1996,7 +2017,7 @@ function showStreakPop() {
   const head = { first: L("Your streak begins!", "連續紀錄開始了！"), up: L("Streak up!", "連續紀錄 +1！"), shield: L("Shield saved your streak!", "護盾保住了你的連續紀錄！"), back: L("Welcome back!", "歡迎回來！") }[p.kind];
   const who = { first: "chiikawa", up: "usagi", shield: "hachiware", back: "momonga" }[p.kind];
   const line = { first: L("Day 1! Come back tomorrow to grow the flame. 🌱", "第 1 天！明天再來，讓火焰長大。🌱"),
-    up: n >= 7 ? L("Wow, a whole week or more! Your brain is getting stronger every day. 💪", "嘩，已經一星期以上！你的腦袋每天都更強。💪") : L("Yaha! One more day of light physics. 🐰", "呀哈！又多一天學習光學。🐰"),
+    up: n >= 7 ? L("Wow, a whole week or more! Your brain is getting stronger every day. 💪", "嘩，已經一星期以上！你的腦袋每天都更強。💪") : L("Wahoo! One more day of light physics. 🐰", "嘩呼！又多一天學習光學。🐰"),
     shield: L(`I used a 🛡️ shield so your ${n}-day streak is safe. Phew!`, `我用了 🛡️ 護盾，你的 ${n} 天連續紀錄保住了。好險！`),
     back: L(`We missed you! Your old best was ${S.longest_streak} days. Let's start a new one today. 💜`, `我們很掛念你！你的最佳紀錄是 ${S.longest_streak} 天。今天重新開始吧。💜`) }[p.kind];
   SFX.fanfare(); if (p.kind !== "back") confetti(80);
@@ -2222,7 +2243,7 @@ const WARDROBE = [
   { id: "prop_dubai", slot: "prop", v2: true, name: "Dubai chocolate bar", price: 80, svg: `<g transform="rotate(-18 88 62)"><rect x="78" y="52" width="20" height="22" rx="2" fill="#6B3E26" ${MO}/><path d="M78 60 H98" stroke="#4A2718" stroke-width="1.4"/><path d="M78 66 H98" stroke="#4A2718" stroke-width="1.4"/><path d="M78 52 L84 47 L88 51 L93 46 L98 52 Z" fill="#9BCB5A" ${MO}/><path d="M82 50 l2 -2 M88 49 l2 -1 M93 49 l2 -1" stroke="#E6C27A" stroke-width="1.2"/></g>` },
   { id: "prop_charm", slot: "prop", v2: true, name: "Toothy monster charm", price: 110, svg: `<path d="M88 58 V64" stroke="${MINK}" stroke-width="1.6"/><path d="M82 66 L80 54 L85 62 Z M94 66 L96 54 L91 62 Z" fill="#C9A98C" ${MO}/><circle cx="88" cy="71" r="8" fill="#C9A98C" ${MO}/><circle cx="85" cy="69" r="1.3" fill="${MINK}"/><circle cx="91" cy="69" r="1.3" fill="${MINK}"/><path d="M83 73 Q88 78 93 73 Z" fill="#fff" stroke="${MINK}" stroke-width="1.2"/><path d="M85 73 v2 M87.5 73 v2.6 M90 73 v2.4" stroke="${MINK}" stroke-width=".8"/>` },
   { id: "prop_lightstick", slot: "prop", v2: true, name: "K-pop lightstick", price: 90, svg: `<path d="M89 76 L92 56" stroke="${MINK}" stroke-width="5" stroke-linecap="round"/><path d="M89 76 L92 56" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="93" cy="48" r="9" fill="#E7D6FF" ${MO}/><path d="M93 52 c-4 -3 -4 -7 0 -5.5 c4 -1.5 4 2.5 0 5.5z" fill="#B084F5"/><circle cx="93" cy="48" r="12" fill="none" stroke="#C9A7F0" stroke-width="1.4" opacity=".6"/>` },
-  // ---- Backdrops for Chiikawa's room (400 × 300) ----
+  // ---- Backdrops for Puff's room (400 × 300) ----
   { id: "bg_brat", slot: "backdrop", name: "Brat-green summer wall", price: 80, bg: `<rect width="400" height="300" fill="#8ACE00"/><text x="200" y="130" text-anchor="middle" font-family="Arial Narrow, Arial, sans-serif" font-size="70" fill="#111" style="filter:blur(1.4px)">brat</text><rect y="220" width="400" height="80" fill="#7AB800"/>` },
   { id: "bg_mongkok", slot: "backdrop", name: "Mong Kok neon street", price: 120, bg: `<rect width="400" height="300" fill="#1B1B3A"/>${[[0, 70, 90, 150], [95, 40, 80, 180], [180, 90, 70, 130], [255, 30, 90, 190], [350, 80, 60, 140]].map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h + 40}" fill="#2A2A4E"/>`).join("")}${[[20, 100, "#FF4FA3", "茶餐廳"], [110, 70, "#3FE0E8", "旺角"], [270, 60, "#FFD84D", "好正"], [190, 120, "#8CFF6A", "HK"]].map(([x, y, c, t]) => `<rect x="${x}" y="${y}" width="64" height="30" rx="6" fill="none" stroke="${c}" stroke-width="3" style="filter:drop-shadow(0 0 5px ${c})"/><text x="${x + 32}" y="${y + 21}" text-anchor="middle" font-size="15" font-weight="800" fill="${c}">${t}</text>`).join("")}<rect y="230" width="400" height="70" fill="#35355A"/><path d="M0 250 H400" stroke="#FFD84D" stroke-width="3" stroke-dasharray="20 14"/>` },
   { id: "bg_harbour", slot: "backdrop", name: "Victoria Harbour at night", price: 120, bg: `<defs><linearGradient id="hbg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#101838"/><stop offset="1" stop-color="#3A3F7A"/></linearGradient></defs><rect width="400" height="300" fill="url(#hbg)"/>${[[10, 120, 30], [45, 90, 26], [75, 60, 22], [100, 100, 30], [135, 40, 26], [165, 110, 34], [205, 75, 28], [238, 20, 24], [265, 95, 30], [300, 65, 26], [330, 105, 34], [368, 85, 32]].map(([x, y, w]) => `<rect x="${x}" y="${y + 40}" width="${w}" height="${200 - y}" fill="#1D2250"/>${Array.from({ length: 6 }, (_, k) => `<rect x="${x + 4 + (k % 2) * (w / 2)}" y="${y + 50 + Math.floor(k / 2) * 18}" width="4" height="6" fill="#FFE27A" opacity=".85"/>`).join("")}`).join("")}<rect y="228" width="400" height="72" fill="#16305E"/>${[40, 120, 200, 280, 360].map(x => `<path d="M${x} 240 v40" stroke="#FFE27A" stroke-width="3" opacity=".35" stroke-dasharray="6 5"/>`).join("")}<path d="M300 236 h40 l-6 8 h-28 Z" fill="#E8E8E8"/><rect x="310" y="228" width="18" height="8" fill="#2F7A4B"/>` },
@@ -2230,7 +2251,28 @@ const WARDROBE = [
   { id: "bg_stage", slot: "backdrop", name: "Stadium tour stage", price: 140, bg: `<rect width="400" height="300" fill="#23163A"/>${[[60, "#FF8FB8"], [200, "#C9A7F0"], [340, "#9FD0FF"]].map(([x, c]) => `<path d="M${x} 0 L${x - 70} 230 H${x + 70} Z" fill="${c}" opacity=".22"/>`).join("")}<rect y="210" width="400" height="90" fill="#3B2A5C"/><rect y="206" width="400" height="8" fill="#FFD84D"/>${Array.from({ length: 40 }, (_, k) => `<circle cx="${(k * 53) % 400}" cy="${250 + (k * 17) % 45}" r="2.6" fill="${["#FF8FB8", "#9FD0FF", "#FFE27A", "#B6F23B"][k % 4]}"/>`).join("")}` },
   { id: "bg_space", slot: "backdrop", name: "Outer space", price: 110, bg: `<defs><radialGradient id="spg" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#3B2A7A"/><stop offset="1" stop-color="#0E0B24"/></radialGradient></defs><rect width="400" height="300" fill="url(#spg)"/>${Array.from({ length: 50 }, (_, k) => `<circle cx="${(k * 83) % 400}" cy="${(k * 47) % 300}" r="${k % 5 ? 1 : 2}" fill="#fff" opacity=".85"/>`).join("")}<circle cx="320" cy="80" r="34" fill="#F4A261"/><ellipse cx="320" cy="80" rx="56" ry="12" fill="none" stroke="#FFE27A" stroke-width="4" transform="rotate(-18 320 80)"/><circle cx="70" cy="60" r="14" fill="#E8E8F0"/><ellipse cx="200" cy="300" rx="260" ry="70" fill="#5A4E8C"/>` },
   { id: "bg_herocity", slot: "backdrop", name: "Hero city at dusk", price: 130, bg: `<defs><linearGradient id="hcg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F59E6B"/><stop offset=".6" stop-color="#8E5BD0"/><stop offset="1" stop-color="#3B2A6A"/></linearGradient></defs><rect width="400" height="300" fill="url(#hcg)"/>${[[0, 110, 60], [55, 70, 50], [100, 130, 46], [140, 40, 64], [200, 100, 50], [245, 60, 58], [300, 120, 44], [340, 80, 60]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${300 - y}" fill="#2B2046"/>`).join("")}<rect x="160" y="20" width="24" height="20" fill="#2B2046"/><circle cx="172" cy="52" r="7" fill="#9FF3FF" style="filter:drop-shadow(0 0 6px #9FF3FF)"/><path d="M40 60 q60 -30 120 -10" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/><rect y="240" width="400" height="60" fill="#241A3A"/>` },
-  { id: "bg_emerald", slot: "backdrop", name: "Emerald city road", price: 110, bg: `<defs><linearGradient id="emg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C9F2D8"/><stop offset="1" stop-color="#6FCF97"/></linearGradient></defs><rect width="400" height="300" fill="url(#emg)"/>${[[120, 60, 30], [160, 30, 34], [205, 50, 30], [245, 80, 26], [95, 100, 22], [280, 110, 22]].map(([x, y, w]) => `<path d="M${x} 200 V${y + 20} L${x + w / 2} ${y} L${x + w} ${y + 20} V200 Z" fill="#2E9E5B" opacity=".85"/>`).join("")}<rect y="200" width="400" height="100" fill="#8FD69E"/><path d="M170 300 L190 200 H214 L240 300 Z" fill="#FFD84D"/>${[220, 245, 270, 290].map(y => `<path d="M${200 - (y - 200) * .35} ${y} H${204 + (y - 200) * .45}" stroke="#E0B42E" stroke-width="2"/>`).join("")}${Array.from({ length: 14 }, (_, k) => `<path d="M${(k * 61) % 400} ${(k * 37) % 180} l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fff" opacity=".8"/>`).join("")}` }
+  { id: "bg_emerald", slot: "backdrop", name: "Emerald city road", price: 110, bg: `<defs><linearGradient id="emg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C9F2D8"/><stop offset="1" stop-color="#6FCF97"/></linearGradient></defs><rect width="400" height="300" fill="url(#emg)"/>${[[120, 60, 30], [160, 30, 34], [205, 50, 30], [245, 80, 26], [95, 100, 22], [280, 110, 22]].map(([x, y, w]) => `<path d="M${x} 200 V${y + 20} L${x + w / 2} ${y} L${x + w} ${y + 20} V200 Z" fill="#2E9E5B" opacity=".85"/>`).join("")}<rect y="200" width="400" height="100" fill="#8FD69E"/><path d="M170 300 L190 200 H214 L240 300 Z" fill="#FFD84D"/>${[220, 245, 270, 290].map(y => `<path d="M${200 - (y - 200) * .35} ${y} H${204 + (y - 200) * .45}" stroke="#E0B42E" stroke-width="2"/>`).join("")}${Array.from({ length: 14 }, (_, k) => `<path d="M${(k * 61) % 400} ${(k * 37) % 180} l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fff" opacity=".8"/>`).join("")}` },
+  // ---- Escape-mode-only costume sets: they replace the other clothes (props, frames and backdrops stay) ----
+  { id: "cos_gym", slot: "costume", v2: true, name: "Gym bro", tier: "rare", escape: true, earn: () => [S.completed_rooms.length, 1], earnDesc: ["🚪 Escape your first room", "🚪 逃出第一個房間"],
+    under: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#8E969F"/><path d="M26 62 C30 74 36 78 38 100 M74 62 C70 74 64 78 62 100" stroke="#fff" stroke-width="7" fill="none"/><text x="50" y="86" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-weight="800" font-size="11" fill="#fff">GYM</text>`,
+    svg: `<path d="M13 40 C30 30 70 30 87 40 L87 47 C70 38 30 38 13 47 Z" fill="#E03A3A" ${MO}/><path d="M18 37 L24 44 M28 35 L32 41" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="62" r="7" fill="#fff" ${MO}/><path d="M8 58 q4 -5 8 0" stroke="${MINK}" stroke-width="1.6" fill="none"/><rect x="84" y="50" width="12" height="24" rx="3" fill="rgba(255,255,255,.8)" ${MO}/><rect x="84" y="62" width="12" height="12" fill="#C98A54"/><rect x="83" y="46" width="14" height="6" rx="2" fill="#2E2A33"/>` },
+  { id: "cos_fish", slot: "costume", v2: true, name: "Fish bro", tier: "rare", escape: true, earn: () => [S.completed_rooms.length, 3], earnDesc: ["🚪 Escape 3 rooms", "🚪 逃出 3 個房間"],
+    under: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#7C8A5A"/>${[[24, 72], [58, 72], [24, 84], [58, 84]].map(([x, y]) => `<rect x="${x}" y="${y}" width="18" height="10" rx="2" fill="#98A66F" stroke="#4E5A36" stroke-width="1.4"/>`).join("")}<path d="M50 64 V100" stroke="#4E5A36" stroke-width="2"/>`,
+    svg: `<path d="M29 26 C29 12 37 8 50 8 C63 8 71 12 71 26 Z" fill="#6E7F45" ${MO}/><path d="M22 25 H78 L88 35 C70 31 30 31 12 35 Z" fill="#6E7F45" ${MO}/><path d="M60 14 l6 -8 M58 14 l-4 -6" stroke="#E0567E" stroke-width="2"/><g transform="rotate(-20 88 64)"><path d="M72 64 C80 54 96 54 102 64 C96 74 80 74 72 64 Z" fill="#5FA8D3" ${MO}/><path d="M102 64 L110 57 L110 71 Z" fill="#5FA8D3" ${MO}/><circle cx="79" cy="62" r="2" fill="${MINK}"/><path d="M86 58 q3 6 0 12 M92 58 q3 6 0 12" stroke="#3E7FA8" stroke-width="1.4" fill="none"/></g>` },
+  { id: "cos_performative", slot: "costume", v2: true, name: "Performative bro", tier: "epic", escape: true, earn: () => [S.stats.flawless || 0, 3], earnDesc: ["🚪 3 flawless escapes (keep all 3 ❤️)", "🚪 3 次完美逃脫（保住 3 ❤️）"],
+    back: `<path d="M8 60 L20 58 L26 90 L6 92 Z" fill="#EFE6D2" ${MO}/><text x="16" y="80" text-anchor="middle" font-size="6" font-weight="800" fill="${MINK}" transform="rotate(-8 16 80)">read</text>`,
+    under: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#CDB892"/>${Array.from({ length: 8 }, (_, k) => `<path d="M${6 + k * 12} 66 v30" stroke="#B89E72" stroke-width="2" stroke-dasharray="3 3"/>`).join("")}<path d="M50 64 V100" stroke="#8C744C" stroke-width="2"/>`,
+    svg: `<path d="M15 50 C12 30 30 15 50 15 C70 15 88 30 85 50 C80 42 72 38 62 37 C58 40 54 42 50 44 C46 42 42 40 38 37 C28 38 20 42 15 50 Z" fill="#6B4A36" ${MO}/>${[[26, 22], [36, 16], [50, 14], [64, 16], [74, 22]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="#6B4A36" ${MO}/>`).join("")}<path d="M19 52 C18 62 22 70 30 76 L42 92 M81 52 C82 62 78 70 70 76 L58 92" stroke="#fff" stroke-width="1.6" fill="none"/><circle cx="19" cy="52" r="2.4" fill="#fff" ${MO}/><circle cx="81" cy="52" r="2.4" fill="#fff" ${MO}/><path d="M82 56 H98 L95 80 H85 Z" fill="#A8D98A" ${MO}/><path d="M82 62 H98" stroke="#fff" stroke-width="2"/><path d="M92 56 L95 44" stroke="${MINK}" stroke-width="3" stroke-linecap="round"/>` },
+  { id: "cos_finance", slot: "costume", v2: true, name: "Finance bro", tier: "epic", escape: true, earn: () => [S.completed_rooms.length, 5], earnDesc: ["🚪 Escape 5 rooms", "🚪 逃出 5 個房間"],
+    under: `<path d="M0 62 C28 68 72 68 100 62 L100 100 L0 100 Z" fill="#AFCBF0"/><path d="M0 64 C20 70 34 70 40 68 L42 100 L0 100 Z M100 64 C80 70 66 70 60 68 L58 100 L100 100 Z" fill="#23304F"/><path d="M42 66 L50 74 L58 66" stroke="#fff" stroke-width="2.4" fill="none"/><path d="M48 70 L50 86 L52 70 Z" fill="#E03A3A"/>`,
+    svg: `<path d="M16 46 C14 28 30 16 50 16 C70 16 86 28 84 46 C78 36 66 30 50 30 C36 30 24 36 16 46 Z" fill="#2E2426" ${MO}/><path d="M28 26 C40 20 58 20 72 26" stroke="#6B5A5E" stroke-width="2.4" fill="none"/><circle cx="14" cy="50" r="3" fill="#fff" ${MO}/><circle cx="86" cy="50" r="3" fill="#fff" ${MO}/><g transform="rotate(12 90 58)"><rect x="82" y="44" width="16" height="28" rx="3" fill="#1E1A1D" ${MO}/><rect x="84" y="47" width="12" height="21" rx="1.5" fill="#F4FFF6"/><path d="M85 64 L88 60 L90 62 L95 52" stroke="#23A45A" stroke-width="2" fill="none"/><path d="M92 52 h3 v3" stroke="#23A45A" stroke-width="1.6" fill="none"/></g>` },
+  { id: "cos_sorcerer", slot: "costume", v2: true, name: "Blindfold sorcerer ♾️", tier: "legend", escape: true,
+    earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.stats.flawless || 0, 10) + Math.min(S.stats.speedEscapes || 0, 5), 36],
+    earnDesc: ["🚪 All 21★ + 10 flawless escapes + 5 escapes with 5+ minutes left", "🚪 全部 21★ + 10 次完美逃脫 + 5 次剩 5 分鐘以上逃脫"],
+    back: `<circle cx="50" cy="56" r="47" fill="none" stroke="#8FD3FF" stroke-width="2" opacity=".6" stroke-dasharray="4 6"/><circle cx="50" cy="56" r="43" fill="rgba(143,211,255,.12)"/>`,
+    under: `<path d="M0 56 C28 62 72 62 100 56 L100 100 L0 100 Z" fill="#1D2140"/><path d="M34 58 C38 66 62 66 66 58" stroke="#34395E" stroke-width="3" fill="none"/><path d="M50 64 V100" stroke="#34395E" stroke-width="2"/><circle cx="50" cy="72" r="2" fill="#C9A74A"/><circle cx="50" cy="82" r="2" fill="#C9A74A"/>`,
+    arm: "#1D2140",
+    svg: `<path d="M16 50 L6 40 L18 38 L10 24 L26 28 L24 10 L38 22 L46 4 L54 20 L66 6 L68 24 L84 16 L78 32 L94 34 L84 46 C78 36 64 30 50 30 C36 30 24 38 16 50 Z" fill="#F4F7FB" ${MO}/><path d="M30 30 L26 20 M50 26 L48 12 M68 30 L72 20" stroke="#BFD6EE" stroke-width="2"/><path d="M14 44 C30 40 70 40 86 44 L86 56 C70 52 30 52 14 56 Z" fill="#141418" ${MO}/><path d="M86 48 L96 52 L90 58" stroke="#141418" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="90" cy="66" r="7" fill="#B07CF0" stroke="#6B3FC0" stroke-width="2"/><circle cx="90" cy="66" r="11" fill="none" stroke="#C9A7F0" stroke-width="1.6" opacity=".7"/>` }
 ];
 WARDROBE.forEach(w => { if (!w.tier) w.tier = w.price <= 60 ? "common" : w.price <= 130 ? "rare" : "epic"; });
 const TIERS = { common: ["Common", "普通"], rare: ["✦ Rare", "✦ 稀有"], epic: ["💎 Epic", "💎 史詩"], legend: ["👑 Legendary", "👑 傳說"] };
@@ -2239,7 +2281,7 @@ let itemQueue = [];
 function checkItems() {
   WARDROBE.forEach(w => { if (!w.earn || S.owned.includes(w.id)) return; const [c, g] = w.earn(); if (c >= g) { S.owned.push(w.id); trophyQueue.push({ item: w }); } });
 }
-const SLOT_NAMES = { hair: "Wigs", hat: "Hats", face: "Glasses", ribbon: "Hair clips", outfit: "Outfits", prop: "Props", frame: "Frames", backdrop: "Backdrops" };
+const SLOT_NAMES = { costume: "Escape costumes", hair: "Wigs", hat: "Hats", face: "Glasses", ribbon: "Hair clips", outfit: "Outfits", prop: "Props", frame: "Frames", backdrop: "Backdrops" };
 const POWERUPS = [
   { id: "torch", icon: "🔦", name: "Torch", price: 25, desc: "Removes one wrong answer, or sets one dial correctly. (Counts as a hint.)" },
   { id: "crystal", icon: "⏳", name: "Time crystal", price: 30, desc: "Adds 60 seconds to the room timer." },
@@ -2254,6 +2296,9 @@ function dressLayers(eq) {
   eq = eq || (typeof S !== "undefined" && S && S.equip);
   if (!eq) return {};
   const it = k => eq[k] && itemById(eq[k]);
+  const c = it("costume");
+  if (c) { const cid = "cc" + (++clipN);   // a costume set replaces every other clothing layer
+    return { back: c.back || "", outfit: c.under ? `<clipPath id="${cid}"><path d="${BODY}"/></clipPath><g clip-path="url(#${cid})">${c.under}</g>` : "", arm: c.arm, front: c.svg }; }
   const o = it("outfit"), id = "oc" + (++clipN);
   return {
     back: (it("hair") && it("hair").back || "") + (o && o.back || ""),
@@ -2464,7 +2509,7 @@ function stopRush() { if (RU) { clearInterval(RU.tid); clearTimeout(RU.nextT); }
 function rushIntro() {
   const bonus = S.rush.lastDay !== today();
   openModal(`<span class="kicker">⚡ ${L("Light Rush", "光速挑戰")}</span><h2>${L("60-second question rush!", "60 秒極速問答！")}</h2>
-    ${say("usagi", L("Yaha! Answer as many as you can before time runs out! 🐰", "呀哈！在時間用完前盡量答多些！🐰"), "happy")}
+    ${say("usagi", L("Wahoo! Answer as many as you can before time runs out! 🐰", "嘩呼！在時間用完前盡量答多些！🐰"), "happy")}
     <div class="rules">${L(`<ul><li>Mixed questions: multiple choice, true/false, matching, ordering, odd one out, fill the gap, colour mixing.</li>
       <li>Correct = +10 points. 3 in a row = <b>×2 combo</b>, 6 in a row = <b>×3</b>.</li>
       <li>Wrong = <b>−3 seconds</b> and the combo resets.</li>
@@ -2479,7 +2524,7 @@ function rushIntro() {
   document.getElementById("rushShop").onclick = () => { SFX.tap(); openShop(); };
 }
 function startRush() {
-  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice();
+  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice(); stopStudy();
   MUSIC.setMode("rush"); renderTools();
   RU = { score: 0, combo: 0, correct: 0, total: 0, end: Date.now() + RUSH_SECONDS * 1000, lock: false, last: -1 };
   $app.innerHTML = `
@@ -2537,11 +2582,117 @@ function rushEnd() {
   SFX.fanfare(); if (r.score > 0) confetti(120);
   openModal(`<span class="kicker">⚡ ${L("Light Rush · Round over", "光速挑戰 · 完結")}</span><h2>${best ? L("🎉 New best score!", "🎉 新紀錄！") : L("Time's up!", "時間到！")}</h2>
     <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} ${L("pts", "分")}</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? L(" (×2 daily bonus)", "（每日雙倍）") : ""}${coins ? multTag() : ""}</span></div>
-    ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? L("YAHA!!! Amazing rush! 🐰🎊", "呀哈！！！超厲害！🐰🎊") : L("Nice try! Every round makes your brain faster. 🌱", "做得好！每一局都令你的腦袋更快。🌱"), "happy", r.correct >= 8 ? "" : "hint")}
+    ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? L("WAHOO!!! Amazing rush! 🐰🎊", "嘩呼！！！超厲害！🐰🎊") : L("Nice try! Every round makes your brain faster. 🌱", "做得好！每一局都令你的腦袋更快。🌱"), "happy", r.correct >= 8 ? "" : "hint")}
     <div class="row"><button class="btn big" id="rAgain">⚡ ${L("Play again", "再玩一次")}</button><button class="btn yellow" id="rShop">👗 ${L("Spend chestnuts", "使用栗子")}</button><button class="btn plain" id="rMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
   document.getElementById("rAgain").onclick = () => { SFX.tap(); startRush(); };
   document.getElementById("rShop").onclick = () => { SFX.tap(); renderMap(); openShop(); };
   document.getElementById("rMap").onclick = () => { SFX.tap(); closeModal(); renderMap(); };
+}
+
+/* ============================================================
+   6d. Study mode: read the notes, then a calm 5-question check (no timer, no hearts)
+   ============================================================ */
+let ST = null;
+function stopStudy() { ST = null; }
+// Shared answer wiring for multiple choice and dial questions outside the escape rooms
+function wireQuiz(body, p, locked, done) {
+  if (p.type === "mc") {
+    body.querySelectorAll(".choice").forEach(b => b.onclick = () => {
+      if (locked()) return; const ok = Number(b.dataset.i) === p.answer;
+      b.classList.add(ok ? "right" : "wrong"); if (!ok) body.querySelector(`.choice[data-i="${p.answer}"]`).classList.add("right");
+      body.querySelectorAll(".choice").forEach(x => (x.disabled = true)); done(ok);
+    });
+  } else {
+    const pos = p.dials.map(() => 0);
+    const show = (d, v) => { const f = body.querySelector("#face" + d); if (f) f.textContent = p.dials[d][v]; };
+    body.querySelectorAll(".arr").forEach(b => b.onclick = () => { if (locked()) return; const d = Number(b.dataset.d), n = p.dials[d].length; pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click(); show(d, pos[d]); });
+    body.querySelector("#dok").onclick = () => {
+      if (locked()) return; const ok = pos.every((x, i) => x === p.answer[i]);
+      body.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true));
+      if (!ok) p.answer.forEach((a, d) => show(d, a));
+      done(ok);
+    };
+  }
+}
+const answerText = p => p.type === "mc" ? p.choices[p.answer] : p.dials.map((o, d) => `${p.labels ? p.labels[d] + ": " : ""}${o[p.answer[d]]}`).join(" · ");
+const termChips = terms => `<div class="terms">${terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span>${spk(en)}</span>`).join("")}</div>`;
+function startStudy(id) {
+  closeModal(); stopTimer(); if (R) { clearTimeout(R.introT); clearTimeout(R.incT); } R = null; stopRush(); stopPractice();
+  MUSIC.setMode("room"); renderTools();
+  const room = ROOMS[roomIndex(id)];
+  ST = { room, qids: pickRun(room), i: -1, right: 0, lock: false, hinted: false }; save();
+  studyNotes(); window.scrollTo(0, 0);
+}
+function studyHead(extra = "") {
+  const r = ST.room;
+  return `<section class="rushhead studyhead"><div class="status"><div class="av ${frameCls()}">${avatar("chiikawa", "happy")}</div>
+    <div><div class="rtopic" style="color:var(--yellow)">📖 ${L("Study mode", "學習模式")} · ${topicNo(r.topicNo)} · ${r.sec}</div><div class="big">${esc(tTopic(r))}</div></div></div>${extra}</section>`;
+}
+function studyNotes() {
+  const r = ST.room, seen = new Set(), terms = [];
+  r.puzzles.forEach(p => (p.terms || []).forEach(t => { if (!seen.has(t[0])) { seen.add(t[0]); terms.push(t); } }));
+  $app.innerHTML = `${studyHead()}
+    <section class="card"><h2>📖 ${L("Key points", "重點")}</h2><ul class="notes">${r.notes.map(n => `<li>${n}</li>`).join("")}</ul>
+      <h3>🧭 ${L("Key rules", "重點規則")}</h3><div class="krules">${r.rules.map(x => `<div class="krule">${x}</div>`).join("")}</div>
+      <h3>🔤 ${L("Key terms", "關鍵詞")}</h3>${termChips(terms)}
+      <div class="row"><button class="btn big" id="stGo">✏️ ${L("Check my understanding (5 questions)", "檢查理解（5 題）")}</button><button class="btn plain" id="stHome">🏠 ${L("Home", "小窩")}</button></div></section>`;
+  document.getElementById("stGo").onclick = () => { SFX.tap(); studyNext(); };
+  document.getElementById("stHome").onclick = () => { SFX.tap(); renderMap(); };
+}
+function studyNext() {
+  if (!ST) return; ST.i++; ST.lock = false; ST.hinted = false;
+  if (ST.i >= ST.qids.length) { studyDone(); return; }
+  const p = ST.room.pool.find(x => x.id === ST.qids[ST.i]) || ST.room.puzzles[0];
+  $app.innerHTML = `${studyHead(`<span class="combo">${ST.i + 1} / ${ST.qids.length}</span>`)}
+    <div class="prdots" aria-hidden="true">${ST.qids.map((_, k) => `<i class="${k < ST.i ? "on" : ""}"></i>`).join("")}</div>
+    <section class="card rq"><p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}<div id="stBody">${answerUi(p)}</div>
+      <div class="row"><button class="btn blue" id="stHint">💡 ${L("Hint", "提示")}</button><button class="btn plain" id="stNotes">📓 ${L("Notes", "筆記")}</button></div><div id="stFb"></div></section>
+    <div class="row"><button class="btn plain" id="stQuit">✕ ${L("Stop studying", "停止溫習")}</button></div>`;
+  document.getElementById("stHint").onclick = () => { SFX.hint(); ST.hinted = true; document.getElementById("stFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
+  document.getElementById("stNotes").onclick = () => { SFX.tap(); openJournal(ST.room.id, (p.terms || []).map(t => t[0])); };
+  document.getElementById("stQuit").onclick = () => { SFX.tap(); renderMap(); };
+  wireQuiz(document.getElementById("stBody"), p, () => !ST || ST.lock, ok => studyAnswer(p, ok));
+  window.scrollTo(0, 0);
+}
+function studyAnswer(p, ok) {
+  if (!ST || ST.lock) return; ST.lock = true;
+  const pid = `${ST.room.id}:${p.id}`;
+  if (ok) { ST.right++; SFX.right(); if (!ST.hinted && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); } S.mistakes = S.mistakes.filter(m => m !== pid); }
+  else { SFX.wrong(); addMistake(pid); }
+  save(); document.getElementById("stHint").hidden = true;
+  const last = ST.i + 1 >= ST.qids.length;
+  document.getElementById("stFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
+    ${ok ? say("usagi", `<b>${L("Correct!", "答對了！")}</b> ${ST.hinted ? "" : L("Mastered 📈", "已掌握 📈")}`, "happy") : say("chiikawa", L("Not quite. Let's learn it! 🌱", "差少少，一起學吧！🌱"), "cry")}
+    ${ok ? "" : `<p><b>${L("Answer", "答案")}:</b> ${esc(answerText(p))}</p>`}<p>${esc(p.explain)}</p>
+    ${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}${p.terms ? termChips(p.terms) : ""}
+    <div class="row"><button class="btn big" id="stNext">${last ? L("See my result", "查看結果") : L("Next ➜", "下一題 ➜")}</button></div></div>`;
+  const nb = document.getElementById("stNext"); nb.focus({ preventScroll: true }); nb.onclick = () => { SFX.tap(); studyNext(); };
+  document.getElementById("stFb").scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "nearest" });
+}
+function studyDone() {
+  const r = ST.room, right = ST.right, n = ST.qids.length; ST = null;
+  S.study = S.study || {}; S.study[r.id] = Math.max(S.study[r.id] || 0, right);
+  const coins = boost(right * 2); S.coins += coins; save(true); checkTrophies();
+  const canEscape = isUnlocked(roomIndex(r.id));
+  SFX.fanfare(); if (right) confetti(right * 25);
+  $app.innerHTML = `<section class="card studydone"><span class="kicker">📖 ${L("Study complete", "完成溫習")} · ${topicNo(r.topicNo)}</span>
+    <h2>${right} / ${n} ${L("correct", "答對")}</h2><div class="big">${"🌟".repeat(right)}${"⚪".repeat(n - right)}</div>
+    ${say(right >= 4 ? "usagi" : "hachiware", right >= 4 ? L("Great! You're ready for the escape room! 🚪", "好厲害！你已準備好挑戰密室！🚪") : L("Nice effort! Your mistakes are saved in 🔁 Practice mode.", "做得好！錯題已存入 🔁 練習模式。"), "happy", right >= 4 ? "" : "hint")}
+    <span class="pill coinpill">+${coins} 🌰${multTag()}</span>
+    <p class="small muted">${L("🚪 Escape mode is where the exclusive costumes are: gym bro, fish bro, performative bro, finance bro and a legendary sorcerer.", "🚪 密室模式才可解鎖獨家服裝：健身兄、釣魚兄、文青兄、金融兄和傳說級術師。")}</p>
+    <div class="row"><button class="btn big" id="sdAgain">🔁 ${L("Study again", "再溫一次")}</button>${canEscape ? `<button class="btn yellow" id="sdEscape">🚪 ${L("Try the escape room", "挑戰密室")}</button>` : ""}<button class="btn plain" id="sdHome">🏠 ${L("Home", "小窩")}</button></div></section>`;
+  document.getElementById("sdAgain").onclick = () => { SFX.tap(); startStudy(r.id); };
+  const e = document.getElementById("sdEscape"); if (e) e.onclick = () => { SFX.tap(); enterRoom(r.id); };
+  document.getElementById("sdHome").onclick = () => { SFX.tap(); renderMap(); };
+}
+function modeChooser() {
+  openModal(`<span class="kicker">🎮 ${L("How do you want to play?", "你想怎樣玩？")}</span><h2>${L("Choose your mode", "選擇模式")}</h2>
+    <div class="modes2">
+      <button class="mode2 study" id="mcStudy"><span class="ic">📖</span><b>${L("Study mode", "學習模式")}</b><span class="small">${L("Read the notes, then answer 5 questions. No timer, no hearts, every topic open. Calm and steady.", "先讀筆記，再答 5 題。沒有計時、沒有心心，所有課題都開放。輕鬆穩陣。")}</span></button>
+      <button class="mode2 escape" id="mcEscape"><span class="ic">🚪</span><b>${L("Escape mode", "密室逃脫模式")}</b><span class="small">${L("❤️❤️❤️ 3 hearts · ⏱️ 10 minutes · 💀 you CAN lose! Earn stars and unlock exclusive costumes.", "❤️❤️❤️ 3 顆心 · ⏱️ 10 分鐘 · 💀 真的會輸！贏取星星和獨家服裝。")}</span></button>
+    </div><p class="small muted">${L("You can switch any time on the 🗺️ Rooms tab.", "你可隨時在 🗺️ 密室分頁切換。")}</p>`);
+  document.getElementById("mcStudy").onclick = () => { SFX.tap(); S.play_mode = "study"; save(); closeModal(); renderMap("rooms"); };
+  document.getElementById("mcEscape").onclick = () => { SFX.tap(); S.play_mode = "escape"; save(); closeModal(); enterRoom(ROOMS[Math.max(0, nextRoomIndex())].id); };
 }
 
 /* ============================================================
@@ -2575,7 +2726,7 @@ function practiceIntro() {
   document.getElementById("prGo").onclick = () => { SFX.init(); SFX.tap(); startPractice(); };
 }
 function startPractice() {
-  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice();
+  closeModal(); stopTimer(); if (R) clearTimeout(R.introT); R = null; stopRush(); stopPractice(); stopStudy();
   MUSIC.setMode("room"); renderTools();
   const fresh = shuffle(S.mistakes.filter(m => practiceable(pidQ(m))));
   PR = { fresh, pending: [], recent: [], streak: 0, best: 0, served: 0, wrong: 0, fixed: 0, cur: null, lock: false, retry: false };
@@ -2618,30 +2769,14 @@ function practiceNext() {
 }
 function practiceShow() {
   const pid = PR.cur, p = pidQ(pid), room = pidRoom(pid);
-  document.getElementById("prType").textContent = `${PR.retry ? L("🔁 Try again · ", "🔁 再試一次 · ") : ""}${topicNo(room.topicNo)} · ${tTopic(room)} · 🧠 ${BLOOM[p.b][LANG === "zh" ? 1 : 0]}`;
+  document.getElementById("prType").textContent = `${PR.retry ? L("🔁 Try again · ", "🔁 再試一次 · ") : ""}${topicNo(room.topicNo)} · ${tTopic(room)}`;
   document.getElementById("prQ").textContent = p.q;
   document.getElementById("prDia").innerHTML = p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : "";
   document.getElementById("prFb").innerHTML = "";
   const hb = document.getElementById("prHint"); hb.hidden = false;
   hb.onclick = () => { SFX.hint(); PR.hinted = true; document.getElementById("prFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
   const body = document.getElementById("prBody"); body.innerHTML = answerUi(p);
-  if (p.type === "mc") {
-    body.querySelectorAll(".choice").forEach(b => b.onclick = () => {
-      if (PR.lock) return; const ok = Number(b.dataset.i) === p.answer;
-      b.classList.add(ok ? "right" : "wrong"); if (!ok) body.querySelector(`.choice[data-i="${p.answer}"]`).classList.add("right");
-      body.querySelectorAll(".choice").forEach(x => (x.disabled = true)); practiceAnswer(ok);
-    });
-  } else {
-    const pos = p.dials.map(() => 0);
-    const show = (d, v) => { const f = body.querySelector("#face" + d); if (f) f.textContent = p.dials[d][v]; };
-    body.querySelectorAll(".arr").forEach(b => b.onclick = () => { if (PR.lock) return; const d = Number(b.dataset.d), n = p.dials[d].length; pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click(); show(d, pos[d]); });
-    body.querySelector("#dok").onclick = () => {
-      if (PR.lock) return; const ok = pos.every((x, i) => x === p.answer[i]);
-      body.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true));
-      if (!ok) p.answer.forEach((a, d) => show(d, a));
-      practiceAnswer(ok);
-    };
-  }
+  wireQuiz(body, p, () => !PR || PR.lock, practiceAnswer);
   practiceStatus();
 }
 function practiceAnswer(ok) {
@@ -2662,11 +2797,10 @@ function practiceAnswer(ok) {
   }
   save(); practiceStatus(); if (ok) checkTrophies();
   if (ok && PR.streak >= PRACTICE_GOAL) { PR.nextT = setTimeout(practiceDone, 700); return; }
-  const answerText = p.type === "mc" ? p.choices[p.answer] : p.dials.map((o, d) => `${p.labels ? p.labels[d] + ": " : ""}${o[p.answer[d]]}`).join(" · ");
-  document.getElementById("prFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
-    ${ok ? say("usagi", `<b>${L("Yaha!", "呀哈！")}</b> ${PR.retry ? L("You fixed it! ✨", "你修正了！✨") : L("Correct!", "答對了！")}`, "happy")
+    document.getElementById("prFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
+    ${ok ? say("usagi", `<b>${L("Wahoo!", "嘩呼！")}</b> ${PR.retry ? L("You fixed it! ✨", "你修正了！✨") : L("Correct!", "答對了！")}`, "happy")
       : say("chiikawa", L("Wah... 😭 This one will come back soon. Let's remember it!", "哇……😭 這題很快會再出現，記住它吧！"), "cry")}
-    ${ok ? "" : `<p><b>${L("Answer", "答案")}:</b> ${esc(answerText)}</p>`}
+    ${ok ? "" : `<p><b>${L("Answer", "答案")}:</b> ${esc(answerText(p))}</p>`}
     <p>${esc(p.explain)}</p>${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
     <div class="row"><button class="btn big" id="prNext">${L("Next ➜", "下一題 ➜")}</button></div></div>`;
   const nb = document.getElementById("prNext"); nb.focus({ preventScroll: true });
@@ -2682,7 +2816,7 @@ function practiceDone() {
   SFX.fanfare(); yaha(); confetti(160);
   openModal(`<span class="kicker">🔁 ${L("Practice complete", "練習完成")}</span><h2>${L(`🎉 ${PRACTICE_GOAL} in a row!`, `🎉 連續答對 ${PRACTICE_GOAL} 題！`)}</h2>
     <div class="row" style="justify-content:center;gap:18px;font-size:1.1rem"><span>✅ ${L("Questions", "題數")}: ${r.served}</span><span>✨ ${L("Mistakes fixed", "修正錯題")}: ${r.fixed}</span><span class="pill coinpill">+${coins} 🌰${bonus ? L(" (×2 today)", "（今天雙倍）") : ""}${multTag()}</span></div>
-    ${say("usagi", L("YAHA!!! Mistakes are just practice in disguise! 🐰🎊", "呀哈！！！錯誤只是化了裝的練習！🐰🎊"), "happy")}
+    ${say("usagi", L("WAHOO!!! Mistakes are just practice in disguise! 🐰🎊", "嘩呼！！！錯誤只是化了裝的練習！🐰🎊"), "happy")}
     <p class="small muted">${mistakeCount() ? L(`${mistakeCount()} saved mistake(s) still waiting for next time.`, `還有 ${mistakeCount()} 題錯題留待下次。`) : L("Your mistake list is empty. Amazing! 🌟", "你的錯題清單已清空，太棒了！🌟")}</p>
     <div class="row"><button class="btn big" id="prAgain">🔁 ${L("Practise again", "再練習")}</button><button class="btn plain" id="prMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
   document.getElementById("prAgain").onclick = () => { SFX.tap(); startPractice(); };
@@ -2727,12 +2861,12 @@ function applyLang() {
   Object.keys(TOPIC_LABELS).forEach(k => { TOPIC_LABELS[k] = zh ? ZH_TOPIC_LABELS[k] : EN.topicLabels[k]; });
   RUSH_MAKERS.forEach((m, i) => { m.label = zh ? ZH_RUSH_LABELS[i] : EN.labels[i]; });
   buildPools();
-  swap(CHEERS, zh ? ["呀哈！", "嗚啦！", "噗嚕噗嚕！", "好嘢！"] : EN.cheers);
+  swap(CHEERS, zh ? ["嘩呼！", "嘩！", "彈彈彈！", "好嘢！"] : EN.cheers);
   RAR.bronze[2] = L("Bronze", "銅"); RAR.silver[2] = L("Silver", "銀"); RAR.gold[2] = L("Gold", "金"); RAR.legend[2] = L("Legendary", "傳說");
-  document.title = L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫");
-  document.getElementById("brandText").textContent = L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫");
-  document.getElementById("footText").textContent = L("Fan-made study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. Not affiliated with the official Chiikawa brand. Characters are original Chiikawa-style drawings.",
-    "香港中三科學第 14 章「光、顏色和光譜以外」的愛好者自製學習遊戲，與吉伊卡哇官方品牌無關。角色為原創的吉伊卡哇風格繪畫。");
+  document.title = L("Puff's Physics Escape", "泡芙物理密室逃脫");
+  document.getElementById("brandText").textContent = L("Puff's Physics Escape", "泡芙物理密室逃脫");
+  document.getElementById("footText").textContent = L("Study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. All characters are original.",
+    "香港中三科學第 14 章「光、顏色和光譜以外」學習遊戲。所有角色均為原創。");
 }
 // Show a stored badge/item (saved in whichever language it was earned) in the current language
 function trItem(str) {
@@ -2751,6 +2885,7 @@ function setLang(l) {
   applyLang(); $journal.innerHTML = "";
   if (RU) { renderTools(); return; }
   if (PR) { renderTools(); closeModal(); practiceScreen(); if (PR.lock) practiceNext(); else practiceShow(); return; }
+  if (ST) { renderTools(); closeModal(); ST.i--; if (ST.i < 0) studyNotes(); else studyNext(); return; }
   closeModal();
   if (R) { R.qs = runQs(R.room); renderRoom(); } else if (S) renderMap(); else renderWelcome();
 }
@@ -2935,7 +3070,7 @@ function renderWelcome() {
   $app.innerHTML = `
     <section class="hero">${starsBg()}
       <span class="kicker" style="color:#fff">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色和光譜以外")}</span>
-      <h1>${L("Chiikawa Physics Escape", "吉伊卡哇物理密室逃脫")}</h1>
+      <h1>${L("Puff's Physics Escape", "泡芙物理密室逃脫")}</h1>
       <p class="sub">${L("7 escape rooms · 1 room a day · 10–15 minutes", "7 個密室 · 每天 1 個 · 10 至 15 分鐘")}</p>
       ${castHtml({ chiikawa: "cry", usagi: "happy" })}
     </section>
@@ -2954,7 +3089,7 @@ function renderWelcome() {
   const go = () => {
     SFX.init(); SFX.item();
     S = freshState(); const v = document.getElementById("nm").value.trim(); if (v) S.player_name = v;
-    checkIn(); save(true); enterRoom(ROOMS[0].id);
+    checkIn(); save(true); streakPop = null; renderMap("home"); modeChooser();
   };
   document.getElementById("go").onclick = go;
   $app.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); const nm = document.getElementById("nm").value; setLang(b.dataset.lang); document.getElementById("nm").value = nm; });
@@ -2974,7 +3109,7 @@ function renderWelcome() {
   };
 }
 
-/* ----- Chiikawa chat card: fun facts from Hong Kong life + personal encouragement ----- */
+/* ----- Puff chat card: fun facts from Hong Kong life + personal encouragement ----- */
 const FACTS = [
   ["At A Symphony of Lights over Victoria Harbour, you can see the laser beams because tiny dust and water droplets in the air scatter the light into your eyes.", "「幻彩詠香江」的激光在維港上空清晰可見，是因為空氣中的微塵和水點把光散射到你的眼睛。"],
   ["The round convex mirrors at sharp bends on Hong Kong's hill roads give drivers a wider field of view, so they can see cars coming round the corner.", "香港山路急彎位的圓形凸面鏡令司機看到更廣闊的範圍，及早看見轉角駛來的車輛。"],
@@ -2996,7 +3131,7 @@ const FACTS = [
 let chatT = null, factI = Math.floor(Math.random() * FACTS.length);
 function cheers() {
   const out = [], m = streakMult(), mk = mistakeCount(), ni = nextRoomIndex();
-  if (S.current_streak > 1) out.push(["usagi", L(`🔥 ${S.current_streak} days in a row! Your chestnut bonus is ×${m.toFixed(1)}. Yaha!`, `🔥 已連續 ${S.current_streak} 天！栗子加成 ×${m.toFixed(1)}。呀哈！`)]);
+  if (S.current_streak > 1) out.push(["usagi", L(`🔥 ${S.current_streak} days in a row! Your chestnut bonus is ×${m.toFixed(1)}. Wahoo!`, `🔥 已連續 ${S.current_streak} 天！栗子加成 ×${m.toFixed(1)}。嘩呼！`)]);
   if (mk) out.push(["hachiware", L(`🔁 ${mk} mistake${mk > 1 ? "s are" : " is"} waiting in Practice mode. Shall we fix just a few today?`, `🔁 練習模式有 ${mk} 題錯題在等你。今天修正幾題好嗎？`)]);
   if (ni !== -1) out.push(["chiikawa", L(`Your next right step: <b>${esc(ROOMS[ni].name)}</b>. Just one room. We can do it! 🌱`, `下一步：<b>${esc(ROOMS[ni].name)}</b>。只需一個房間，我們做得到！🌱`)]);
   else out.push(["chiikawa", L("We escaped EVERY room! 🥹🎉 Replay rooms to earn 3 stars.", "我們逃出所有房間了！🥹🎉 重玩房間爭取 3 粒星吧。")]);
@@ -3017,19 +3152,19 @@ function showChat(kind) { const el = document.getElementById("chat"); if (el) el
    ============================================================ */
 let HUB_TAB = "home";
 const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Light Lab", "光學實驗室"], ["dress", "👗", "Dress up", "換裝"], ["collect", "🏆", "Collection", "收藏"]];
-const PET_LINES = [["Yaha!", "呀哈！"], ["Hehe~ 🥰", "嘻嘻～🥰"], ["Let's learn about light!", "一起學光吧！"], ["Pat pat... ☺️", "摸摸頭……☺️"], ["Do I look cute today?", "我今天可愛嗎？"], ["One room a day! 🌱", "每天一個房間！🌱"]];
+const PET_LINES = [["Wahoo!", "嘩呼！"], ["Hehe~ 🥰", "嘻嘻～🥰"], ["Let's learn about light!", "一起學光吧！"], ["Pat pat... ☺️", "摸摸頭……☺️"], ["Do I look cute today?", "我今天可愛嗎？"], ["One room a day! 🌱", "每天一個房間！🌱"]];
 const bgItem = () => S && S.equip.backdrop && itemById(S.equip.backdrop);
 const bgSvg = w => `<svg class="bgart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${w.bg}</svg>`;
 function sceneHtml(mood) {
   const bg = bgItem();
   if (bg) return `<div class="scene">${bgSvg(bg)}<div class="rug" style="opacity:.35"></div>
-    <button class="pet" id="pet" aria-label="${L("Pat Chiikawa", "摸摸吉伊卡哇")}">${figure("chiikawa", mood)}</button>
+    <button class="pet" id="pet" aria-label="${L("Pat Puff", "摸摸泡芙")}">${figure("chiikawa", mood)}</button>
     <span class="petsay" id="petsay" hidden></span></div>`;
   return `<div class="scene">
     <svg class="win" viewBox="0 0 120 106" aria-hidden="true"><rect x="6" y="4" width="108" height="90" rx="16" fill="#fff"/><rect x="14" y="12" width="92" height="74" rx="9" fill="#CFE6FA"/><circle cx="38" cy="32" r="10" fill="#FFE27A"/><ellipse cx="80" cy="64" rx="17" ry="6.5" fill="#fff"/><path d="M60 12 V86 M14 49 H106" stroke="#fff" stroke-width="6"/><rect x="0" y="92" width="120" height="11" rx="5.5" fill="#E7C9A6"/></svg>
     <div class="floor"></div><div class="rug"></div>
     <span class="spark s1" aria-hidden="true">✦</span><span class="spark s2" aria-hidden="true">✦</span>
-    <button class="pet" id="pet" aria-label="${L("Pat Chiikawa", "摸摸吉伊卡哇")}">${figure("chiikawa", mood)}</button>
+    <button class="pet" id="pet" aria-label="${L("Pat Puff", "摸摸泡芙")}">${figure("chiikawa", mood)}</button>
     <span class="petsay" id="petsay" hidden></span>
   </div>`;
 }
@@ -3054,7 +3189,7 @@ function streakCard() {
   return `<section class="card streakc"><div class="row" style="flex-wrap:nowrap"><div class="sfl">${flameSvg(n)}</div>
     <div><h3>${L(`${n}-day streak`, `${n} 日連續溫習`)}</h3><span class="small muted">${L("Chestnut bonus", "栗子加成")} ×${m.toFixed(1)} · 🛡️ ${S.streak_shields} · ${L("Best", "最佳")} ${S.longest_streak}</span></div></div>
     <div class="wk" aria-label="${L("Last 7 days", "過去 7 天")}">${days.map(([l, on]) => `<span class="${on ? "on" : ""}">${l}</span>`).join("")}</div>
-    <p class="small muted">${L("Play once a day to keep the flame burning. 🌱", "每天玩一次，讓火焰繼續燃燒。🌱")}</p></section>`;
+    <div class="row"><button class="btn yellow" id="chest" ${S.last_chest_date !== today() ? "" : "disabled"}>${S.last_chest_date !== today() ? L("🎁 Daily snack chest", "🎁 每日零食寶箱") : L("🎁 Back tomorrow", "🎁 明天再來")}</button><span class="small muted">${L("Play once a day to keep the flame burning. 🌱", "每天玩一次，讓火焰繼續燃燒。🌱")}</span></div></section>`;
 }
 function homeHtml() {
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today(), mk = mistakeCount();
@@ -3068,12 +3203,12 @@ function homeHtml() {
       ${meter("⭐", L("Stars", "星星"), stars, 21, "#FFD84D")}
       ${meter("📚", L("Mastered", "已掌握"), S.mastered_puzzles.length, tot, "#A0C4FF")}
       <div class="acts">
-        ${allDone ? act("aRooms", "pink", "🗺️", L("Revise a room", "重溫房間"), L("New questions!", "新題目！")) : act("aGo", "pink", "▶️", L("Enter room", "進入房間"), esc(ROOMS[ni].name), `data-room="${ROOMS[ni].id}"`)}
+        ${act("aStudy", "green", "📖", L("Study mode", "學習模式"), L("Notes + 5 questions", "筆記 + 5 題"))}
+        ${allDone ? act("aRooms", "pink", "🚪", L("Escape mode", "密室逃脫"), L("Replay for ⭐", "重玩賺星")) : act("aGo", "pink", "🚪", L("Escape mode", "密室逃脫"), `❤️×3 · ${esc(ROOMS[ni].name)}`, `data-room="${ROOMS[ni].id}"`)}
         ${act("mRush", "purple", "⚡", L("Light Rush", "光速挑戰"), S.rush.lastDay !== today() ? L("×2 today!", "今天雙倍！") : `${L("Best", "最高")} ${S.rush.best}`)}
-        ${act("mPrac", "green", "🔁", L("Practice", "練習"), mk ? L(`${mk} to fix`, `${mk} 題待修正`) : L(`${PRACTICE_GOAL} in a row`, `連對 ${PRACTICE_GOAL} 題`))}
+        ${act("mPrac", "yellow", "🔁", L("Practice", "練習"), mk ? L(`${mk} to fix`, `${mk} 題待修正`) : L(`${PRACTICE_GOAL} in a row`, `連對 ${PRACTICE_GOAL} 題`))}
         ${act("aLab", "blue", "🔭", L("Light Lab", "光學實驗室"), L("Lenses · mirror · TIR", "透鏡 · 鏡 · 全內反射"))}
         ${act("mShop", "white", "👗", L("Dress up", "換裝"), `🌰 ${S.coins}`)}
-        ${act("chest", "yellow", "🎁", chestReady ? L("Snack chest", "零食寶箱") : L("Back tomorrow", "明天再來"), "", chestReady ? "" : "disabled")}
       </div>
     </section>
     <section class="card chatc"><div class="chat" id="chat" aria-live="polite">${chatHtml("cheer", true)}</div>
@@ -3082,18 +3217,25 @@ function homeHtml() {
   </div>`;
 }
 function roomsHtml() {
-  const ni = nextRoomIndex();
+  const ni = nextRoomIndex(), study = S.play_mode === "study";
+  const toggle = `<div class="seg big" role="radiogroup" aria-label="${L("Mode", "模式")}"><button role="radio" aria-checked="${study}" data-pmode="study">📖 ${L("Study mode", "學習模式")}</button><button role="radio" aria-checked="${!study}" data-pmode="escape">🚪 ${L("Escape mode", "密室逃脫")}</button></div>`;
+  const cards = ROOMS.map((r, i) => {
+    const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length, mm = masteredIn(r);
+    const bar = `<span class="tbar" role="img" aria-label="${mm}/${r.pool.length}"><i style="width:${Math.round(mm / r.pool.length * 100)}%"></i></span><span class="small">📚 ${mm}/${r.pool.length} ${L("mastered", "已掌握")}</span>`;
+    if (study) return `<button class="topic study" data-study="${r.id}">
+        <span class="tnum">${topicNo(r.topicNo)} · ${r.sec}</span><span class="tname">${topicHtml(r)}</span>${bar}
+        <span class="rstars">📖 ${S.study && S.study[r.id] != null ? `${L("Best", "最佳")} ${S.study[r.id]}/5` : L("Start studying", "開始溫習")}</span></button>`;
+    return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
+        <span class="tnum">${topicNo(r.topicNo)} · ${r.sec}</span><span class="tname">${topicHtml(r)}</span>
+        <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>${open ? bar : ""}
+        <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 · ${heartsHtml(heartsOf(S.room_run[r.id]))}` : L("Escape the room before", "先逃出上一個房間")}</span>
+      </button>`; }).join("");
+  const info = study
+    ? `<p class="small muted">${L("📖 Read each topic's key points, then answer 5 questions. No timer, no hearts, every topic open. Mistakes go to 🔁 Practice.", "📖 先讀每個課題的重點，再答 5 題。沒有計時、沒有心心，所有課題都開放。錯題會存入 🔁 練習。")}</p>`
+    : `<div class="rules escinfo">${L("🚪 <b>Escape mode:</b> ❤️❤️❤️ 3 hearts · ⏱️ 10 minutes · every wrong answer costs a heart · 0 hearts or time up = 💀 <b>GAME OVER</b> (the locks reset). Stars = hearts left.", "🚪 <b>密室逃脫：</b>❤️❤️❤️ 3 顆心 · ⏱️ 10 分鐘 · 每答錯一次扣一顆心 · 沒有心或時間用完 = 💀 <b>GAME OVER</b>（鎖會重設）。星星 = 剩下的心。")}
+        <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")}</div>`;
   return `<section class="card"><div class="row" style="justify-content:space-between"><h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色和光譜以外")}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
-    <p class="small muted">${L("Every room has 40 questions (Bloom levels 1–6). Answer one right first time without a hint to master it. Cleared rooms give new questions and random incidents every visit, plus a daily 📚 revision bonus.", "每個房間有 40 題（布魯姆 1 至 6 級）。不用提示一次答對，就算掌握該題。已逃出的房間每次都有新題目和隨機事件，每天首次重溫更有 📚 溫習獎勵。")}</p>
-    <div class="topics">${ROOMS.map((r, i) => {
-      const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length, mm = masteredIn(r);
-      return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
-        <span class="tnum">${topicNo(r.topicNo)}${r.sec ? ` · ${r.sec}` : ""}</span>
-        <span class="tname">${topicHtml(r)}</span>
-        <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>
-        ${open ? `<span class="tbar" role="img" aria-label="${mm}/${r.pool.length}"><i style="width:${Math.round(mm / r.pool.length * 100)}%"></i></span><span class="small">📚 ${mm}/${r.pool.length} ${L("mastered", "已掌握")}</span>` : ""}
-        <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 ${L("locks", "把鎖")}` : L("Escape the room before", "先逃出上一個房間")}</span>
-      </button>`; }).join("")}</div></section>`;
+    ${toggle}${info}<div class="topics">${cards}</div></section>`;
 }
 function collectHtml() {
   const own = WARDROBE.filter(w => S.owned.includes(w.id)).length;
@@ -3109,7 +3251,7 @@ function collectHtml() {
 }
 /* ----- Dress-up ----- */
 let DRESS_SLOT = "hair";
-const SLOT_ICON = { hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", backdrop: "🏞️", power: "🎒", music: "🎵" };
+const SLOT_ICON = { costume: "🚪", hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", backdrop: "🏞️", power: "🎒", music: "🎵" };
 function wardrobeHtml(slot) {
   const eq = S.equip, tabs = Object.keys(SLOT_NAMES).concat("power", "music");
   const grid = slot === "music"
@@ -3127,7 +3269,7 @@ function wardrobeHtml(slot) {
     : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
         const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
         return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
-          <b class="small">${esc(w.name)}</b>
+          <b class="small">${esc(w.name)}</b>${w.escape ? `<span class="req"><b>🚪 ${L("Escape mode only", "密室限定")}</b></span>` : ""}
           ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
                 : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
                 : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`;
@@ -3160,7 +3302,7 @@ function dressTabHtml() {
       <div class="dinfo"><span class="pill coinpill" id="dCoins">🌰 ${S.coins}</span><span id="dColl">${collectLine()}</span>
         <button class="btn plain" id="dOff">🧺 ${L("Take everything off", "全部脫下")}</button>
         <span class="small muted">${L("Earn 🌰 in rooms, ⚡ Light Rush and 🔁 Practice. Items with 🔒 are earned by steady effort, not bought.", "在密室、⚡ 光速挑戰和 🔁 練習賺取 🌰。有 🔒 的物品要靠持續努力贏取，不能購買。")}</span></div></section>
-    <section class="card"><h2>👗 ${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2><div id="dPane">${wardrobeHtml(DRESS_SLOT)}</div></section>
+    <section class="card"><h2>👗 ${L("Dress up Puff", "為泡芙打扮")}</h2><div id="dPane">${wardrobeHtml(DRESS_SLOT)}</div></section>
   </div>`;
 }
 function refreshDress() {
@@ -3173,7 +3315,7 @@ function openShop(slot) {
   if (slot === "power") DRESS_SLOT = "power";
   if (S && !R && !RU && !PR) { closeModal(); renderMap("dress"); return; }
   const draw = () => {
-    const box = openModal(`<span class="kicker">👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</span><h2>${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2>
+    const box = openModal(`<span class="kicker">👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</span><h2>${L("Dress up Puff", "為泡芙打扮")}</h2>
       <div class="preview-big"><div class="fig">${figure("chiikawa", "happy")}</div><div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} ${L("chestnuts", "栗子")}</span>${collectLine()}</div></div>
       ${wardrobeHtml(DRESS_SLOT)}`, { wide: true });
     wireWardrobe(box, draw);
@@ -3181,6 +3323,7 @@ function openShop(slot) {
   draw();
 }
 function renderMap(tab) {
+  stopStudy();
   const moved = tab && tab !== HUB_TAB; if (tab) HUB_TAB = tab;
   stopRush(); stopPractice(); MUSIC.setMode("map"); MUSIC.setTrack(S.track); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
@@ -3191,7 +3334,9 @@ function renderMap(tab) {
   $app.querySelectorAll(".bnav [data-tab]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); renderMap(b.dataset.tab); });
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
   wirePet();
-  on("mRush", rushIntro); on("mPrac", practiceIntro); on("mShop", () => renderMap("dress")); on("aLab", () => renderMap("lab")); on("aRooms", () => renderMap("rooms"));
+  on("mRush", rushIntro); on("mPrac", practiceIntro); on("mShop", () => renderMap("dress")); on("aLab", () => renderMap("lab")); on("aRooms", () => { S.play_mode = "escape"; renderMap("rooms"); }); on("aStudy", () => { S.play_mode = "study"; renderMap("rooms"); });
+  $app.querySelectorAll("[data-study]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); startStudy(b.dataset.study); });
+  $app.querySelectorAll("[data-pmode]").forEach(b => b.onclick = () => { SFX.tap(); S.play_mode = b.dataset.pmode; save(); renderMap("rooms"); });
   on("mLb", openLeaderboard); on("cSave", openSaveModal); on("rJournal", () => openJournal());
   on("cFact", () => showChat("fact")); on("cCheer", () => showChat("cheer"));
   if (document.getElementById("dPane")) { wireWardrobe(document.getElementById("dPane"), refreshDress);
@@ -3205,7 +3350,7 @@ function renderMap(tab) {
     SFX.init(); SFX.fanfare(); confetti(70);
     const snack = pick(SNACKS); S.inventory.push(snack);
     let extra = ""; if (Math.random() < .2 && S.streak_shields < 3) { S.streak_shields++; extra = L(" …and a 🛡️ shield!", "……還有一個 🛡️ 護盾！"); }
-    S.last_chest_date = today(); streakNote = L(`🎁 Kuri-Manju opened the chest: ${snack}${extra}`, `🎁 栗子饅頭打開了寶箱：${snack}${extra}`); save(true); renderMap();
+    S.last_chest_date = today(); streakNote = L(`🎁 Chestnut opened the chest: ${snack}${extra}`, `🎁 栗子伯打開了寶箱：${snack}${extra}`); save(true); renderMap();
   };
 }
 /* ============================================================
@@ -3570,13 +3715,13 @@ const runQs = room => S.room_run[room.id].qids.map(id => room.pool.find(p => p.i
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
 function enterRoom(id) {
-  stopRush(); stopPractice();
+  stopRush(); stopPractice(); stopStudy();
   const room = ROOMS[roomIndex(id)];
   const replay = S.completed_rooms.includes(room.id);
   if (replay || !S.room_run[room.id]) S.room_run[room.id] = freshRun();
   if (!S.room_run[room.id].qids) S.room_run[room.id].qids = pickRun(room);
   if (replay) { S.room_progress[room.id] = []; S.room_timer[room.id] = ROOM_SECONDS; }
-  if (S.room_timer[room.id] == null) S.room_timer[room.id] = ROOM_SECONDS;
+  const tt = S.room_timer[room.id]; if (tt == null || tt <= 0 || tt > ROOM_SECONDS) S.room_timer[room.id] = ROOM_SECONDS;
   S.current_room = room.id; save(); MUSIC.setMode("room");
   if (R) clearTimeout(R.introT);
   if (R) clearTimeout(R.incT);
@@ -3593,7 +3738,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ Careful: a wrong answer costs <b>20 seconds</b> and shuffles the lock. Guessing <b>jams the lock</b>, costs 🌰 chestnuts and can make the lights go dim. Think first! And watch out for strange happenings in the dark... 👀", "點擊發光的 <b>?</b> 開始。⚠️ 小心：答錯會<b>扣 20 秒</b>並打亂鎖；亂猜會<b>卡住鎖</b>、扣 🌰 栗子，還可能令燈光變暗。先想清楚！小心房間裏的奇怪事情……👀")), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ You have <b>3 hearts ❤️❤️❤️</b> and <b>10 minutes</b>. Every wrong answer costs a heart and 20 seconds. Lose all your hearts or run out of time and it's <b>GAME OVER</b>: the locks reset! Stars = hearts left. Think first... and watch the dark 👀", "點擊發光的 <b>?</b> 開始。⚠️ 你有 <b>3 顆心 ❤️❤️❤️</b> 和 <b>10 分鐘</b>。每答錯一次扣一顆心和 20 秒。失去所有心心或時間用完便會 <b>GAME OVER</b>，所有鎖會重設！星星 = 剩下的心心。先想清楚……小心黑暗 👀")), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -3604,7 +3749,7 @@ function setLine(who, html, mood = "normal") {
 function setMood(m, ms) {
   if (!R) return; R.mood = m;
   const el = document.getElementById("chiiAv"); if (el) el.innerHTML = avatar("chiikawa", m);
-  const st = document.getElementById("chiiSt"); if (st) st.textContent = { normal: L("Chiikawa is ready", "吉伊卡哇準備好了"), happy: L("Chiikawa is happy!", "吉伊卡哇很開心！"), cry: L("Chiikawa is nervous...", "吉伊卡哇很緊張……") }[m];
+  const st = document.getElementById("chiiSt"); if (st) st.textContent = { normal: L("Puff is ready", "泡芙準備好了"), happy: L("Puff is happy!", "泡芙很開心！"), cry: L("Puff is nervous...", "泡芙很緊張……") }[m];
   clearTimeout(moodTimer);
   if (ms) moodTimer = setTimeout(() => R && setMood(S.room_timer[R.room.id] < 120 ? "cry" : "normal"), ms);
 }
@@ -3615,10 +3760,11 @@ function tickTimer() {
   if (!frozen) S.room_timer[id] -= warp ? 2 : 1;
   const t = S.room_timer[id];
   const el = document.getElementById("timer");
-  if (el) { el.textContent = t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`; el.className = "timer" + (t < 0 ? " over" : t < 120 ? " low" : "") + (frozen ? " frozen" : warp ? " warp" : ""); }
-  if (t === 120) { setMood("cry"); setLine("chiikawa", L("Wah! Only 2 minutes left! 😖", "哇！只剩 2 分鐘！😖"), "cry"); }
-  if (t === 0) setLine("hachiware", L("Time's up, but don't worry! We can keep going in overtime. No penalty! 🌱", "時間到了，但別擔心！可以超時繼續，不會扣分！🌱"));
-  if (t > 0 && t <= 10) SFX.tick();
+  if (el) { el.textContent = fmt(Math.max(0, t)); el.className = "timer" + (t < 60 ? " low" : "") + (frozen ? " frozen" : warp ? " warp" : ""); }
+  if (t === 120) { setMood("cry"); setLine("chiikawa", L("Wah! Only 2 minutes left! Hurry! 😖", "哇！只剩 2 分鐘！快啲！😖"), "cry"); }
+  if (t === 60) { MUSIC.setMode("rush"); document.getElementById("scene")?.classList.add("danger"); setLine("hachiware", L("⚠️ 60 seconds! When the timer hits zero, the door seals and it's GAME OVER!", "⚠️ 最後 60 秒！時間一到，大門封死，便會 GAME OVER！"), "cry"); }
+  if (t > 0 && t <= 30) SFX.tick();
+  if (t <= 0 && !R.done) { gameOver("time"); return; }
   if (t % 5 === 0) save();
   if (R.blackUntil && now > R.blackUntil) { R.blackUntil = 0; const sc = document.getElementById("scene"); if (sc) { sc.classList.remove("blackout"); sc.style.setProperty("--dim", R.room.dim); } }
 }
@@ -3633,17 +3779,17 @@ function renderRoom() {
         <div class="av ${frameCls()}" id="chiiAv">${avatar("chiikawa", R.mood)}</div>
         <div style="min-width:0"><div class="rtopic">${topicNo(room.topicNo)}: ${topicHtml(room)}</div>
           <div class="rt">${esc(room.name)}</div>
-          <div class="small" id="chiiSt">${L("Chiikawa is ready", "吉伊卡哇準備好了")}</div></div>
+          <div class="small" id="chiiSt">${L("Puff is ready", "泡芙準備好了")}</div></div>
       </div>
       <div style="display:grid;justify-items:end;gap:4px">
-        <div class="timer ${t < 0 ? "over" : t < 120 ? "low" : ""}" id="timer" role="timer" aria-label="${L("Time left", "剩餘時間")}">${t >= 0 ? fmt(t) : `${L("OVERTIME", "超時")} ${fmt(t)}`}</div>
+        <div class="timer ${t < 60 ? "low" : ""}" id="timer" role="timer" aria-label="${L("Time left", "剩餘時間")}">${fmt(Math.max(0, t))}</div>
         <span class="small">🔓 ${solved.length}/5 ${L("locks", "把鎖")} · 🚪 ${solved.length === 5 ? L("code ready!", "密碼齊了！") : L("door locked", "門已上鎖")}</span>
-        <span class="strikes" id="strikes" title="${L("Guess strikes: 3 strikes = −1 star, 6 strikes = −2 stars", "猜測警告：3 次 = 扣 1 粒星，6 次 = 扣 2 粒星")}">⚠️ ${L("Strikes", "警告")} ${S.room_run[room.id].strikes}</span>
+        <span class="hearts" id="hearts" aria-label="${L("Hearts left", "剩餘心心")}: ${heartsOf(S.room_run[room.id])}">${heartsHtml(heartsOf(S.room_run[room.id]))}</span>
       </div>
     </section>
     <div id="line"></div>
     <section class="scene-wrap">
-      <div class="scene ${R.blackUntil > Date.now() ? "blackout" : ""}" id="scene" style="--dim:${R.blackUntil > Date.now() ? .94 : room.dim}">
+      <div class="scene ${R.blackUntil > Date.now() ? "blackout" : ""} ${heartsOf(S.room_run[room.id]) === 1 || t < 60 ? "danger" : ""}" id="scene" style="--dim:${R.blackUntil > Date.now() ? .94 : room.dim}">
         ${sceneSvg(room, solved.length)}
         <div class="dark"></div>
         ${HOTSPOTS.map((h, i) => {
@@ -3694,14 +3840,14 @@ function openPuzzle(i) {
   if (R.hiddenHs === i) { R.hiddenHs = null; toast(L("🔦 Found the hidden lock!", "🔦 找到了被藏起來的鎖！")); }
   const typeLabel = { mc: L("Multiple choice", "選擇題"), keypad: L("Keypad lock", "數字鎖"), dial: L("Combination dials", "密碼盤") }[p.type];
   const box = openModal(`
-    <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh} · 🧠 ${L("Bloom", "布魯姆")} ${p.b}: ${BLOOM[p.b][LANG === "zh" ? 1 : 0]}</span>
+    <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh}</span>
     <h2>${esc(hsName)}</h2>
     ${say("chiikawa", esc(line))}
     <p class="q">${esc(p.q)}</p>
     ${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
     <div id="jamBox"></div>
     <div id="ans">${answerUi(p)}</div>
-    <div class="row"><button class="btn blue" id="hint">💡 ${L("Hint from Hachiware", "小八的提示")}</button><button class="btn plain" id="pj">📓 ${L("Journal", "日誌")}</button></div>
+    <div class="row"><button class="btn blue" id="hint">💡 ${L("Hint from Berry", "莓莓的提示")}</button><button class="btn plain" id="pj">📓 ${L("Journal", "日誌")}</button></div>
     <div class="pwr" id="pwr"></div>
     <div id="pfb"></div>`, { wide: true });
   renderPwr(p, i);
@@ -3709,7 +3855,7 @@ function openPuzzle(i) {
   document.getElementById("pj").onclick = () => { SFX.tap(); openJournal(room.id, (p.terms || []).map(t => t[0])); };
   wireAnswer(p, box);
   if (R.jam[i] > Date.now()) startJam(i, 0);
-  if (R.noHintUntil > Date.now()) { const h = document.getElementById("hint"); h.disabled = true; h.textContent = L("😴 Hachiware is sleepy...", "😴 小八很睏……"); }
+  if (R.noHintUntil > Date.now()) { const h = document.getElementById("hint"); h.disabled = true; h.textContent = L("😴 Berry is sleepy...", "😴 莓莓很睏……"); }
   if (R.fog) { R.fog = false; fogAnswers(); }
 }
 function fogAnswers() {
@@ -3766,7 +3912,7 @@ function dimLights() {
   const me = R; setTimeout(() => { if (R === me) { const s2 = document.getElementById("scene"); if (s2) s2.style.setProperty("--dim", R.room.dim); } }, 45000);
 }
 function markHint(i) { R.hinted[i] = true; S.room_run[R.room.id].hints = true; save(); }
-/* Anti-guessing: a lock jams for a while after a guess, and Hachiware's hint must be read. */
+/* Anti-guessing: a lock jams for a while after a guess, and Berry's hint must be read. */
 function startJam(i, secs, reason) {
   if (secs) R.jam[i] = Date.now() + secs * 1000;
   const ans = document.getElementById("ans"), jb = document.getElementById("jamBox");
@@ -3778,7 +3924,7 @@ function startJam(i, secs, reason) {
     const left = Math.ceil((R.jam[i] - Date.now()) / 1000);
     if (left <= 0) { ans.inert = false; ans.classList.remove("jammed"); jb.innerHTML = ""; SFX.click(); return; }
     jb.innerHTML = `<div class="jam" role="status"><b>🔒 ${esc(reason || R.jamReason || L("Lock jammed!", "鎖卡住了！"))}</b><span class="jt">${left}s</span>
-      <span class="small">${L("Use this time to read Hachiware's hint below or open the 📓 Journal.", "趁這段時間細讀下面小八的提示，或打開 📓 日誌。")}</span></div>`;
+      <span class="small">${L("Use this time to read Berry's hint below or open the 📓 Journal.", "趁這段時間細讀下面莓莓的提示，或打開 📓 日誌。")}</span></div>`;
     setTimeout(tick, 250);
   };
   R.jamReason = reason || R.jamReason;
@@ -3843,6 +3989,11 @@ function miss(box) {
   R.lastWrongAt = now;
   SFX.wrong(); setMood("cry", 2500);
   const hit = [];
+  // Penalty 0: a heart
+  run.hearts = heartsOf(run) - 1; const hEl = document.getElementById("hearts"); if (hEl) { hEl.textContent = heartsHtml(run.hearts); hEl.classList.remove("shake"); void hEl.offsetWidth; hEl.classList.add("shake"); }
+  hit.push(L("💔 −1 heart", "💔 −1 心"));
+  if (run.hearts <= 0) { save(); penaltyFlash("💔"); setTimeout(() => gameOver("hearts"), 700); return; }
+  if (run.hearts === 1) document.getElementById("scene")?.classList.add("danger");
   // Penalty 1: time
   S.room_timer[id] -= 20; penaltyFlash(L("−20s ⏱️", "−20 秒 ⏱️")); updateTimerEl(); hit.push(L("⏱️ −20 seconds", "⏱️ −20 秒"));
   // Penalty 2: the lock reshuffles, so tapping the next option doesn't work
@@ -3865,11 +4016,10 @@ function miss(box) {
     if (run.strikes % 3 === 0) { dimLights(); hit.push(L("🌑 lights dimmed for 45 s", "🌑 燈光變暗 45 秒")); }
   }
   save();
-  const st = document.getElementById("strikes"); if (st) st.textContent = `⚠️ ${L("Strikes", "警告")} ${run.strikes}`;
-  const warn = run.strikes >= 6 ? L("You've lost 2 stars in this room.", "這個房間已扣 2 粒星。") : run.strikes >= 3 ? L("3+ strikes: this room loses 1 star.", "3 次或以上警告：這個房間扣 1 粒星。") : L(`${3 - run.strikes} more strike${3 - run.strikes === 1 ? "" : "s"} and this room loses a star.`, `再有 ${3 - run.strikes} 次警告，這個房間便會扣 1 粒星。`);
+  const warn = run.hearts === 1 ? L("⚠️ Last heart! One more mistake and it's GAME OVER.", "⚠️ 最後一顆心！再錯一次便 GAME OVER。") : L(`${run.hearts} hearts left.`, `剩下 ${run.hearts} 顆心。`);
   document.getElementById("pfb").innerHTML = `<div class="fb no">
     ${say("chiikawa", jam ? (fast ? L("Wah...! That was too fast! Did we guess? 😭", "哇……！太快了！我們是在亂猜嗎？😭") : L("Wah...! Wrong again... 😭", "哇……！又錯了……😭")) : L("Wah...! 😭 The lock didn't open...", "哇……！😭 鎖打不開……"), "cry")}
-    <div class="rules"><b>${L("Penalties", "懲罰")}:</b> ${hit.join(" · ")}${jam ? `<br>${warn}` : ""}</div>
+    <div class="rules"><b>${L("Penalties", "懲罰")}:</b> ${hit.join(" · ")}<br><b>${warn}</b></div>
     ${say("hachiware", `${jam ? L("Let's slow down and read carefully.", "我們慢慢來，細心閱讀。") : L("Don't worry! We can figure this out together.", "別擔心！我們一起想辦法。")} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
   if (jam) startJam(i, jam, reason);
 }
@@ -3887,7 +4037,7 @@ function solve() {
   if (firstTry) confetti(40);
   document.getElementById("hint").hidden = true;
   document.getElementById("pfb").innerHTML = `<div class="fb ok">
-    ${say("usagi", `<b>${L("Yaha!", "呀哈！")}</b> ${firstTry ? L("First try! Mastery up 📈", "一次答對！掌握度上升 📈") : L("Unlocked! 🔓", "解鎖了！🔓")}`, "happy")}
+    ${say("usagi", `<b>${L("Wahoo!", "嘩呼！")}</b> ${firstTry ? L("First try! Mastery up 📈", "一次答對！掌握度上升 📈") : L("Unlocked! 🔓", "解鎖了！🔓")}`, "happy")}
     <p>${esc(p.explain)}</p>
     ${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip 考試貼士", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
     ${p.terms ? `<div class="terms">${p.terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span>${spk(en)}</span>`).join("")}</div>` : ""}
@@ -3935,6 +4085,27 @@ function openDoor() {
   document.getElementById("kok").onclick = ok;
   box.onkeydown = e => { if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter") { e.preventDefault(); ok(); } };
 }
+function gameOver(reason) {
+  if (!R || R.done) return;
+  const { room } = R, id = room.id, run = S.room_run[id] || freshRun(), locks = (S.room_progress[id] || []).length;
+  R.done = true; stopTimer(); clearTimeout(R.introT); clearTimeout(R.incT); closeModal();
+  const fine = Math.min(S.coins || 0, 5); S.coins -= fine; S.stats.gameOvers += 1;
+  S.room_run[id] = freshRun(); S.room_progress[id] = []; S.room_timer[id] = ROOM_SECONDS; save(true);
+  SFX.creepy(); SFX.door(); MUSIC.setMode("room"); setMood("cry");
+  const sc = document.getElementById("scene"); if (sc) sc.classList.add("gameover");
+  setTimeout(() => {
+    openModal(`<div class="govr"><span class="kicker" style="color:#FF8A8A">💀 GAME OVER</span>
+      <h2>${reason === "time" ? L("Time's up! The door has sealed shut...", "時間到！大門已封死……") : L("Out of hearts! The room goes dark...", "心心用光了！房間一片漆黑……")}</h2>
+      <div class="creature">${CREATURES.shadow || CREATURES[Object.keys(CREATURES)[0]]}</div>
+      <p>${L(`You lost the <b>${locks}</b> lock${locks === 1 ? "" : "s"} you had opened${fine ? ` and ${fine} 🌰` : ""}. The room will give you <b>new questions</b> next time.`, `你失去了已打開的 <b>${locks}</b> 把鎖${fine ? `和 ${fine} 🌰` : ""}。下次房間會出<b>新的題目</b>。`)}</p>
+      ${say("chiikawa", L("Wah... 😭 We can do it next time!", "哇……😭 下次一定得！"), "cry")}
+      ${say("hachiware", L("Tip: review this topic in 📖 Study mode first, then come back stronger. 💪", "提示：先用 📖 學習模式溫習這個課題，再回來挑戰！💪"), "normal", "hint")}
+      <div class="row"><button class="btn big" id="goRetry">🔁 ${L("Try again", "再挑戰")}</button><button class="btn blue" id="goStudy">📖 ${L("Study this topic", "溫習這個課題")}</button><button class="btn plain" id="goHome">🏠 ${L("Home", "小窩")}</button></div></div>`, { closable: false });
+    document.getElementById("goRetry").onclick = () => { SFX.tap(); closeModal(); enterRoom(id); };
+    document.getElementById("goStudy").onclick = () => { SFX.tap(); closeModal(); startStudy(id); };
+    document.getElementById("goHome").onclick = () => { SFX.tap(); closeModal(); renderMap("home"); };
+  }, reduced() ? 100 : 900);
+}
 function escapeRoom() {
   const { room } = R;
   stopTimer(); clearTimeout(R.introT);
@@ -3942,9 +4113,9 @@ function escapeRoom() {
   const first = !S.completed_rooms.includes(room.id);
   if (first) { S.completed_rooms.push(room.id); S.chiikawa_badges.push(room.badge); S.inventory.push(room.item); }
   const run = S.room_run[room.id] || freshRun();
-  const n = run.firsts.length, base = n === 5 ? 3 : n >= 3 ? 2 : 1;
-  const lost = run.strikes >= 6 ? 2 : run.strikes >= 3 ? 1 : 0;
-  const stars = Math.max(1, base - lost);
+  const n = run.firsts.length, hearts = heartsOf(run), stars = Math.max(1, hearts), lost = 0;
+  if (hearts === MAX_HEARTS) S.stats.flawless += 1;
+  if (tLeft >= 300) S.stats.speedEscapes += 1;
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
   if (!first) S.stats.replays += 1;
   const revise = !first && S.last_revise_day !== today(); if (revise) S.last_revise_day = today();
@@ -3957,15 +4128,15 @@ function escapeRoom() {
   recomputeMastery(); save(true);
   SFX.door();
   document.getElementById("doorG").classList.add("door-open");
-  setMood("happy"); setLine("usagi", L("YAHA!!! The door is opening!!! 🐰🎊", "呀哈！！！門打開了！！！🐰🎊"), "happy");
+  setMood("happy"); setLine("usagi", L("WAHOO!!! The door is opening!!! 🐰🎊", "嘩呼！！！門打開了！！！🐰🎊"), "happy");
   setTimeout(() => {
-    SFX.fanfare(); confetti(180); yaha(L("Yaha!!", "呀哈！！"));
+    SFX.fanfare(); confetti(180); yaha(L("Wahoo!!", "嘩呼！！"));
     openModal(`
       <span class="kicker">${L("Escaped!", "逃脫成功！")} · ${topicNo(room.topicNo)}</span>
       <h2>🎉 ${L(`You escaped ${esc(room.name)}!`, `你逃出了${esc(room.name)}！`)}</h2>
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
       <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} / 3 ★">${starStr(stars)}</div>
-      <p style="text-align:center">${L(`<b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}`, `一次答對 <b>${n}/5</b> 把鎖 · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? "（超時）" : ""} · ⚠️ ${run.strikes} 次警告`)}</p>
+      <p style="text-align:center">${heartsHtml(hearts)} · ${L(`<b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}`, `一次答對 <b>${n}/5</b> 把鎖 · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? "（超時）" : ""} · ⚠️ ${run.strikes} 次警告`)}</p>
       <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}${revise ? L(" · 📚 daily revision bonus!", " · 📚 每日溫習獎勵！") : ""}${multTag()}</span>${R.incidents ? ` <span class="pill">👻 ${L("Incidents survived", "經歷事件")}: ${R.incidents}</span>` : ""}</p>
       ${lost ? `<div class="rules">${L(`Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!`, `猜測警告令你這次失去 <b>${lost} 粒星</b>。重玩房間、先想後答就能贏回來！`)}</div>` : ""}
       ${first ? say("momonga", L(`You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, `你獲得了<b>${esc(room.badge)}</b>和<b>${esc(room.item)}</b>！💜`), "happy") : say("kurimanju", L("Replay complete. Practice makes the brain strong. 🍵", "重玩完成。多練習令腦袋更強壯。🍵"), "happy")}
@@ -4001,11 +4172,11 @@ const INCIDENTS = [
     run() { R.fog = true; } },
   { id: "clock", w: 2, art: "clock", title: ["The clock goes haywire!", "時鐘失控了！"], text: ["Tick... tick... TICKTICKTICK! The wall clock's hands start spinning by themselves.", "滴答……滴答……滴滴答答！掛牆鐘的指針自己轉個不停。"], effect: ["⏩ For 30 seconds, time runs twice as fast.", "⏩ 30 秒內，時間會加倍快。"],
     run() { R.warpUntil = Date.now() + 30000; } },
-  { id: "spores", w: 2, art: "shroom", title: ["Sleepy spores", "催眠孢子"], text: ["Glowing mushrooms pop up in the corner and puff out sparkly spores. Hachiware yawns... and dozes off.", "角落長出發光的蘑菇，噴出閃閃的孢子。小八打了個呵欠……睡着了。"], effect: ["😴 Hints are unavailable for 45 seconds.", "😴 45 秒內不能使用提示。"],
+  { id: "spores", w: 2, art: "shroom", title: ["Sleepy spores", "催眠孢子"], text: ["Glowing mushrooms pop up in the corner and puff out sparkly spores. Berry yawns... and dozes off.", "角落長出發光的蘑菇，噴出閃閃的孢子。莓莓打了個呵欠……睡着了。"], effect: ["😴 Hints are unavailable for 45 seconds.", "😴 45 秒內不能使用提示。"],
     run() { R.noHintUntil = Date.now() + 45000; } },
   { id: "owl", w: 2, good: true, art: "owl", title: ["A wise night owl appears", "一隻聰明的貓頭鷹出現了"], text: ["Hoo... hoo... A big owl lands on the bookshelf, eyes glowing in the dark. It has a riddle for you.", "咕……咕……一隻大貓頭鷹停在書架上，雙眼在黑暗中發光。牠有一道謎題給你。"], effect: ["🦉 Answer its bonus question for +45 seconds and 5 🌰.", "🦉 答對獎勵題可得 +45 秒和 5 顆 🌰。"],
     run() { setTimeout(owlQuiz, 300); } },
-  { id: "tea", w: 2, good: true, art: null, title: ["Kuri-Manju's tea break", "栗子饅頭的茶點時間"], text: ["Out of nowhere, Kuri-Manju pours a cup of warm tea. The room feels calm for a moment.", "栗子饅頭突然出現，倒了一杯暖暖的茶。房間暫時變得平靜。"], effect: ["🍵 The timer freezes for 30 seconds. Relax and think!", "🍵 計時器停頓 30 秒。放鬆想一想！"],
+  { id: "tea", w: 2, good: true, art: null, title: ["Chestnut's tea break", "栗子伯的茶點時間"], text: ["Out of nowhere, Chestnut pours a cup of warm tea. The room feels calm for a moment.", "栗子伯突然出現，倒了一杯暖暖的茶。房間暫時變得平靜。"], effect: ["🍵 The timer freezes for 30 seconds. Relax and think!", "🍵 計時器停頓 30 秒。放鬆想一想！"],
     run() { R.freezeUntil = Date.now() + 30000; } }
 ];
 function tryIncident(me) {
@@ -4054,7 +4225,7 @@ function chaseWolverine() {
 function owlQuiz() {
   if (!R) return;
   sideQuiz({ kicker: `🦉 ${L("Owl's bonus riddle", "貓頭鷹的獎勵謎題")}`, title: L("Hoo... can you answer this?", "咕……你答得到嗎？"), art: "owl", p: sideQuestion(6),
-    onRight: () => { S.room_timer[R.room.id] += 45; S.coins += 5; save(true); toast(L("🦉 Wise! +45 s and +5 🌰", "🦉 聰明！+45 秒和 +5 🌰")); },
+    onRight: () => { const run = S.room_run[R.room.id]; S.room_timer[R.room.id] += 45; S.coins += 5; const extra = heartsOf(run) < MAX_HEARTS; if (extra) run.hearts = heartsOf(run) + 1; save(true); renderRoom(); toast(L(`🦉 Wise! +45 s, +5 🌰${extra ? " and +1 ❤️" : ""}`, `🦉 聰明！+45 秒、+5 🌰${extra ? " 和 +1 ❤️" : ""}`)); },
     onWrong: () => { toast(L("🦉 Hoo... not quite. No reward this time.", "🦉 咕……不太對。這次沒有獎勵。")); } });
 }
 

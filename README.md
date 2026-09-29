@@ -1,4 +1,4 @@
-# 🔦 Chiikawa Physics Escape
+# 🔦 Puff's Physics Escape
 
 A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Light, Colours and Beyond**. Concept-only: there are **no calculations** anywhere in the game.
 
@@ -51,6 +51,9 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 - **🎭 Wave-2 wardrobe:** 25 more original items that nod to memes, movies, superheroes and pop stars (big blond swoop wig, purple K-pop idol hair, curtain-bang and sky-high-ponytail pop-star wigs, mad-scientist hair, demon-hunter idol braid, web-slinger / iron-armour / merc / panther masks, thunder hammer, star shield, metal claws, chicken-jockey rider, witch hat, alien ears, Dubai chocolate, friendship bracelets, lightstick…) plus 8 room backdrops (Mong Kok neon, Victoria Harbour, brat-green wall, pixel world, stadium stage, space, hero city, emerald city).
 - **🔭 Light Lab:** three simulators (lenses 14.5–14.6, plane mirror 14.2, total internal reflection 14.4 with water, glass and diamond) and a choice of arrow, pencil or pop-star doll as the object. 12 missions.
 - **🎵 Music shop:** 7 unlockable background tracks for the home screen (lo-fi, pixel, disco pop, brainrot bounce, party chant, 2010 teen-pop, K-pop anthem). All melodies are original; only the style nods to famous songs.
+- **📖 Study mode or 🚪 Escape mode:** students choose. Study mode = key points, key rules and terms, then a calm 5-question check (no timer, every topic open). Escape mode = 3 ❤️ hearts and a strict 10-minute timer: every wrong answer costs a heart, and 0 hearts or time up is a real **GAME OVER** (the room's locks reset). Stars = hearts left.
+- **🚪 Escape-only costumes:** 💪 Gym bro (first escape), 🎣 Fish bro (3 rooms), 🍵 Performative bro (3 flawless escapes), 💼 Finance bro (5 rooms) and the legendary ♾️ Blindfold sorcerer (all 21★ + 10 flawless + 5 fast escapes).
+- **New original cast:** Puff 泡芙, Berry 莓莓, Mango 芒芒, Taro 芋圓 and Chestnut 栗子伯. Bloom levels are still used to pick questions but are no longer shown to students.
 - **💬 Chat card:** on the map, the Chiikawa friends take turns sharing 💡 light facts from Hong Kong life (Symphony of Lights, convex road mirrors, optical-fibre broadband…) and 💪 personal cheers (streak, mistakes waiting, nearest trophy, next room). It changes every 20 s.
 - **🔥 Streak pop-up and bonus:** an animated pop-up each new day (streak up, shield saved, welcome back). Every 3 days in a row adds +10% chestnuts, up to ×1.5.
 - **✦ 💎 👑 Rarity tiers:** wardrobe items are Common, Rare, Epic or Legendary. There are new Hong Kong items (pineapple-bun hat, egg-tart clip, neon-sign frame). Five special items can't be bought; students earn them through steady effort (3★ in 3 rooms, fix 30 mistakes, master 140 questions, finish 20 practice rounds, all 21★ + 250 mastered).
