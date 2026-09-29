@@ -1853,7 +1853,7 @@ function checkIn() {
 }
 const flameSvg = n => `<svg class="flame" viewBox="0 0 120 140" aria-hidden="true"><path d="M60 8 C72 38 104 52 100 92 C97 122 78 134 60 134 C42 134 20 122 20 92 C20 66 38 58 44 34 C52 48 56 56 60 60 C64 44 64 28 60 8Z" fill="${n >= 14 ? "#8E7CF0" : n >= 7 ? "#FF6B6B" : "#FF9F5A"}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M60 58 C68 76 84 86 80 106 C77 122 68 126 60 126 C50 126 40 120 40 104 C40 92 50 86 54 74 C57 82 58 86 60 88 C62 78 62 68 60 58Z" fill="#FDFFB6" stroke="${INK}" stroke-width="2.4"/><circle cx="52" cy="108" r="2.6" fill="${INK}"/><circle cx="68" cy="108" r="2.6" fill="${INK}"/><path d="M56 115 q4 3 8 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="113" rx="3.4" ry="2" fill="#FFB7C5"/><ellipse cx="74" cy="113" rx="3.4" ry="2" fill="#FFB7C5"/></svg>`;
 function showStreakPop() {
-  const p = streakPop; streakPop = null; if (!p) return;
+  const p = streakPop; streakPop = null; if (!p) return; streakNote = "";
   const n = p.n, m = streakMult(), toNext = m < 1.5 ? 3 - (n % 3) : 0, week = n % 7 === 0 ? 7 : n % 7;
   const head = { first: L("Your streak begins!", "連續紀錄開始了！"), up: L("Streak up!", "連續紀錄 +1！"), shield: L("Shield saved your streak!", "護盾保住了你的連續紀錄！"), back: L("Welcome back!", "歡迎回來！") }[p.kind];
   const who = { first: "chiikawa", up: "usagi", shield: "hachiware", back: "momonga" }[p.kind];
