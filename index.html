@@ -295,6 +295,72 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .mode.rush .muted { color: #D8CFE8; }
 .mode h3 { font-size: 1.15rem; }
 .mode.practice { background: var(--yellow); }
+/* ---------- Hub (bottom tabs) ---------- */
+.hub { display: grid; gap: 14px; }
+.bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: #fff; border-top: var(--line); display: flex; justify-content: center; gap: 2px; padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.bnav button { flex: 1 1 0; max-width: 128px; min-width: 0; background: none; border: 0; border-radius: 14px; display: grid; justify-items: center; gap: 1px; padding: 4px 2px; min-height: 54px; font-size: .78rem; font-weight: 800; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bnav button .i { font-size: 1.45rem; line-height: 1.15; }
+.bnav button[aria-current="page"] { background: var(--pink-2); color: var(--ink); }
+body:has(.bnav) footer { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+body:has(.bnav) .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+.homegrid { display: grid; gap: 14px; grid-template-areas: "nest" "stat" "streak" "chat"; }
+.homegrid .nest { grid-area: nest; } .homegrid .stat { grid-area: stat; } .homegrid .chatc { grid-area: chat; } .homegrid .streakc { grid-area: streak; }
+@media (min-width: 820px) { .homegrid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-areas: "nest stat" "chat streak"; align-items: start; } }
+.nest { padding: 0; overflow: hidden; }
+.scene { position: relative; height: clamp(230px, 46vw, 360px); background: radial-gradient(circle, #F2DFCB 2.2px, transparent 2.8px) 0 0 / 24px 24px, #FFF8EE; }
+.scene .win { position: absolute; right: 7%; top: 7%; width: clamp(80px, 24%, 150px); height: auto; }
+.scene .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(#EED6B7, #E2C39E); border-top: 4px solid #DDBB94; }
+.scene .rug { position: absolute; left: 50%; bottom: 7%; width: 62%; height: 12%; transform: translateX(-50%); background: #FFD6E0; border-radius: 50%; }
+.scene .pet { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: 5%; width: min(44%, 210px); background: none; border: 0; padding: 0; animation: bob 2.6s ease-in-out infinite; }
+.scene .pet svg { width: 100%; height: auto; display: block; overflow: visible; }
+.scene .pet.boing svg { animation: boing .5s ease-out; }
+@keyframes boing { 0% { transform: scale(1); } 30% { transform: scale(1.12, .88); } 60% { transform: scale(.94, 1.08); } 100% { transform: scale(1); } }
+.scene .spark { position: absolute; color: #FFB7C5; font-size: 1.3rem; animation: twinkle 2.4s ease-in-out infinite; }
+.scene .spark.s1 { left: 22%; top: 46%; } .scene .spark.s2 { left: 70%; top: 58%; color: #A0C4FF; animation-delay: -1.2s; }
+.scene .petsay { position: absolute; left: 0; right: 0; margin: 0 auto; width: fit-content; top: 10%; background: #fff; border: var(--line); border-radius: 16px; padding: 4px 12px; font-weight: 800; box-shadow: var(--shadow-sm); white-space: nowrap; animation: pop .3s ease-out; }
+.chip { font-size: .8rem; font-weight: 800; border-radius: 999px; padding: 2px 10px; background: #EFE6FF; border: 2px solid var(--ink); white-space: nowrap; }
+.meter { display: grid; grid-template-columns: minmax(6.5em, auto) 1fr auto; align-items: center; gap: 10px; font-weight: 800; font-size: .92rem; }
+.meter i { height: 12px; background: #F1EAE0; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.meter b { display: block; height: 100%; }
+.meter .mv { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.act { border: var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); background: #fff; display: grid; justify-items: center; align-content: center; gap: 2px; padding: 8px 4px; min-height: 86px; text-align: center; min-width: 0; }
+.act:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.act .ic { font-size: 1.6rem; line-height: 1.1; } .act b { font-size: .95rem; line-height: 1.2; } .act .sub { font-size: .74rem; color: var(--ink-soft); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; max-width: 100%; white-space: nowrap; }
+.act.pink { background: var(--pink-2); } .act.purple { background: #E8DEFF; } .act.green { background: #DDF6E4; } .act.blue { background: var(--blue-2); } .act.yellow { background: var(--yellow); }
+.act:disabled { opacity: .55; }
+.streakc .sfl { width: 54px; flex: 0 0 54px; } .streakc .sfl svg.flame { width: 54px; height: 64px; }
+.wk { display: flex; gap: 6px; flex-wrap: wrap; }
+.wk span { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--ink); display: grid; place-items: center; font-weight: 800; font-size: .8rem; background: #F4EFE7; color: var(--ink-soft); }
+.wk span.on { background: #FFB36B; color: var(--ink); }
+.topics .tbar { height: 8px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; overflow: hidden; } .topics .tbar i { display: block; height: 100%; background: var(--pink); }
+.twocol { display: grid; gap: 14px; } @media (min-width: 760px) { .twocol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.dressgrid { display: grid; gap: 14px; } @media (min-width: 820px) { .dressgrid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; } .dressgrid .nest { position: sticky; top: 84px; } }
+.dressgrid > *, .homegrid > *, #dPane, .twocol > * { min-width: 0; }
+.dinfo { display: grid; gap: 8px; padding: 12px 16px 16px; justify-items: start; }
+.slotbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.slotbar .tab { white-space: nowrap; flex: 0 0 auto; }
+@media (max-width: 560px) { .scene { height: 230px; } .acts { gap: 8px; } .act { min-height: 78px; } .meter { font-size: .85rem; gap: 8px; } }
+@media (max-width: 560px) { .tools .pill.saved { display: none; } .tools { gap: 5px; } .tools .iconbtn { min-width: 38px; min-height: 40px; padding: 2px 6px; } .tools .pill { padding: 2px 7px; } }
+@media (max-width: 440px) { .brand { display: none !important; } header.top { justify-content: center; } }
+/* Lens Lab */
+.lab .labsvg { width: 100%; height: auto; display: block; border: var(--line); border-radius: 16px; touch-action: none; cursor: ew-resize; }
+.lab .lt { font: 800 21px var(--font); fill: #5B4846; } .lab .lt.sm { font-size: 18px; font-weight: 700; }
+@media (max-width: 600px) { .lab .ax { display: none; } .lab .lt { font-size: 34px; } .lab .lt.sm { font-size: 30px; } .labsvg line, .labsvg path { stroke-width: 6px; } .labsvg .grab { r: 28px; } .lab { padding: 14px; } }
+.seg { display: inline-flex; border: var(--line); border-radius: 14px; overflow: hidden; }
+.seg button { border: 0; background: #fff; padding: 8px 14px; font-weight: 800; min-height: 44px; }
+.seg button[aria-checked="true"] { background: var(--pink); }
+.rchk { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; font-size: .88rem; border: 2px solid var(--ink); border-radius: 999px; padding: 4px 10px; background: #fff; min-height: 40px; }
+.rchk input { width: 18px; height: 18px; }
+.rchk.r1, .r1 { color: #C86A10; } .rchk.r2, .r2 { color: #23804A; } .rchk.r3, .r3 { color: #2F6FD6; }
+.labslide { display: grid; gap: 4px; font-weight: 800; font-size: .9rem; }
+.labslide input { width: 100%; accent-color: #E0567E; height: 32px; }
+.labgrid { display: grid; gap: 14px; } @media (min-width: 820px) { .labgrid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.labfacts { display: grid; gap: 8px; } .labfacts > div { background: var(--cream-2); border: 2px solid var(--ink); border-radius: 12px; padding: 6px 10px; display: grid; }
+.labfacts .lk { font-size: .76rem; font-weight: 800; color: var(--ink-soft); }
+.labrules { display: grid; gap: 6px; align-content: start; font-size: .92rem; }
+.missions { display: grid; gap: 6px; } .mission { border: 2px dashed var(--ink); border-radius: 12px; padding: 6px 10px; font-size: .92rem; background: #fff; }
+.mission.done { border-style: solid; background: var(--green); }
 /* pronunciation buttons */
 .spk { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
 .spkb { min-width: 36px; min-height: 36px; border: 2px solid var(--ink); border-radius: 10px; background: var(--blue-2); font-size: .95rem; line-height: 1; padding: 0 4px; }
@@ -436,63 +502,67 @@ try { LANG = localStorage.getItem(LANG_KEY) === "zh" ? "zh" : "en"; } catch (e) 
 const L = (en, zh) => (LANG === "zh" ? zh : en);
 const INK = "#4A3E3D";
 let clipN = 0;
-function eyes(x1, x2, y, mood, big) {
-  if (mood === "happy") return `<path d="M${x1 - 3.2} ${y + 1.2} q3.2 -4.4 6.4 0 M${x2 - 3.2} ${y + 1.2} q3.2 -4.4 6.4 0" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>`;
-  const rx = big ? 3.8 : 2.7, ry = big ? 4.4 : 3.3, hr = big ? 1.4 : 1;
-  let s = `<ellipse cx="${x1}" cy="${y}" rx="${rx}" ry="${ry}" fill="${INK}"/><ellipse cx="${x2}" cy="${y}" rx="${rx}" ry="${ry}" fill="${INK}"/>
-    <circle cx="${x1 + 1}" cy="${y - 1.3}" r="${hr}" fill="#fff"/><circle cx="${x2 + 1}" cy="${y - 1.3}" r="${hr}" fill="#fff"/>`;
-  if (mood === "cry") s += `<path d="M${x1} ${y + 4} q-2.4 4.5 0 6.5 q2.4 -2 0 -6.5Z M${x2} ${y + 4} q-2.4 4.5 0 6.5 q2.4 -2 0 -6.5Z" fill="#A0C4FF" stroke="#5B8FC9" stroke-width=".8"/>`;
+/* Soft "mochi" characters: one round squishy body, tiny arms and feet, rosy cheeks.
+   Drawn in a 100 × 100 box. Eyes sit at y = 50, cheeks at y = 57, body from y ≈ 20 to 92. */
+const MINK = "#5B4846";
+const MO = `stroke="${MINK}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"`;
+const BODY = "M50 20 C74 20 88 39 88 61 C88 82 72 92 50 92 C28 92 12 82 12 61 C12 39 26 20 50 20 Z";
+const CHESTNUT = "M50 15 C60 23 88 36 88 61 C88 82 72 92 50 92 C28 92 12 82 12 61 C12 36 40 23 50 15 Z";
+function mEyes(mood, big, y = 50) {
+  const x1 = 38.5, x2 = 61.5;
+  if (mood === "happy") return `<path d="M${x1 - 4.2} ${y + 1.6} q4.2 -6 8.4 0 M${x2 - 4.2} ${y + 1.6} q4.2 -6 8.4 0" fill="none" stroke="${MINK}" stroke-width="2.9" stroke-linecap="round"/>`;
+  const rx = big ? 4.4 : 3.4, ry = big ? 5 : 4;
+  let s = `<ellipse cx="${x1}" cy="${y}" rx="${rx}" ry="${ry}" fill="${MINK}"/><ellipse cx="${x2}" cy="${y}" rx="${rx}" ry="${ry}" fill="${MINK}"/>
+    <circle cx="${x1 + 1.2}" cy="${y - 1.6}" r="${big ? 1.7 : 1.3}" fill="#fff"/><circle cx="${x2 + 1.2}" cy="${y - 1.6}" r="${big ? 1.7 : 1.3}" fill="#fff"/>`;
+  if (mood === "cry") s += `<path d="M${x1 - 1} ${y + 5} q-3 5.5 0 8 q3 -2.5 0 -8Z M${x2 + 1} ${y + 5} q-3 5.5 0 8 q3 -2.5 0 -8Z" fill="#A9D0FF" stroke="#6E9FD6" stroke-width="1"/>`;
   return s;
 }
-function blush(x1, x2, y) {
-  const h = x => `M${x - 3.5} ${y + 1.6} l1.6 -3.2 M${x - .5} ${y + 1.6} l1.6 -3.2 M${x + 2.5} ${y + 1.6} l1.6 -3.2`;
-  return `<ellipse cx="${x1}" cy="${y}" rx="5.2" ry="3.2" fill="#FFB7C5"/><ellipse cx="${x2}" cy="${y}" rx="5.2" ry="3.2" fill="#FFB7C5"/>
-    <path d="${h(x1)} ${h(x2)}" stroke="#E27893" stroke-width=".9" stroke-linecap="round"/>`;
+const mBlush = (y = 57) => `<ellipse cx="28.5" cy="${y}" rx="6.8" ry="4.2" fill="#FFB1C3" opacity=".9"/><ellipse cx="71.5" cy="${y}" rx="6.8" ry="4.2" fill="#FFB1C3" opacity=".9"/>`;
+function mMouth(mood, open, y = 56) {
+  if (mood === "cry") return `<path d="M44.5 ${y + 2} q2.75 -3 5.5 0 q2.75 3 5.5 0" fill="none" stroke="${MINK}" stroke-width="2.2" stroke-linecap="round"/>`;
+  if (open || mood === "happy") return `<path d="M44.8 ${y - .5} q5.2 8.5 10.4 0 Z" fill="#F4839C" stroke="${MINK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M47.4 ${y + 3.2} q2.6 -2 5.2 0" fill="#FFC2CF"/>`;
+  return `<path d="M45 ${y} q2.5 2.8 5 0 q2.5 2.8 5 0" fill="none" stroke="${MINK}" stroke-width="2.2" stroke-linecap="round"/>`;
 }
-function mouth(x, y, mood, open) {
-  if (mood === "cry") return `<path d="M${x - 4.5} ${y + 1.5} q2.25 -2.5 4.5 0 q2.25 2.5 4.5 0" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`;
-  if (open || mood === "happy") return `<path d="M${x - 3.8} ${y - 1} q3.8 6 7.6 0 Z" fill="#F07C9A" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
-  return `<path d="M${x - 2.6} ${y} q1.3 1.8 2.6 0 q1.3 1.8 2.6 0" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`;
+// arms and feet share the body colour; the belly is a soft lighter patch
+const limbs = c => `<ellipse cx="37" cy="91" rx="8.5" ry="4.8" fill="${c}" ${MO}/><ellipse cx="63" cy="91" rx="8.5" ry="4.8" fill="${c}" ${MO}/>`;
+const arms = c => `<path d="M15.5 60 q-7 5 -3.5 11.5 q4 3 8 -2" fill="${c}" ${MO}/><path d="M84.5 60 q7 5 3.5 11.5 q-4 3 -8 -2" fill="${c}" ${MO}/>`;
+const belly = (c = "#FFF5EA") => `<ellipse cx="50" cy="75" rx="20" ry="12.5" fill="${c}"/>`;
+const shine = `<path d="M24 38 q4 -9 12 -12" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".9"/>`;
+function capped(id, shape, fill, capFill, capPath) {
+  return `<clipPath id="${id}"><path d="${shape}"/></clipPath><path d="${shape}" fill="${fill}"/><path clip-path="url(#${id})" d="${capPath}" fill="${capFill}"/>`;
 }
-const OUT = `stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"`;
 const CHAR = {
-  chiikawa: { name: "Chiikawa", color: "#ffffff",
-    head: m => `<circle cx="17" cy="17" r="7" fill="#fff" ${OUT}/><circle cx="47" cy="17" r="7" fill="#fff" ${OUT}/>
-      <ellipse cx="32" cy="37" rx="25" ry="21" fill="#fff" ${OUT}/>${blush(15, 49, 43)}${eyes(24, 40, 36, m)}${mouth(32, 43, m)}` },
-  hachiware: { name: "Hachiware", color: "#ffffff",
-    head: m => { const id = "hc" + (++clipN); return `<path d="M9 26 L13 5 L26 16Z" fill="#A0C4FF" ${OUT}/><path d="M55 26 L51 5 L38 16Z" fill="#A0C4FF" ${OUT}/>
-      <clipPath id="${id}"><ellipse cx="32" cy="37" rx="25" ry="21"/></clipPath>
-      <ellipse cx="32" cy="37" rx="25" ry="21" fill="#fff"/>
-      <path clip-path="url(#${id})" d="M0 33 L0 0 L64 0 L64 33 L42 33 L32 17 L22 33 Z" fill="#A0C4FF"/>
-      <ellipse cx="32" cy="37" rx="25" ry="21" fill="none" ${OUT}/>${blush(15, 49, 44)}${eyes(24, 40, 38, m)}${mouth(32, 45, m)}`; } },
-  usagi: { name: "Usagi", color: "#FDF3A8",
-    head: m => `<ellipse cx="23" cy="10" rx="5.5" ry="13" fill="#FDF3A8" ${OUT}/><ellipse cx="41" cy="10" rx="5.5" ry="13" fill="#FDF3A8" ${OUT}/>
-      <ellipse cx="23" cy="10" rx="2" ry="8" fill="#FFB7C5"/><ellipse cx="41" cy="10" rx="2" ry="8" fill="#FFB7C5"/>
-      <ellipse cx="32" cy="38" rx="24" ry="20" fill="#FDF3A8" ${OUT}/>${blush(15, 49, 44)}${eyes(24, 40, 37, m)}${mouth(32, 45, m, true)}` },
-  momonga: { name: "Momonga", color: "#ffffff",
-    head: m => { const id = "mc" + (++clipN); return `<circle cx="14" cy="21" r="6.5" fill="#C9C3F0" ${OUT}/><circle cx="50" cy="21" r="6.5" fill="#C9C3F0" ${OUT}/>
-      <clipPath id="${id}"><ellipse cx="32" cy="37" rx="25" ry="21"/></clipPath>
-      <ellipse cx="32" cy="37" rx="25" ry="21" fill="#fff"/>
-      <path clip-path="url(#${id})" d="M0 30 Q32 15 64 30 L64 0 L0 0 Z" fill="#C9C3F0"/>
-      <ellipse cx="32" cy="37" rx="25" ry="21" fill="none" ${OUT}/>${blush(14, 50, 45)}${eyes(23, 41, 38, m, true)}${mouth(32, 46, m)}`; } },
-  kurimanju: { name: "Kuri-Manju", color: "#F2D7AE",
-    head: m => { const id = "kc" + (++clipN);
-      const e = m === "normal" ? `<path d="M21 37 h6 M37 37 h6" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>` : eyes(24, 40, 37, m);
-      return `<clipPath id="${id}"><path d="M8 45 Q6 18 32 16 Q58 18 56 45 Q32 56 8 45Z"/></clipPath>
-      <path d="M8 45 Q6 18 32 16 Q58 18 56 45 Q32 56 8 45Z" fill="#F2D7AE"/>
-      <path clip-path="url(#${id})" d="M0 29 Q32 19 64 29 L64 0 L0 0 Z" fill="#A8703F"/>
-      <path d="M8 45 Q6 18 32 16 Q58 18 56 45 Q32 56 8 45Z" fill="none" ${OUT}/>${blush(15, 49, 43)}${e}${mouth(32, 44, m)}`; } }
+  chiikawa: { name: "Chiikawa", color: "#FFFFFF",
+    back: () => `<circle cx="27" cy="26" r="9" fill="#fff" ${MO}/><circle cx="73" cy="26" r="9" fill="#fff" ${MO}/><circle cx="27" cy="26.5" r="4.4" fill="#FFD3DD"/><circle cx="73" cy="26.5" r="4.4" fill="#FFD3DD"/>`,
+    body: () => `<path d="${BODY}" fill="#fff"/>${belly()}`,
+    face: m => `${mBlush()}${mEyes(m)}${mMouth(m)}` },
+  hachiware: { name: "Hachiware", color: "#FFFFFF",
+    back: () => `<path d="M20 36 L22 11 L41 24 Z" fill="#A8C8F5" ${MO}/><path d="M80 36 L78 11 L59 24 Z" fill="#A8C8F5" ${MO}/><path d="M25 29 L26 17 L35 24 Z" fill="#FFD3DD"/><path d="M75 29 L74 17 L65 24 Z" fill="#FFD3DD"/>`,
+    body: () => { const id = "hc" + (++clipN); return capped(id, BODY, "#fff", "#A8C8F5", "M0 44 L0 0 L100 0 L100 44 L63 44 L50 27 L37 44 Z") + belly(); },
+    face: m => `${mBlush(58)}${mEyes(m, false, 51)}${mMouth(m, false, 57)}` },
+  usagi: { name: "Usagi", color: "#FFF1A8",
+    back: () => `<ellipse cx="38" cy="12" rx="7" ry="17" fill="#FFF1A8" ${MO} transform="rotate(-8 38 12)"/><ellipse cx="62" cy="12" rx="7" ry="17" fill="#FFF1A8" ${MO} transform="rotate(8 62 12)"/><ellipse cx="38" cy="12" rx="2.8" ry="11" fill="#FFC6D3" transform="rotate(-8 38 12)"/><ellipse cx="62" cy="12" rx="2.8" ry="11" fill="#FFC6D3" transform="rotate(8 62 12)"/>`,
+    body: () => `<path d="${BODY}" fill="#FFF1A8"/>${belly("#FFF9D6")}`,
+    face: m => `${mBlush()}${mEyes(m)}${mMouth(m, true)}` },
+  momonga: { name: "Momonga", color: "#FFFFFF",
+    back: () => `<circle cx="17" cy="36" r="10" fill="#CFC6F5" ${MO}/><circle cx="83" cy="36" r="10" fill="#CFC6F5" ${MO}/><circle cx="17" cy="36" r="5" fill="#FFD3DD"/><circle cx="83" cy="36" r="5" fill="#FFD3DD"/>`,
+    body: () => { const id = "mc" + (++clipN); return capped(id, BODY, "#fff", "#CFC6F5", "M0 42 Q50 28 100 42 L100 0 L0 0 Z") + belly(); },
+    face: m => `${mBlush(58)}${mEyes(m, true, 50)}${mMouth(m, false, 58)}` },
+  kurimanju: { name: "Kuri-Manju", color: "#F4DDB6",
+    back: () => "",
+    body: () => { const id = "kc" + (++clipN); return capped(id, CHESTNUT, "#F4DDB6", "#B07846", "M0 42 Q50 30 100 42 L100 0 L0 0 Z") + belly("#FAEBD0"); },
+    face: m => `${mBlush()}${m === "normal" ? `<path d="M34 50 h9 M57 50 h9" stroke="${MINK}" stroke-width="2.8" stroke-linecap="round"/>` : mEyes(m)}${mMouth(m)}` }
 };
-const avatar = (who, mood = "normal", eq) => `<svg viewBox="0 0 64 64" aria-hidden="true"><g filter="url(#sketch)">${CHAR[who].head(mood)}${who === "chiikawa" ? outfitSvg(eq) : ""}</g></svg>`;
-function figure(who, mood = "normal") {
-  const c = CHAR[who].color;
-  return `<svg viewBox="-4 -4 72 100" aria-hidden="true"><g filter="url(#sketch)">
-    <ellipse cx="32" cy="76" rx="19" ry="15" fill="${c}" ${OUT}/>
-    <ellipse cx="13" cy="70" rx="5" ry="7" fill="${c}" ${OUT} transform="rotate(30 13 70)"/>
-    <ellipse cx="51" cy="70" rx="5" ry="7" fill="${c}" ${OUT} transform="rotate(-30 51 70)"/>
-    <ellipse cx="24" cy="90" rx="6" ry="3.5" fill="${c}" ${OUT}/><ellipse cx="40" cy="90" rx="6" ry="3.5" fill="${c}" ${OUT}/>
-    <g>${CHAR[who].head(mood)}${who === "chiikawa" ? outfitSvg() : ""}</g></g></svg>`;
+CHAR.kurimanju.shape = CHESTNUT;
+// the whole character in one 100 × 100 drawing; Chiikawa also wears the player's outfit
+function mochi(who, mood = "normal", eq, ground) {
+  const c = CHAR[who], shape = c.shape || BODY, dress = who === "chiikawa" ? dressLayers(eq) : {};
+  return `${ground ? `<ellipse cx="50" cy="95" rx="32" ry="4.5" fill="${MINK}" opacity=".12"/>` : ""}${dress.back || ""}${c.back()}${limbs(c.color)}${c.body()}${dress.outfit || ""}
+    <path d="${shape}" fill="none" ${MO}/>${shine}${arms(dress.arm || c.color)}${c.face(mood)}${dress.front || ""}`;
 }
+Object.keys(CHAR).forEach(k => { CHAR[k].head = m => mochi(k, m); });
+const avatar = (who, mood = "normal", eq) => `<svg viewBox="0 0 100 100" aria-hidden="true">${mochi(who, mood, eq)}</svg>`;
+function figure(who, mood = "normal") { return `<svg viewBox="0 0 100 100" aria-hidden="true">${mochi(who, mood, undefined, true)}</svg>`; }
 
 /* ============================================================
    2. Sound effects: Web Audio, no files
@@ -1051,9 +1121,9 @@ const ZH_ROOMS = {
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
 const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
-const ZH_WARDROBE = { hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_WARDROBE = { hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
-const ZH_SLOTS = { hat: "帽子", face: "眼鏡", ribbon: "髮夾", frame: "相框" };
+const ZH_SLOTS = { hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框" };
 const ZH_CHAR = { chiikawa: "吉伊卡哇", hachiware: "小八", usagi: "烏薩奇", momonga: "小桃", kurimanju: "栗子饅頭" };
 const ZH_COLOURS = { Red: "紅", Green: "綠", Blue: "藍", Yellow: "黃", Cyan: "青", Magenta: "品紅", White: "白", Black: "黑" };
 const ZH_TOPIC_LABELS = { light_basics: "光與視覺", reflection: "反射", refraction: "折射與全內反射", lenses: "透鏡", colours: "顏色", em_waves: "電磁波譜" };
@@ -1658,8 +1728,8 @@ function freshState() {
     physics_mastery: { light_basics: 0, reflection: 0, refraction: 0, lenses: 0, colours: 0, em_waves: 0 },
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
-    coins: 0, owned: [], equip: { hat: null, face: null, ribbon: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, player_id: newId(), lb_last: 0
+    coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null }, power: { torch: 1, crystal: 1, guard: 1 },
+    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -1669,7 +1739,7 @@ function normalise(obj) {
   s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run); s.seen = Object.assign({}, s.seen);
   // older saves used roomX-N for the 5 core puzzles
   s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
-  s.equip = Object.assign({ hat: null, face: null, ribbon: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
+  s.equip = Object.assign({ hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null }, s.equip); s.power = Object.assign({ torch: 0, crystal: 0, guard: 0 }, s.power);
   s.rush = Object.assign({ best: 0, lastDay: null }, s.rush); s.practice = Object.assign({ best: 0, lastDay: null }, s.practice); s.mistakes = [...(s.mistakes || [])]; s.owned = [...(s.owned || [])]; if (!s.player_id) s.player_id = newId();
   // v1 saves stored room names and a lock count: convert to room ids and solved-hotspot lists
   s.completed_rooms = [...new Set((s.completed_rooms || []).map(n => (ROOMS.find(r => r.id === n || String(n).includes(r.name)) || {}).id).filter(Boolean))];
@@ -1884,7 +1954,7 @@ function trophySvg(t, got) {
     <rect x="44" y="72" width="12" height="14" fill="${c1}" stroke="${INK}" stroke-width="3"/>
     <rect x="30" y="86" width="40" height="12" rx="3" fill="${c2}" stroke="${INK}" stroke-width="3"/>
     <rect x="24" y="98" width="52" height="12" rx="3" fill="${c1}" stroke="${INK}" stroke-width="3"/>
-    ${got ? `<svg x="31" y="22" width="38" height="38" viewBox="0 0 64 64">${CHAR[t.who].head("happy")}</svg>`
+    ${got ? `<svg x="29" y="18" width="42" height="42" viewBox="0 0 100 100">${CHAR[t.who].head("happy")}</svg>`
           : `<g transform="translate(50 42)"><rect x="-10" y="-4" width="20" height="16" rx="3" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M-6 -4 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="${INK}" stroke-width="3"/></g>`}
   </svg>`;
 }
@@ -1960,7 +2030,30 @@ const WARDROBE = [
   { id: "face_xray", slot: "face", name: "X-ray goggles", tier: "epic", earn: () => [S.stats.fixed || 0, 30], earnDesc: ["Fix 30 mistakes in 🔁 Practice mode", "在 🔁 練習模式修正 30 題錯題"], svg: `<path d="M12 35 h40" stroke="${INK}" stroke-width="3"/><rect x="15" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><rect x="34" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><path d="M19 35 h7 M38 35 h7" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 2"/>` },
   { id: "hat_wizard", slot: "hat", name: "Optics wizard hat", tier: "epic", earn: () => [S.mastered_puzzles.length, 140], earnDesc: ["Master 140 questions", "掌握 140 題"], svg: `<ellipse cx="32" cy="18" rx="20" ry="4.5" fill="#3B3A7A" ${O2}/><path d="M20 17 L35 -14 L44 17 Z" fill="#3B3A7A" ${O2}/><path d="M33 3 l1.4 2.9 3.2 .5 -2.3 2.2 .5 3.2 -2.8 -1.5 -2.8 1.5 .5 -3.2 -2.3 -2.2 3.2 -.5z" fill="#FDFFB6"/><circle cx="27" cy="11" r="1.3" fill="#FFB7C5"/><circle cx="39" cy="-4" r="1.1" fill="#A0C4FF"/>` },
   { id: "fr_galaxy", slot: "frame", name: "Galaxy frame", tier: "legend", earn: () => [S.stats.practiceRuns || 0, 20], earnDesc: ["Finish 20 🔁 Practice rounds", "完成 20 次 🔁 練習"], cls: "fr-galaxy" },
-  { id: "hat_halo", slot: "hat", name: "Rainbow halo", tier: "legend", earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.mastered_puzzles.length, 250), 271], earnDesc: ["All 21 ★ and master 250 questions", "取得全部 21★ 並掌握 250 題"], svg: `${["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF", "#B07CF0"].map((c, k) => `<ellipse cx="32" cy="${-1 + k * 0.1}" rx="${17 - k * 2.2}" ry="${5.2 - k * .7}" fill="none" stroke="${c}" stroke-width="2.2"/>`).join("")}<ellipse cx="32" cy="-1" rx="19" ry="6.4" fill="none" stroke="${INK}" stroke-width="1.4"/>` }
+  { id: "hat_halo", slot: "hat", name: "Rainbow halo", tier: "legend", earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.mastered_puzzles.length, 250), 271], earnDesc: ["All 21 ★ and master 250 questions", "取得全部 21★ 並掌握 250 題"], svg: `${["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF", "#B07CF0"].map((c, k) => `<ellipse cx="32" cy="${-1 + k * 0.1}" rx="${17 - k * 2.2}" ry="${5.2 - k * .7}" fill="none" stroke="${c}" stroke-width="2.2"/>`).join("")}<ellipse cx="32" cy="-1" rx="19" ry="6.4" fill="none" stroke="${INK}" stroke-width="1.4"/>` },
+  // ---- Gen Z & Hong Kong trend items (drawn in the 100 × 100 mochi box) ----
+  { id: "hair_swoop", slot: "hair", v2: true, name: "\"Baby, baby\" swoop wig", price: 110, svg: `<path d="M13 58 C9 34 26 14 50 14 C74 14 91 32 87 56 C84 46 79 40 72 37 C64 44 50 46 38 43 C30 42 22 45 18 50 C16 52 14 55 13 58 Z" fill="#8A5A3B" ${MO}/><path d="M28 27 C42 20 60 22 71 35 M38 20 C52 18 66 24 76 34 M22 38 C30 32 40 30 50 32" stroke="#B98158" stroke-width="2.4" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_idol", slot: "hair", v2: true, name: "K-pop idol wolf cut", price: 120, svg: `<path d="M16 76 L11 63 L15 58 C8 36 26 14 50 14 C74 14 92 36 85 58 L89 63 L84 76 L79 66 L76 72 L74 50 C70 42 64 39 58 38 L54 44 L50 37 L45 44 L41 38 C34 40 28 44 26 52 L24 72 L21 66 Z" fill="#F59BC0" ${MO}/><path d="M30 24 C40 19 56 19 66 25" stroke="#FFD0E2" stroke-width="3" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_afro", slot: "hair", v2: true, name: "Disco afro", price: 90, svg: (() => { const c = [[21, 35, 12], [31, 23, 13], [50, 17, 14], [69, 23, 13], [79, 35, 12], [14, 47, 8], [86, 47, 8], [40, 31, 9], [60, 31, 9]];
+      return c.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#3B2B2B" ${MO}/>`).join("") + c.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r - 1.4}" fill="#3B2B2B"/>`).join("") + `<path d="M36 16 q5 -4 10 -3 M60 18 q5 0 8 4" stroke="#6E5555" stroke-width="2" fill="none" stroke-linecap="round"/>`; })() },
+  { id: "hair_mullet", slot: "hair", v2: true, name: "Party mullet", price: 70, back: `<path d="M16 44 C8 60 10 78 16 88 L26 84 L22 60 Z M84 44 C92 60 90 78 84 88 L74 84 L78 60 Z" fill="#F2CF63" ${MO}/>`, svg: `<path d="M16 47 C14 28 30 15 50 15 C70 15 86 28 84 47 C78 38 70 34 61 34 C55 39 45 39 39 34 C30 34 22 38 16 47 Z" fill="#F2CF63" ${MO}/><path d="M30 24 q10 -6 22 -5" stroke="#FFF0B3" stroke-width="3" fill="none" stroke-linecap="round"/>` },
+  { id: "hair_braids", slot: "hair", v2: true, name: "Gothic twin braids", price: 80, svg: `<path d="M15 51 C13 30 30 15 50 15 C70 15 87 30 85 51 C80 41 66 34 53 35 L50 23 L47 35 C34 34 20 41 15 51 Z" fill="#2E2A33" ${MO}/>${[0, 1, 2, 3].map(k => `<ellipse cx="14" cy="${58 + k * 8}" rx="5" ry="4.6" fill="#2E2A33" ${MO}/><ellipse cx="86" cy="${58 + k * 8}" rx="5" ry="4.6" fill="#2E2A33" ${MO}/>`).join("")}<circle cx="14" cy="89" r="2.6" fill="#FF8FB8" ${MO}/><circle cx="86" cy="89" r="2.6" fill="#FF8FB8" ${MO}/>` },
+  { id: "hat_moon", slot: "hat", v2: true, name: "Moonwalk fedora", price: 160, svg: `<g transform="rotate(-8 50 24)"><path d="M29 27 C29 11 36 6 50 8 C64 6 71 11 71 27 Z" fill="#242026" ${MO}/><path d="M42 10 q8 5 16 0" stroke="#4C4550" stroke-width="2" fill="none"/><path d="M29.5 21 H70.5 V26.5 H29.5 Z" fill="#fff"/><ellipse cx="50" cy="28" rx="33" ry="5.6" fill="#242026" ${MO}/></g>` },
+  { id: "hat_bucket", slot: "hat", v2: true, name: "Gen Z bucket hat", price: 60, svg: `<path d="M29 26 C29 12 37 8 50 8 C63 8 71 12 71 26 Z" fill="#BDE58A" ${MO}/><path d="M24 25 H76 L87 35 C70 31 30 31 13 35 Z" fill="#BDE58A" ${MO}/><circle cx="50" cy="17" r="5.2" fill="#FFE14D" ${MO}/><path d="M47.6 16 v.4 M52.4 16 v.4 M47.5 18.6 q2.5 2 5 0" stroke="${MINK}" stroke-width="1.4" stroke-linecap="round" fill="none"/>` },
+  { id: "hat_headset", slot: "hat", v2: true, name: "Cat-ear gamer headset", price: 130, svg: `<path d="M25 26 L27 10 L38 20 Z M75 26 L73 10 L62 20 Z" fill="#FF8FB8" ${MO}/><path d="M28 21 L29 14 L34 19 Z M72 21 L71 14 L66 19 Z" fill="#fff"/><path d="M17 46 C13 17 87 17 83 46" fill="none" stroke="${MINK}" stroke-width="8.5" stroke-linecap="round"/><path d="M17 46 C13 17 87 17 83 46" fill="none" stroke="#FF8FB8" stroke-width="4.5" stroke-linecap="round"/><rect x="8" y="41" width="12" height="17" rx="5" fill="#FF8FB8" ${MO}/><rect x="80" y="41" width="12" height="17" rx="5" fill="#FF8FB8" ${MO}/><circle cx="14" cy="49.5" r="2.4" fill="#3FE0E8"/><circle cx="86" cy="49.5" r="2.4" fill="#3FE0E8"/><path d="M14 58 q4 10 20 6" stroke="${MINK}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="35" cy="63.5" r="2.6" fill="#242026"/>` },
+  { id: "face_deal", slot: "face", v2: true, name: "Deal-with-it pixel shades", price: 100, svg: `<g fill="#111" shape-rendering="crispEdges"><rect x="23" y="43" width="54" height="5"/><rect x="27" y="48" width="18" height="6"/><rect x="55" y="48" width="18" height="6"/><rect x="30" y="54" width="12" height="3"/><rect x="58" y="54" width="12" height="3"/></g><g fill="#fff" shape-rendering="crispEdges"><rect x="30" y="49" width="3" height="3"/><rect x="33" y="52" width="3" height="2"/><rect x="58" y="49" width="3" height="3"/><rect x="61" y="52" width="3" height="2"/></g>` },
+  { id: "face_nerd", slot: "face", v2: true, name: "\"Um, actually\" nerd glasses", price: 50, svg: `<circle cx="38.5" cy="50" r="8.6" fill="rgba(255,255,255,.28)" stroke="#1E1A1D" stroke-width="3.2"/><circle cx="61.5" cy="50" r="8.6" fill="rgba(255,255,255,.28)" stroke="#1E1A1D" stroke-width="3.2"/><rect x="46" y="46.5" width="8" height="5" rx="1" fill="#fff" ${MO}/><path d="M29.9 48 L20 45 M70.1 48 L80 45" stroke="#1E1A1D" stroke-width="3"/><rect x="46.8" y="58" width="6.4" height="5.4" rx="1" fill="#fff" stroke="${MINK}" stroke-width="1.6"/><path d="M50 58 v5.4" stroke="${MINK}" stroke-width="1.2"/>` },
+  { id: "out_thriller", slot: "outfit", v2: true, name: "80s pop-star red jacket", price: 180, arm: "#D8262F", svg: `<path d="M0 63 C30 69 70 69 100 63 L100 100 L0 100 Z" fill="#D8262F"/><path d="M50 67 V96" stroke="#C9C9C9" stroke-width="2.4"/><path d="M20 68 L36 80 L46 70 M80 68 L64 80 L54 70 M18 78 L34 90 M82 78 L66 90" stroke="#1E1A1D" stroke-width="3.2" fill="none" stroke-linejoin="round"/>` },
+  { id: "out_67", slot: "outfit", v2: true, name: "\"Six-seven\" jersey", price: 120, svg: `<path d="M0 63 C28 69 72 69 100 63 L100 100 L0 100 Z" fill="#6B4BCF"/><path d="M38 66 L50 75 L62 66" stroke="#FFD84D" stroke-width="3.4" fill="none" stroke-linejoin="round"/><text x="50" y="91" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-weight="800" font-size="15" fill="#fff" stroke="${MINK}" stroke-width=".8">67</text>` },
+  { id: "out_rwb", slot: "outfit", v2: true, name: "Red-white-blue bag poncho", price: 90, arm: "#F8F6F0", svg: `<path d="M0 63 C28 69 72 69 100 63 L100 100 L0 100 Z" fill="#F8F6F0"/>${[8, 26, 44, 62, 80].map(x => `<rect x="${x}" y="60" width="6" height="40" fill="#D8262F" opacity=".85"/><rect x="${x + 8}" y="60" width="5" height="40" fill="#1F4FB5" opacity=".85"/>`).join("")}${[70, 84].map(y => `<rect x="0" y="${y}" width="100" height="5" fill="#D8262F" opacity=".55"/><rect x="0" y="${y + 7}" width="100" height="4" fill="#1F4FB5" opacity=".55"/>`).join("")}` },
+  { id: "out_apron", slot: "outfit", v2: true, name: "Cha chaan teng apron", price: 70, svg: `<path d="M30 65 H70 L75 96 H25 Z" fill="#fff" ${MO}/><path d="M36 82 H64" stroke="#E7A95A" stroke-width="2.4"/><path d="M44 70 h12 l-1.5 8 h-9 Z" fill="#C88A54" stroke="${MINK}" stroke-width="1.6"/><path d="M56 72 q4 1 0 4" stroke="${MINK}" stroke-width="1.4" fill="none"/><path d="M47 69 q1 -3 0 -5 M52 69 q1 -3 0 -5" stroke="#B9A8A0" stroke-width="1.2" fill="none"/>` },
+  { id: "out_chain", slot: "outfit", v2: true, name: "Rizz gold chain", price: 110, over: true, svg: `<path d="M27 63 Q50 80 73 63" fill="none" stroke="${MINK}" stroke-width="5.2" stroke-linecap="round"/><path d="M27 63 Q50 80 73 63" fill="none" stroke="#F2C230" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 1.6"/><path d="M50 71 l6 6 -6 8 -6 -8 Z" fill="#9FE3FF" ${MO}/><path d="M47 76 h6" stroke="#fff" stroke-width="1.4"/>` },
+  { id: "prop_67", slot: "prop", v2: true, name: "\"6-7\" hands", price: 90, svg: `${[[9, 42, "6"], [91, 42, "7"]].map(([x, y, t]) => `<circle cx="${x}" cy="${y}" r="8.5" fill="#FFE14D" ${MO}/><text x="${x}" y="${y + 4.8}" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-weight="800" font-size="13" fill="${MINK}">${t}</text>`).join("")}<path d="M3 56 q3 -3 6 0 M91 56 q3 -3 6 0" stroke="${MINK}" stroke-width="1.8" fill="none" stroke-linecap="round"/>` },
+  { id: "prop_glove", slot: "prop", v2: true, name: "One sparkly glove", price: 140, svg: `<path d="M79 57 q15 1 13 16 q-7 7 -14 -1 Z" fill="#fff" ${MO}/><path d="M78 58 q2 5 0 9" stroke="#C9CFE0" stroke-width="3" fill="none"/>${[[84, 62], [88, 66], [83, 67], [87, 70], [85, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1" fill="#A7B4C8"/>`).join("")}<path d="M94 54 l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1z M80 52 l.7 2 2 .7 -2 .7 -.7 2 -.7 -2 -2 -.7 2 -.7z" fill="#FFD84D"/>` },
+  { id: "prop_boba", slot: "prop", v2: true, name: "Bubble milk tea", price: 50, svg: `<path d="M93 38 L90 56" stroke="${MINK}" stroke-width="6" stroke-linecap="round"/><path d="M93 38 L90 56" stroke="#FF8FB8" stroke-width="3" stroke-linecap="round"/><path d="M81 54 H99 L96 80 H84 Z" fill="#E6C39C" ${MO}/><path d="M81 54 H99" stroke="${MINK}" stroke-width="3.4" stroke-linecap="round"/>${[[86, 75], [90, 77], [94, 75], [88, 72], [92, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9" fill="#3B2B2B"/>`).join("")}` },
+  { id: "prop_waffle", slot: "prop", v2: true, name: "Egg-waffle cone", price: 60, svg: `${[[88, 46], [94, 49], [83, 51], [90, 53], [96, 56], [85, 58], [92, 60]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.2" fill="#F4C25B" ${MO}/>`).join("")}<path d="M80 62 L98 58 L92 82 Z" fill="#FFF7EC" ${MO}/><path d="M84 66 L96 63" stroke="#E0567E" stroke-width="1.6"/>` },
+  { id: "prop_aura", slot: "prop", v2: true, name: "+1000 Aura sign", price: 150, svg: `<rect x="22" y="0" width="56" height="12" rx="6" fill="#2B2433" ${MO}/><text x="50" y="9" text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-weight="800" font-size="8" fill="#FFE14D">+1000 AURA</text><path d="M16 4 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z M84 4 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z" fill="#C9A7F0"/>` },
+  { id: "prop_selfie", slot: "prop", v2: true, name: "Selfie phone", price: 80, svg: `<g transform="rotate(14 90 48)"><rect x="83" y="33" width="15" height="26" rx="3.5" fill="#2B2433" ${MO}/><rect x="85" y="36" width="11" height="19" rx="1.5" fill="#FFD3DD"/><path d="M90.5 49 c-3 -2 -3 -5 0 -4 c3 -1 3 2 0 4z" fill="#E0567E"/></g><circle cx="80" cy="30" r="3" fill="#FFF7B0" opacity=".9"/>` }
 ];
 WARDROBE.forEach(w => { if (!w.tier) w.tier = w.price <= 60 ? "common" : w.price <= 130 ? "rare" : "epic"; });
 const TIERS = { common: ["Common", "普通"], rare: ["✦ Rare", "✦ 稀有"], epic: ["💎 Epic", "💎 史詩"], legend: ["👑 Legendary", "👑 傳說"] };
@@ -1969,7 +2062,7 @@ let itemQueue = [];
 function checkItems() {
   WARDROBE.forEach(w => { if (!w.earn || S.owned.includes(w.id)) return; const [c, g] = w.earn(); if (c >= g) { S.owned.push(w.id); trophyQueue.push({ item: w }); } });
 }
-const SLOT_NAMES = { hat: "Hats", face: "Glasses", ribbon: "Hair clips", frame: "Frames" };
+const SLOT_NAMES = { hair: "Wigs", hat: "Hats", face: "Glasses", ribbon: "Hair clips", outfit: "Outfits", prop: "Props", frame: "Frames" };
 const POWERUPS = [
   { id: "torch", icon: "🔦", name: "Torch", price: 25, desc: "Removes one wrong answer, or sets one dial correctly. (Counts as a hint.)" },
   { id: "crystal", icon: "⏳", name: "Time crystal", price: 30, desc: "Adds 60 seconds to the room timer." },
@@ -1977,10 +2070,20 @@ const POWERUPS = [
 ];
 const MAX_POWER = 5;
 const itemById = id => WARDROBE.find(w => w.id === id);
-function outfitSvg(eq) {
+// Old items were drawn on the small 64 × 64 head; this maps them onto the mochi body
+const OLD_FIT = `translate(50 50) scale(1.4) translate(-32 -36)`;
+const itemSvg = w => w.v2 ? w.svg : `<g transform="${OLD_FIT}">${w.svg}</g>`;
+function dressLayers(eq) {
   eq = eq || (typeof S !== "undefined" && S && S.equip);
-  if (!eq) return "";
-  return ["ribbon", "face", "hat"].map(k => eq[k] && itemById(eq[k]) ? itemById(eq[k]).svg : "").join("");
+  if (!eq) return {};
+  const it = k => eq[k] && itemById(eq[k]);
+  const o = it("outfit"), id = "oc" + (++clipN);
+  return {
+    back: it("hair") && it("hair").back || "",
+    outfit: o && !o.over ? `<clipPath id="${id}"><path d="${BODY}"/></clipPath><g clip-path="url(#${id})">${o.svg}</g>` : "",
+    arm: o && o.arm,
+    front: (o && o.over ? o.svg : "") + ["hair", "face", "hat", "ribbon", "prop"].map(k => it(k) ? itemSvg(it(k)) : "").join("")
+  };
 }
 const frameCls = eq => { eq = eq || (S && S.equip) || {}; const f = eq.frame && itemById(eq.frame); return f ? f.cls : ""; };
 const playerAv = (mood = "normal") => `<span class="${frameCls()}" style="display:inline-flex">${avatar("chiikawa", mood)}</span>`;
@@ -1990,47 +2093,6 @@ const boost = n => Math.round(n * streakMult());
 const multTag = () => streakMult() > 1 ? ` · 🔥×${streakMult().toFixed(1)}` : "";
 function addCoins(n, why) { S.coins = Math.max(0, (S.coins || 0) + n); save(); renderTools(); if (why) toast(`${n >= 0 ? "+" : ""}${n} 🌰 ${why}`); }
 
-function openShop(tab = "outfits") {
-  const draw = () => {
-    const eq = S.equip;
-    const html = `
-      <span class="kicker">👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</span>
-      <h2>${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2>
-      <div class="preview-big"><div class="fig"><span class="${frameCls()}" style="display:inline-flex;border-radius:50%">${figure("chiikawa", "happy")}</span></div>
-        <div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} ${L("chestnuts", "栗子")}</span>
-        <span class="small"><b>${L("Collection", "收藏")}: ${WARDROBE.filter(w => S.owned.includes(w.id)).length}/${WARDROBE.length}</b> · ${["rare", "epic", "legend"].map(t => `${L(...TIERS[t]).split(" ")[0]} ${WARDROBE.filter(w => w.tier === t && S.owned.includes(w.id)).length}/${WARDROBE.filter(w => w.tier === t).length}`).join(" · ")}</span>
-        <span class="small muted">${L("✦ 💎 👑 Special items with 🔒 can't be bought. Earn them with steady effort!", "有 🔒 的 ✦ 💎 👑 特別物品不能購買，要靠持續努力贏取！")}</span>
-        <span class="small muted">${L("Earn chestnuts in ⚡ Light Rush (double on your first round each day), by escaping rooms and by unlocking trophies.", "在 ⚡ 光速挑戰（每天第一局雙倍）、逃出房間和解鎖獎盃都可以賺取栗子。")}</span></div></div>
-      <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${tab === "outfits"}" data-tab="outfits">👒 ${L("Outfits", "服飾")}</button><button class="tab" role="tab" aria-selected="${tab === "power"}" data-tab="power">🎒 ${L("Power-ups", "道具")}</button></div>
-      ${tab === "outfits" ? Object.keys(SLOT_NAMES).map(slot => `<h3>${SLOT_NAMES[slot]}</h3><div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
-          const own = S.owned.includes(w.id), on = eq[slot] === w.id;
-          const prevEq = Object.assign({}, eq, { [slot]: w.id });
-          const pr = w.earn && !own ? w.earn() : null;
-          return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
-            <b class="small">${esc(w.name)}</b>
-            ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
-                  : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
-                  : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`).join("")
-      : `<p class="small muted">${L(`Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.`, `道具可在密室中使用：在任何一把鎖的 🎒 欄使用。每種最多持有 ${MAX_POWER} 個。`)}</p>
-         <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
-           <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
-           <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🌰 ${u.price}</button></div>`).join("")}</div>`}`;
-    const box = openModal(html, { wide: true });
-    box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { SFX.tap(); tab = b.dataset.tab; draw(); });
-    box.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
-      const w = itemById(b.dataset.buy); if (w.earn || S.coins < w.price) return;
-      S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha(L("Cute!", "好可愛！")); draw(); refreshPlayer();
-    });
-    box.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
-      const w = itemById(b.dataset.wear); S.equip[w.slot] = S.equip[w.slot] === w.id ? null : w.id; save(true); SFX.item(); draw(); refreshPlayer();
-    });
-    box.querySelectorAll("[data-pbuy]").forEach(b => b.onclick = () => {
-      const u = POWERUPS.find(x => x.id === b.dataset.pbuy); if (S.coins < u.price) return;
-      S.coins -= u.price; S.power[u.id] = (S.power[u.id] || 0) + 1; save(true); SFX.item(); draw();
-    });
-  };
-  draw();
-}
 function refreshPlayer() {
   document.getElementById("brandav").innerHTML = playerAv("happy");
   const c = document.getElementById("chiiAv"); if (c) { c.className = "av " + frameCls(); c.innerHTML = avatar("chiikawa", R ? R.mood : "normal"); }
@@ -2512,9 +2574,8 @@ function renderTools() {
   const justSaved = Date.now() - savedFlash < 2500;
   document.getElementById("tools").innerHTML = `
     ${S ? `<span class="pill" title="${L("Daily streak · chestnut bonus", "連續日數 · 栗子加成")}">🔥 ${S.current_streak}${streakMult() > 1 ? `<span class="lbl"> ×${streakMult().toFixed(1)}</span>` : ""}</span>` : ""}
-    ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="${L("Your progress saves automatically on this device", "進度會自動儲存在這部裝置")}">${justSaved ? `✓<span class="lbl"> ${L("Saved", "已儲存")}</span>` : `💾<span class="lbl"> ${L("Auto-save", "自動儲存")}</span>`}</span>` : ""}
+    ${S && justSaved ? `<span class="pill saved" title="${L("Your progress saves automatically on this device", "進度會自動儲存在這部裝置")}">✓<span class="lbl"> ${L("Saved", "已儲存")}</span></span>` : ""}
     ${S ? `<button class="iconbtn coinpill" id="tCoins" aria-label="${L("Chestnuts", "栗子")}: ${S.coins}">🌰 ${S.coins}</button>` : ""}
-    ${S ? `<button class="iconbtn" id="tTrophy" aria-label="${L("Open the Trophy Cabinet", "打開獎盃櫃")}">🏆<span class="lbl">${L("Trophies", "獎盃")}</span></button>` : ""}
     <button class="iconbtn" id="tJournal" aria-label="${L("Open the Study Journal", "打開學習日誌")}">📓<span class="lbl">${L("Journal", "日誌")}</span></button>
     ${S ? `<button class="iconbtn" id="tSave" aria-label="${L("Save and share code", "儲存及分享代碼")}">🔑<span class="lbl">${L("Save code", "存檔代碼")}</span></button>` : ""}
     <button class="iconbtn" id="tLang" aria-label="${L("Switch to Traditional Chinese", "Switch to English")}" title="${L("Language", "語言")}">🌐<span class="lbl">${L("中文", "English")}</span></button>
@@ -2761,75 +2822,333 @@ function chatHtml(kind, first) {
   return `<span class="kind">💪 ${L("From your friends", "朋友的話")}</span>${say(who, text, "happy")}`;
 }
 function showChat(kind) { const el = document.getElementById("chat"); if (el) el.innerHTML = chatHtml(kind); }
-function renderMap() {
-  stopRush(); stopPractice(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
-  const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
-  $app.innerHTML = `
-    <section class="hero">${starsBg()}
-      <span class="kicker" style="color:#fff">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色與其他")}</span>
-      <h1>${L("Hi", "你好")}, ${esc(S.player_name)}!</h1>
-      <p class="sub">${allDone ? L("You escaped every room! 全部房間都逃出咗!", "全部房間都逃出咗！") : `${L("Next", "下一個")}: ${topicNo(ROOMS[ni].topicNo)} · ${esc(ROOMS[ni].name)}`}</p>
-      ${castHtml(allDone ? { chiikawa: "happy", hachiware: "happy", usagi: "happy", momonga: "happy", kurimanju: "happy" } : { usagi: "happy" })}
-    </section>
-    ${streakNote && !streakPop ? `<section class="card cream"><b>${esc(streakNote)}</b></section>` : ""}
-    <section class="card">
-      <div class="chat" id="chat" aria-live="polite">${chatHtml("cheer", true)}</div>
-      <div class="row"><button class="btn plain" id="cFact">💡 ${L("Fun fact", "趣味知識")}</button><button class="btn plain" id="cCheer">💪 ${L("Cheer me on", "為我打氣")}</button></div>
-      <div class="row">
-        ${!allDone ? `<button class="btn big" data-room="${ROOMS[ni].id}">▶ ${L("Enter", "進入")} ${esc(ROOMS[ni].name)}</button>` : ""}
-        <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? L("🎁 Daily snack chest", "🎁 每日零食寶箱") : L("🎁 Opened. Back tomorrow!", "🎁 已打開，明天再來！")}</button>
+/* ============================================================
+   Hub: bottom tabs (Home · Rooms · Lens Lab · Dress up · Collection) so nothing needs a long scroll
+   ============================================================ */
+let HUB_TAB = "home";
+const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Lens Lab", "透鏡實驗室"], ["dress", "👗", "Dress up", "換裝"], ["collect", "🏆", "Collection", "收藏"]];
+const PET_LINES = [["Yaha!", "呀哈！"], ["Hehe~ 🥰", "嘻嘻～🥰"], ["Let's learn about light!", "一起學光吧！"], ["Pat pat... ☺️", "摸摸頭……☺️"], ["Do I look cute today?", "我今天可愛嗎？"], ["One room a day! 🌱", "每天一個房間！🌱"]];
+function sceneHtml(mood) {
+  return `<div class="scene">
+    <svg class="win" viewBox="0 0 120 106" aria-hidden="true"><rect x="6" y="4" width="108" height="90" rx="16" fill="#fff"/><rect x="14" y="12" width="92" height="74" rx="9" fill="#CFE6FA"/><circle cx="38" cy="32" r="10" fill="#FFE27A"/><ellipse cx="80" cy="64" rx="17" ry="6.5" fill="#fff"/><path d="M60 12 V86 M14 49 H106" stroke="#fff" stroke-width="6"/><rect x="0" y="92" width="120" height="11" rx="5.5" fill="#E7C9A6"/></svg>
+    <div class="floor"></div><div class="rug"></div>
+    <span class="spark s1" aria-hidden="true">✦</span><span class="spark s2" aria-hidden="true">✦</span>
+    <button class="pet" id="pet" aria-label="${L("Pat Chiikawa", "摸摸吉伊卡哇")}">${figure("chiikawa", mood)}</button>
+    <span class="petsay" id="petsay" hidden></span>
+  </div>`;
+}
+function wirePet() {
+  const p = document.getElementById("pet"); if (!p) return;
+  p.onclick = () => {
+    SFX.init(); SFX.yaha(); p.innerHTML = figure("chiikawa", "happy"); p.classList.remove("boing"); void p.offsetWidth; p.classList.add("boing");
+    const b = document.getElementById("petsay"); b.textContent = L(...pick(PET_LINES)); b.hidden = false;
+    clearTimeout(wirePet._t); wirePet._t = setTimeout(() => { b.hidden = true; }, 1800);
+  };
+}
+const meter = (ic, label, v, max, col) => `<div class="meter"><span>${ic} ${label}</span><i><b style="width:${Math.min(100, Math.round(v / Math.max(1, max) * 100))}%;background:${col}"></b></i><span class="mv">${v}/${max}</span></div>`;
+const act = (id, cls, ic, t, sub, extra = "") => `<button class="act ${cls}" id="${id}" ${extra}><span class="ic" aria-hidden="true">${ic}</span><b>${t}</b>${sub ? `<span class="sub">${sub}</span>` : ""}</button>`;
+function rankName() {
+  const n = S.completed_rooms.length;
+  return n >= 7 ? L("Light Master", "光之大師") : n >= 5 ? L("Light Expert", "光學專家") : n >= 2 ? L("Explorer", "探險家") : L("Beginner", "新手");
+}
+function streakCard() {
+  const n = S.current_streak, m = streakMult();
+  const wd = LANG === "zh" ? ["日", "一", "二", "三", "四", "五", "六"] : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"], t = new Date();
+  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(t); d.setDate(t.getDate() - 6 + i); return [wd[d.getDay()], 6 - i < n]; });
+  return `<section class="card streakc"><div class="row" style="flex-wrap:nowrap"><div class="sfl">${flameSvg(n)}</div>
+    <div><h3>${L(`${n}-day streak`, `${n} 日連續溫習`)}</h3><span class="small muted">${L("Chestnut bonus", "栗子加成")} ×${m.toFixed(1)} · 🛡️ ${S.streak_shields} · ${L("Best", "最佳")} ${S.longest_streak}</span></div></div>
+    <div class="wk" aria-label="${L("Last 7 days", "過去 7 天")}">${days.map(([l, on]) => `<span class="${on ? "on" : ""}">${l}</span>`).join("")}</div>
+    <p class="small muted">${L("Play once a day to keep the flame burning. 🌱", "每天玩一次，讓火焰繼續燃燒。🌱")}</p></section>`;
+}
+function homeHtml() {
+  const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today(), mk = mistakeCount();
+  const stars = ROOMS.reduce((a, r) => a + roomStars(r), 0), tot = ROOMS.reduce((a, r) => a + r.pool.length, 0);
+  return `${streakNote && !streakPop ? `<section class="card cream note"><b>${esc(streakNote)}</b></section>` : ""}
+  <div class="homegrid">
+    <section class="card nest">${sceneHtml(allDone ? "happy" : "normal")}</section>
+    <section class="card stat">
+      <div class="row" style="justify-content:space-between"><h2>${esc(S.player_name)}</h2><span class="chip">${rankName()}</span></div>
+      ${meter("🚪", L("Escaped", "已逃出"), S.completed_rooms.length, ROOMS.length, "#FFB7C5")}
+      ${meter("⭐", L("Stars", "星星"), stars, 21, "#FFD84D")}
+      ${meter("📚", L("Mastered", "已掌握"), S.mastered_puzzles.length, tot, "#A0C4FF")}
+      <div class="acts">
+        ${allDone ? act("aRooms", "pink", "🗺️", L("Revise a room", "重溫房間"), L("New questions!", "新題目！")) : act("aGo", "pink", "▶️", L("Enter room", "進入房間"), esc(ROOMS[ni].name), `data-room="${ROOMS[ni].id}"`)}
+        ${act("mRush", "purple", "⚡", L("Light Rush", "光速挑戰"), S.rush.lastDay !== today() ? L("×2 today!", "今天雙倍！") : `${L("Best", "最高")} ${S.rush.best}`)}
+        ${act("mPrac", "green", "🔁", L("Practice", "練習"), mk ? L(`${mk} to fix`, `${mk} 題待修正`) : L(`${PRACTICE_GOAL} in a row`, `連對 ${PRACTICE_GOAL} 題`))}
+        ${act("aLab", "blue", "🔭", L("Lens Lab", "透鏡實驗室"), L("Try it!", "動手試！"))}
+        ${act("mShop", "white", "👗", L("Dress up", "換裝"), `🌰 ${S.coins}`)}
+        ${act("chest", "yellow", "🎁", chestReady ? L("Snack chest", "零食寶箱") : L("Back tomorrow", "明天再來"), "", chestReady ? "" : "disabled")}
       </div>
     </section>
-    <section class="card">
-      <h2>🎮 ${L("Game modes", "遊戲模式")}</h2>
-      <div class="modes">
-        <button class="mode rush" id="mRush"><h3>⚡ ${L("Light Rush", "光速挑戰")}</h3><span class="muted small">${L("60 seconds of mixed quick questions. Earn 🌰 chestnuts for outfits and power-ups.", "60 秒混合快問快答。賺取 🌰 栗子換服飾和道具。")}</span><span class="small">${L("Best", "最高分")}: <b>${S.rush.best}</b> ${L("pts", "分")} ${S.rush.lastDay !== today() ? L("· <b>×2 today!</b>", "· <b>今天雙倍！</b>") : ""}</span></button>
-        <button class="mode practice" id="mPrac"><h3>🔁 ${L("Practice mode", "練習模式")}</h3><span class="muted small">${L(`Loops the questions you got wrong until you get ${PRACTICE_GOAL} right in a row.`, `重溫你答錯的題目，直至連續答對 ${PRACTICE_GOAL} 題。`)}</span><span class="small">${mistakeCount() ? L(`🔁 <b>${mistakeCount()}</b> mistake(s) to fix`, `🔁 <b>${mistakeCount()}</b> 題錯題待修正`) : L("✨ No mistakes saved", "✨ 暫無錯題")}</span></button>
-        <button class="mode" id="mShop"><h3>👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</h3><span class="muted small">${L("Dress up Chiikawa and buy power-ups for the escape rooms.", "為吉伊卡哇打扮，並購買密室道具。")}</span><span class="small">🌰 <b>${S.coins}</b> ${L("chestnuts", "栗子")}</span></button>
-        <button class="mode" id="mLb"><h3>🏅 ${L("Leaderboard", "排行榜")}</h3><span class="muted small">${L("The 10 most dedicated players.", "最努力的十位玩家。")}</span><span class="small">${L("Your points", "你的分數")}: <b>${dedication()}</b></span></button>
-      </div>
-    </section>
-    <section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
-    <section class="card">
-      <h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色與其他")}</h2>
-      <div class="topics">${ROOMS.map((r, i) => {
-        const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length;
-        return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
-          <span class="tnum">${topicNo(r.topicNo)}</span>
-          <span class="tname">${topicHtml(r)}</span>
-          <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>
-          ${open ? `<span class="small">📚 ${masteredIn(r)}/${r.pool.length} ${L("questions mastered", "題已掌握")}</span>` : ""}
-          ${done ? `<span class="small"><b>🔁 ${L("Revise: new questions & incidents every visit", "溫習：每次都有新題目和新事件")}</b></span>` : ""}
-          <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 ${L("locks", "把鎖")}` : L("Escape the room before", "先逃出上一個房間")}</span>
-        </button>`; }).join("")}</div>
-    </section>
-    <section class="card">
-      <h2>📈 ${L("Physics mastery", "物理掌握度")}</h2>
-      <p class="small muted">${L("Each room has 40 questions (Bloom levels 1–6). Mastery goes up when you answer one right on the first try without a hint. Replay cleared rooms to master them all! The first replay each day earns a 📚 revision bonus.", "每個房間有 40 題（布魯姆 1 至 6 級）。一次答對而不用提示，掌握度就會上升。重玩已逃出的房間把全部題目掌握吧！每天第一次重玩可獲 📚 溫習獎勵。")}</p>
-      ${Object.entries(S.physics_mastery).map(([k, v]) => `<div><div class="row" style="justify-content:space-between"><b class="small">${TOPIC_LABELS[k]}</b><b class="small">${v}%</b></div>
-        <div style="height:14px;border:2px solid var(--ink);border-radius:999px;background:var(--cream);overflow:hidden"><i style="display:block;height:100%;width:${v}%;background:var(--pink)"></i></div></div>`).join("")}
-    </section>
-    <section class="card">
-      <h2>🎒 ${L("Backpack", "背包")}</h2>
+    <section class="card chatc"><div class="chat" id="chat" aria-live="polite">${chatHtml("cheer", true)}</div>
+      <div class="row"><button class="btn plain" id="cFact">💡 ${L("Fun fact", "趣味知識")}</button><button class="btn plain" id="cCheer">💪 ${L("Cheer me on", "為我打氣")}</button></div></section>
+    ${streakCard()}
+  </div>`;
+}
+function roomsHtml() {
+  const ni = nextRoomIndex();
+  return `<section class="card"><div class="row" style="justify-content:space-between"><h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色和光譜以外")}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
+    <p class="small muted">${L("Every room has 40 questions (Bloom levels 1–6). Answer one right first time without a hint to master it. Cleared rooms give new questions and random incidents every visit, plus a daily 📚 revision bonus.", "每個房間有 40 題（布魯姆 1 至 6 級）。不用提示一次答對，就算掌握該題。已逃出的房間每次都有新題目和隨機事件，每天首次重溫更有 📚 溫習獎勵。")}</p>
+    <div class="topics">${ROOMS.map((r, i) => {
+      const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length, mm = masteredIn(r);
+      return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
+        <span class="tnum">${topicNo(r.topicNo)}${r.sec ? ` · ${r.sec}` : ""}</span>
+        <span class="tname">${topicHtml(r)}</span>
+        <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>
+        ${open ? `<span class="tbar" role="img" aria-label="${mm}/${r.pool.length}"><i style="width:${Math.round(mm / r.pool.length * 100)}%"></i></span><span class="small">📚 ${mm}/${r.pool.length} ${L("mastered", "已掌握")}</span>` : ""}
+        <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 ${L("locks", "把鎖")}` : L("Escape the room before", "先逃出上一個房間")}</span>
+      </button>`; }).join("")}</div></section>`;
+}
+function collectHtml() {
+  const own = WARDROBE.filter(w => S.owned.includes(w.id)).length;
+  return `<section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
+  <div class="twocol">
+    <section class="card"><h2>🎒 ${L("Backpack", "背包")}</h2>
       <div class="bag">${S.chiikawa_badges.concat(S.inventory).map(b => `<span class="tag">${esc(trItem(b))}</span>`).join("") || `<span class="muted small">${L("Empty. Escape a room or open the daily chest!", "空空如也。逃出房間或打開每日寶箱吧！")}</span>`}</div>
-      <p class="small muted">${L(`🔥 Longest streak: ${S.longest_streak} days · 🛡️ Shields: ${S.streak_shields} (a shield saves your streak if you miss a day)`, `🔥 最長連續：${S.longest_streak} 天 · 🛡️ 護盾：${S.streak_shields}（漏玩一天時護盾會保住連續紀錄）`)}</p>
-    </section>`;
+      <p class="small muted">👗 ${L("Outfits collected", "已收集服飾")}: <b>${own}/${WARDROBE.length}</b> · 🔥 ${L("Longest streak", "最長連續")}: ${S.longest_streak} · 🛡️ ${S.streak_shields}</p></section>
+    <section class="card"><h2>🏅 ${L("Class leaderboard", "班級排行榜")}</h2><p class="small muted">${L("Dedication points come from days played, locks, rooms, rounds and trophies.", "努力分數來自遊玩日數、鎖、房間、練習回合和獎盃。")}</p>
+      <p><b>${L("Your points", "你的分數")}: ${dedication()}</b></p>
+      <div class="row"><button class="btn yellow" id="mLb">🏅 ${L("Open leaderboard", "打開排行榜")}</button><button class="btn plain" id="cSave">🔑 ${L("Save code", "存檔代碼")}</button></div></section>
+  </div>`;
+}
+/* ----- Dress-up ----- */
+let DRESS_SLOT = "hair";
+const SLOT_ICON = { hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", power: "🎒" };
+function wardrobeHtml(slot) {
+  const eq = S.equip, tabs = Object.keys(SLOT_NAMES).concat("power");
+  const grid = slot === "power"
+    ? `<p class="small muted">${L(`Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.`, `道具可在密室中使用：在任何一把鎖的 🎒 欄使用。每種最多持有 ${MAX_POWER} 個。`)}</p>
+       <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
+         <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
+         <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🌰 ${u.price}</button></div>`).join("")}</div>`
+    : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
+        const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
+        return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
+          <b class="small">${esc(w.name)}</b>
+          ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
+                : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
+                : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`;
+  return `<div class="slotbar" role="tablist">${tabs.map(k => `<button class="tab" role="tab" aria-selected="${k === slot}" data-slot="${k}">${SLOT_ICON[k]} ${k === "power" ? L("Power-ups", "道具") : SLOT_NAMES[k]}</button>`).join("")}</div>${grid}`;
+}
+function wireWardrobe(root, redraw) {
+  root.querySelectorAll("[data-slot]").forEach(b => b.onclick = () => { SFX.tap(); DRESS_SLOT = b.dataset.slot; redraw(); });
+  root.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
+    const w = itemById(b.dataset.buy); if (w.earn || S.coins < w.price) return;
+    S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha(L("Cute!", "好可愛！")); redraw(); refreshPlayer();
+  });
+  root.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
+    const w = itemById(b.dataset.wear); S.equip[w.slot] = S.equip[w.slot] === w.id ? null : w.id; save(true); SFX.item(); redraw(); refreshPlayer();
+  });
+  root.querySelectorAll("[data-pbuy]").forEach(b => b.onclick = () => {
+    const u = POWERUPS.find(x => x.id === b.dataset.pbuy); if (S.coins < u.price) return;
+    S.coins -= u.price; S.power[u.id] = (S.power[u.id] || 0) + 1; save(true); SFX.item(); redraw();
+  });
+}
+const collectLine = () => `<span class="small"><b>${L("Collection", "收藏")}: ${WARDROBE.filter(w => S.owned.includes(w.id)).length}/${WARDROBE.length}</b> · ${["rare", "epic", "legend"].map(t => `${L(...TIERS[t]).split(" ")[0]} ${WARDROBE.filter(w => w.tier === t && S.owned.includes(w.id)).length}/${WARDROBE.filter(w => w.tier === t).length}`).join(" · ")}</span>`;
+function dressTabHtml() {
+  return `<div class="dressgrid">
+    <section class="card nest">${sceneHtml("happy")}
+      <div class="dinfo"><span class="pill coinpill" id="dCoins">🌰 ${S.coins}</span><span id="dColl">${collectLine()}</span>
+        <button class="btn plain" id="dOff">🧺 ${L("Take everything off", "全部脫下")}</button>
+        <span class="small muted">${L("Earn 🌰 in rooms, ⚡ Light Rush and 🔁 Practice. Items with 🔒 are earned by steady effort, not bought.", "在密室、⚡ 光速挑戰和 🔁 練習賺取 🌰。有 🔒 的物品要靠持續努力贏取，不能購買。")}</span></div></section>
+    <section class="card"><h2>👗 ${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2><div id="dPane">${wardrobeHtml(DRESS_SLOT)}</div></section>
+  </div>`;
+}
+function refreshDress() {
+  const pane = document.getElementById("dPane"); if (!pane) return;
+  pane.innerHTML = wardrobeHtml(DRESS_SLOT); wireWardrobe(pane, refreshDress);
+  document.getElementById("pet").innerHTML = figure("chiikawa", "happy");
+  document.getElementById("dCoins").textContent = `🌰 ${S.coins}`; document.getElementById("dColl").innerHTML = collectLine();
+}
+function openShop(slot) {
+  if (slot === "power") DRESS_SLOT = "power";
+  if (S && !R && !RU && !PR) { closeModal(); renderMap("dress"); return; }
+  const draw = () => {
+    const box = openModal(`<span class="kicker">👗 ${L("Wardrobe &amp; Shop", "衣櫃與商店")}</span><h2>${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2>
+      <div class="preview-big"><div class="fig">${figure("chiikawa", "happy")}</div><div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} ${L("chestnuts", "栗子")}</span>${collectLine()}</div></div>
+      ${wardrobeHtml(DRESS_SLOT)}`, { wide: true });
+    wireWardrobe(box, draw);
+  };
+  draw();
+}
+function renderMap(tab) {
+  const moved = tab && tab !== HUB_TAB; if (tab) HUB_TAB = tab;
+  stopRush(); stopPractice(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
+  const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
+  $app.innerHTML = `<div class="hub">${body}</div>
+    <nav class="bnav" aria-label="${L("Main sections", "主要部分")}">${HUB_TABS.map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${i}</span>${L(en, zh)}</button>`).join("")}</nav>`;
+  if (moved) window.scrollTo(0, 0);
+  const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = () => { SFX.init(); SFX.tap(); fn(); }; };
+  $app.querySelectorAll(".bnav [data-tab]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); renderMap(b.dataset.tab); });
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
-  document.getElementById("cFact").onclick = () => { SFX.tap(); showChat("fact"); };
-  document.getElementById("cCheer").onclick = () => { SFX.tap(); showChat("cheer"); };
-  clearInterval(chatT); chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
+  wirePet();
+  on("mRush", rushIntro); on("mPrac", practiceIntro); on("mShop", () => renderMap("dress")); on("aLab", () => renderMap("lab")); on("aRooms", () => renderMap("rooms"));
+  on("mLb", openLeaderboard); on("cSave", openSaveModal); on("rJournal", () => openJournal());
+  on("cFact", () => showChat("fact")); on("cCheer", () => showChat("cheer"));
+  if (document.getElementById("dPane")) { wireWardrobe(document.getElementById("dPane"), refreshDress);
+    on("dOff", () => { Object.keys(S.equip).forEach(k => S.equip[k] = null); save(true); refreshDress(); refreshPlayer(); }); }
+  if (HUB_TAB === "lab") wireLensLab();
+  clearInterval(chatT);
+  if (document.getElementById("chat")) chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
   if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop && document.getElementById("chat")) showStreakPop(); }, 500);
-  document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
-  document.getElementById("mPrac").onclick = () => { SFX.init(); SFX.tap(); practiceIntro(); };
-  document.getElementById("mShop").onclick = () => { SFX.init(); SFX.tap(); openShop(); };
-  document.getElementById("mLb").onclick = () => { SFX.init(); SFX.tap(); openLeaderboard(); };
   const c = document.getElementById("chest");
-  if (chestReady) c.onclick = () => {
+  if (c && S.last_chest_date !== today()) c.onclick = () => {
     SFX.init(); SFX.fanfare(); confetti(70);
     const snack = pick(SNACKS); S.inventory.push(snack);
     let extra = ""; if (Math.random() < .2 && S.streak_shields < 3) { S.streak_shields++; extra = L(" …and a 🛡️ shield!", "……還有一個 🛡️ 護盾！"); }
     S.last_chest_date = today(); streakNote = L(`🎁 Kuri-Manju opened the chest: ${snack}${extra}`, `🎁 栗子饅頭打開了寶箱：${snack}${extra}`); save(true); renderMap();
   };
+}
+/* ============================================================
+   Lens Lab: drag the object and watch the three textbook rays form the image
+   ============================================================ */
+const LAB = { kind: "convex", u: 3, rays: [true, true, true] };
+const LX = 400, AY = 215, FPX = 80, OBJ_H = 60, LH = 400;   // lens position, principal axis, focal length (px), object height (px)
+const LAB_MISSIONS = [
+  { id: "cam", kind: "convex", en: "Make a real, inverted, <b>diminished</b> image (like a camera).", zh: "形成實像、倒立、<b>縮小</b>的像（像相機）。", ok: s => s.real && s.size === "dim" },
+  { id: "same", kind: "convex", en: "Make a real, inverted image the <b>same size</b> as the object.", zh: "形成實像、倒立、與物體<b>大小相同</b>的像。", ok: s => s.real && s.size === "same" },
+  { id: "proj", kind: "convex", en: "Make a real, inverted, <b>magnified</b> image (like a projector).", zh: "形成實像、倒立、<b>放大</b>的像（像投影機）。", ok: s => s.real && s.size === "mag" },
+  { id: "inf", kind: "convex", en: "Put the object where <b>no clear image</b> forms.", zh: "把物體放在<b>不能形成清晰的像</b>的位置。", ok: s => s.inf },
+  { id: "mag", kind: "convex", en: "Make a <b>virtual, erect, magnified</b> image (like a magnifying glass).", zh: "形成<b>虛像、正立、放大</b>的像（像放大鏡）。", ok: s => s.virt && s.size === "mag" },
+  { id: "con", kind: "concave", en: "Use the lens that <b>spreads light out</b>. What image does it always form?", zh: "使用令光線<b>發散</b>的透鏡。它形成的像總是怎樣的？", ok: s => s.kind === "concave" }
+];
+function labSolve() {
+  const u = LAB.u, f = 1, cv = LAB.kind === "convex", eps = 0.03;
+  if (cv && Math.abs(u - f) < eps) return { kind: LAB.kind, u, inf: true };
+  const v = cv ? u * f / (u - f) : -u * f / (u + f);   // v > 0: real image on the far side; v < 0: virtual, same side as the object
+  const m = Math.abs(v) / u, size = Math.abs(m - 1) < 0.04 ? "same" : m > 1 ? "mag" : "dim";
+  return { kind: LAB.kind, u, v, m, size, real: v > 0, virt: v < 0 };
+}
+function labZones(s) {
+  const u = s.u, cv = s.kind === "convex";
+  const obj = !cv ? L("Anywhere in front of the lens", "在透鏡前任何位置") : Math.abs(u - 2) < 0.03 ? L("At 2F'", "在 2F'") : u > 2 ? L("Beyond 2F'", "在 2F' 以外") : s.inf ? L("At F'", "在 F'") : u > 1 ? L("Between F' and 2F'", "在 F' 和 2F' 之間") : L("Within F'", "在 F' 以內");
+  let img;
+  if (s.inf) img = L("At infinity (no clear image)", "在無限遠處（沒有清晰的像）");
+  else if (!cv) img = L("Within F', on the same side as the object", "在 F' 以內，與物體在同一側");
+  else if (s.virt) img = L("On the same side as the object", "與物體在同一側");
+  else img = Math.abs(s.v - 2) < 0.06 ? L("At 2F", "在 2F") : s.v > 2 ? L("Beyond 2F", "在 2F 以外") : L("Between F and 2F", "在 F 和 2F 之間");
+  return [obj, img];
+}
+function labUse(s) {
+  if (s.kind === "concave") return L("Peephole on a door, myopia (short-sight) glasses, wide-angle phone lens", "大門防盜眼、近視眼鏡、智能電話廣角鏡頭");
+  if (s.inf) return L("Torches and car headlights put the bulb at F so the light comes out as a parallel beam", "電筒和汽車車頭燈把燈泡放在焦點，射出平行光束");
+  if (s.virt) return L("Magnifying glass", "放大鏡");
+  return s.size === "dim" ? L("Camera", "相機") : s.size === "mag" ? L("Projector", "投影機") : "—";
+}
+function labSvg() {
+  const s = labSolve(), cv = LAB.kind === "convex", xo = LX - LAB.u * FPX, yo = AY - OBJ_H;
+  const C1 = "#F08A24", C2 = "#2E9E5B", C3 = "#2F6FD6", IMG = "#7A4BD8", far = 2600;
+  const line = (x1, y1, x2, y2, c, dash) => `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="3" ${dash ? `stroke-dasharray="8 7"` : ""} stroke-linecap="round"/>`;
+  const mid = (x1, y1, x2, y2, c) => { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, a = Math.atan2(y2 - y1, x2 - x1), k = 11;
+    return `<path d="M${(mx - k * Math.cos(a - .45)).toFixed(1)} ${(my - k * Math.sin(a - .45)).toFixed(1)} L${mx.toFixed(1)} ${my.toFixed(1)} L${(mx - k * Math.cos(a + .45)).toFixed(1)} ${(my - k * Math.sin(a + .45)).toFixed(1)}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`; };
+  const out = (px, py, dx, dy, c) => { const n = Math.hypot(dx, dy) || 1; return line(px, py, px + dx / n * far, py + dy / n * far, c) + mid(px, py, px + dx / n * 160, py + dy / n * 160, c); };
+  const Fp = LX - FPX, F = LX + FPX, ix = s.inf ? null : LX + s.v * FPX, iy = s.inf ? null : AY + OBJ_H * s.v / LAB.u;
+  let rays = "";
+  // Rule 1: parallel to the axis, then through F (convex) or as if from F' (concave)
+  if (LAB.rays[0]) { const px = LX, py = yo;
+    rays += line(xo, yo, px, py, C1) + mid(xo, yo, px, py, C1);
+    if (cv) rays += out(px, py, F - px, AY - py, C1); else { rays += out(px, py, px - Fp, py - AY, C1) + line(Fp, AY, px, py, C1, true); }
+    if (s.virt && cv) rays += line(px, py, ix, iy, C1, true); }
+  // Rule 2: through F' then parallel (convex), or aimed at F then parallel (concave)
+  if (LAB.rays[1] && !s.inf) { const tx = cv ? Fp : F, py = yo + (AY - yo) * (LX - xo) / (tx - xo);
+    if (Number.isFinite(py) && Math.abs(py - AY) < 260) {
+      rays += line(xo, yo, LX, py, C2) + mid(xo, yo, LX, py, C2) + out(LX, py, 1, 0, C2);
+      if (cv && LAB.u < 1) rays += line(Fp, AY, xo, yo, C2, true);
+      if (!cv) rays += line(LX, py, F, AY, C2, true);
+      if (s.virt) rays += line(LX, py, ix, iy, C2, true);
+    } }
+  // Rule 3: through the optical centre, no bending
+  if (LAB.rays[2]) { rays += line(xo, yo, LX, AY, C3) + mid(xo, yo, LX, AY, C3) + out(LX, AY, LX - xo, AY - yo, C3); if (s.virt) rays += line(LX, AY, ix, iy, C3, true); }
+  const arrow = (x, yTop, c, dash, label, left) => { const up = yTop < AY, hd = up ? 12 : -12;
+    return `<line x1="${x}" y1="${AY}" x2="${x}" y2="${yTop}" stroke="${c}" stroke-width="5" ${dash ? `stroke-dasharray="9 6"` : ""}/><path d="M${x - 9} ${yTop + hd} L${x} ${yTop} L${x + 9} ${yTop + hd}" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+      <text x="${left ? x - 14 : x + 14}" y="${up ? yTop + 8 : yTop - 2}" ${left ? `text-anchor="end"` : ""} class="lt sm" fill="${c}">${label}</text>`; };
+  const lens = cv ? `<path d="M${LX} 42 Q${LX + 46} ${AY} ${LX} 368 Q${LX - 46} ${AY} ${LX} 42 Z" fill="rgba(160,196,255,.45)" stroke="${MINK}" stroke-width="3"/>`
+                  : `<path d="M${LX - 20} 42 H${LX + 20} Q${LX + 2} ${AY} ${LX + 20} 368 H${LX - 20} Q${LX - 2} ${AY} ${LX - 20} 42 Z" fill="rgba(160,196,255,.45)" stroke="${MINK}" stroke-width="3"/>`;
+  const mark = (x, t) => `<line x1="${x}" y1="${AY - 7}" x2="${x}" y2="${AY + 7}" stroke="${MINK}" stroke-width="3"/><text x="${x}" y="${AY + 32}" text-anchor="middle" class="lt">${t}</text>`;
+  const onScreen = !s.inf && ix > 8 && ix < 792 && iy > 6 && iy < LH - 20;
+  const dimU = `<g class="dim"><line x1="${xo}" y1="${LH - 22}" x2="${LX}" y2="${LH - 22}" stroke="#E0567E" stroke-width="3"/><text x="${(xo + LX) / 2}" y="${LH - 30}" text-anchor="middle" class="lt sm" fill="#E0567E">u</text></g>`;
+  const dimV = !s.inf && onScreen ? `<g class="dim"><line x1="${LX}" y1="${LH - 8}" x2="${ix}" y2="${LH - 8}" stroke="${IMG}" stroke-width="3"/><text x="${(ix + LX) / 2}" y="${LH - 13}" text-anchor="middle" class="lt sm" fill="${IMG}">v</text></g>` : "";
+  return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Ray diagram", "光線圖")}">
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>
+    <line x1="0" y1="${AY}" x2="800" y2="${AY}" stroke="${MINK}" stroke-width="2" stroke-dasharray="3 5"/>
+    <text x="16" y="${AY - 10}" class="lt sm ax">${L("principal axis", "主軸")}</text>
+    ${lens}${mark(LX - FPX, "F'")}${mark(LX - 2 * FPX, "2F'")}${mark(LX + FPX, "F")}${mark(LX + 2 * FPX, "2F")}
+    <circle cx="${LX}" cy="${AY}" r="4.5" fill="${MINK}"/><text x="${LX + 10}" y="${AY + 22}" class="lt sm">C</text>
+    ${rays}
+    ${arrow(xo, yo, "#E0567E", false, L("object", "物體"), true)}
+    ${onScreen ? arrow(ix, iy, IMG, s.virt, L(s.virt ? "virtual image" : "real image", s.virt ? "虛像" : "實像"), ix > 600) : ""}
+    ${dimU}${dimV}
+    ${!s.inf && !onScreen ? `<text x="790" y="30" text-anchor="end" class="lt sm" fill="${IMG}">${L("The image is very far away (off the screen)", "像在很遠處（超出畫面）")}</text>` : ""}
+    <circle class="grab" cx="${xo}" cy="${AY}" r="16" fill="#E0567E" opacity=".25"/>
+  </svg>`;
+}
+function labInfo() {
+  const s = labSolve(), [oz, iz] = labZones(s), yes = "✅", no = "❌";
+  const nature = s.inf ? L("No clear image: the rays come out parallel.", "沒有清晰的像：光線穿過透鏡後互相平行。")
+    : [s.real ? L("Real", "實像") : L("Virtual", "虛像"), s.real ? L("Inverted", "倒立") : L("Erect", "正立"), { mag: L("Magnified", "放大"), same: L("Same size", "與物體大小相同"), dim: L("Diminished", "縮小") }[s.size]].map(t => `<span class="chip">${t}</span>`).join(" ");
+  return `<div class="labfacts">
+    <div><span class="lk">${L("Object position", "物體位置")}</span><b>${oz}</b></div>
+    <div><span class="lk">${L("Image position", "像的位置")}</span><b>${iz}</b></div>
+    <div><span class="lk">${L("Nature of the image", "像的性質")}</span><span>${nature}</span></div>
+    <div><span class="lk">${L("Object distance u · image distance v", "物距 u · 像距 v")}</span><b>u ≈ ${s.u.toFixed(2)}f${s.inf ? " · v → ∞" : ` · v ≈ ${Math.abs(s.v).toFixed(2)}f`}</b></div>
+    ${s.inf ? "" : `<div><span class="lk">${L("Magnification = image distance ÷ object distance", "放大率 = 像距 ÷ 物距")}</span><b>≈ ${s.m.toFixed(2)} ${s.m > 1.04 ? L("(> 1: magnified)", "（> 1：放大）") : s.m < .96 ? L("(< 1: diminished)", "（< 1：縮小）") : L("(= 1: same size)", "（= 1：大小相同）")}</b></div>`}
+    <div><span class="lk">${L("Can it be caught on a screen?", "能否投射到屏幕上？")}</span><b>${s.real ? `${yes} ${L("Yes: real rays meet there", "能：真實光線在那裏相交")}` : `${no} ${L("No", "不能")}`}</b></div>
+    <div><span class="lk">${L("Everyday use", "日常應用")}</span><b>${labUse(s)}</b></div>
+  </div>`;
+}
+function lensLabHtml() {
+  const done = S.lab_done || [];
+  return `<section class="card lab">
+    <div class="row" style="justify-content:space-between"><h2>🔭 ${L("Lens Lab", "透鏡實驗室")}</h2><span class="small muted">${L("14.5 Convex lenses · 14.6 Concave lenses", "14.5 凸透鏡 · 14.6 凹透鏡")}</span></div>
+    <div class="row"><div class="seg" role="radiogroup" aria-label="${L("Lens", "透鏡")}">
+      <button role="radio" aria-checked="${LAB.kind === "convex"}" data-lens="convex">${L("Convex lens", "凸透鏡")}</button>
+      <button role="radio" aria-checked="${LAB.kind === "concave"}" data-lens="concave">${L("Concave lens", "凹透鏡")}</button></div>
+      ${["Rule 1", "Rule 2", "Rule 3"].map((t, i) => `<label class="rchk r${i + 1}"><input type="checkbox" data-ray="${i}" ${LAB.rays[i] ? "checked" : ""}> ${L(t, `規則 ${i + 1}`)}</label>`).join("")}</div>
+    <div id="labSvg">${labSvg()}</div>
+    <label class="labslide"><span>${L("Drag the object (or this slider) to change the object distance", "拖動物體（或這條滑桿）改變物距")}</span>
+      <input type="range" id="labU" min="0.3" max="4" step="0.05" value="${LAB.u}" aria-label="${L("Object distance", "物距")}"></label>
+    ${LAB.kind === "convex" ? `<div class="row presets">${[[3, L("Beyond 2F'", "2F' 以外")], [2, L("At 2F'", "在 2F'")], [1.5, L("F' – 2F'", "F' 至 2F'")], [1, L("At F'", "在 F'")], [0.6, L("Within F'", "F' 以內")]].map(([u, t]) => `<button class="tab" data-u="${u}">${t}</button>`).join("")}</div>` : ""}
+    <div class="labgrid"><div id="labInfo">${labInfo()}</div>
+      <div class="labrules">
+        <h3>${L("Rules for drawing ray diagrams", "繪畫光線圖的規則")}</h3>
+        ${LAB.kind === "convex" ? `<p><b class="r1">${L("Rule 1", "規則 1")}</b> ${L("A ray parallel to the principal axis passes through F after the lens.", "與主軸平行的光線通過透鏡後，會通過另一側的主焦點 F。")}</p>
+        <p><b class="r2">${L("Rule 2", "規則 2")}</b> ${L("A ray passing through F' comes out parallel to the principal axis.", "穿過主焦點 F' 的光線通過透鏡後，會與主軸平行。")}</p>`
+        : `<p><b class="r1">${L("Rule 1", "規則 1")}</b> ${L("A ray parallel to the principal axis spreads out as if it came from F'.", "與主軸平行的光線通過凹透鏡後會偏折，看似來自主焦點 F'。")}</p>
+        <p><b class="r2">${L("Rule 2", "規則 2")}</b> ${L("A ray heading towards F comes out parallel to the principal axis.", "射向主焦點 F 的光線通過凹透鏡後會與主軸平行。")}</p>`}
+        <p><b class="r3">${L("Rule 3", "規則 3")}</b> ${L("A ray through the optical centre C goes straight on.", "穿過光心 C 的光線方向不變。")}</p>
+        <p class="small muted">${L("Solid lines = real rays. Dashed lines = virtual rays (where the rays only seem to come from).", "實線 = 真實光線；虛線 = 虛擬光線（光線看似來自的地方）。")}</p>
+      </div></div>
+    <div class="missions"><h3>🎯 ${L("Lab missions", "實驗任務")} <span class="small muted">${done.length}/${LAB_MISSIONS.length} · +5 🌰 ${L("each", "每個")}</span></h3>
+      ${LAB_MISSIONS.map(m => `<div class="mission ${done.includes(m.id) ? "done" : ""}" data-m="${m.id}">${done.includes(m.id) ? "✅" : "⬜"} ${L(m.en, m.zh)}</div>`).join("")}</div>
+  </section>`;
+}
+function labUpdate() {
+  document.getElementById("labSvg").innerHTML = labSvg(); document.getElementById("labInfo").innerHTML = labInfo();
+  wireLabDrag();
+  const s = labSolve(); S.lab_done = S.lab_done || [];
+  LAB_MISSIONS.forEach(m => {
+    if (S.lab_done.includes(m.id) || m.kind !== LAB.kind || !m.ok(s)) return;
+    S.lab_done.push(m.id); S.coins += 5; save(true); SFX.right(); yaha(L("Mission done!", "任務完成！")); confetti(60);
+    const el = document.querySelector(`.mission[data-m="${m.id}"]`); if (el) { el.classList.add("done"); el.innerHTML = `✅ ${L(m.en, m.zh)}`; }
+    const h = document.querySelector(".missions h3 .small"); if (h) h.textContent = `${S.lab_done.length}/${LAB_MISSIONS.length} · +5 🌰 ${L("each", "每個")}`;
+    toast(L("🎯 Mission complete! +5 🌰", "🎯 任務完成！+5 🌰"));
+  });
+}
+function wireLabDrag() {
+  const svg = document.querySelector(".labsvg"); if (!svg) return;
+  const setFrom = e => { const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 800;
+    const u = Math.max(0.3, Math.min(4, Math.round((LX - x) / FPX / 0.05) * 0.05)); if (u === LAB.u) return; LAB.u = +u.toFixed(2); document.getElementById("labU").value = LAB.u; labUpdate(); };
+  svg.onpointerdown = e => { const r = svg.getBoundingClientRect(); if ((e.clientX - r.left) / r.width * 800 > LX - 10) return; e.preventDefault(); LAB.drag = true; svg.setPointerCapture && svg.setPointerCapture(e.pointerId); setFrom(e); };
+  svg.onpointermove = e => { if (LAB.drag) setFrom(e); };
+  svg.onpointerup = svg.onpointercancel = () => { LAB.drag = false; };
+}
+function wireLensLab() {
+  const root = document.querySelector(".lab"); if (!root) return;
+  root.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { SFX.tap(); LAB.kind = b.dataset.lens; renderMap("lab"); labUpdate(); });
+  root.querySelectorAll("[data-ray]").forEach(c => c.onchange = () => { LAB.rays[+c.dataset.ray] = c.checked; labUpdate(); });
+  root.querySelectorAll("[data-u]").forEach(b => b.onclick = () => { SFX.tap(); LAB.u = +b.dataset.u; document.getElementById("labU").value = LAB.u; labUpdate(); });
+  document.getElementById("labU").oninput = e => { LAB.u = +(+e.target.value).toFixed(2); labUpdate(); };
+  wireLabDrag();
 }
 
 /* ----- Room scene (SVG) ----- */
