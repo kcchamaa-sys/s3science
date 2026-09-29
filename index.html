@@ -2818,7 +2818,7 @@ function renderMap() {
   document.getElementById("cFact").onclick = () => { SFX.tap(); showChat("fact"); };
   document.getElementById("cCheer").onclick = () => { SFX.tap(); showChat("cheer"); };
   clearInterval(chatT); chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
-  if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop) showStreakPop(); }, 500);
+  if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop && document.getElementById("chat")) showStreakPop(); }, 500);
   document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
   document.getElementById("mPrac").onclick = () => { SFX.init(); SFX.tap(); practiceIntro(); };
   document.getElementById("mShop").onclick = () => { SFX.init(); SFX.tap(); openShop(); };
