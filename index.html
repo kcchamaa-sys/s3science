@@ -72,7 +72,7 @@ header.top {
 }
 .brand { background: none; border: 0; padding: 0; font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
 .brand svg { width: 34px; height: 34px; overflow: visible; }
-.brand .fr-rainbow, .brand .fr-laser, .brand .fr-sakura { display: inline-flex; padding: 2px; }
+.brand .fr-rainbow, .brand .fr-laser, .brand .fr-sakura, .brand .fr-neon, .brand .fr-galaxy { display: inline-flex; padding: 2px; }
 .tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .pill { border: var(--line); border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: .88rem; background: var(--yellow); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pill.saved { background: var(--green); animation: pop .4s ease-out; }
@@ -295,6 +295,39 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .mode.rush .muted { color: #D8CFE8; }
 .mode h3 { font-size: 1.15rem; }
 .mode.practice { background: var(--yellow); }
+/* pronunciation buttons */
+.spk { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: middle; }
+.spkb { min-width: 36px; min-height: 36px; border: 2px solid var(--ink); border-radius: 10px; background: var(--blue-2); font-size: .95rem; line-height: 1; padding: 0 4px; }
+.spkb:active { transform: translateY(1px); }
+.term { display: inline-flex; align-items: center; flex-wrap: wrap; }
+/* chat card */
+.chat { display: grid; gap: 10px; }
+.chat .say { animation: chatIn .45s ease; }
+@keyframes chatIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.chat .kind { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #A23E60; }
+/* streak pop-up */
+.spop { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.spop .flame { width: 120px; height: 140px; overflow: visible; transform-origin: 50% 90%; animation: flick 1.1s ease-in-out infinite alternate; }
+@keyframes flick { from { transform: scale(1) rotate(-2deg); } to { transform: scale(1.06, 1.1) rotate(2deg); } }
+.spop .num { font-size: 3rem; font-weight: 800; line-height: 1; animation: popIn .6s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes popIn { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.spop .dots { display: flex; gap: 6px; }
+.spop .dots i { width: 22px; height: 22px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: .7rem; font-style: normal; }
+.spop .dots i.on { background: var(--pink); animation: popIn .4s both; }
+.spop .shieldbig { font-size: 4rem; animation: popIn .6s both; }
+/* rarity tiers */
+.tierp { font-size: .72rem; font-weight: 800; border: 2px solid var(--ink); border-radius: 999px; padding: 0 8px; background: #fff; }
+.tierp.rare { background: #D7E6FF; } .tierp.epic { background: #E6D5FB; } .tierp.legend { background: linear-gradient(90deg, #FFE27A, #FFB7C5, #A0C4FF); }
+.sitem.rare { border-color: #5B8BD9; } .sitem.epic { border-color: #8E5BD0; }
+.sitem.legend { background: linear-gradient(160deg, #FFF8D6, #FFE9F0 60%, #E3EEFF); }
+.sitem .req { font-size: .78rem; color: #6A5B58; }
+.sitem .bar { width: 100%; height: 10px; border: 2px solid var(--ink); border-radius: 999px; background: var(--cream); overflow: hidden; }
+.sitem .bar i { display: block; height: 100%; background: var(--pink); }
+.sitem.locked .pv { filter: grayscale(.85) opacity(.55); }
+.fr-neon { border-radius: 50%; background: #2B2433; padding: 4px; box-shadow: 0 0 0 2px #FF4FA3, 0 0 10px #FF4FA3, 0 0 18px #3FE0E8; animation: neon 2.4s infinite; }
+@keyframes neon { 0%, 92%, 100% { box-shadow: 0 0 0 2px #FF4FA3, 0 0 10px #FF4FA3, 0 0 18px #3FE0E8; } 94% { box-shadow: 0 0 0 2px #7A3657; } 96% { box-shadow: 0 0 0 2px #FF4FA3, 0 0 14px #FF4FA3; } }
+.fr-galaxy { border-radius: 50%; padding: 4px; background: radial-gradient(circle at 25% 30%, #fff 0 1.2px, transparent 2px), radial-gradient(circle at 75% 25%, #fff 0 1px, transparent 2px), radial-gradient(circle at 65% 80%, #FDFFB6 0 1.2px, transparent 2px), conic-gradient(#2B2433, #4B3B8F, #8E44C8, #E0567E, #2B2433); box-shadow: 0 0 12px #8E44C8; }
+@media (prefers-reduced-motion: reduce) { .spop .flame, .fr-neon, .chat .say { animation: none; } }
 .rushhead.prhead { background-image: radial-gradient(circle at 90% 0, rgba(160,196,255,.45), transparent 50%); }
 .prdots { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .prdots i { width: 16px; height: 16px; border: 2px solid var(--ink); border-radius: 50%; background: #fff; }
@@ -464,6 +497,20 @@ function figure(who, mood = "normal") {
 /* ============================================================
    2. Sound effects: Web Audio, no files
    ============================================================ */
+/* British pronunciation for key terms (Web Speech API, en-GB voice) */
+const SPEAK = {
+  voice: null,
+  pickVoice() { try { const vs = speechSynthesis.getVoices(); this.voice = vs.find(v => /en[-_]GB/i.test(v.lang) && /female|Serena|Kate|Libby|Sonia|Martha|UK English Female/i.test(v.name)) || vs.find(v => /en[-_]GB/i.test(v.lang)) || null; } catch (e) {} },
+  say(text, slow) {
+    if (!("speechSynthesis" in window)) { toast(L("Sorry, this browser can't speak.", "抱歉，這個瀏覽器不支援朗讀。")); return; }
+    speechSynthesis.cancel(); if (!this.voice) this.pickVoice();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "en-GB"; if (this.voice) u.voice = this.voice; u.rate = slow ? .55 : .9;
+    speechSynthesis.speak(u);
+  }
+};
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => SPEAK.pickVoice();
+const spk = en => `<span class="spk"><button class="spkb" data-say="${esc(en)}" aria-label="Say ${esc(en)} (British English)">🔊</button><button class="spkb" data-say="${esc(en)}" data-slow="1" aria-label="Say ${esc(en)} slowly">🐢</button></span>`;
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-say]"); if (b) { e.preventDefault(); e.stopPropagation(); SPEAK.say(b.dataset.say, !!b.dataset.slow); } }, true);
 const SFX = {
   ctx: null, on: true,
   init() {
@@ -1004,7 +1051,7 @@ const ZH_ROOMS = {
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
 const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
-const ZH_WARDROBE = { hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_WARDROBE = { hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
 const ZH_SLOTS = { hat: "帽子", face: "眼鏡", ribbon: "髮夾", frame: "相框" };
 const ZH_CHAR = { chiikawa: "吉伊卡哇", hachiware: "小八", usagi: "烏薩奇", momonga: "小桃", kurimanju: "栗子饅頭" };
@@ -1601,7 +1648,7 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
-function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0 }; }
+function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0, fixed: 0 }; }
 function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null }; }
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function freshState() {
@@ -1709,13 +1756,14 @@ function stateFromCode(d, name) {
 }
 
 let S = load();
-let streakNote = "";
+let streakNote = "", streakPop = null;
 try { SFX.on = localStorage.getItem(SOUND_KEY) !== "off"; } catch (e) {}
 
 // Daily streak: same day → no change; next day → +1; missed days → shields cover them, else restart at 1.
 function checkIn() {
   const t = today();
   if (S.last_login_date !== t) S.stats.days += 1;
+  const shieldsBefore = S.streak_shields;
   if (!S.last_login_date) { S.current_streak = 1; streakNote = L("🔥 Day 1 of your streak!", "🔥 連續紀錄第 1 天！"); }
   else if (S.last_login_date !== t) {
     const gap = dayNum(t) - dayNum(S.last_login_date);
@@ -1728,9 +1776,30 @@ function checkIn() {
     if (S.current_streak % 7 === 0 && S.streak_shields < 3) { S.streak_shields += 1; streakNote += L(" 🛡️ 7-day milestone: +1 shield!", " 🛡️ 7 天里程碑：+1 護盾！"); }
   }
   S.longest_streak = Math.max(S.longest_streak || 0, S.current_streak);
+  if (S.last_login_date !== t) streakPop = { kind: !S.last_login_date ? "first" : S.streak_shields < shieldsBefore ? "shield" : S.current_streak === 1 ? "back" : "up", n: S.current_streak, gotShield: S.streak_shields > shieldsBefore };
   S.last_login_date = t;
   save();
   checkTrophies();
+}
+const flameSvg = n => `<svg class="flame" viewBox="0 0 120 140" aria-hidden="true"><path d="M60 8 C72 38 104 52 100 92 C97 122 78 134 60 134 C42 134 20 122 20 92 C20 66 38 58 44 34 C52 48 56 56 60 60 C64 44 64 28 60 8Z" fill="${n >= 14 ? "#8E7CF0" : n >= 7 ? "#FF6B6B" : "#FF9F5A"}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M60 58 C68 76 84 86 80 106 C77 122 68 126 60 126 C50 126 40 120 40 104 C40 92 50 86 54 74 C57 82 58 86 60 88 C62 78 62 68 60 58Z" fill="#FDFFB6" stroke="${INK}" stroke-width="2.4"/><circle cx="52" cy="108" r="2.6" fill="${INK}"/><circle cx="68" cy="108" r="2.6" fill="${INK}"/><path d="M56 115 q4 3 8 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="46" cy="113" rx="3.4" ry="2" fill="#FFB7C5"/><ellipse cx="74" cy="113" rx="3.4" ry="2" fill="#FFB7C5"/></svg>`;
+function showStreakPop() {
+  const p = streakPop; streakPop = null; if (!p) return;
+  const n = p.n, m = streakMult(), toNext = m < 1.5 ? 3 - (n % 3) : 0, week = n % 7 === 0 ? 7 : n % 7;
+  const head = { first: L("Your streak begins!", "連續紀錄開始了！"), up: L("Streak up!", "連續紀錄 +1！"), shield: L("Shield saved your streak!", "護盾保住了你的連續紀錄！"), back: L("Welcome back!", "歡迎回來！") }[p.kind];
+  const who = { first: "chiikawa", up: "usagi", shield: "hachiware", back: "momonga" }[p.kind];
+  const line = { first: L("Day 1! Come back tomorrow to grow the flame. 🌱", "第 1 天！明天再來，讓火焰長大。🌱"),
+    up: n >= 7 ? L("Wow, a whole week or more! Your brain is getting stronger every day. 💪", "嘩，已經一星期以上！你的腦袋每天都更強。💪") : L("Yaha! One more day of light physics. 🐰", "呀哈！又多一天學習光學。🐰"),
+    shield: L(`I used a 🛡️ shield so your ${n}-day streak is safe. Phew!`, `我用了 🛡️ 護盾，你的 ${n} 天連續紀錄保住了。好險！`),
+    back: L(`We missed you! Your old best was ${S.longest_streak} days. Let's start a new one today. 💜`, `我們很掛念你！你的最佳紀錄是 ${S.longest_streak} 天。今天重新開始吧。💜`) }[p.kind];
+  SFX.fanfare(); if (p.kind !== "back") confetti(80);
+  openModal(`<div class="spop"><span class="kicker">🔥 ${L("Daily streak", "每日連續紀錄")}</span><h2>${head}</h2>
+    ${p.kind === "shield" ? `<div class="shieldbig" aria-hidden="true">🛡️</div>` : flameSvg(n)}
+    <div class="num">${n} ${L(n === 1 ? "day" : "days", "天")}</div>
+    <div class="dots" aria-label="${L(`Day ${week} of 7 this week`, `本週第 ${week}/7 天`)}">${Array.from({ length: 7 }, (_, i) => `<i class="${i < week ? "on" : ""}" style="animation-delay:${i * .08}s">${i === 6 ? "🛡️" : ""}</i>`).join("")}</div>
+    <p class="small"><b>${L("Chestnut bonus", "栗子加成")}: ×${m.toFixed(1)}</b>${toNext ? L(` · ${toNext} more day${toNext > 1 ? "s" : ""} to ×${(m + .1).toFixed(1)}`, ` · 再 ${toNext} 天升到 ×${(m + .1).toFixed(1)}`) : L(" (max!)", "（最高！）")}${p.gotShield ? L(" · 🛡️ +1 shield!", " · 🛡️ +1 護盾！") : ""}</p>
+    ${say(who, line, p.kind === "back" ? "normal" : "happy")}
+    <button class="btn big" id="spGo">${L("Let's go! ▶", "出發！▶")}</button></div>`);
+  document.getElementById("spGo").onclick = () => { SFX.tap(); closeModal(); };
 }
 function recomputeMastery() {
   const tot = {}, got = {};
@@ -1846,13 +1915,16 @@ function checkTrophies() {
     const [cur, goal] = t.prog();
     if (cur >= goal) { S.trophies[t.id] = today(); S.coins = (S.coins || 0) + 30; trophyQueue.push(t); }
   });
+  checkItems();
   if (trophyQueue.length) { save(); renderTools(); showTrophyBanner(); lbSubmit(true); }
 }
 function showTrophyBanner() {
   if (document.querySelector(".tbanner") || !trophyQueue.length) return;
   const t = trophyQueue.shift();
   const d = document.createElement("button"); d.className = "tbanner"; d.setAttribute("aria-live", "polite");
-  d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">${L("Trophy unlocked!", "解鎖獎盃！")}</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)} · +30 🌰</span></span>`;
+  if (t.item) { const w = t.item, eq = Object.assign({}, S.equip, { [w.slot]: w.id });
+    d.innerHTML = `<span class="${frameCls(eq)}" style="display:inline-flex;border-radius:50%;width:60px;height:60px;flex:0 0 60px">${avatar("chiikawa", "happy", eq)}</span><span style="text-align:left"><span class="kicker" style="padding:0">${L("Special item unlocked!", "解鎖特別物品！")}</span><br><b>${esc(w.name)}</b> ${tierPill(w.tier)}<br><span class="small">${esc(L(...w.earnDesc))} · ${L("Wear it in 👗 Wardrobe", "到 👗 衣櫃穿上")}</span></span>`; }
+  else d.innerHTML = `${trophySvg(t, true)}<span style="text-align:left"><span class="kicker" style="padding:0">${L("Trophy unlocked!", "解鎖獎盃！")}</span><br><b>${esc(t.name)}</b><br><span class="small">${esc(t.desc)} · +30 🌰</span></span>`;
   const done = () => { d.remove(); setTimeout(showTrophyBanner, 300); };
   d.onclick = () => { SFX.tap(); done(); };
   document.body.appendChild(d);
@@ -1878,8 +1950,25 @@ const WARDROBE = [
   { id: "rib_star", slot: "ribbon", name: "Star clip", price: 70, svg: `<path d="M48 3 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8z" fill="#FDFFB6" ${O2}/>` },
   { id: "fr_sakura", slot: "frame", name: "Sakura frame", price: 60, cls: "fr-sakura" },
   { id: "fr_laser", slot: "frame", name: "Laser frame", price: 90, cls: "fr-laser" },
-  { id: "fr_rainbow", slot: "frame", name: "Rainbow frame", price: 140, cls: "fr-rainbow" }
+  { id: "fr_rainbow", slot: "frame", name: "Rainbow frame", price: 140, cls: "fr-rainbow" },
+  // Hong Kong favourites
+  { id: "hat_pbun", slot: "hat", name: "Pineapple-bun hat", price: 100, svg: `<path d="M15 19 Q16 1 32 0 Q48 1 49 19 Z" fill="#F2B84B" ${O2}/><path d="M22 6 L38 18 M30 2 L44 14 M20 13 L27 18 M42 4 L24 18 M34 1 L18 14 M46 12 L40 18" stroke="#C98A2E" stroke-width="1.6"/><rect x="26" y="-3" width="12" height="5" rx="1.5" fill="#FFF3A6" ${O2}/>` },
+  { id: "rib_eggtart", slot: "ribbon", name: "Egg-tart clip", price: 55, svg: `<path d="M40 10 L43 18 H53 L56 10 Z" fill="#E7A95A" ${O2}/><ellipse cx="48" cy="10" rx="8" ry="3" fill="#FFD84D" ${O2}/>` },
+  { id: "fr_neon", slot: "frame", name: "Neon-sign frame", price: 120, cls: "fr-neon" },
+  // Earned by effort only (cannot be bought)
+  { id: "rib_lens", slot: "ribbon", name: "Magnifier clip", tier: "rare", earn: () => [ROOMS.filter(r => roomStars(r) === 3).length, 3], earnDesc: ["Get 3★ in 3 rooms", "在 3 個房間取得 3★"], svg: `<path d="M51 15 L57 22" stroke="${INK}" stroke-width="3.4" stroke-linecap="round"/><circle cx="47" cy="11" r="6" fill="rgba(160,196,255,.75)" ${O2}/><path d="M44 9 q2 -2 4 -1" stroke="#fff" stroke-width="1.6" fill="none"/>` },
+  { id: "face_xray", slot: "face", name: "X-ray goggles", tier: "epic", earn: () => [S.stats.fixed || 0, 30], earnDesc: ["Fix 30 mistakes in 🔁 Practice mode", "在 🔁 練習模式修正 30 題錯題"], svg: `<path d="M12 35 h40" stroke="${INK}" stroke-width="3"/><rect x="15" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><rect x="34" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><path d="M19 35 h7 M38 35 h7" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 2"/>` },
+  { id: "hat_wizard", slot: "hat", name: "Optics wizard hat", tier: "epic", earn: () => [S.mastered_puzzles.length, 140], earnDesc: ["Master 140 questions", "掌握 140 題"], svg: `<ellipse cx="32" cy="18" rx="20" ry="4.5" fill="#3B3A7A" ${O2}/><path d="M20 17 L35 -14 L44 17 Z" fill="#3B3A7A" ${O2}/><path d="M33 3 l1.4 2.9 3.2 .5 -2.3 2.2 .5 3.2 -2.8 -1.5 -2.8 1.5 .5 -3.2 -2.3 -2.2 3.2 -.5z" fill="#FDFFB6"/><circle cx="27" cy="11" r="1.3" fill="#FFB7C5"/><circle cx="39" cy="-4" r="1.1" fill="#A0C4FF"/>` },
+  { id: "fr_galaxy", slot: "frame", name: "Galaxy frame", tier: "legend", earn: () => [S.stats.practiceRuns || 0, 20], earnDesc: ["Finish 20 🔁 Practice rounds", "完成 20 次 🔁 練習"], cls: "fr-galaxy" },
+  { id: "hat_halo", slot: "hat", name: "Rainbow halo", tier: "legend", earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.mastered_puzzles.length, 250), 271], earnDesc: ["All 21 ★ and master 250 questions", "取得全部 21★ 並掌握 250 題"], svg: `${["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF", "#B07CF0"].map((c, k) => `<ellipse cx="32" cy="${-1 + k * 0.1}" rx="${17 - k * 2.2}" ry="${5.2 - k * .7}" fill="none" stroke="${c}" stroke-width="2.2"/>`).join("")}<ellipse cx="32" cy="-1" rx="19" ry="6.4" fill="none" stroke="${INK}" stroke-width="1.4"/>` }
 ];
+WARDROBE.forEach(w => { if (!w.tier) w.tier = w.price <= 60 ? "common" : w.price <= 130 ? "rare" : "epic"; });
+const TIERS = { common: ["Common", "普通"], rare: ["✦ Rare", "✦ 稀有"], epic: ["💎 Epic", "💎 史詩"], legend: ["👑 Legendary", "👑 傳說"] };
+const tierPill = t => `<span class="tierp ${t}">${L(...TIERS[t])}</span>`;
+let itemQueue = [];
+function checkItems() {
+  WARDROBE.forEach(w => { if (!w.earn || S.owned.includes(w.id)) return; const [c, g] = w.earn(); if (c >= g) { S.owned.push(w.id); trophyQueue.push({ item: w }); } });
+}
 const SLOT_NAMES = { hat: "Hats", face: "Glasses", ribbon: "Hair clips", frame: "Frames" };
 const POWERUPS = [
   { id: "torch", icon: "🔦", name: "Torch", price: 25, desc: "Removes one wrong answer, or sets one dial correctly. (Counts as a hint.)" },
@@ -1895,6 +1984,10 @@ function outfitSvg(eq) {
 }
 const frameCls = eq => { eq = eq || (S && S.equip) || {}; const f = eq.frame && itemById(eq.frame); return f ? f.cls : ""; };
 const playerAv = (mood = "normal") => `<span class="${frameCls()}" style="display:inline-flex">${avatar("chiikawa", mood)}</span>`;
+// Daily streak bonus: +10% chestnuts for every 3 days in a row, up to ×1.5
+const streakMult = () => 1 + Math.min(5, Math.floor((S.current_streak || 0) / 3)) / 10;
+const boost = n => Math.round(n * streakMult());
+const multTag = () => streakMult() > 1 ? ` · 🔥×${streakMult().toFixed(1)}` : "";
 function addCoins(n, why) { S.coins = Math.max(0, (S.coins || 0) + n); save(); renderTools(); if (why) toast(`${n >= 0 ? "+" : ""}${n} 🌰 ${why}`); }
 
 function openShop(tab = "outfits") {
@@ -1905,14 +1998,18 @@ function openShop(tab = "outfits") {
       <h2>${L("Dress up Chiikawa", "為吉伊卡哇打扮")}</h2>
       <div class="preview-big"><div class="fig"><span class="${frameCls()}" style="display:inline-flex;border-radius:50%">${figure("chiikawa", "happy")}</span></div>
         <div style="display:grid;gap:6px"><span class="pill coinpill" style="justify-self:start">🌰 ${S.coins} ${L("chestnuts", "栗子")}</span>
+        <span class="small"><b>${L("Collection", "收藏")}: ${WARDROBE.filter(w => S.owned.includes(w.id)).length}/${WARDROBE.length}</b> · ${["rare", "epic", "legend"].map(t => `${L(...TIERS[t]).split(" ")[0]} ${WARDROBE.filter(w => w.tier === t && S.owned.includes(w.id)).length}/${WARDROBE.filter(w => w.tier === t).length}`).join(" · ")}</span>
+        <span class="small muted">${L("✦ 💎 👑 Special items with 🔒 can't be bought. Earn them with steady effort!", "有 🔒 的 ✦ 💎 👑 特別物品不能購買，要靠持續努力贏取！")}</span>
         <span class="small muted">${L("Earn chestnuts in ⚡ Light Rush (double on your first round each day), by escaping rooms and by unlocking trophies.", "在 ⚡ 光速挑戰（每天第一局雙倍）、逃出房間和解鎖獎盃都可以賺取栗子。")}</span></div></div>
       <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="${tab === "outfits"}" data-tab="outfits">👒 ${L("Outfits", "服飾")}</button><button class="tab" role="tab" aria-selected="${tab === "power"}" data-tab="power">🎒 ${L("Power-ups", "道具")}</button></div>
       ${tab === "outfits" ? Object.keys(SLOT_NAMES).map(slot => `<h3>${SLOT_NAMES[slot]}</h3><div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
           const own = S.owned.includes(w.id), on = eq[slot] === w.id;
           const prevEq = Object.assign({}, eq, { [slot]: w.id });
-          return `<div class="sitem ${on ? "on" : ""}"><div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
+          const pr = w.earn && !own ? w.earn() : null;
+          return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>
             <b class="small">${esc(w.name)}</b>
             ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
+                  : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
                   : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🌰 ${w.price}</button>`}</div>`; }).join("")}</div>`).join("")
       : `<p class="small muted">${L(`Power-ups help inside escape rooms. Use them from the 🎒 bar in any lock. You can hold up to ${MAX_POWER} of each.`, `道具可在密室中使用：在任何一把鎖的 🎒 欄使用。每種最多持有 ${MAX_POWER} 個。`)}</p>
          <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
@@ -1921,7 +2018,7 @@ function openShop(tab = "outfits") {
     const box = openModal(html, { wide: true });
     box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { SFX.tap(); tab = b.dataset.tab; draw(); });
     box.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
-      const w = itemById(b.dataset.buy); if (S.coins < w.price) return;
+      const w = itemById(b.dataset.buy); if (w.earn || S.coins < w.price) return;
       S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha(L("Cute!", "好可愛！")); draw(); refreshPlayer();
     });
     box.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
@@ -2181,13 +2278,13 @@ function rushEnd() {
   if (!RU) return;
   const r = RU; stopRush();
   const bonus = S.rush.lastDay !== today();
-  let coins = Math.ceil(r.score / 10); if (bonus && r.total > 0) coins *= 2;
+  let coins = Math.ceil(r.score / 10); if (bonus && r.total > 0) coins *= 2; coins = boost(coins);
   if (r.total > 0) { S.rush.lastDay = today(); S.stats.rushRounds += 1; }
   const best = r.score > S.rush.best; S.rush.best = Math.max(S.rush.best, r.score);
   S.coins += coins; save(true); checkTrophies(); lbSubmit(true);
   SFX.fanfare(); if (r.score > 0) confetti(120);
   openModal(`<span class="kicker">⚡ ${L("Light Rush · Round over", "光速挑戰 · 完結")}</span><h2>${best ? L("🎉 New best score!", "🎉 新紀錄！") : L("Time's up!", "時間到！")}</h2>
-    <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} ${L("pts", "分")}</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? L(" (×2 daily bonus)", "（每日雙倍）") : ""}</span></div>
+    <div class="row" style="justify-content:center;gap:18px;font-size:1.2rem"><b>${r.score} ${L("pts", "分")}</b><span>✅ ${r.correct}/${r.total}</span><span class="pill coinpill">+${coins} 🌰${bonus && r.total > 0 ? L(" (×2 daily bonus)", "（每日雙倍）") : ""}${coins ? multTag() : ""}</span></div>
     ${say(r.correct >= 8 ? "usagi" : "hachiware", r.correct >= 8 ? L("YAHA!!! Amazing rush! 🐰🎊", "呀哈！！！超厲害！🐰🎊") : L("Nice try! Every round makes your brain faster. 🌱", "做得好！每一局都令你的腦袋更快。🌱"), "happy", r.correct >= 8 ? "" : "hint")}
     <div class="row"><button class="btn big" id="rAgain">⚡ ${L("Play again", "再玩一次")}</button><button class="btn yellow" id="rShop">👗 ${L("Spend chestnuts", "使用栗子")}</button><button class="btn plain" id="rMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
   document.getElementById("rAgain").onclick = () => { SFX.tap(); startRush(); };
@@ -2301,7 +2398,7 @@ function practiceAnswer(ok) {
   document.getElementById("prHint").hidden = true;
   if (ok) {
     PR.streak++; PR.best = Math.max(PR.best, PR.streak);
-    if (S.mistakes.includes(pid)) { S.mistakes = S.mistakes.filter(m => m !== pid); PR.fixed++; }
+    if (S.mistakes.includes(pid)) { S.mistakes = S.mistakes.filter(m => m !== pid); PR.fixed++; S.stats.fixed = (S.stats.fixed || 0) + 1; }
     if (!PR.hinted && !PR.retry && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); }
     SFX.right(); if (av) av.innerHTML = avatar("chiikawa", "happy");
     const d = document.createElement("div"); d.className = "plus"; d.textContent = `${PR.streak}/${PRACTICE_GOAL}`; document.body.appendChild(d); setTimeout(() => d.remove(), 900);
@@ -2311,7 +2408,7 @@ function practiceAnswer(ok) {
     PR.pending.push({ pid, due: PR.served + 2 + Math.floor(Math.random() * 4) });
     SFX.wrong(); if (av) av.innerHTML = avatar("chiikawa", "cry");
   }
-  save(); practiceStatus();
+  save(); practiceStatus(); if (ok) checkTrophies();
   if (ok && PR.streak >= PRACTICE_GOAL) { PR.nextT = setTimeout(practiceDone, 700); return; }
   const answerText = p.type === "mc" ? p.choices[p.answer] : p.dials.map((o, d) => `${p.labels ? p.labels[d] + ": " : ""}${o[p.answer[d]]}`).join(" · ");
   document.getElementById("prFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
@@ -2327,12 +2424,12 @@ function practiceAnswer(ok) {
 function practiceDone() {
   if (!PR) return;
   const r = PR; stopPractice();
-  const bonus = S.practice.lastDay !== today(); const coins = bonus ? 20 : 10;
+  const bonus = S.practice.lastDay !== today(); const coins = boost(bonus ? 20 : 10);
   S.practice.lastDay = today(); S.practice.best = Math.max(S.practice.best, r.best); S.stats.practiceRuns += 1;
   S.coins += coins; save(true); checkTrophies(); lbSubmit(true);
   SFX.fanfare(); yaha(); confetti(160);
   openModal(`<span class="kicker">🔁 ${L("Practice complete", "練習完成")}</span><h2>${L(`🎉 ${PRACTICE_GOAL} in a row!`, `🎉 連續答對 ${PRACTICE_GOAL} 題！`)}</h2>
-    <div class="row" style="justify-content:center;gap:18px;font-size:1.1rem"><span>✅ ${L("Questions", "題數")}: ${r.served}</span><span>✨ ${L("Mistakes fixed", "修正錯題")}: ${r.fixed}</span><span class="pill coinpill">+${coins} 🌰${bonus ? L(" (×2 today)", "（今天雙倍）") : ""}</span></div>
+    <div class="row" style="justify-content:center;gap:18px;font-size:1.1rem"><span>✅ ${L("Questions", "題數")}: ${r.served}</span><span>✨ ${L("Mistakes fixed", "修正錯題")}: ${r.fixed}</span><span class="pill coinpill">+${coins} 🌰${bonus ? L(" (×2 today)", "（今天雙倍）") : ""}${multTag()}</span></div>
     ${say("usagi", L("YAHA!!! Mistakes are just practice in disguise! 🐰🎊", "呀哈！！！錯誤只是化了裝的練習！🐰🎊"), "happy")}
     <p class="small muted">${mistakeCount() ? L(`${mistakeCount()} saved mistake(s) still waiting for next time.`, `還有 ${mistakeCount()} 題錯題留待下次。`) : L("Your mistake list is empty. Amazing! 🌟", "你的錯題清單已清空，太棒了！🌟")}</p>
     <div class="row"><button class="btn big" id="prAgain">🔁 ${L("Practise again", "再練習")}</button><button class="btn plain" id="prMap">🗺️ ${L("Map", "地圖")}</button></div>`, { onClose: renderMap });
@@ -2414,7 +2511,7 @@ document.getElementById("brandav").innerHTML = playerAv("happy");
 function renderTools() {
   const justSaved = Date.now() - savedFlash < 2500;
   document.getElementById("tools").innerHTML = `
-    ${S ? `<span class="pill" title="${L("Daily streak", "連續日數")}">🔥 ${S.current_streak}</span>` : ""}
+    ${S ? `<span class="pill" title="${L("Daily streak · chestnut bonus", "連續日數 · 栗子加成")}">🔥 ${S.current_streak}${streakMult() > 1 ? `<span class="lbl"> ×${streakMult().toFixed(1)}</span>` : ""}</span>` : ""}
     ${S ? `<span class="pill ${justSaved ? "saved" : ""}" title="${L("Your progress saves automatically on this device", "進度會自動儲存在這部裝置")}">${justSaved ? `✓<span class="lbl"> ${L("Saved", "已儲存")}</span>` : `💾<span class="lbl"> ${L("Auto-save", "自動儲存")}</span>`}</span>` : ""}
     ${S ? `<button class="iconbtn coinpill" id="tCoins" aria-label="${L("Chestnuts", "栗子")}: ${S.coins}">🌰 ${S.coins}</button>` : ""}
     ${S ? `<button class="iconbtn" id="tTrophy" aria-label="${L("Open the Trophy Cabinet", "打開獎盃櫃")}">🏆<span class="lbl">${L("Trophies", "獎盃")}</span></button>` : ""}
@@ -2477,7 +2574,7 @@ function openJournal(roomId, highlight = []) {
       <section class="jsec"><h3>📖 ${L("Summary 重點", "重點")}</h3><ul>${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></section>
       <section class="jsec"><h3>🧭 ${L("Key rules 重點規則", "重點規則")}</h3>${r.rules.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
       <section class="jsec"><h3>🔤 ${L("Key terms 關鍵詞", "關鍵詞（中英對照）")}</h3><table class="tterms"><tbody>
-        ${terms.map(([en, zh]) => `<tr class="${highlight.includes(en) ? "hl" : ""}"><td>${esc(en)}</td><td class="zh">${zh}</td></tr>`).join("")}</tbody></table>
+        ${terms.map(([en, zh]) => `<tr class="${highlight.includes(en) ? "hl" : ""}"><td>${esc(en)}</td><td class="zh">${zh}</td><td style="white-space:nowrap;text-align:right">${spk(en)}</td></tr>`).join("")}</tbody></table>
         ${highlight.length ? `<p class="small muted">${L("Highlighted terms are used in the puzzle you're on.", "標示的詞語會在目前的謎題中出現。")}</p>` : ""}</section>
     </div></div>`;
     document.getElementById("jx").onclick = () => { SFX.tap(); $journal.innerHTML = ""; };
@@ -2626,6 +2723,44 @@ function renderWelcome() {
   };
 }
 
+/* ----- Chiikawa chat card: fun facts from Hong Kong life + personal encouragement ----- */
+const FACTS = [
+  ["At A Symphony of Lights over Victoria Harbour, you can see the laser beams because tiny dust and water droplets in the air scatter the light into your eyes.", "「幻彩詠香江」的激光在維港上空清晰可見，是因為空氣中的微塵和水點把光散射到你的眼睛。"],
+  ["The round convex mirrors at sharp bends on Hong Kong's hill roads give drivers a wider field of view, so they can see cars coming round the corner.", "香港山路急彎位的圓形凸面鏡令司機看到更廣闊的範圍，及早看見轉角駛來的車輛。"],
+  ["Your home broadband travels through optical fibres under the harbour. Light bounces along inside them by total internal reflection.", "你家中的寬頻訊號經海底光纖傳送，光靠全內反射在光纖內不斷反射前進。"],
+  ["Seen a rainbow over Lion Rock after summer rain? Each raindrop acts like a tiny prism and disperses white light into colours.", "夏天雨後在獅子山上見過彩虹嗎？每一滴雨水都像一塊小稜鏡，把白光色散成不同顏色。"],
+  ["A red taxi looks red because its paint reflects red light and absorbs most of the other colours.", "紅色的士看起來是紅色，是因為車漆反射紅光，並吸收大部分其他顏色的光。"],
+  ["LED screens in Mong Kok make millions of colours by mixing just three: red, green and blue light.", "旺角的 LED 大屏幕只用紅、綠、藍三種色光混合，就能顯示千萬種顏色。"],
+  ["A swimming pool looks shallower than it really is. Light from the bottom refracts as it leaves the water.", "泳池看起來比實際淺，因為池底的光離開水面時會折射。"],
+  ["You see lightning before you hear thunder, because light travels much faster than sound.", "我們先看到閃電才聽到雷聲，因為光的速率比聲音快得多。"],
+  ["Beach day in Sai Kung? Ultraviolet from the Sun causes sunburn, so wear sunscreen and sunglasses that block UV.", "去西貢沙灘？太陽的紫外線會令皮膚曬傷，記得塗防曬和戴能阻隔紫外線的太陽眼鏡。"],
+  ["Luggage X-ray scanners at Hong Kong International Airport let officers see inside bags without opening them.", "香港國際機場的 X 射線行李掃描機，令職員不用打開行李也能看到裏面的東西。"],
+  ["Your TV remote sends invisible infrared signals. Point it at a phone camera and you may see it blink!", "電視遙控器發出看不見的紅外線。把它對着手機鏡頭按，你可能會看到它在閃！"],
+  ["The mirrors in lifts make the space look bigger. The image in a plane mirror is as far behind the mirror as you are in front.", "升降機內的鏡令空間看起來更大：平面鏡的像在鏡後的距離，等於物體在鏡前的距離。"],
+  ["Short-sighted classmates wear glasses with concave lenses, which spread light out before it enters the eye.", "近視的同學戴凹透鏡眼鏡，凹透鏡會先把光線發散，再讓光進入眼睛。"],
+  ["The Octopus card reader and 5G phones both use radio waves, which sit at the long-wavelength end of the EM spectrum.", "八達通讀卡器和 5G 手機都使用無線電波，它位於電磁波譜中波長最長的一端。"],
+  ["Microwave ovens heat food because microwaves make the water inside it vibrate.", "微波爐能加熱食物，是因為微波令食物內的水分子振動。"],
+  ["Shadows at noon in Hong Kong's summer are very short, because the Sun is almost overhead and light travels in straight lines.", "香港夏天中午的影子很短，因為太陽差不多在頭頂，而光沿直線傳播。"]
+];
+let chatT = null, factI = Math.floor(Math.random() * FACTS.length);
+function cheers() {
+  const out = [], m = streakMult(), mk = mistakeCount(), ni = nextRoomIndex();
+  if (S.current_streak > 1) out.push(["usagi", L(`🔥 ${S.current_streak} days in a row! Your chestnut bonus is ×${m.toFixed(1)}. Yaha!`, `🔥 已連續 ${S.current_streak} 天！栗子加成 ×${m.toFixed(1)}。呀哈！`)]);
+  if (mk) out.push(["hachiware", L(`🔁 ${mk} mistake${mk > 1 ? "s are" : " is"} waiting in Practice mode. Shall we fix just a few today?`, `🔁 練習模式有 ${mk} 題錯題在等你。今天修正幾題好嗎？`)]);
+  if (ni !== -1) out.push(["chiikawa", L(`Your next right step: <b>${esc(ROOMS[ni].name)}</b>. Just one room. We can do it! 🌱`, `下一步：<b>${esc(ROOMS[ni].name)}</b>。只需一個房間，我們做得到！🌱`)]);
+  else out.push(["chiikawa", L("We escaped EVERY room! 🥹🎉 Replay rooms to earn 3 stars.", "我們逃出所有房間了！🥹🎉 重玩房間爭取 3 粒星吧。")]);
+  const near = TROPHIES.filter(t => !S.trophies[t.id]).map(t => { const [c, g] = t.prog(); return [t, c / g, c, g]; }).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1])[0];
+  if (near) out.push(["momonga", L(`🏆 You're ${near[2]}/${near[3]} of the way to <b>${esc(near[0].name)}</b>. So close!`, `🏆 距離<b>${esc(near[0].name)}</b>：${near[2]}/${near[3]}。就快到了！`)]);
+  if (S.last_chest_date !== today()) out.push(["kurimanju", L("🎁 Today's snack chest is still closed... 🍵", "🎁 今天的零食寶箱還未打開……🍵")]);
+  out.push(["hachiware", L("Mistakes are how brains grow. Every wrong answer is a clue! 💡", "錯誤令腦袋成長。每一次答錯都是一條線索！💡")]);
+  return out;
+}
+function chatHtml(kind, first) {
+  if (kind === "fact") { factI = (factI + 1) % FACTS.length; return `<span class="kind">💡 ${L("Did you know?", "你知道嗎？")}</span>${say(pick(["hachiware", "momonga"]), L(...FACTS[factI]), "happy", "hint")}`; }
+  const c = cheers(), [who, text] = first ? c[0] : pick(c);
+  return `<span class="kind">💪 ${L("From your friends", "朋友的話")}</span>${say(who, text, "happy")}`;
+}
+function showChat(kind) { const el = document.getElementById("chat"); if (el) el.innerHTML = chatHtml(kind); }
 function renderMap() {
   stopRush(); stopPractice(); MUSIC.setMode("map"); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
   const ni = nextRoomIndex(), allDone = ni === -1, chestReady = S.last_chest_date !== today();
@@ -2636,9 +2771,10 @@ function renderMap() {
       <p class="sub">${allDone ? L("You escaped every room! 全部房間都逃出咗!", "全部房間都逃出咗！") : `${L("Next", "下一個")}: ${topicNo(ROOMS[ni].topicNo)} · ${esc(ROOMS[ni].name)}`}</p>
       ${castHtml(allDone ? { chiikawa: "happy", hachiware: "happy", usagi: "happy", momonga: "happy", kurimanju: "happy" } : { usagi: "happy" })}
     </section>
-    ${streakNote ? `<section class="card cream"><b>${esc(streakNote)}</b></section>` : ""}
+    ${streakNote && !streakPop ? `<section class="card cream"><b>${esc(streakNote)}</b></section>` : ""}
     <section class="card">
-      ${allDone ? say("chiikawa", L("We escaped EVERY room! 🥹🎉 Replay rooms to earn 3 stars.", "我們逃出所有房間了！🥹🎉 重玩房間爭取 3 粒星吧。"), "happy") : say("hachiware", L("Your next right step: just <b>one</b> room today. Small steps count! 🌱", "下一步：今天只需完成<b>一個</b>房間。一小步也很重要！🌱"), "normal", "hint")}
+      <div class="chat" id="chat" aria-live="polite">${chatHtml("cheer", true)}</div>
+      <div class="row"><button class="btn plain" id="cFact">💡 ${L("Fun fact", "趣味知識")}</button><button class="btn plain" id="cCheer">💪 ${L("Cheer me on", "為我打氣")}</button></div>
       <div class="row">
         ${!allDone ? `<button class="btn big" data-room="${ROOMS[ni].id}">▶ ${L("Enter", "進入")} ${esc(ROOMS[ni].name)}</button>` : ""}
         <button class="btn yellow" id="chest" ${chestReady ? "" : "disabled"}>${chestReady ? L("🎁 Daily snack chest", "🎁 每日零食寶箱") : L("🎁 Opened. Back tomorrow!", "🎁 已打開，明天再來！")}</button>
@@ -2679,6 +2815,10 @@ function renderMap() {
       <p class="small muted">${L(`🔥 Longest streak: ${S.longest_streak} days · 🛡️ Shields: ${S.streak_shields} (a shield saves your streak if you miss a day)`, `🔥 最長連續：${S.longest_streak} 天 · 🛡️ 護盾：${S.streak_shields}（漏玩一天時護盾會保住連續紀錄）`)}</p>
     </section>`;
   $app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); streakNote = ""; enterRoom(b.dataset.room); });
+  document.getElementById("cFact").onclick = () => { SFX.tap(); showChat("fact"); };
+  document.getElementById("cCheer").onclick = () => { SFX.tap(); showChat("cheer"); };
+  clearInterval(chatT); chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
+  if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop) showStreakPop(); }, 500);
   document.getElementById("mRush").onclick = () => { SFX.init(); SFX.tap(); rushIntro(); };
   document.getElementById("mPrac").onclick = () => { SFX.init(); SFX.tap(); practiceIntro(); };
   document.getElementById("mShop").onclick = () => { SFX.init(); SFX.tap(); openShop(); };
@@ -3083,7 +3223,7 @@ function solve() {
     ${say("usagi", `<b>${L("Yaha!", "呀哈！")}</b> ${firstTry ? L("First try! Mastery up 📈", "一次答對！掌握度上升 📈") : L("Unlocked! 🔓", "解鎖了！🔓")}`, "happy")}
     <p>${esc(p.explain)}</p>
     ${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip 考試貼士", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
-    ${p.terms ? `<div class="terms">${p.terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span></span>`).join("")}</div>` : ""}
+    ${p.terms ? `<div class="terms">${p.terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span>${spk(en)}</span>`).join("")}</div>` : ""}
     <div class="found">${ICONS[HOTSPOTS[i].item]}<span>${L("You found", "你找到了")}: <b>${esc(itemName(i))}</b>. ${L("Code digit", "密碼數字")} #${i + 1} = <b>${room.code[i]}</b></span></div>
     <div class="row"><button class="btn big" id="collect">${L("Collect item ✨", "收集物品 ✨")}</button></div></div>`;
   const c = document.getElementById("collect"); c.focus({ preventScroll: true });
@@ -3141,7 +3281,7 @@ function escapeRoom() {
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
   if (!first) S.stats.replays += 1;
   const revise = !first && S.last_revise_day !== today(); if (revise) S.last_revise_day = today();
-  const earned = first ? 15 : revise ? 20 : 5; S.coins = (S.coins || 0) + earned; R.done = true; clearTimeout(R.incT);
+  const earned = boost(first ? 15 : revise ? 20 : 5); S.coins = (S.coins || 0) + earned; R.done = true; clearTimeout(R.incT);
   if (tLeft >= 0 && run.strikes === 0) S.stats.cleanEscapes += 1;
   if (!run.hints) S.stats.noHintEscapes += 1;
   S.room_run[room.id] = freshRun();
@@ -3159,7 +3299,7 @@ function escapeRoom() {
       <div class="cast" style="margin:0">${["usagi", "chiikawa", "hachiware"].map(w => `<div class="fig" style="width:90px">${figure(w, "happy")}</div>`).join("")}</div>
       <div class="row" style="justify-content:center;font-size:1.8rem" aria-label="${stars} / 3 ★">${starStr(stars)}</div>
       <p style="text-align:center">${L(`<b>${n}/5</b> locks on the first try · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? " (overtime)" : ""} · ⚠️ ${run.strikes} strike${run.strikes === 1 ? "" : "s"}`, `一次答對 <b>${n}/5</b> 把鎖 · ⏱️ ${fmt(Math.max(0, used))}${tLeft < 0 ? "（超時）" : ""} · ⚠️ ${run.strikes} 次警告`)}</p>
-      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}${revise ? L(" · 📚 daily revision bonus!", " · 📚 每日溫習獎勵！") : ""}</span>${R.incidents ? ` <span class="pill">👻 ${L("Incidents survived", "經歷事件")}: ${R.incidents}</span>` : ""}</p>
+      <p style="text-align:center"><span class="pill coinpill">+${earned} 🌰 ${L("chestnuts", "栗子")}${revise ? L(" · 📚 daily revision bonus!", " · 📚 每日溫習獎勵！") : ""}${multTag()}</span>${R.incidents ? ` <span class="pill">👻 ${L("Incidents survived", "經歷事件")}: ${R.incidents}</span>` : ""}</p>
       ${lost ? `<div class="rules">${L(`Guess strikes cost you <b>${lost} star${lost > 1 ? "s" : ""}</b> this time. Replay the room and think before answering to win them back!`, `猜測警告令你這次失去 <b>${lost} 粒星</b>。重玩房間、先想後答就能贏回來！`)}</div>` : ""}
       ${first ? say("momonga", L(`You earned <b>${esc(room.badge)}</b> and <b>${esc(room.item)}</b>! 💜`, `你獲得了<b>${esc(room.badge)}</b>和<b>${esc(room.item)}</b>！💜`), "happy") : say("kurimanju", L("Replay complete. Practice makes the brain strong. 🍵", "重玩完成。多練習令腦袋更強壯。🍵"), "happy")}
       <section class="card cream jsec"><h3>📖 ${L("Textbook recap", "課本重溫")}: ${topicHtml(room)}</h3><ul>${room.notes.map(x => `<li>${x}</li>`).join("")}</ul></section>

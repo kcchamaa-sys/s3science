@@ -43,6 +43,10 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 
 ## ⚡ Light Rush, 👗 Wardrobe and 🏅 Leaderboard
 
+- **💬 Chat card:** on the map, the Chiikawa friends take turns sharing 💡 light facts from Hong Kong life (Symphony of Lights, convex road mirrors, optical-fibre broadband…) and 💪 personal cheers (streak, mistakes waiting, nearest trophy, next room). It changes every 20 s.
+- **🔥 Streak pop-up and bonus:** an animated pop-up each new day (streak up, shield saved, welcome back). Every 3 days in a row adds +10% chestnuts, up to ×1.5.
+- **✦ 💎 👑 Rarity tiers:** wardrobe items are Common, Rare, Epic or Legendary. There are new Hong Kong items (pineapple-bun hat, egg-tart clip, neon-sign frame). Five special items can't be bought; students earn them through steady effort (3★ in 3 rooms, fix 30 mistakes, master 140 questions, finish 20 practice rounds, all 21★ + 250 mastered).
+- **🔊 British pronunciation:** every key term (journal and answer feedback) has 🔊 normal and 🐢 slow buttons using an en-GB voice.
 - **🔁 Practice mode:** loops the questions you got wrong (in rooms or Light Rush). Get **15 right in a row** to finish; a wrong answer comes back 2–5 questions later and resets the streak. If there aren't enough saved mistakes, random questions from unlocked rooms fill in. Finishing gives +10 🌰 (double on the first finish each day).
 - **Light Rush:** 60 seconds of mixed quick questions (multiple choice, true/false, matching, put in order, odd one out, fill the gap, colour mixer). Combos give ×2 / ×3 points; a wrong answer costs 3 seconds. Every 10 points = 1 🌰 chestnut; the first round each day pays double.
 - **Wardrobe & Shop:** spend chestnuts on hats, glasses, hair clips and frames for Chiikawa, or on power-ups for the escape rooms: 🔦 Torch (removes a wrong answer / fixes a dial), ⏳ Time crystal (+60 s), 🛡️ Guard charm (blocks one wrong answer's penalties).
