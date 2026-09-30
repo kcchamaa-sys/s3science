@@ -302,11 +302,19 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .mode.rush { background: #2B2433; color: #fff; background-image: radial-gradient(circle at 90% 0, rgba(255,107,107,.45), transparent 50%); }
 .mode.rush .muted { color: #D8CFE8; }
 .mode h3 { font-size: 1.15rem; }
+@media (max-width: 380px) { .bnav { padding-left: 2px; padding-right: 2px; gap: 0; } .bnav button { font-size: .64rem; padding: 4px 0; } .bnav button .i { font-size: 1.3rem; } }
+.nbadge { position: absolute; top: 2px; right: 14%; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: #E0567E; color: #fff; font-size: .68rem; line-height: 18px; text-align: center; border: 2px solid #fff; }
+.bnav button { position: relative; }
+.mlist { display: grid; gap: 12px; }
+.mcard { border: var(--line); border-radius: var(--r); box-shadow: var(--shadow-sm); padding: 12px; display: grid; gap: 8px; background: #FFFDF6; min-width: 0; }
+.mans { border: 2px dashed var(--ink); border-radius: 12px; padding: 6px 10px; background: #fff; }
+.mans summary { cursor: pointer; font-weight: 800; min-height: 32px; display: flex; align-items: center; }
+.mans[open] { display: grid; gap: 6px; }
 .mode.practice { background: var(--yellow); }
 /* ---------- Hub (bottom tabs) ---------- */
 .hub { display: grid; gap: 14px; }
 .bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: #fff; border-top: var(--line); display: flex; justify-content: center; gap: 2px; padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
-.bnav button { flex: 1 1 0; max-width: 128px; min-width: 0; background: none; border: 0; border-radius: 14px; display: grid; justify-items: center; gap: 1px; padding: 4px 2px; min-height: 54px; font-size: .78rem; font-weight: 800; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bnav button { flex: 1 1 0; max-width: 128px; min-width: 0; background: none; border: 0; border-radius: 14px; display: grid; justify-items: center; gap: 1px; padding: 4px 2px; min-height: 54px; font-size: .72rem; font-weight: 800; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bnav button .i { font-size: 1.45rem; line-height: 1.15; }
 .bnav button[aria-current="page"] { background: var(--pink-2); color: var(--ink); }
 body:has(.bnav) footer { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
@@ -1888,7 +1896,7 @@ function freshState() {
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
     coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null, costume: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, mistakes: [], practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", play_mode: null, study: {}, player_id: newId(), lb_last: 0
+    rush: { best: 0, lastDay: null }, mistakes: [], minfo: {}, mfilter: "all", practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", play_mode: null, study: {}, player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
@@ -2657,7 +2665,7 @@ function studyNext() {
 function studyAnswer(p, ok) {
   if (!ST || ST.lock) return; ST.lock = true;
   const pid = `${ST.room.id}:${p.id}`;
-  if (ok) { ST.right++; SFX.right(); if (!ST.hinted && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); } S.mistakes = S.mistakes.filter(m => m !== pid); }
+  if (ok) { ST.right++; SFX.right(); if (!ST.hinted && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); } clearMistake(pid); }
   else { SFX.wrong(); addMistake(pid); }
   save(); document.getElementById("stHint").hidden = true;
   const last = ST.i + 1 >= ST.qids.length;
@@ -2706,7 +2714,11 @@ const practiceable = p => p && (p.type === "mc" || p.type === "dial");
 function addMistake(pid) {
   if (!practiceable(pidQ(pid))) return;
   S.mistakes = S.mistakes.filter(m => m !== pid).concat(pid).slice(-80);
+  S.minfo = S.minfo || {}; const o = S.minfo[pid] || { n: 0 };
+  S.minfo[pid] = { n: o.n + 1, last: today() };
+  Object.keys(S.minfo).forEach(k => { if (!S.mistakes.includes(k)) delete S.minfo[k]; });
 }
+function clearMistake(pid) { S.mistakes = S.mistakes.filter(m => m !== pid); if (S.minfo) delete S.minfo[pid]; }
 function mistakeCount() { return S.mistakes.filter(m => practiceable(pidQ(m))).length; }
 function stopPractice() { if (PR) clearTimeout(PR.nextT); PR = null; }
 function practiceIntro() {
@@ -2722,7 +2734,8 @@ function practiceIntro() {
       <li>沒有計時，沒有懲罰。慢慢來，細心閱讀。</li>
       <li>完成 = +10 🌰。${bonus ? "<b>今天第一次完成雙倍獎勵！</b>" : ""}</li></ul>`)}</div>
     <p class="small muted">${L("Finished", "已完成")}: ${S.stats.practiceRuns} · ${L("Best streak", "最佳連續")}: ${S.practice.best}</p>
-    <div class="row"><button class="btn big" id="prGo">🔁 ${L("Start practice", "開始練習")}</button></div>`);
+    <div class="row"><button class="btn big" id="prGo">🔁 ${L("Start practice", "開始練習")}</button><button class="btn plain" id="prBook">📕 ${L("Mistake notebook", "錯題本")}</button></div>`);
+  document.getElementById("prBook").onclick = () => { SFX.tap(); closeModal(); renderMap("mist"); };
   document.getElementById("prGo").onclick = () => { SFX.init(); SFX.tap(); startPractice(); };
 }
 function startPractice() {
@@ -2785,7 +2798,7 @@ function practiceAnswer(ok) {
   document.getElementById("prHint").hidden = true;
   if (ok) {
     PR.streak++; PR.best = Math.max(PR.best, PR.streak);
-    if (S.mistakes.includes(pid)) { S.mistakes = S.mistakes.filter(m => m !== pid); PR.fixed++; S.stats.fixed = (S.stats.fixed || 0) + 1; }
+    if (S.mistakes.includes(pid)) { clearMistake(pid); PR.fixed++; S.stats.fixed = (S.stats.fixed || 0) + 1; }
     if (!PR.hinted && !PR.retry && !S.mastered_puzzles.includes(pid)) { S.mastered_puzzles.push(pid); recomputeMastery(); }
     SFX.right(); if (av) av.innerHTML = avatar("chiikawa", "happy");
     const d = document.createElement("div"); d.className = "plus"; d.textContent = `${PR.streak}/${PRACTICE_GOAL}`; document.body.appendChild(d); setTimeout(() => d.remove(), 900);
@@ -3151,7 +3164,7 @@ function showChat(kind) { const el = document.getElementById("chat"); if (el) el
    Hub: bottom tabs (Home · Rooms · Lens Lab · Dress up · Collection) so nothing needs a long scroll
    ============================================================ */
 let HUB_TAB = "home";
-const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Light Lab", "光學實驗室"], ["dress", "👗", "Dress up", "換裝"], ["collect", "🏆", "Collection", "收藏"]];
+const HUB_TABS = [["home", "🏠", "Home", "小窩"], ["rooms", "🗺️", "Rooms", "密室"], ["lab", "🔭", "Lab", "實驗室"], ["mist", "📕", "Mistakes", "錯題本"], ["dress", "👗", "Dress", "換裝"], ["collect", "🏆", "Trophies", "收藏"]];
 const PET_LINES = [["Wahoo!", "嘩呼！"], ["Hehe~ 🥰", "嘻嘻～🥰"], ["Let's learn about light!", "一起學光吧！"], ["Pat pat... ☺️", "摸摸頭……☺️"], ["Do I look cute today?", "我今天可愛嗎？"], ["One room a day! 🌱", "每天一個房間！🌱"]];
 const bgItem = () => S && S.equip.backdrop && itemById(S.equip.backdrop);
 const bgSvg = w => `<svg class="bgart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${w.bg}</svg>`;
@@ -3322,13 +3335,63 @@ function openShop(slot) {
   };
   draw();
 }
+/* ----- 錯題本 Mistake Notebook ----- */
+function mistakeItems() {
+  return S.mistakes.map(pid => ({ pid, p: pidQ(pid), room: pidRoom(pid), info: (S.minfo || {})[pid] || { n: 1, last: null } })).filter(x => x.p && practiceable(x.p)).reverse();
+}
+function mistakesHtml() {
+  const all = mistakeItems(), f = S.mfilter || "all", list = f === "all" ? all : all.filter(x => x.room.id === f);
+  const chip = (k, label, n) => `<button class="tab" role="tab" aria-selected="${f === k}" data-mf="${k}">${label} <b>${n}</b></button>`;
+  const chips = chip("all", L("All", "全部"), all.length) + ROOMS.map(r => { const n = all.filter(x => x.room.id === r.id).length; return n ? chip(r.id, `T${r.topicNo}`, n) : ""; }).join("");
+  const card = x => { const { p, room, info } = x, c = topicNo(room.topicNo);
+    return `<article class="mcard" data-pid="${esc(x.pid)}">
+      <div class="row" style="justify-content:space-between"><span class="chip">${c} · ${esc(tTopic(room))}</span><span class="small muted">${L("Missed", "答錯")} ${info.n}× ${info.last ? "· " + info.last : ""}</span></div>
+      <p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
+      <details class="mans"><summary>👀 ${L("Show answer & explanation", "顯示答案和解釋")}</summary>
+        <p><b>${L("Answer", "答案")}:</b> ${esc(answerText(p))}</p><p>${esc(p.explain)}</p>${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}${p.terms ? termChips(p.terms) : ""}</details>
+      <div class="row"><button class="btn blue" data-retry="${esc(x.pid)}">🔁 ${L("Try again", "再試一次")}</button><button class="btn plain" data-mj="${room.id}">📓 ${L("Notes", "筆記")}</button><button class="btn plain" data-mdel="${esc(x.pid)}" aria-label="${L("Remove from notebook", "從錯題本移除")}">🗑️</button></div>
+    </article>`; };
+  return `<section class="card"><div class="row" style="justify-content:space-between"><h2>📕 ${L("Mistake notebook", "錯題本")}</h2><span class="pill">${all.length} ${L("saved", "題")}</span></div>
+    <p class="small muted">${L("Every question you get wrong is saved here automatically. Tap 🔁 and answer it correctly to clear it (+3 🌰).", "答錯的題目會自動儲存在這裏。按 🔁 再答對一次，就可以清除（+3 🌰）。")}</p>
+    ${all.length ? `<div class="row"><button class="btn big" id="mPracAll">🔁 ${L(`Practice all ${all.length} (15 in a row)`, `練習全部 ${all.length} 題（連續答對 15 題）`)}</button></div>
+      <div class="slotbar" role="tablist">${chips}</div><div class="mlist">${list.map(card).join("")}</div>`
+      : `${say("usagi", L("No mistakes saved. Amazing! Keep going in Study or Escape mode, and any wrong answers will show up here. 🌟", "沒有錯題，好厲害！繼續玩學習或密室模式，答錯的題目會出現在這裏。🌟"), "happy")}
+        <div class="row"><button class="btn green" id="mGoStudy">📖 ${L("Go to Study mode", "去學習模式")}</button></div>`}
+  </section>`;
+}
+function retryMistake(pid) {
+  const p = pidQ(pid), room = pidRoom(pid); if (!p) return;
+  let locked = false;
+  const box = openModal(`<span class="kicker">📕 ${L("Mistake notebook", "錯題本")} · ${topicNo(room.topicNo)}</span><h2>${L("Try it again", "再試一次")}</h2>
+    <p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}<div id="rmBody">${answerUi(p)}</div>
+    <div class="row"><button class="btn blue" id="rmHint">💡 ${L("Hint", "提示")}</button></div><div id="rmFb"></div>`, { wide: true, onClose: () => renderMap("mist") });
+  document.getElementById("rmHint").onclick = () => { SFX.hint(); document.getElementById("rmFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
+  wireQuiz(document.getElementById("rmBody"), p, () => locked, ok => {
+    locked = true; document.getElementById("rmHint").hidden = true;
+    if (ok) { clearMistake(pid); S.stats.fixed = (S.stats.fixed || 0) + 1; const c = boost(3); S.coins += c; save(true); SFX.right(); confetti(50); checkTrophies(); }
+    else { SFX.wrong(); addMistake(pid); save(); }
+    document.getElementById("rmFb").innerHTML = `<div class="fb ${ok ? "ok" : "no"}">
+      ${ok ? say("usagi", `<b>${L("Cleared!", "清除了！")}</b> +${boost(3)} 🌰`, "happy") : say("chiikawa", L("Not yet. Read the answer and try again later. 🌱", "還未答對。看看答案，稍後再試。🌱"), "cry")}
+      ${ok ? "" : `<p><b>${L("Answer", "答案")}:</b> ${esc(answerText(p))}</p>`}<p>${esc(p.explain)}</p>
+      <div class="row"><button class="btn big" id="rmDone">${L("Back to the notebook", "返回錯題本")}</button></div></div>`;
+    document.getElementById("rmDone").onclick = () => { SFX.tap(); closeModal(); renderMap("mist"); };
+  });
+}
+function wireMistakes() {
+  $app.querySelectorAll("[data-mf]").forEach(b => b.onclick = () => { SFX.tap(); S.mfilter = b.dataset.mf; renderMap("mist"); });
+  $app.querySelectorAll("[data-retry]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); retryMistake(b.dataset.retry); });
+  $app.querySelectorAll("[data-mj]").forEach(b => b.onclick = () => { SFX.tap(); openJournal(b.dataset.mj); });
+  $app.querySelectorAll("[data-mdel]").forEach(b => b.onclick = () => { SFX.tap(); clearMistake(b.dataset.mdel); save(); renderMap("mist"); });
+  const pa = document.getElementById("mPracAll"); if (pa) pa.onclick = () => { SFX.init(); SFX.tap(); practiceIntro(); };
+  const gs = document.getElementById("mGoStudy"); if (gs) gs.onclick = () => { SFX.tap(); S.play_mode = "study"; renderMap("rooms"); };
+}
 function renderMap(tab) {
   stopStudy();
   const moved = tab && tab !== HUB_TAB; if (tab) HUB_TAB = tab;
   stopRush(); stopPractice(); MUSIC.setMode("map"); MUSIC.setTrack(S.track); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
-  const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
+  const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, mist: mistakesHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
   $app.innerHTML = `<div class="hub">${body}</div>
-    <nav class="bnav" aria-label="${L("Main sections", "主要部分")}">${HUB_TABS.map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${i}</span>${L(en, zh)}</button>`).join("")}</nav>`;
+    <nav class="bnav" aria-label="${L("Main sections", "主要部分")}">${HUB_TABS.map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${i}</span>${L(en, zh)}${k === "mist" && mistakeCount() ? `<span class="nbadge">${mistakeCount()}</span>` : ""}</button>`).join("")}</nav>`;
   if (moved) window.scrollTo(0, 0);
   const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = () => { SFX.init(); SFX.tap(); fn(); }; };
   $app.querySelectorAll(".bnav [data-tab]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); renderMap(b.dataset.tab); });
@@ -3342,6 +3405,7 @@ function renderMap(tab) {
   if (document.getElementById("dPane")) { wireWardrobe(document.getElementById("dPane"), refreshDress);
     on("dOff", () => { Object.keys(S.equip).forEach(k => S.equip[k] = null); save(true); refreshDress(); refreshPlayer(); }); }
   if (HUB_TAB === "lab") wireLensLab();
+  if (HUB_TAB === "mist") wireMistakes();
   clearInterval(chatT);
   if (document.getElementById("chat")) chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
   if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop && document.getElementById("chat")) showStreakPop(); }, 500);
