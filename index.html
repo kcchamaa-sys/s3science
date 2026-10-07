@@ -670,6 +670,34 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
 .modal { background: #FFFCEC; }
 .tag, .chip { background: #FFEBC2; }
 :focus-visible { outline-color: #FFB238; }
+/* Room types: door challenges */
+.kindtag { display: inline-block; font-size: .78rem; font-weight: 800; background: #FFF1B8; color: #7A4B00; border: 1.5px solid #F2C94C; border-radius: 999px; padding: 1px 8px; }
+.jig { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: min(360px, 100%); margin: 0 auto; }
+.jig .jt { padding: 0; border: 3px solid transparent; border-radius: 8px; background: none; aspect-ratio: 1; overflow: hidden; cursor: pointer; }
+.jig .jt svg { display: block; width: 100%; height: 100%; }
+.jig .jt.sel { border-color: #FF8A2B; box-shadow: 0 0 0 3px #FFD84D; transform: scale(.96); }
+.jig .jt.ok { border-color: #5BC27A; }
+.dgsvg { width: 100%; max-width: 560px; display: block; margin: 0 auto; border: var(--line); border-radius: 16px; }
+.dgsvg .flow { stroke-dasharray: 14 8; animation: dgflow 1s linear infinite; }
+@keyframes dgflow { to { stroke-dashoffset: -22; } }
+.dglabels { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.dgl { display: flex; align-items: center; gap: 8px; background: #FFFBEA; border: 2px solid #F2C94C; border-radius: 12px; padding: 6px 10px; }
+.dgl b { font-size: 1.1rem; width: 1.4em; text-align: center; } .dgl select { flex: 1; min-width: 0; font-size: 1rem; padding: 6px; border-radius: 8px; border: 2px solid #E8D7A0; }
+.dgl.bad { border-color: #E0567E; background: #FDECEF; }
+.xlab .labsvg { width: 100%; height: auto; }
+.cmgrid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; align-items: center; }
+.cmsvg { width: 100%; display: block; border-radius: 16px; }
+.cmside { display: grid; gap: 6px; justify-items: center; text-align: center; }
+.cmswatch { width: 90px; height: 60px; border-radius: 12px; border: 3px solid var(--ink, #5B4846); } .cmswatch.sm { width: 60px; height: 40px; }
+.cmbtn { background: #2B2433; color: #fff; border-color: var(--cc); } .cmbtn.on { background: var(--cc); color: #111; box-shadow: 0 0 14px var(--cc); }
+.emwave { width: 100%; height: 50px; display: block; }
+.emseq { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+.emslot { border: 2px dashed #E8C24A; border-radius: 12px; padding: 8px; min-height: 40px; font-weight: 800; color: #B39A4E; text-align: center; }
+.emslot.full { border-style: solid; background: #FFF6D8; color: #5B4846; }
+.emcards { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.emcard { display: inline-flex; align-items: center; gap: 2px; }
+@media (max-width: 520px) { .cmgrid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .dgsvg .flow { animation: none; } .dgsvg .beam { display: none; } }
 </style>
 </head>
 <body>
@@ -3602,13 +3630,14 @@ function roomsHtml() {
         <span class="rstars">📖 ${S.study && S.study[r.id] != null ? `${L("Best", "最佳")} ${S.study[r.id]}/5` : L("Start studying", "開始溫習")}</span></button>`;
     return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
         <span class="tnum">${topicNo(r.topicNo)} · ${r.sec}</span><span class="tname">${topicHtml(r)}</span>
-        <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span>${open ? bar : ""}
+        <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span><span class="kindtag">${kindTag(r)}</span>${open ? bar : ""}
         <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `🔑 ${n}/5 · ${heartsHtml(heartsOf(S.room_run[r.id]))}` : L("Escape the room before", "先逃出上一個房間")}</span>
       </button>`; }).join("");
   const info = study
     ? `<p class="small muted">${L("📖 Read each topic's key points, then answer 5 questions. No timer, no hearts, every topic open. Mistakes go to 🔁 Practice.", "📖 先讀每個課題的重點，再答 5 題。沒有計時、沒有心心，所有課題都開放。錯題會存入 🔁 練習。")}</p>`
     : `<div class="rules escinfo">${L("🚪 <b>Escape mode:</b> ❤️❤️❤️ 3 hearts · ⏱️ 10 minutes · every wrong answer costs a heart · 0 hearts or time up = 💀 <b>GAME OVER</b> (the locks reset). Stars = hearts left.", "🚪 <b>密室逃脫：</b>❤️❤️❤️ 3 顆心 · ⏱️ 10 分鐘 · 每答錯一次扣一顆心 · 沒有心或時間用完 = 💀 <b>GAME OVER</b>（鎖會重設）。星星 = 剩下的心。")}
-        <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")}</div>`;
+        <br>${L("🚪 Every room ends differently:", "🚪 每個房間的結局都不同：")} ${[...new Set(ROOMS.map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}
+        <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")} · 👊 ${L("Sorcerer first-year", "咒術學校一年級生")} · 🎣 ${L("Rookie hunter", "新手獵人")}</div>`;
   return `<section class="card"><div class="row" style="justify-content:space-between"><h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色和光譜以外")}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
     ${toggle}${info}<div class="topics">${cards}</div></section>`;
 }
@@ -4140,6 +4169,20 @@ function pickRun(room) {
 const runQs = room => S.room_run[room.id].qids.map(id => room.pool.find(p => p.id === id) || room.puzzles[0]);
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 
+/* ----- Room types: every room ends with a different kind of exit-door challenge ----- */
+const ROOM_KINDS = {
+  jigsaw: { icon: "🧩", en: "Jigsaw room", zh: "拼圖房", piece: ["jigsaw piece", "拼圖塊"], intro: ["This is a 🧩 <b>Jigsaw room</b>: every lock you open gives a jigsaw piece. Rebuild the picture at the 🚪 door to escape!", "這是 🧩 <b>拼圖房</b>：每打開一把鎖就得到一塊拼圖。在 🚪 大門前把圖畫拼好就能逃出！"] },
+  diagram: { icon: "🏷️", en: "Diagram room", zh: "圖解房", piece: ["label card", "標籤卡"], intro: ["This is a 🏷️ <b>Diagram room</b>: every lock gives a label card. Label the moving ray diagram at the 🚪 door (you can listen to it too 🔊)!", "這是 🏷️ <b>圖解房</b>：每把鎖給你一張標籤卡。在 🚪 大門為會動的光線圖貼上標籤（還可以聽讀音 🔊）！"] },
+  code: { icon: "🔐", en: "Code-lock room", zh: "密碼鎖房", piece: ["code digit", "密碼數字"], intro: ["This is a 🔐 <b>Code-lock room</b>: every item shows one digit of the 🚪 door code.", "這是 🔐 <b>密碼鎖房</b>：每件物品顯示 🚪 大門密碼的一個數字。"] },
+  experiment: { icon: "🔬", en: "Experiment room", zh: "實驗房", piece: ["lab part", "實驗零件"], intro: ["This is a 🔬 <b>Experiment room</b>: every lock gives a lab part. Build the experiment at the 🚪 door and use the simulator to open it!", "這是 🔬 <b>實驗房</b>：每把鎖給你一件實驗零件。在 🚪 大門砌好實驗，用模擬器把門打開！"] },
+  colour: { icon: "🎨", en: "Colour-mixing room", zh: "混色房", piece: ["colour filter", "濾色片"], intro: ["This is a 🎨 <b>Colour-mixing room</b>: every lock gives a colour filter. Mix the spotlights at the 🚪 door to match the colours!", "這是 🎨 <b>混色房</b>：每把鎖給你一塊濾色片。在 🚪 大門混合射燈，配出正確的顏色！"] },
+  spectrum: { icon: "🌈", en: "Spectrum line-up room", zh: "光譜排序房", piece: ["wave card", "波段卡"], intro: ["This is a 🌈 <b>Spectrum line-up room</b>: every lock gives a wave card. Line up the electromagnetic spectrum at the 🚪 door!", "這是 🌈 <b>光譜排序房</b>：每把鎖給你一張波段卡。在 🚪 大門把電磁波譜排好次序！"] }
+};
+const ROOM_KIND = { room1: "jigsaw", room2: "diagram", room3: "code", room4: "experiment", room5: "experiment", room6: "colour", room7: "spectrum" };
+const roomKind = r => ROOM_KIND[r.id] || "code";
+const kindOf = r => ROOM_KINDS[roomKind(r)];
+const kindTag = r => `${kindOf(r).icon} ${L(kindOf(r).en, kindOf(r).zh)}`;
+const pieceName = r => L(kindOf(r).piece[0], kindOf(r).piece[1]);
 function enterRoom(id) {
   stopRush(); stopPractice(); stopStudy(); document.body.classList.remove("lgmode");
   const room = ROOMS[roomIndex(id)];
@@ -4164,7 +4207,7 @@ function playIntro() {
     if (R !== me) return;
     const [w, m, t] = lines[k++];
     setLine(w, t, m);
-    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L("Tap a glowing <b>?</b> to start. ⚠️ You have <b>3 hearts ❤️❤️❤️</b> and <b>10 minutes</b>. Every wrong answer costs a heart and 20 seconds. Lose all your hearts or run out of time and it's <b>GAME OVER</b>: the locks reset! Stars = hearts left. Think first... and watch the dark 👀", "點擊發光的 <b>?</b> 開始。⚠️ 你有 <b>3 顆心 ❤️❤️❤️</b> 和 <b>10 分鐘</b>。每答錯一次扣一顆心和 20 秒。失去所有心心或時間用完便會 <b>GAME OVER</b>，所有鎖會重設！星星 = 剩下的心心。先想清楚……小心黑暗 👀")), k < lines.length ? 2600 : 3200);
+    me.introT = setTimeout(k < lines.length ? step : () => R === me && setLine("hachiware", L(...kindOf(R.room).intro) + " " + L("Tap a glowing <b>?</b> to start. ⚠️ You have <b>3 hearts ❤️❤️❤️</b> and <b>10 minutes</b>. Every wrong answer costs a heart and 20 seconds. Lose all your hearts or run out of time and it's <b>GAME OVER</b>: the locks reset! Stars = hearts left. Think first... and watch the dark 👀", "點擊發光的 <b>?</b> 開始。⚠️ 你有 <b>3 顆心 ❤️❤️❤️</b> 和 <b>10 分鐘</b>。每答錯一次扣一顆心和 20 秒。失去所有心心或時間用完便會 <b>GAME OVER</b>，所有鎖會重設！星星 = 剩下的心心。先想清楚……小心黑暗 👀")), k < lines.length ? 2600 : 3200);
   };
   step();
 }
@@ -4203,13 +4246,13 @@ function renderRoom() {
     <section class="roomhead">
       <div class="status">
         <div class="av ${frameCls()}" id="chiiAv">${avatar("chiikawa", R.mood)}</div>
-        <div style="min-width:0"><div class="rtopic">${topicNo(room.topicNo)}: ${topicHtml(room)}</div>
+        <div style="min-width:0"><div class="rtopic">${topicNo(room.topicNo)}: ${topicHtml(room)} · <span class="kindtag">${kindTag(room)}</span></div>
           <div class="rt">${esc(room.name)}</div>
           <div class="small" id="chiiSt">${L("Puff is ready", "泡芙準備好了")}</div></div>
       </div>
       <div style="display:grid;justify-items:end;gap:4px">
         <div class="timer ${t < 60 ? "low" : ""}" id="timer" role="timer" aria-label="${L("Time left", "剩餘時間")}">${fmt(Math.max(0, t))}</div>
-        <span class="small">🔓 ${solved.length}/5 ${L("locks", "把鎖")} · 🚪 ${solved.length === 5 ? L("code ready!", "密碼齊了！") : L("door locked", "門已上鎖")}</span>
+        <span class="small">🔓 ${solved.length}/5 ${L("locks", "把鎖")} · 🚪 ${solved.length === 5 ? (roomKind(room) === "code" ? L("code ready!", "密碼齊了！") : L("door challenge ready!", "大門挑戰準備好！")) : L("door locked", "門已上鎖")}</span>
         <span class="hearts" id="hearts" aria-label="${L("Hearts left", "剩餘心心")}: ${heartsOf(S.room_run[room.id])}">${heartsHtml(heartsOf(S.room_run[room.id]))}</span>
       </div>
     </section>
@@ -4228,7 +4271,7 @@ function renderRoom() {
       </div>
     </section>
     <section class="card" style="padding:12px">
-      <div class="row" style="justify-content:space-between"><b>🎒 ${L("Inventory", "物品欄")}</b><span class="small muted">${L("Each item shows one digit of the door code", "每件物品顯示大門密碼的一個數字")}</span></div>
+      <div class="row" style="justify-content:space-between"><b>🎒 ${L("Inventory", "物品欄")}</b><span class="small muted">${roomKind(room) === "code" ? L("Each item shows one digit of the door code", "每件物品顯示大門密碼的一個數字") : L(`Each item comes with a ${kindOf(room).icon} ${pieceName(room)} for the door challenge`, `每件物品附有一張 ${kindOf(room).icon} ${pieceName(room)}，用於大門挑戰`)}</span></div>
       <div class="inv" id="inv">${invHtml()}</div>
     </section>
     <div class="row"><button class="btn plain" id="toMap">← ${L("Topic map", "課題地圖")}</button><button class="btn blue" id="openJ">📓 ${L("Textbook notes for this topic", "本課題的課本筆記")}</button></div>`;
@@ -4249,7 +4292,9 @@ function invHtml(newIdx = -1) {
   return HOTSPOTS.map((h, i) => R.stolen === i
     ? `<div class="slot stolen" aria-label="${L("Taken by the wolverine", "被狼獾拿走了")}"><span style="font-size:1.5rem">🐾</span><span>${L("Taken!", "被拿走了！")}</span><span class="code">#${i + 1} = ?</span></div>`
     : solved.includes(i)
-    ? `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))}: ${L("code digit", "密碼數字")} #${i + 1} = ${R.room.code[i]}" aria-label="${esc(itemName(i))}: #${i + 1} = ${R.room.code[i]}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">#${i + 1} = ${R.room.code[i]}</span></button>`
+    ? (roomKind(R.room) === "code"
+      ? `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))}: ${L("code digit", "密碼數字")} #${i + 1} = ${R.room.code[i]}" aria-label="${esc(itemName(i))}: #${i + 1} = ${R.room.code[i]}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">#${i + 1} = ${R.room.code[i]}</span></button>`
+      : `<button class="slot full ${i === newIdx ? "new" : ""}" data-info="${esc(itemName(i))} + ${kindOf(R.room).icon} ${esc(pieceName(R.room))} #${i + 1}" aria-label="${esc(itemName(i))}: ${esc(pieceName(R.room))} #${i + 1}">${ICONS[h.item]}<span class="nm">${esc(itemName(i))}</span><span class="code">${kindOf(R.room).icon} #${i + 1}</span></button>`)
     : `<div class="slot" aria-label="${L("Empty slot", "空格")} ${i + 1}"><span class="muted">#${i + 1}<br>?</span></div>`).join("");
 }
 
@@ -4467,7 +4512,7 @@ function solve() {
     <p>${esc(p.explain)}</p>
     ${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip 考試貼士", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}
     ${p.terms ? `<div class="terms">${p.terms.map(([en, zh]) => `<span class="term">${esc(en)}<span class="zh">${zh}</span>${spk(en)}</span>`).join("")}</div>` : ""}
-    <div class="found">${ICONS[HOTSPOTS[i].item]}<span>${L("You found", "你找到了")}: <b>${esc(itemName(i))}</b>. ${L("Code digit", "密碼數字")} #${i + 1} = <b>${room.code[i]}</b></span></div>
+    <div class="found">${ICONS[HOTSPOTS[i].item]}<span>${L("You found", "你找到了")}: <b>${esc(itemName(i))}</b>. ${roomKind(room) === "code" ? `${L("Code digit", "密碼數字")} #${i + 1} = <b>${room.code[i]}</b>` : `${L("It comes with", "附送")} ${kindOf(room).icon} <b>${esc(pieceName(room))} #${i + 1}</b>`}</span></div>
     <div class="row"><button class="btn big" id="collect">${L("Collect item ✨", "收集物品 ✨")}</button></div></div>`;
   const c = document.getElementById("collect"); c.focus({ preventScroll: true });
   document.getElementById("pfb").scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "nearest" });
@@ -4480,7 +4525,7 @@ function collect(i) {
   document.getElementById("inv").innerHTML = invHtml(i); wireSlots();
   const n = (S.room_progress[R.room.id] || []).length;
   if (n < 5 && R.incidents < 3 && Math.random() < (R.replay ? 0.55 : 0.4)) { const me = R; setTimeout(() => tryIncident(me), 1500); }
-  if (n === 5) setLine("hachiware", L("All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!", "5 個密碼數字都找到了！點擊 🚪 <b>出口大門</b>輸入密碼！"));
+  if (n === 5) setLine("hachiware", roomKind(R.room) === "code" ? L("All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!", "5 個密碼數字都找到了！點擊 🚪 <b>出口大門</b>輸入密碼！") : L(`All 5 ${pieceName(R.room)}s found! Tap the 🚪 <b>exit door</b> for the ${kindTag(R.room)} challenge!`, `5 張${pieceName(R.room)}都找到了！點擊 🚪 <b>出口大門</b>挑戰${kindTag(R.room)}！`));
   else setLine("chiikawa", L(`Ya...! ${5 - n} more lock${5 - n === 1 ? "" : "s"} to go! 🔍`, `呀……！還有 ${5 - n} 把鎖！🔍`), "happy");
 }
 
@@ -4489,8 +4534,10 @@ function openDoor() {
   const { room } = R;
   const solved = S.room_progress[room.id] || [];
   if (R.stolen !== null) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", L(`The wolverine still has item #${R.stolen + 1}! Tap the 🐾 to catch it first.`, `狼獾還拿着物品 #${R.stolen + 1}！先點擊 🐾 捉住牠。`), "cry"); return; }
-  if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", L(`The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, `大門需要 5 位數密碼……我們只有 ${solved.length}/5 個數字。再開多些鎖吧！🔍`), "cry"); return; }
+  if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", roomKind(room) === "code" ? L(`The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, `大門需要 5 位數密碼……我們只有 ${solved.length}/5 個數字。再開多些鎖吧！🔍`) : L(`The door needs all 5 ${pieceName(room)}s... We have ${solved.length}/5. Let's open more locks! 🔍`, `大門需要全部 5 張${pieceName(room)}……我們只有 ${solved.length}/5。再開多些鎖吧！🔍`), "cry"); return; }
   SFX.click();
+  const kind = roomKind(room);
+  if (kind !== "code") return ({ jigsaw: openJigsaw, diagram: openDiagram, experiment: openExperiment, colour: openColour, spectrum: openSpectrum })[kind](room);
   const box = openModal(`
     <span class="kicker">${L("Exit door · Keypad", "出口大門 · 數字鎖")}</span>
     <h2>🚪 ${L("Enter the door code", "輸入大門密碼")}</h2>
@@ -4510,6 +4557,212 @@ function openDoor() {
   };
   document.getElementById("kok").onclick = ok;
   box.onkeydown = e => { if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter") { e.preventDefault(); ok(); } };
+}
+/* ----- Exit-door challenges for the non-code rooms ----- */
+function doorWrong(msg) {
+  const id = R.room.id, box = document.getElementById("mbox");
+  SFX.wrong(); setMood("cry", 2000);
+  if (box) { box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake"); }
+  S.room_timer[id] -= 20; save();
+  const tm = document.getElementById("timer"); if (tm) tm.textContent = fmt(Math.max(0, S.room_timer[id]));
+  const fb = document.getElementById("pfb"); if (fb) fb.innerHTML = say("chiikawa", `${msg} <b>${L("⏱️ −20 s", "⏱️ −20 秒")}</b>`, "cry");
+  if (S.room_timer[id] <= 0) gameOver("time");
+}
+function doorWin(html) {
+  if (!R || R.done) return;
+  SFX.right(); confetti(60); setMood("happy");
+  const go = () => { if (R && !R.done) { closeModal(); escapeRoom(); } };
+  document.getElementById("pfb").innerHTML = `<div class="fb ok">${say("usagi", html, "happy")}<div class="row"><button class="btn big" id="dgo">${L("Open the door 🔓", "開門 🔓")}</button></div></div>`;
+  const b = document.getElementById("dgo"); b.focus({ preventScroll: true }); b.onclick = go;
+  document.getElementById("pfb").scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "nearest" });
+  $modal._close = go;
+}
+const doorHead = (r, title, hint) => `<span class="kicker">${L("Exit door", "出口大門")} · ${kindTag(r)}</span><h2>🚪 ${title}</h2>${say("hachiware", hint, "normal", "hint")}`;
+const shuffled = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+
+/* 🧩 Jigsaw: rebuild "how we see a non-luminous object", then answer one question about it */
+function jigPic() {
+  const ar = (x, y, a) => `<path d="M${x} ${y} l-11 -7 M${x} ${y} l-11 7" transform="rotate(${a} ${x} ${y})" stroke="#E08A00" stroke-width="5" stroke-linecap="round"/>`;
+  return `<defs><linearGradient id="jgbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF4B8"/><stop offset=".5" stop-color="#FFE0C2"/><stop offset="1" stop-color="#E4D8FF"/></linearGradient></defs>
+    <rect width="300" height="300" fill="url(#jgbg)"/>
+    ${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<path d="M50 50 m${(30 * Math.cos(a * Math.PI / 180)).toFixed(1)} ${(30 * Math.sin(a * Math.PI / 180)).toFixed(1)} l${(10 * Math.cos(a * Math.PI / 180)).toFixed(1)} ${(10 * Math.sin(a * Math.PI / 180)).toFixed(1)}" stroke="#FFC300" stroke-width="4" stroke-linecap="round"/>`).join("")}
+    <circle cx="50" cy="48" r="20" fill="#FFE14D" stroke="${MINK}" stroke-width="3"/><rect x="42" y="66" width="16" height="10" rx="2" fill="#B9B3C7" stroke="${MINK}" stroke-width="3"/>
+    <text x="50" y="96" text-anchor="middle" font-size="12" font-weight="800" fill="${MINK}">${L("luminous", "發光體")}</text>
+    <path d="M86 50 H222" stroke="#FFC300" stroke-width="5" stroke-linecap="round"/>${ar(155, 50, 0)}
+    <g transform="rotate(-8 252 52)"><rect x="230" y="30" width="44" height="40" rx="4" fill="#E0567E" stroke="${MINK}" stroke-width="3"/><path d="M238 30 V70" stroke="#fff" stroke-width="3"/><text x="256" y="56" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">📖</text></g>
+    <text x="252" y="96" text-anchor="middle" font-size="12" font-weight="800" fill="${MINK}">${L("non-luminous", "非發光體")}</text>
+    <path d="M236 84 L86 232" stroke="#FFC300" stroke-width="5" stroke-linecap="round"/>${ar(160, 159, 135)}${ar(112, 206, 135)}
+    <text x="56" y="140" text-anchor="middle" font-size="13" font-weight="800" fill="#7A4BD8">${L("How do we", "我們怎樣")}</text><text x="56" y="160" text-anchor="middle" font-size="13" font-weight="800" fill="#7A4BD8">${L("see it?", "看見它？")}</text>
+    <path d="M250 130 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" fill="#FFD84D" stroke="${MINK}" stroke-width="1.5"/>
+    <ellipse cx="58" cy="252" rx="34" ry="20" fill="#fff" stroke="${MINK}" stroke-width="3"/><circle cx="62" cy="250" r="12" fill="#5FA8D3"/><circle cx="62" cy="250" r="6" fill="${MINK}"/><circle cx="66" cy="246" r="2.4" fill="#fff"/>
+    <text x="250" y="240" text-anchor="middle" font-size="12" font-weight="800" fill="${MINK}">${L("light enters", "光線進入")}</text><text x="250" y="258" text-anchor="middle" font-size="12" font-weight="800" fill="${MINK}">${L("the eye 👁️", "眼睛 👁️")}</text>
+    <rect x="1.5" y="1.5" width="297" height="297" fill="none" stroke="${MINK}" stroke-width="3" rx="10"/>`;
+}
+function openJigsaw(room) {
+  let order; do order = shuffled([0, 1, 2, 3, 4, 5, 6, 7, 8]); while (order.every((v, k) => v === k));
+  let sel = -1, built = false;
+  const pic = jigPic();
+  const box = openModal(`${doorHead(room, L("Rebuild the picture", "把圖畫拼好"), L("Tap two pieces to swap them. Put the picture back together to see <b>how we see things</b>!", "點擊兩塊拼圖互相交換。把圖畫拼回原狀，看看<b>我們怎樣看見物件</b>！"))}
+    <div class="jig" id="jig" role="grid" aria-label="${L("Jigsaw puzzle", "拼圖")}"></div>
+    <div class="row" style="justify-content:center"><button class="btn plain" id="jpeek">👀 ${L("Peek at the picture", "偷看完整圖畫")}</button></div>
+    <div id="jq"></div><div id="pfb"></div>`, { wide: true });
+  const draw = () => {
+    document.getElementById("jig").innerHTML = order.map((t, k) => `<button class="jt ${k === sel ? "sel" : ""} ${built ? "ok" : ""}" data-k="${k}" aria-label="${L("Piece", "拼圖塊")} ${t + 1}, ${L("slot", "位置")} ${k + 1}"><svg viewBox="${(t % 3) * 100} ${Math.floor(t / 3) * 100} 100 100" aria-hidden="true">${pic}</svg></button>`).join("");
+    box.querySelectorAll(".jt").forEach(b => b.onclick = () => {
+      if (built) return; const k = +b.dataset.k;
+      if (sel === -1) { sel = k; SFX.tap(); }
+      else { [order[sel], order[k]] = [order[k], order[sel]]; sel = -1; SFX.beep(); }
+      if (order.every((v, i) => v === i)) { built = true; SFX.item(); ask(); }
+      draw();
+    });
+  };
+  const ask = () => {
+    const opts = shuffled([["lamp", L("The lamp 💡", "燈泡 💡"), 1], ["book", L("The book 📖", "書本 📖"), 0], ["eye", L("The eye 👁️", "眼睛 👁️"), 0]]);
+    document.getElementById("jq").innerHTML = `<div class="fb ok">${say("chiikawa", L("The picture is back! One last check before the door opens:", "圖畫拼好了！開門前最後一題："), "happy")}
+      <p><b>${L("The book is non-luminous. Where does the light that lets us see the book come from?", "書本是非發光體。令我們看見書本的光從哪裏來？")}</b></p>
+      <div class="row">${opts.map(([k, t]) => `<button class="btn plain" data-jq="${k}">${t}</button>`).join("")}</div></div>`;
+    box.querySelectorAll("[data-jq]").forEach(b => b.onclick = () => b.dataset.jq === "lamp"
+      ? (box.querySelectorAll("[data-jq]").forEach(x => x.disabled = true), doorWin(L("Yes! The lamp is <b>luminous</b>. Its light is <b>reflected</b> by the book into our eyes. 💡→📖→👁️", "對！燈泡是<b>發光體</b>。它的光被書本<b>反射</b>進入我們的眼睛。💡→📖→👁️")))
+      : doorWrong(L("Not quite... A non-luminous object gives out no light of its own. Follow the arrows!", "不太對……非發光體自己不會發光。跟着箭號看看！")));
+  };
+  document.getElementById("jpeek").onclick = () => {
+    SFX.tap(); const j = document.getElementById("jig"), keep = j.innerHTML;
+    if (built) return;
+    j.innerHTML = `<svg viewBox="0 0 300 300" style="grid-column:1/-1;width:100%;border-radius:12px" role="img" aria-label="${L("Finished picture", "完成的圖畫")}">${pic}</svg>`;
+    setTimeout(() => { if (document.getElementById("jig") === j) draw(); }, 1800);
+  };
+  draw();
+}
+
+/* 🏷️ Diagram: label an animated reflection diagram, with read-aloud */
+function openDiagram(room) {
+  const parts = [["inc", "Incident ray", "入射光線"], ["ref", "Reflected ray", "反射光線"], ["nor", "Normal", "法線"], ["ai", "Angle of incidence (i)", "入射角 (i)"], ["ar", "Angle of reflection (r)", "反射角 (r)"], ["mir", "Plane mirror", "平面鏡"]];
+  const marks = [["A", 122, 98, "inc"], ["B", 284, 104, "ref"], ["C", 200, 28, "nor"], ["D", 166, 146, "ai"], ["E", 234, 146, "ar"], ["F", 80, 228, "mir"]];
+  const opts = shuffled(parts);
+  const law = "The law of reflection. The angle of incidence equals the angle of reflection. The incident ray, the reflected ray and the normal all lie in the same plane.";
+  const svg = `<svg class="dgsvg" viewBox="0 0 400 250" role="img" aria-label="${L("Reflection ray diagram with labels A to F", "反射光線圖，標籤 A 至 F")}">
+    <rect width="400" height="250" rx="16" fill="#FFFBEA"/>
+    <path d="M50 200 H350" stroke="#7FA7D9" stroke-width="7" stroke-linecap="round"/>${Array.from({ length: 15 }, (_, k) => `<path d="M${58 + k * 20} 204 l-10 12" stroke="#7FA7D9" stroke-width="2"/>`).join("")}
+    <path d="M200 200 V40" stroke="${MINK}" stroke-width="2.4" stroke-dasharray="7 6"/>
+    <path d="M200 160 A40 40 0 0 0 171.7 171.7" fill="none" stroke="#E0567E" stroke-width="3"/><path d="M200 160 A40 40 0 0 1 228.3 171.7" fill="none" stroke="#2F6FD6" stroke-width="3"/>
+    <path class="flow" d="M80 80 L200 200" stroke="#E0567E" stroke-width="5" stroke-linecap="round"/><path class="flow d2" d="M200 200 L320 80" stroke="#2F6FD6" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 140 l-11.6 -3.1 M140 140 l-3.1 -11.6" stroke="#E0567E" stroke-width="4" stroke-linecap="round"/><path d="M260 140 l-11.6 3.1 M260 140 l-3.1 11.6" stroke="#2F6FD6" stroke-width="4" stroke-linecap="round"/>
+    <g class="beam"><circle r="6" fill="#FFD84D" stroke="${MINK}" stroke-width="1.5"><animateMotion dur="3s" repeatCount="indefinite" path="M80 80 L200 200 L320 80"/></circle></g>
+    <circle cx="70" cy="70" r="14" fill="#FFE14D" stroke="${MINK}" stroke-width="2.4"/>
+    ${marks.map(([t, x, y]) => `<g><circle cx="${x}" cy="${y}" r="13" fill="#fff" stroke="${MINK}" stroke-width="2.4"/><text x="${x}" y="${y + 5.5}" text-anchor="middle" font-size="16" font-weight="800" fill="${MINK}">${t}</text></g>`).join("")}
+  </svg>`;
+  const box = openModal(`${doorHead(room, L("Label the ray diagram", "為光線圖加上標籤"), L("Watch the light bounce off the mirror. Pick the right label for each letter, then open the door.", "看看光線怎樣在鏡面反射。為每個字母選出正確的標籤，然後開門。"))}
+    ${svg}
+    <div class="row" style="justify-content:center;align-items:center"><span class="small"><b>🔊 ${L("Listen: the law of reflection", "聆聽：反射定律")}</b></span>${spk(law)}</div>
+    <div class="dglabels">${marks.map(([t]) => `<label class="dgl"><b>${t}</b><select data-m="${t}" aria-label="${L("Label for", "標籤")} ${t}"><option value="">${L("— choose —", "— 請選擇 —")}</option>${opts.map(([k, en, zh]) => `<option value="${k}">${L(en, zh)}</option>`).join("")}</select></label>`).join("")}</div>
+    <div class="row"><button class="btn big" id="dgok">${L("Check my labels ✔", "檢查標籤 ✔")}</button></div><div id="pfb"></div>`, { wide: true });
+  document.getElementById("dgok").onclick = () => {
+    const sel = [...box.querySelectorAll("select[data-m]")];
+    if (sel.some(s => !s.value)) { SFX.wrong(); document.getElementById("pfb").innerHTML = say("chiikawa", L("Choose a label for every letter first!", "先為每個字母選好標籤！"), "cry"); return; }
+    const right = sel.filter(s => marks.find(m => m[0] === s.dataset.m)[3] === s.value).length;
+    sel.forEach(s => s.closest(".dgl").classList.toggle("bad", marks.find(m => m[0] === s.dataset.m)[3] !== s.value));
+    if (right === marks.length) { sel.forEach(s => s.disabled = true); document.getElementById("dgok").disabled = true; doorWin(L("All 6 labels are right! Remember: <b>i = r</b>, and both angles are measured from the <b>normal</b>, not the mirror. 🪞", "6 個標籤全對！記住：<b>i = r</b>，兩個角都是從<b>法線</b>量度，不是從鏡面。🪞")); }
+    else doorWrong(L(`${right}/6 labels are right. The red ones need another look: angles are measured from the normal!`, `${right}/6 個標籤正確。紅色的要再想想：角度是從法線量度的！`));
+  };
+}
+
+/* 🔬 Experiment: solve the door with the TIR or lens simulator */
+function openExperiment(room) {
+  const tir = room.id === "room4";
+  let goal;
+  if (tir) { LAB.tab = "tir"; LAB.mat = "glass"; LAB.ang = 15; }
+  else {
+    goal = shuffled([
+      { en: "a <b>real, inverted, magnified</b> image, like a <b>projector</b>", zh: "<b>實像、倒立、放大</b>的像，像<b>投影機</b>", ok: s => s.real && s.size === "mag", u: 3 },
+      { en: "a <b>real, inverted, diminished</b> image, like a <b>camera</b>", zh: "<b>實像、倒立、縮小</b>的像，像<b>相機</b>", ok: s => s.real && s.size === "dim", u: 0.6 },
+      { en: "a <b>virtual, erect, magnified</b> image, like a <b>magnifying glass</b>", zh: "<b>虛像、正立、放大</b>的像，像<b>放大鏡</b>", ok: s => s.virt && s.size === "mag", u: 3 }])[0];
+    LAB.tab = "lens"; LAB.kind = "convex"; LAB.u = goal.u; LAB.rays = [true, true, true];
+  }
+  const task = tir
+    ? L("The crystal door opens only when light is <b>trapped inside a diamond</b> by total internal reflection, at an angle that would <b>NOT</b> trap light in glass (glass C = 41.8°).", "水晶門只會在光線被<b>困在鑽石內</b>發生全內反射時打開，而且入射角要<b>不能</b>令玻璃發生全內反射（玻璃 C = 41.8°）。")
+    : L(`The door's screen needs ${goal.en}. Move the object, then lock in your experiment.`, `大門的屏幕需要${goal.zh}。移動物體，然後鎖定你的實驗。`);
+  const body = tir
+    ? `<div class="row"><div class="seg" role="radiogroup" aria-label="${L("Material", "物質")}">${Object.entries(TIR_MATS).map(([k, [n, en, zh]]) => `<button role="radio" aria-checked="${LAB.mat === k}" data-xmat="${k}">${L(en, zh)} ${n}</button>`).join("")}</div></div>
+      <div id="labSvg">${tirSvg()}</div>
+      <label class="labslide"><span>${L("Drag the laser (or this slider): angle of incidence", "拖動激光（或這條滑桿）：入射角")}</span><input type="range" id="labAng" min="0" max="85" step="0.5" value="${LAB.ang}"></label>
+      <div id="labInfo">${tirInfo()}</div>`
+    : `<div id="labSvg">${labSvg()}</div>
+      <label class="labslide"><span>${L("Drag the object (or this slider) to change the object distance", "拖動物體（或這條滑桿）改變物距")}</span><input type="range" id="labU" min="0.3" max="4" step="0.05" value="${LAB.u}" aria-label="${L("Object distance", "物距")}"></label>
+      <div id="labInfo">${labInfo()}</div>`;
+  const box = openModal(`${doorHead(room, tir ? L("Trap the light", "困住光線") : L("Focus the door's projector", "為大門投影機對焦"), task)}
+    <div class="lab xlab">${body}</div>
+    <div class="row"><button class="btn big" id="xok">${L("Lock in my experiment ✔", "鎖定我的實驗 ✔")}</button></div><div id="pfb"></div>`, { wide: true });
+  const upd = () => { labUpdate(); };
+  box.querySelectorAll("[data-xmat]").forEach(b => b.onclick = () => { SFX.tap(); LAB.mat = b.dataset.xmat; box.querySelectorAll("[data-xmat]").forEach(x => x.setAttribute("aria-checked", x === b)); upd(); });
+  const sl = document.getElementById(tir ? "labAng" : "labU"); sl.oninput = e => { if (tir) LAB.ang = +e.target.value; else LAB.u = +(+e.target.value).toFixed(2); upd(); };
+  wireLabDrag();
+  document.getElementById("xok").onclick = () => {
+    if (tir) {
+      const s = tirSolve();
+      if (s.mat === "diamond" && s.state === "tir" && s.i < 41.8) { document.getElementById("xok").disabled = true; doorWin(L(`Trapped! In diamond C = ${s.C.toFixed(1)}°, so i = ${s.i.toFixed(0)}° gives total internal reflection, but in glass it would just refract out. That's why diamonds sparkle! 💎`, `困住了！鑽石的 C = ${s.C.toFixed(1)}°，所以 i = ${s.i.toFixed(0)}° 會發生全內反射，但在玻璃中光只會折射出去。這就是鑽石閃閃發亮的原因！💎`)); }
+      else doorWrong(s.mat !== "diamond" ? L("The door wants the light trapped in <b>diamond</b>. Switch the material!", "大門要求光線困在<b>鑽石</b>內。轉換物質吧！")
+        : s.state !== "tir" ? L(`No total internal reflection yet: i must be <b>bigger</b> than diamond's critical angle (${s.C.toFixed(1)}°).`, `還未發生全內反射：i 必須<b>大於</b>鑽石的臨界角（${s.C.toFixed(1)}°）。`)
+        : L("That angle would trap light in glass too! Use a <b>smaller</b> angle that only works in diamond.", "這個角度在玻璃中也會發生全內反射！用一個只在鑽石中有效的<b>較小</b>角度。"));
+    } else {
+      const s = labSolve();
+      if (goal.ok(s)) { document.getElementById("xok").disabled = true; doorWin(L(`In focus! Object: ${labZones(s)[0]} → image: ${labZones(s)[1]}. 🔍`, `對焦成功！物體：${labZones(s)[0]} → 像：${labZones(s)[1]}。🔍`)); }
+      else doorWrong(L("The door's screen shows the wrong kind of image. Check the image table (real or virtual? bigger or smaller?) and move the object.", "大門屏幕的像不對。看看資料表（實像還是虛像？放大還是縮小？）再移動物體。"));
+    }
+  };
+}
+
+/* 🎨 Colour mixing: switch the red, green and blue spotlights to match 3 target colours */
+function openColour(room) {
+  const C = { r: "#FF2B2B", g: "#2BFF4A", b: "#2B5BFF" }, MIX = { r: C.r, g: C.g, b: C.b, rg: "#FFF02B", gb: "#2BFFF0", rb: "#FF2BF0", rgb: "#FFFFFF" };
+  const T = shuffled([["yellow", "Yellow", "黃色", "rg"], ["cyan", "Cyan", "青色", "gb"], ["magenta", "Magenta", "品紅色", "rb"], ["white", "White", "白色", "rgb"]]).slice(0, 3).map(t => t.concat(MIX[t[3]]));
+  let round = 0; const on = { r: false, g: false, b: false };
+  const box = openModal(`${doorHead(room, L("Mix the spotlights", "混合射燈"), L("Switch the <b>red</b>, <b>green</b> and <b>blue</b> spotlights on or off to make the colour on the door. Match 3 colours to escape!", "開關<b>紅</b>、<b>綠</b>、<b>藍</b>三盞射燈，配出大門上的顏色。配對 3 種顏色就能逃出！"))}
+    <div id="cmix"></div><div id="pfb"></div>`, { wide: true });
+  const mixHex = () => MIX[["r", "g", "b"].filter(c => on[c]).join("")] || "#111";
+  const draw = () => {
+    const t = T[round];
+    document.getElementById("cmix").innerHTML = `<div class="cmgrid">
+      <svg class="cmsvg" viewBox="0 0 320 230" role="img" aria-label="${L("Spotlights on a dark wall", "射在暗牆上的射燈")}"><rect width="320" height="230" rx="16" fill="#111"/>
+        <g style="isolation:isolate">${[["r", 130, 95], ["g", 190, 95], ["b", 160, 148]].map(([c, x, y]) => on[c] ? `<circle cx="${x}" cy="${y}" r="62" fill="${C[c]}" style="mix-blend-mode:screen"/>` : "").join("")}</g></svg>
+      <div class="cmside"><div class="small"><b>${L("Door colour", "大門顏色")} ${round + 1}/3</b></div><div class="cmswatch" style="background:${t[4]}"></div><b>${L(t[1], t[2])}</b>
+        <div class="small muted">${L("Your mix", "你的混色")}</div><div class="cmswatch sm" style="background:${mixHex()}"></div></div></div>
+      <div class="row" style="justify-content:center">${[["r", "Red", "紅"], ["g", "Green", "綠"], ["b", "Blue", "藍"]].map(([c, en, zh]) => `<button class="btn cmbtn ${on[c] ? "on" : ""}" data-c="${c}" aria-pressed="${on[c]}" style="--cc:${C[c]}">💡 ${L(en, zh)} ${on[c] ? L("ON", "開") : L("OFF", "關")}</button>`).join("")}</div>
+      <div class="row"><button class="btn big" id="cok">${L("Shine it on the door ✔", "照向大門 ✔")}</button></div>`;
+    box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { SFX.beep(); on[b.dataset.c] = !on[b.dataset.c]; draw(); });
+    document.getElementById("cok").onclick = () => {
+      const k = ["r", "g", "b"].filter(c => on[c]).join("");
+      if (k !== t[3]) { doorWrong(L(`That makes the wrong colour. Which primary colours of light add up to <b>${t[1].toLowerCase()}</b>?`, `這不是正確的顏色。哪些光的三原色加起來會變成<b>${t[2]}</b>？`)); return; }
+      SFX.right(); round += 1; on.r = on.g = on.b = false;
+      if (round < 3) { document.getElementById("pfb").innerHTML = say("usagi", L(`Yes! ${t[3].split("").map(c => ({ r: "red", g: "green", b: "blue" })[c]).join(" + ")} = <b>${t[1].toLowerCase()}</b>! Next colour...`, `對！${t[3].split("").map(c => ({ r: "紅", g: "綠", b: "藍" })[c]).join(" + ")} = <b>${t[2]}</b>！下一個顏色……`), "happy"); draw(); }
+      else { document.getElementById("cmix").querySelectorAll("button").forEach(b => b.disabled = true); doorWin(L("All 3 colours matched! Red, green and blue are the <b>primary colours of light</b>: mix all three and you get white. 🌈", "3 種顏色全部配對！紅、綠、藍是<b>光的三原色</b>：三種混合便得到白光。🌈")); }
+    };
+  };
+  draw();
+}
+
+/* 🌈 Spectrum line-up: put the EM waves in order of wavelength */
+function openSpectrum(room) {
+  const W = [["radio", "Radio waves", "無線電波", "📻"], ["micro", "Microwaves", "微波", "📡"], ["ir", "Infrared", "紅外線", "🔥"], ["vis", "Visible light", "可見光", "🌈"], ["uv", "Ultraviolet", "紫外線", "🕶️"], ["xray", "X-rays", "X 射線", "🦴"], ["gamma", "Gamma rays", "伽馬射線", "☢️"]];
+  const cards = shuffled(W); let seq = [];
+  const wave = `<svg viewBox="0 0 400 50" class="emwave" aria-hidden="true"><path d="${Array.from({ length: 400 }, (_, x) => `${x ? "L" : "M"}${x} ${(25 + 18 * Math.sin(x * x / 2600)).toFixed(1)}`).join(" ")}" fill="none" stroke="#7A4BD8" stroke-width="3"/></svg>`;
+  const box = openModal(`${doorHead(room, L("Line up the spectrum", "把光譜排好"), L("Tap the wave cards from the <b>longest wavelength</b> to the <b>shortest</b>. Tap 🔊 to hear each name.", "由<b>波長最長</b>到<b>波長最短</b>依次點擊波段卡。點擊 🔊 聽讀音。"))}
+    ${wave}<div class="row small muted" style="justify-content:space-between"><span>← ${L("longest wavelength", "波長最長")}</span><span>${L("shortest wavelength", "波長最短")} →</span></div>
+    <div class="emseq" id="emseq"></div><div class="emcards" id="emcards"></div>
+    <div class="row"><button class="btn plain" id="emundo">↩️ ${L("Undo", "還原")}</button><button class="btn big" id="emok">${L("Check the order ✔", "檢查次序 ✔")}</button></div><div id="pfb"></div>`, { wide: true });
+  const nm = w => L(w[1], w[2]);
+  const draw = () => {
+    document.getElementById("emseq").innerHTML = W.map((_, k) => seq[k] ? `<span class="emslot full">${k + 1}. ${seq[k][3]} ${nm(seq[k])}</span>` : `<span class="emslot">${k + 1}</span>`).join("");
+    document.getElementById("emcards").innerHTML = cards.filter(c => !seq.includes(c)).map(c => `<span class="emcard"><button class="btn plain" data-w="${c[0]}">${c[3]} ${nm(c)}</button>${spk(c[1])}</span>`).join("");
+    box.querySelectorAll("[data-w]").forEach(b => b.onclick = () => { SFX.tap(); seq.push(W.find(w => w[0] === b.dataset.w)); draw(); });
+  };
+  document.getElementById("emundo").onclick = () => { SFX.tap(); seq.pop(); draw(); };
+  document.getElementById("emok").onclick = () => {
+    if (seq.length < W.length) { SFX.wrong(); document.getElementById("pfb").innerHTML = say("chiikawa", L("Place all 7 wave cards first!", "先放好全部 7 張波段卡！"), "cry"); return; }
+    const right = seq.filter((w, k) => w === W[k]).length;
+    if (right === W.length) { ["emok", "emundo"].forEach(id => document.getElementById(id).disabled = true); doorWin(L("Perfect order! Radio → micro → IR → visible → UV → X → gamma: wavelength gets <b>shorter</b> and the waves carry <b>more energy</b>. 📡☢️", "次序完全正確！無線電波 → 微波 → 紅外線 → 可見光 → 紫外線 → X 射線 → 伽馬射線：波長愈來愈<b>短</b>，能量愈來愈<b>高</b>。📡☢️")); }
+    else { doorWrong(L(`${right}/7 cards are in the right place. Try again!`, `${right}/7 張卡在正確位置。再試一次！`)); seq = []; draw(); }
+  };
+  draw();
 }
 function gameOver(reason) {
   if (!R || R.done) return;
