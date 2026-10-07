@@ -52,9 +52,9 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 
 - **40 questions per room** (280 in total, English + 繁中), spread across **Bloom's taxonomy levels 1–6**: Remember, Understand, Apply, Analyse, Evaluate, Create.
 - Every visit picks **5 fresh questions** climbing from level 1–2 up to 5–6, avoiding the ones seen recently. Answer choices are shuffled each time.
-- Mastery counts how many of a room's 40 questions you've answered right first time. The first replay each day earns a 📚 revision bonus (+20 🌰).
+- Mastery counts how many of a room's 40 questions you've answered right first time. The first replay each day earns a 📚 revision bonus (+30 🪙).
 - **Random incidents** (up to 3 per visit, more likely on replays) add a spooky, friendly twist:
-  🌑 blackout · 🐾 a wolverine takes an item (answer its riddle to get it back) · 👻 a shadow hides a lock · 🌫️ fog hides answers for 6 s · ⏩ the clock runs double speed · 😴 sleepy spores block hints · 🦉 an owl's bonus riddle (+45 s, +5 🌰) · 🍵 Kuri-Manju's tea break freezes the timer.
+  🌑 blackout · 🐾 a wolverine takes an item (answer its riddle to get it back) · 👻 a shadow hides a lock · 🌫️ fog hides answers for 6 s · ⏩ the clock runs double speed · 😴 sleepy spores block hints · 🦉 an owl's bonus riddle (+45 s, +5 🪙) · 🍵 Kuri-Manju's tea break freezes the timer.
 
 ## How a room works
 
@@ -72,7 +72,7 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
   | 14.8 Wave Observatory | 🌈 Spectrum line-up | Put the 7 EM wave cards in order of wavelength; 🔊 names |
 
   A wrong door answer costs 20 seconds (no heart). Room types are set in `ROOM_KIND` in `index.html`.
-- 10-minute countdown per room. When it runs out (or all 3 ❤️ hearts are lost) it is game over and the room restarts.
+- **Every room task = 15 questions:** 5 locks × 3 questions each. Answer all 3 to open a lock, then open the exit door. 20-minute countdown and 5 ❤️ hearts per room; when time runs out (or all hearts are lost) it is game over and the room restarts. Stars: 4–5 ❤️ left = ★★★, 2–3 = ★★, 1 = ★.
 - **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.
 
 ## 🚀 Automatic deployment
@@ -100,35 +100,44 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 - **🏠 Tabbed hub:** a bottom bar (Home · Rooms · Lens Lab · Dress up · Collection) replaces the long map page, so students hardly need to scroll. Home shows Chiikawa in a cosy room, progress meters, action tiles, the streak and the chat card.
 - **🍡 Mochi-style characters:** all five friends are redrawn as soft, round mochi bodies with tiny arms and feet.
 - **👗 Dress-up page:** new wig, outfit and prop slots with 22 Gen Z / Hong Kong items (swoop wig, K-pop wolf cut, moonwalk fedora, sparkly glove, "six-seven" jersey, deal-with-it shades, +1000 aura sign, bubble tea, egg waffle, red-white-blue poncho…).
-- **🔭 Lens Lab:** drag an object in front of a convex or concave lens. The three textbook rules draw the rays, and the lab shows the image position, its nature, u, v, magnification and everyday uses, with six missions (+5 🌰 each).
+- **🔭 Lens Lab:** drag an object in front of a convex or concave lens. The three textbook rules draw the rays, and the lab shows the image position, its nature, u, v, magnification and everyday uses, with six missions (+5 🪙 each).
 - **📘 Textbook alignment:** rooms follow sections 14.1–14.8 of "光、顏色和光譜以外", with notes rewritten from each 重點 and the textbook's terms (橫向倒置, 後視鏡, 藍綠, 洋紅, 紅外輻射, 紫外輻射, 伽瑪射線…). 33 bank questions were replaced with textbook examples (光酥餅, 貓眼石, 單車反光板, 紅外線體溫計, 快易通, 食物保存…).
-- **🎌 Anime wardrobe pack:** 81 more original items (the wardrobe now has 162) that nod to Jujutsu Kaisen, Hunter x Hunter, Naruto, Demon Slayer, One Piece, Spy x Family, Dragon Ball, Sailor Moon, Frieren, Haikyu!!, Bocchi the Rock!, My Hero Academia, Chainsaw Man, Attack on Titan and Oshi no Ko: hair, hats, face items, clips, outfits, props, 5 frames, 6 backdrops and 2 escape-only costumes (Sorcerer first-year, Rookie hunter). All are simple original drawings, not official artwork.
+- **🎒 Adventure wardrobe pack:** 81 more original items (the wardrobe now has 162): hair, hats, face items, clips, outfits, props, 5 frames, 6 backdrops and 2 escape-only costumes (Sorcerer first-year, Rookie hunter). All are simple original drawings, not official artwork, and item names do not mention any show.
 - **☀️ Sunshine theme:** warm lemon, peach and orange interface colours. One Chinese font everywhere: M PLUS Rounded 1c is loaded only for Latin characters, so all Chinese text uses Huninn (fallback Noto Sans TC).
 - **🎭 Wave-2 wardrobe:** 25 more original items that nod to memes, movies, superheroes and pop stars (big blond swoop wig, purple K-pop idol hair, curtain-bang and sky-high-ponytail pop-star wigs, mad-scientist hair, demon-hunter idol braid, web-slinger / iron-armour / merc / panther masks, thunder hammer, star shield, metal claws, chicken-jockey rider, witch hat, alien ears, Dubai chocolate, friendship bracelets, lightstick…) plus 8 room backdrops (Mong Kok neon, Victoria Harbour, brat-green wall, pixel world, stadium stage, space, hero city, emerald city).
 - **🔭 Light Lab:** three simulators (lenses 14.5–14.6, plane mirror 14.2, total internal reflection 14.4 with water, glass and diamond) and a choice of arrow, pencil or pop-star doll as the object. 12 missions.
 - **🎵 Music shop:** 7 unlockable background tracks for the home screen (lo-fi, pixel, disco pop, brainrot bounce, party chant, 2010 teen-pop, K-pop anthem). All melodies are original; only the style nods to famous songs.
-- **📖 Study mode or 🚪 Escape mode:** students choose. Study mode = key points, key rules and terms, then a calm 5-question check (no timer, every topic open). Escape mode = 3 ❤️ hearts and a strict 10-minute timer: every wrong answer costs a heart, and 0 hearts or time up is a real **GAME OVER** (the room's locks reset). Stars = hearts left.
-- **🚪 Escape-only costumes:** 💪 Gym bro (first escape), 🎣 Fish bro (3 rooms), 🍵 Performative bro (3 flawless escapes), 💼 Finance bro (5 rooms) and the legendary ♾️ Blindfold sorcerer (all 21★ + 10 flawless + 5 fast escapes).
+- **📖 Study mode or 🚪 Escape mode:** students choose. Study mode = key points, key rules and terms, then a calm 15-question check (no timer, every topic open). Escape mode = 15 questions, 5 ❤️ hearts and a strict 20-minute timer: every wrong answer costs a heart, and 0 hearts or time up is a real **GAME OVER** (the room's locks reset). Stars come from hearts left.
+- **🚪 Escape-only costumes:** 💪 Gym bro (first Biology room), 🎣 Fish bro (first Chemistry room), 👊 Sorcerer first-year (first Physics room), 🍵 Performative bro (3 flawless escapes, all 5 ❤️ kept), 🎣 Rookie hunter (2 flawless escapes), 💼 Finance bro (2 rooms in every subject) and the legendary ♾️ Blindfold sorcerer (every ★ in every room + 10 flawless + 5 fast escapes).
 - **New original cast:** Puff 泡芙, Berry 莓莓, Mango 芒芒, Taro 芋圓 and Chestnut 栗子伯. Bloom levels are still used to pick questions but are no longer shown to students.
-- **📕 Mistake notebook (錯題本):** every wrong answer (rooms, Study, Rush, Practice) is saved with its topic, how many times it was missed and the date. Students can filter by topic, reveal the answer and explanation, retry it (a correct answer clears it and gives +3 🌰), open the notes, remove it, or start 🔁 Practice from the whole list. The tab shows a badge with the count.
+- **📕 Mistake notebook (錯題本):** every wrong answer (rooms, Study, Rush, Practice) is saved with its topic, how many times it was missed and the date. Students can filter by topic, reveal the answer and explanation, retry it (a correct answer clears it and gives +3 🪙), open the notes, remove it, or start 🔁 Practice from the whole list. The tab shows a badge with the count.
 - **💬 Chat card:** on the map, the Chiikawa friends take turns sharing 💡 light facts from Hong Kong life (Symphony of Lights, convex road mirrors, optical-fibre broadband…) and 💪 personal cheers (streak, mistakes waiting, nearest trophy, next room). It changes every 20 s.
-- **🔥 Streak pop-up and bonus:** an animated pop-up each new day (streak up, shield saved, welcome back). Every 3 days in a row adds +10% chestnuts, up to ×1.5.
-- **✦ 💎 👑 Rarity tiers:** wardrobe items are Common, Rare, Epic or Legendary. There are new Hong Kong items (pineapple-bun hat, egg-tart clip, neon-sign frame). Five special items can't be bought; students earn them through steady effort (3★ in 3 rooms, fix 30 mistakes, master 140 questions, finish 20 practice rounds, all 21★ + 250 mastered).
+- **🔥 Streak pop-up and bonus:** an animated pop-up each new day (streak up, shield saved, welcome back). Every 3 days in a row adds +10% coins, up to ×1.5.
+- **✦ 💎 👑 Rarity tiers:** wardrobe items are Common, Rare, Epic or Legendary. There are new Hong Kong items (pineapple-bun hat, egg-tart clip, neon-sign frame). Five special items can't be bought; students earn them through steady effort (3★ in 3 rooms, fix 30 mistakes, escape 3 Physics rooms, finish 20 practice rounds, every ★ in every room + 250 mastered).
 - **🔊 British pronunciation:** every key term (journal and answer feedback) has 🔊 normal and 🐢 slow buttons using an en-GB voice.
-- **🔁 Practice mode:** loops the questions you got wrong (in rooms or Light Rush). Get **15 right in a row** to finish; a wrong answer comes back 2–5 questions later and resets the streak. If there aren't enough saved mistakes, random questions from unlocked rooms fill in. Finishing gives +10 🌰 (double on the first finish each day).
-- **Light Rush:** 60 seconds of mixed quick questions (multiple choice, true/false, matching, put in order, odd one out, fill the gap, colour mixer). Combos give ×2 / ×3 points; a wrong answer costs 3 seconds. Every 10 points = 1 🌰 chestnut; the first round each day pays double.
-- **Wardrobe & Shop:** spend chestnuts on hats, glasses, hair clips and frames for Chiikawa, or on power-ups for the escape rooms: 🔦 Torch (removes a wrong answer / fixes a dial), ⏳ Time crystal (+60 s), 🛡️ Guard charm (blocks one wrong answer's penalties).
-- **Leaderboard:** top 10 by dedication points (10 per day played + 1 per lock + 10 per room + 5 per rush round + 25 per trophy). It needs a free Google Sheet: see [`leaderboard/SETUP.md`](leaderboard/SETUP.md), then put the web-app URL in `LEADERBOARD_URL` in `index.html`.
+- **🔁 Practice mode:** loops the questions you got wrong (in rooms or Light Rush). Get **15 right in a row** to finish; a wrong answer comes back 2–5 questions later and resets the streak. If there aren't enough saved mistakes, random questions from unlocked rooms fill in. Finishing gives +10 🪙 (double on the first finish each day).
+- **Light Rush:** 60 seconds of mixed quick questions (multiple choice, true/false, matching, put in order, odd one out, fill the gap, colour mixer). Combos give ×2 / ×3 points; a wrong answer costs 3 seconds. Every 10 points = 1 🪙 coin; the first round each day pays double.
+- **Wardrobe & Shop:** spend coins on hats, glasses, hair clips and frames for Chiikawa, or on power-ups for the escape rooms: 🔦 Torch (removes a wrong answer / fixes a dial), ⏳ Time crystal (+60 s), 🛡️ Guard charm (blocks one wrong answer's penalties).
+- **Leaderboard:** top 10 by dedication points (10 per day played + 1 per correct room question + 10 per room + 5 per rush round + 25 per trophy). It needs a free Google Sheet: see [`leaderboard/SETUP.md`](leaderboard/SETUP.md), then put the web-app URL in `LEADERBOARD_URL` in `index.html`.
 
 ## Trophies 🏆
 
-10 hard trophies in the **Trophy Cabinet** (map screen and 🏆 button). They reward effort over many days: 7- and 30-day streaks, 20 play days, 15 first-try answers in a row, 100 locks opened, all rooms escaped, 3★ everywhere, 5 clean escapes, 5 no-hint escapes, 10 replays. Locked trophies show a progress bar.
+19 collectible **trophy cards** (🏆 tab and button), in the same card style as the S1 game: each card has a picture of a pal in a Biology, Chemistry, Physics or general scene. Locked cards start as a silhouette and get clearer as you get closer; a ribbon says how many more you need.
+
+- ● **Bronze (+20 🪙):** first escape, 7-day streak, Study check in 5 topics, 150 correct room questions
+- ◆ **Silver (+30 🪙):** all Biology rooms, all Chemistry rooms, all Physics rooms, 20 play days, 5 no-hint escapes, 10 replays
+- ★ **Gold (+50 🪙):** 15 first-try answers in a row (a whole room task), 3 rooms in each subject, 5 clean escapes, 3 flawless escapes, 500 correct room questions
+- ✦ **Legendary (+80 🪙):** all rooms escaped, 3★ everywhere, 30-day streak, 400 questions mastered
+
+## Subject looks 🎨
+
+Each part of the course has its own colours and background: 🫀 Biology is rose pink and leaf green with cell dots, ⚗️ Chemistry is mint and teal with hexagon molecules and bubbles, ⚡ Physics is indigo and gold with a rainbow light beam. The look follows the subject tab and the room you are in.
 
 ## Anti-guessing rules ⚠️
 
 - Every wrong answer: **−20 seconds**, and the lock **reshuffles** (answer order shuffles, dials spin).
 - **Guessing** (a wrong answer within 5 s of opening a lock or of the last wrong answer) jams the lock for 25 s; a **repeat miss** jams it for 20–40 s.
-- Each jam adds a **guess strike** and costs **3 🌰 chestnuts**. Every 3rd strike, the **lights dim** for 45 s.
+- Each jam adds a **guess strike** and costs **3 🪙 coins**. Every 3rd strike, the **lights dim** for 45 s.
 - 3 strikes = −1 star, 6 strikes = −2 stars for that escape (minimum 1★).
 
 ## Daily streak
