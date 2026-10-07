@@ -72,7 +72,7 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
   | 14.8 Wave Observatory | 🌈 Spectrum line-up | Put the 7 EM wave cards in order of wavelength; 🔊 names |
 
   A wrong door answer costs 20 seconds (no heart). Room types are set in `ROOM_KIND` in `index.html`.
-- 15-minute countdown per room. When it runs out the room keeps going in overtime, with no penalty.
+- 10-minute countdown per room. When it runs out (or all 3 ❤️ hearts are lost) it is game over and the room restarts.
 - **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.
 
 ## 🚀 Automatic deployment
