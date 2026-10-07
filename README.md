@@ -1,4 +1,4 @@
-# 🔦 Puff's Physics Escape
+# ☀️ S3 Science Study Pals
 
 A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Light, Colours and Beyond**. Concept-only: there are **no calculations** anywhere in the game.
 

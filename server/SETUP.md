@@ -20,7 +20,7 @@ Until this is done, the game works exactly as before: students type a nickname a
 - To use your own instead: [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials) → **Create credentials → OAuth client ID → Web application**, add `https://kcchamaa-sys.github.io` to **Authorised JavaScript origins**, save, and copy the Client ID (it ends with `.apps.googleusercontent.com`).
 
 ## Step 3 · The Apps Script
-- Go to [script.google.com](https://script.google.com) → **New project** → name it `Puff's Physics Escape server`.
+- Go to [script.google.com](https://script.google.com) → **New project** → name it `S3 Science Study Pals server`.
 - Delete the sample code and paste everything from **`server/Code.gs`**.
 - **Project Settings (⚙️) → Script properties → Add**:
 

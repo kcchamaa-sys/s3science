@@ -1,5 +1,5 @@
 /**
- * Puff's Physics Escape – class server (Google Apps Script web app)
+ * S3 Science Study Pals – class server (Google Apps Script web app)
  * ----------------------------------------------------------------
  * - Checks each Google sign-in (ID token) and looks the email up in the Users sheet.
  * - Saves each student's game progress and a record of every room / study / rush / practice round.
@@ -28,7 +28,7 @@ var MODES = { escape: '密室逃脫 Escape room', study: '溫習 Study', rush: '
 var STATUS = { done: '完成 Done', gameover: '遊戲結束 Game over' };
 
 function doGet() {
-  return out({ ok: true, app: "Puff's Physics Escape", time: new Date().toISOString() });
+  return out({ ok: true, app: "S3 Science Study Pals", time: new Date().toISOString() });
 }
 
 function doPost(e) {

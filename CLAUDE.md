@@ -1,4 +1,4 @@
-# Puff's Physics Escape (s3science)
+# S3 Science Study Pals (s3science)
 
 Part of a **three-repo family** that shares knowledge. Read [`docs/SHARED_KNOWLEDGE.md` in biology](https://github.com/kcchamaa-sys/biology/blob/claude/wonderful-turing-8ehr7a/docs/SHARED_KNOWLEDGE.md) (or `/home/user/biology/docs/SHARED_KNOWLEDGE.md` if the repo is cloned in this session) before designing or porting a feature.
 

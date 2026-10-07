@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#FFFDF6">
-<title>Puff's Physics Escape</title>
-<meta name="description" content="A cute escape room game for HK S3 Science: Light.">
+<meta name="theme-color" content="#FFF4CC">
+<title>S3 Science Study Pals</title>
+<meta name="description" content="S3 Science Study Pals: a cute escape-room study game for HK S3 Science, Chapter 14 Light.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Huninn&family=Noto+Sans+TC:wght@400;700&family=Noto+Sans+HK:wght@500;700&display=swap" rel="stylesheet">
+<!-- M PLUS Rounded 1c is loaded for Latin letters only (text= subset). It also contains Japanese kanji, so loading it in full
+     made Chinese text switch between Japanese-style and Huninn glyphs. Every Chinese character and full-width mark now uses Huninn. -->
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&amp;text=%20%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%E2%80%99%E2%80%98%E2%80%9C%E2%80%9D%C2%B7%E2%80%94%E2%80%93%E2%80%A6%C3%97%C2%B0%E2%80%B2%E2%80%B3%E2%80%A2%C3%A9%C3%A8%C3%A0%C3%BC%C3%B6%C3%B1%C2%B1%E2%89%88%E2%89%A4%E2%89%A5%C3%B7%C2%B2%C2%B3%C2%BD&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Huninn&amp;family=Noto+Sans+TC:wght@400;700&amp;display=swap" rel="stylesheet">
 <style>
 /* Look follows the s1 "Mochi Science Pals" interface: cream page, soft clay cards, bottom tab bar. Escape-room scenes stay dim. */
 :root {
@@ -39,8 +42,8 @@
   --line: 2px solid var(--edge);
   --pinkfill: #F4A3B5;
   --r: 24px;
-  --font: "M PLUS Rounded 1c", "Huninn", "Noto Sans TC", "Noto Sans HK", ui-rounded, system-ui, sans-serif;
-  --zh: "Huninn", "Noto Sans TC", "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --font: "M PLUS Rounded 1c", "Huninn", "Noto Sans TC", "PingFang HK", "Microsoft JhengHei", ui-rounded, system-ui, sans-serif;
+  --zh: "Huninn", "Noto Sans TC", "PingFang HK", "Microsoft JhengHei", sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -48,7 +51,8 @@ body { background: var(--cream); color: var(--ink); font-family: var(--font); fo
 button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 h1, h2, h3 { margin: 0; line-height: 1.25; text-wrap: balance; font-weight: 800; }
 p { margin: 0; }
-.zh { font-family: var(--zh); font-weight: 500; }
+.zh { font-family: var(--zh); }
+input, select, textarea { font-family: var(--font); }
 .muted { color: var(--ink-soft); }
 .small { font-size: .86rem; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
@@ -625,6 +629,42 @@ body.lgmode main { max-width: none; padding: 0; display: block; }
 /* account chip in the top bar */
 .pill.acct { cursor: pointer; max-width: 160px; overflow: hidden; text-overflow: ellipsis; background: #EAF7FF; border-color: #BFE6FB; box-shadow: 0 3px 0 #9FD4F2; color: #1B5E86; font: inherit; font-weight: 800; font-size: 14px; }
 .pill.acct.stale { background: #FFF0DD; border-color: #FFC68A; box-shadow: 0 3px 0 #F5A44B; color: #A24F00; }
+
+/* ---------- ☀️ Sunshine theme (S3 Science Study Pals): warm lemon, sunflower and tangerine. Escape-room scenes stay dim. ---------- */
+:root {
+  --cream: #FFFBE8; --cream-2: #FFF4CC; --ink: #5A4632; --ink-soft: #8C7458;
+  --pink: #FFE1B0; --pink-2: #FFF0D6; --rose: #FFC56E; --pinkfill: #FFB238;
+  --yellow: #FFF0A8; --blue: #D9F3FF; --blue-2: #EAF8FF; --green: #DDF5C9; --lav: #FFEBC2;
+  --edge: #F6E2B0; --edge-2: #EDCF8C;
+  --shadow: 0 4px 0 #F2D9A0, 0 12px 26px rgba(214,150,40,.10); --shadow-sm: 0 3px 0 #EFD49A;
+}
+body { background: radial-gradient(90% 60% at 100% 0%, #FFE9A8 0%, rgba(255,233,168,0) 60%), radial-gradient(80% 50% at 0% 100%, #FFE0C2 0%, rgba(255,224,194,0) 60%), var(--cream); background-attachment: fixed; }
+header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
+.btn { --bx: #E99A2C; }
+.btn.yellow { --bx: #E2B640; background: #FFE680; border-color: #F7CF4E; }
+.card { background: #FFFEF7; border-color: #F8E8BE; }
+.card.cream { background: var(--cream-2); }
+.hero { background: linear-gradient(120deg, #FFF3A6, #FFD68A 45%, #FFB98A); box-shadow: 0 5px 0 #F0C46C, 0 14px 28px rgba(230,150,40,.2); }
+.hero .sub, .hero .kicker { color: #A0520A; }
+.topic { background: #FFFEF7; }
+.topic.next { background: #FFF3B8; border-color: #FFD34D; box-shadow: 0 4px 0 #F2B820, 0 12px 26px rgba(214,150,40,.10); }
+.bnav { background: rgba(255,251,232,.97); border-top-color: #F5DC9C; }
+.bnav button[aria-current="page"] { color: #C25E00; }
+.bnav button[aria-current="page"] .i { background: #FFE9A8; border-color: #FFC34D; }
+.seg button[aria-checked="true"] { background: #FFD877; color: #7A3E00; }
+.act.pink { --bx: #E99A2C; background: #FFE1B0; border-color: #FFC56E; }
+.act.purple { --bx: #E7A07A; background: #FFE0D0; border-color: #F8BFA3; }
+.scene { background: radial-gradient(circle, #F6DDA8 2.2px, transparent 2.8px) 0 0 / 24px 24px, #FFF7DE; }
+.scene .rug { background: #FFD98A; }
+.lgbg { background: radial-gradient(120% 80% at 0% 0%, #FFF1A8 0%, #FFFBE8 42%, transparent 70%), radial-gradient(120% 90% at 100% 100%, #FFD9A0 0%, #FFEFD0 40%, #FFFBE8 75%); }
+.glowL { background: radial-gradient(circle, rgba(255,220,110,.6), rgba(255,180,120,.35) 45%, transparent 70%); }
+.glowR { background: radial-gradient(circle, rgba(255,200,140,.6), rgba(255,240,150,.4) 45%, transparent 70%); }
+.lgseg button[aria-pressed="true"] { background: #FF9F1C; box-shadow: inset 0 -3px 0 #D97F00; }
+.lglink { color: #C25E00; }
+.lgcard, .lgteaser { border-color: #F8E8BE; box-shadow: 0 4px 0 #F2D9A0, 0 14px 28px rgba(214,150,40,.10); }
+.modal { background: #FFFCEC; }
+.tag, .chip { background: #FFEBC2; }
+:focus-visible { outline-color: #FFB238; }
 </style>
 </head>
 <body>
@@ -632,7 +672,7 @@ body.lgmode main { max-width: none; padding: 0; display: block; }
   <filter id="sketch"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <header class="top">
-  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt"><span id="brandText">Puff's Physics Escape</span><br><small id="brandSub">S3 Physics · Light</small></span></button>
+  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt"><span id="brandText">S3 Science Study Pals</span><br><small id="brandSub">S3 Physics · Light</small></span></button>
   <div class="tools" id="tools"></div>
 </header>
 <main id="app"></main>
@@ -3012,8 +3052,8 @@ function applyLang() {
   buildPools();
   swap(CHEERS, zh ? ["嘩呼！", "嘩！", "彈彈彈！", "好嘢！"] : EN.cheers);
   RAR.bronze[2] = L("Bronze", "銅"); RAR.silver[2] = L("Silver", "銀"); RAR.gold[2] = L("Gold", "金"); RAR.legend[2] = L("Legendary", "傳說");
-  document.title = L("Puff's Physics Escape", "泡芙物理密室逃脫");
-  document.getElementById("brandText").textContent = L("Puff's Physics Escape", "泡芙物理密室逃脫");
+  document.title = L("S3 Science Study Pals", "中三科學學習夥伴");
+  document.getElementById("brandText").textContent = L("S3 Science Study Pals", "中三科學學習夥伴");
   document.getElementById("brandSub").textContent = L("S3 Physics · Light", "中三物理 · 光");
   document.getElementById("footText").textContent = L("Study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. All characters are original.",
     "香港中三科學第 14 章「光、顏色和光譜以外」學習遊戲。所有角色均為原創。");
@@ -3231,24 +3271,10 @@ function applyCode(d, name) {
   setTimeout(checkTrophies, 800);
 }
 
-/* ----- Resume prompt on reload ----- */
-function showResume() {
-  const ni = nextRoomIndex();
-  const r = ni === -1 ? null : ROOMS[ni];
-  const solved = r ? (S.room_progress[r.id] || []).length : 0;
-  openModal(`
-    <span class="kicker">${L("Welcome back", "歡迎回來")}</span>
-    <h2>${L("Hi", "你好")}, ${esc(AUTH.user ? dispName() : S.player_name)}! 👋</h2>
-    ${say("chiikawa", streakNote ? esc(streakNote) : L("Ya...! You came back! 🥹", "呀……！你回來了！🥹"), "happy")}
-    ${r ? say("hachiware", L(`You were in <b>${esc(r.name)}</b> (${topicNo(r.topicNo)}: ${esc(tTopic(r))}) with <b>${solved}/5</b> locks open.`, `你上次在<b>${esc(r.name)}</b>（${topicNo(r.topicNo)}：${esc(tTopic(r))}），已開 <b>${solved}/5</b> 把鎖。`), "normal", "hint") : say("hachiware", L("You've escaped every room! Replay any room to practise.", "你已逃出所有房間！可以重玩任何房間練習。"), "normal", "hint")}
-    <div class="row">
-      ${r ? `<button class="btn big" id="rsGo">▶ ${L("Resume game", "繼續遊戲")}</button>` : ""}
-      <button class="btn blue" id="rsMap">🗺️ ${L("Topic map", "課題地圖")}</button>
-      <button class="btn plain" id="rsCode">🔑 ${L("Use a save code", "使用存檔代碼")}</button>
-    </div>`, { closable: false });
-  if (r) document.getElementById("rsGo").onclick = () => { SFX.init(); SFX.tap(); closeModal(); streakNote = ""; enterRoom(r.id); };
-  document.getElementById("rsMap").onclick = () => { SFX.init(); SFX.tap(); closeModal(); renderMap(); };
-  document.getElementById("rsCode").onclick = () => { SFX.init(); SFX.tap(); closeModal(); openSaveModal(); };
+/* ----- Every sign-in or reload starts on the Home main menu; a short hello replaces the old resume pop-up ----- */
+function greetBack() {
+  const ni = nextRoomIndex(), r = ni === -1 ? null : ROOMS[ni], solved = r ? (S.room_progress[r.id] || []).length : 0;
+  setTimeout(() => toast(`👋 ${L("Welcome back", "歡迎回來")}, ${AUTH.user ? dispName() : S.player_name}! ${r && solved ? L(`${r.name}: ${solved}/5 locks open.`, `${r.name}：已開 ${solved}/5 把鎖。`) : ""}`), 400);
 }
 function showCodeFromLink(d) {
   openModal(`
@@ -3308,7 +3334,7 @@ function renderWelcome() {
         <div class="lgmid" aria-hidden="true">${parts}</div>
         <div class="lgduo" aria-hidden="true"><div class="lgpal lgm">${avatar("chiikawa", "happy", { face: "face_prism", prop: "prop_lightstick" })}</div><div class="lgpal lgpt">${avatar("hachiware", "happy", {})}<span class="mote mo1"></span><span class="mote mo2"></span><span class="mote mo3"></span></div></div>
         <div class="lgisle"></div></div>
-      <h1 class="lgtitle">${L("Puff's Physics Escape", "泡芙物理密室逃脫")}</h1>
+      <h1 class="lgtitle">${L("S3 Science Study Pals", "中三科學學習夥伴")}</h1>
       <p class="lgsub">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色和光譜以外")}</p>
       ${lgCardHtml()}
       <div class="lgteasers"><div class="lgteaser"><span class="tfl">${IC("flame")}</span><b>${L("One room a day", "每天一個密室")}</b><span>${L("10–15 minutes · keep your streak glowing", "10 至 15 分鐘 · 讓連續紀錄火焰不滅")}</span></div>
@@ -4614,7 +4640,7 @@ function startAccount(st) {
   const linked = pendCode; pendCode = null; clearHash();
   const base = (() => { try { const raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(OLD_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } })();
   S = st || freshState(); checkIn(); save(true);
-  if (st) { renderMap(); linked ? showCodeFromLink(linked) : showResume(); return; }
+  if (st) { renderMap("home"); if (linked) showCodeFromLink(linked); return; }
   streakPop = null; renderMap("home");
   if (linked) { showCodeFromLink(linked); return; }
   if (!base || base.imported || !(base.completed_rooms || []).length && !(base.coins > 0)) { modeChooser(); return; }
@@ -4718,7 +4744,7 @@ window.addEventListener("pagehide", () => { if (S) save(); });
   const linked = decodeCode(location.hash.slice(1));
   if (cloudOn()) { pendCode = linked; renderWelcome(); return; }
   if (linked) { S ? renderMap() : renderWelcome(); showCodeFromLink(linked); return; }
-  if (S) { checkIn(); renderMap(); showResume(); } else renderWelcome();
+  if (S) { checkIn(); renderMap("home"); greetBack(); } else renderWelcome();
 })();
 </script>
 </body>
