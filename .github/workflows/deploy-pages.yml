@@ -1,0 +1,38 @@
+# Publishes the game to GitHub Pages automatically.
+# Every push to the main branch or the working branch copies the site into the
+# gh-pages branch, which is what https://kcchamaa-sys.github.io/s3science/ serves.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - copilot/copy-asethetic-component-login-system
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect the site files
+        run: |
+          mkdir -p _site
+          cp index.html .nojekyll _site/
+          cp -r leaderboard _site/
+      - name: Publish to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Deploy ${{ github.sha }}"
