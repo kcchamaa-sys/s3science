@@ -44,7 +44,7 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
   | 6 Create | 4 |
 
   Count the questions per room before shipping.
-- Each visit picks 5 fresh questions that climb Bloom levels and skip the last 30 seen. Answer choices are shuffled.
+- Each visit picks 15 fresh questions (3 per lock) that climb Bloom levels and skip the last 30 seen. Answer choices are shuffled.
 - Question types:
   - multiple choice
   - labelled combination dials
@@ -65,8 +65,8 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
   - safe
   - exit door
 - Each hotspot opens a puzzle modal.
-- Each solved lock gives an inventory item holding one digit of a 5-digit door code. Students enter the code on a keypad.
-- A 15-min LED countdown (overtime allowed). 1–3 ★ based on first-try answers.
+- Each lock needs 3 right answers, so a room task is 15 questions. Each solved lock gives an inventory item holding one digit of a 5-digit door code. Students enter the code on a keypad.
+- A 20-min LED countdown and 5 ❤️ hearts. 1–3 ★ from hearts left (4–5 = ★★★, 2–3 = ★★, 1 = ★).
 - A 📓 Study Journal with the summary, key rules and bilingual terms. It highlights the current puzzle's terms.
 
 ## Chiikawa aesthetic
@@ -109,19 +109,13 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
 
 - Daily streak with shields: a shield covers a missed day; +1 every 7 days, max 3.
 - Daily snack chest.
-- **10 hard trophies** in a Trophy Cabinet (SVG cups, rarity tiers, progress bars):
-  1. 7-day streak
-  2. 20 play days
-  3. 30-day streak
-  4. 15 first-try answers in a row
-  5. 100 locks opened
-  6. All rooms escaped
-  7. 21 stars
-  8. 5 clean escapes
-  9. 5 no-hint escapes
-  10. 10 replays
+- **Trophy cards** (same card style as the S1 game: rarity frame, pal picture, frosted silhouette that gets clearer with progress, coin reward). Mix:
+  1. Bronze: first escape, 7-day streak, Study check in 5 topics, 150 correct room questions
+  2. Silver: all rooms in each subject, 20 play days, 5 no-hint escapes, 10 replays
+  3. Gold: a whole 15-question room task first try, 3 rooms in each subject, 5 clean escapes, 3 flawless escapes, 500 correct
+  4. Legendary: all rooms, 3★ everywhere, 30-day streak, 400 mastered
 - Revision hooks:
-  - +20 🌰 daily bonus for replaying a cleared room
+  - +30 🪙 daily bonus for replaying a cleared room
   - "12/40 mastered" shown per room
 
 ## Anti-guessing penalties (gentle, varied)
@@ -130,7 +124,7 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
 - **Jams:**
   - A fast wrong answer (<5 s after opening, or <4 s after the last miss) jams the lock for 25 s.
   - A repeat miss jams it for 20–40 s.
-- **Strikes:** each jam adds 1 strike and costs −3 🌰.
+- **Strikes:** each jam adds 1 strike and costs −3 🪙.
   - Every 3rd strike dims the lights for 45 s.
   - 3 strikes = −1★; 6 strikes = −2★ (minimum 1★).
 - Show the hint during a jam.
@@ -146,7 +140,7 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
   - fill the gap
   - one subject-specific visual type
 - Combo ×2 and ×3 multipliers. A wrong answer costs −3 s.
-- 10 points = 1 🌰. The first round each day pays double.
+- 10 points = 1 🪙. The first round each day pays double.
 
 ## Shop
 
@@ -163,7 +157,7 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
   | Action | Points |
   |---|---|
   | Each day played | 10 |
-  | Each lock opened | 1 |
+  | Each correct room question | 1 |
   | Each room escaped | 10 |
   | Each rush round | 5 |
   | Each trophy | 25 |
@@ -188,7 +182,7 @@ Spooky but friendly and **non-violent and healthy**. Up to 3 per visit, more lik
 | 🌫️ Fog | Next lock's answers blurred for 6 s |
 | ⏩ Haywire clock | Timer runs double speed for 30 s |
 | 😴 Sleepy spores | No hints for 45 s |
-| 🦉 Owl (good) | Bonus riddle: +45 s, +5 🌰 |
+| 🦉 Owl (good) | Bonus riddle: +45 s, +5 🪙 |
 | 🍵 Kuri-Manju tea (good) | Timer frozen for 30 s |
 
 ## Language and devices
