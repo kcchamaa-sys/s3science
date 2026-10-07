@@ -71,8 +71,9 @@ It must copy the format of my finished game **"Chiikawa Physics Escape"**:
 
 ## Chiikawa aesthetic
 
-- **Palette:** cream `#FFFDF0`, brown outline `#4A3E3D`, pink `#FFB7C5`, blue `#A0C4FF`, yellow `#FDFFB6`.
-- **Style:** 3px outlines, `4px 4px 0` shadows, **M PLUS Rounded 1c** font.
+- **Interface:** follow the s1science "Mochi Science Pals" look: a frosted top bar (brand, coin and streak chips, icon buttons), a bottom tab bar with two-tone vector icons (the active tab sits on a light-blue tile), and modals that open as bottom sheets on phones.
+- **Palette:** cream `#FFFDF6`, ink `#5B4B49`, pink `#FFE5EC` / rose `#E8AEB7`, butter `#FFF1C5`, mint `#D8F3DC`, lavender `#EDE4F7`, sky `#DDF4FF`.
+- **Style:** soft "clay" cards (2px light border, `0 4px 0` soft bottom shadow) and pastel buttons with a darker bottom edge that sinks when pressed. Fonts: **M PLUS Rounded 1c**, then Huninn / Noto Sans TC for Chinese.
 - **Characters:** ORIGINAL Chiikawa-style SVGs only. Never use official artwork (copyright).
 
   | Character | Role |
