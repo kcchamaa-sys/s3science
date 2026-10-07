@@ -41,6 +41,17 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 - **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Reopening the game shows a **Resume game** prompt.
 - **🔑 Save code:** a 5-character code (e.g. `K7Q2M`) or a link ending in `#K7Q2M` moves progress to another device with no account needed. It stores stars per room, locks solved in the current room, streak and shields. The game shows what a code contains before loading it.
 
+## 🌤️ Login screen and 🔐 class sign-in
+
+- **Login screen** (copied from the s1 Mochi Science Pals game): Puff, wearing prism glasses and holding a lightstick, waves next to Berry on a floating grassy island. Behind them is a cream-to-sky gradient with a faint dot grid, a scan-line, breathing glows, stardust and three glowing 3D orbit rings. Prisms, atoms, bulbs, rainbows and light rays drift past and move with the mouse or when the phone tilts. It also has a language pill, a music toggle and two teaser cards. Reduced-motion settings stop all the animation.
+- **Class sign-in:** students on the class list sign in with their school Google account. Progress saves to the cloud and loads on any device. Every escape (or game over), Study check, Light Rush round and Practice run is also written to the teacher's Google Sheet.
+  - A tab left open on another device can never overwrite newer progress.
+  - Records wait on the device until the server has them.
+  - Tap your name in the top bar to sync now, sign in again after the sign-in expires (about 1 hour), or sign out.
+- **School guest mode:** an account on the school domain that isn't on the class list can still play. Its progress is saved only on that device, and nothing is recorded.
+- **First sign-in:** if the device already has progress from before sign-in, the student is asked once whether to move it into their account.
+- **Setup:** see [`server/SETUP.md`](server/SETUP.md) (server code: `server/Code.gs`). Until `API_URL` is filled in `window.S3_CONFIG` near the top of `index.html`, the login screen shows **Play on this device**: students type a nickname and save codes work, the same as before. Student names and emails stay in the teacher's private sheet and are never put in this repo.
+
 ## ⚡ Light Rush, 👗 Wardrobe and 🏅 Leaderboard
 
 - **🏠 Tabbed hub:** a bottom bar (Home · Rooms · Lens Lab · Dress up · Collection) replaces the long map page, so students hardly need to scroll. Home shows Chiikawa in a cosy room, progress meters, action tiles, the streak and the chat card.
