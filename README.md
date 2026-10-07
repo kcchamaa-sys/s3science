@@ -32,13 +32,25 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 ## How a room works
 
 - Tap the glowing **?** objects (bookshelf, wall clock, room object, locked box, safe). Each opens a puzzle: multiple choice or combination dials.
-- Each solved lock gives an item with one digit of the **door code**. Enter the 5 digits at the 🚪 exit door to escape.
+- Each solved lock gives an item. Once all 5 are collected, the 🚪 exit door opens a **different challenge in each room**:
+
+  | Room | Type | Door challenge |
+  |---|---|---|
+  | 14.1 Dark Cavern | 🧩 Jigsaw | Tap-to-swap 3×3 jigsaw of "how we see a non-luminous object", then one check question |
+  | 14.2 Hall of Mirrors | 🏷️ Diagram | Label an animated reflection ray diagram (A–F); 🔊 / 🐢 read-aloud of the law of reflection |
+  | 14.3 Bent Pool | 🔐 Code lock | Enter the 5 code digits shown on the items (the classic keypad) |
+  | 14.4 Crystal Fibre Tunnel | 🔬 Experiment | Use the TIR simulator to trap light in diamond at an angle that would not trap it in glass |
+  | 14.5–6 Lens Workshop | 🔬 Experiment | Use the lens simulator to make the image the door asks for (projector, camera or magnifying glass) |
+  | 14.7 Rainbow Prism Tower | 🎨 Colour mixing | Switch red, green and blue spotlights to match 3 target colours |
+  | 14.8 Wave Observatory | 🌈 Spectrum line-up | Put the 7 EM wave cards in order of wavelength; 🔊 names |
+
+  A wrong door answer costs 20 seconds (no heart). Room types are set in `ROOM_KIND` in `index.html`.
 - 15-minute countdown per room. When it runs out the room keeps going in overtime, with no penalty.
 - **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.
 
 ## Saving progress
 
-- **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Reopening the game shows a **Resume game** prompt.
+- **Auto-save:** progress saves on the device after every action (`localStorage` key `escapeGameProgress`). Every sign-in or reload lands on the 🏠 **Home** main menu with a short "welcome back" note.
 - **🔑 Save code:** a 5-character code (e.g. `K7Q2M`) or a link ending in `#K7Q2M` moves progress to another device with no account needed. It stores stars per room, locks solved in the current room, streak and shields. The game shows what a code contains before loading it.
 
 ## 🌤️ Login screen and 🔐 class sign-in
@@ -59,6 +71,8 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
 - **👗 Dress-up page:** new wig, outfit and prop slots with 22 Gen Z / Hong Kong items (swoop wig, K-pop wolf cut, moonwalk fedora, sparkly glove, "six-seven" jersey, deal-with-it shades, +1000 aura sign, bubble tea, egg waffle, red-white-blue poncho…).
 - **🔭 Lens Lab:** drag an object in front of a convex or concave lens. The three textbook rules draw the rays, and the lab shows the image position, its nature, u, v, magnification and everyday uses, with six missions (+5 🌰 each).
 - **📘 Textbook alignment:** rooms follow sections 14.1–14.8 of "光、顏色和光譜以外", with notes rewritten from each 重點 and the textbook's terms (橫向倒置, 後視鏡, 藍綠, 洋紅, 紅外輻射, 紫外輻射, 伽瑪射線…). 33 bank questions were replaced with textbook examples (光酥餅, 貓眼石, 單車反光板, 紅外線體溫計, 快易通, 食物保存…).
+- **🎌 Anime wardrobe pack:** 81 more original items (the wardrobe now has 162) that nod to Jujutsu Kaisen, Hunter x Hunter, Naruto, Demon Slayer, One Piece, Spy x Family, Dragon Ball, Sailor Moon, Frieren, Haikyu!!, Bocchi the Rock!, My Hero Academia, Chainsaw Man, Attack on Titan and Oshi no Ko: hair, hats, face items, clips, outfits, props, 5 frames, 6 backdrops and 2 escape-only costumes (Sorcerer first-year, Rookie hunter). All are simple original drawings, not official artwork.
+- **☀️ Sunshine theme:** warm lemon, peach and orange interface colours. One Chinese font everywhere: M PLUS Rounded 1c is loaded only for Latin characters, so all Chinese text uses Huninn (fallback Noto Sans TC).
 - **🎭 Wave-2 wardrobe:** 25 more original items that nod to memes, movies, superheroes and pop stars (big blond swoop wig, purple K-pop idol hair, curtain-bang and sky-high-ponytail pop-star wigs, mad-scientist hair, demon-hunter idol braid, web-slinger / iron-armour / merc / panther masks, thunder hammer, star shield, metal claws, chicken-jockey rider, witch hat, alien ears, Dubai chocolate, friendship bracelets, lightstick…) plus 8 room backdrops (Mong Kok neon, Victoria Harbour, brat-green wall, pixel world, stadium stage, space, hero city, emerald city).
 - **🔭 Light Lab:** three simulators (lenses 14.5–14.6, plane mirror 14.2, total internal reflection 14.4 with water, glass and diamond) and a choice of arrow, pencil or pop-star doll as the object. 12 missions.
 - **🎵 Music shop:** 7 unlockable background tracks for the home screen (lo-fi, pixel, disco pop, brainrot bounce, party chant, 2010 teen-pop, K-pop anthem). All melodies are original; only the style nods to famous songs.
