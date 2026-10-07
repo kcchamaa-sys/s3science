@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FFF4CC">
 <title>S3 Science Study Pals</title>
-<meta name="description" content="S3 Science Study Pals: a cute escape-room study game for HK S3 Science, Chapter 14 Light.">
+<meta name="description" content="S3 Science Study Pals: a cute escape-room study game for HK S3 Science: Biology (Ch 12), Chemistry (Ch 13) and Physics (Ch 14).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- M PLUS Rounded 1c is loaded for Latin letters only (text= subset). It also contains Japanese kanji, so loading it in full
@@ -698,6 +698,73 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
 .emcard { display: inline-flex; align-items: center; gap: 2px; }
 @media (max-width: 520px) { .cmgrid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .dgsvg .flow { animation: none; } .dgsvg .beam { display: none; } }
+/* ----- Subjects + multimedia questions ----- */
+.subjbar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.subj { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; border: var(--line); border-radius: 18px; background: #fff; box-shadow: 0 3px 0 var(--edge); font-weight: 800; }
+.subj .si { font-size: 1.7rem; line-height: 1; }
+.subj[aria-selected="true"].s-bio { background: #FFE3EC; }
+.subj[aria-selected="true"].s-chem { background: #DDF6E6; }
+.subj[aria-selected="true"].s-phy { background: #FFF1B8; }
+.subj[aria-selected="true"] { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
+.fmthow { margin: 4px 0 8px; font-size: .9rem; background: #FFF6D6; border: 2px dashed #F2C94C; border-radius: 12px; padding: 6px 10px; }
+.srt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.casefile { background: #FFF9EC; border: var(--line); border-radius: 16px; padding: 10px; margin: 8px 0; box-shadow: 0 3px 0 var(--edge); }
+.cfh { font-weight: 800; margin-bottom: 8px; }
+.cfcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+.cfcard { display: grid; gap: 3px; background: #fff; border: 2px solid var(--edge); border-radius: 12px; padding: 8px 10px; font-size: .92rem; transform: rotate(-.6deg); }
+.cfcard:nth-child(even) { transform: rotate(.6deg); }
+.cfi { font-size: 1.4rem; }
+.dtwrap { overflow-x: auto; margin: 8px 0; }
+.dtable { border-collapse: collapse; width: 100%; background: #fff; border: var(--line); border-radius: 12px; overflow: hidden; font-size: .92rem; }
+.dtable th { background: #FFE58A; text-align: left; }
+.dtable th, .dtable td { padding: 7px 9px; border-bottom: 2px solid #F2E6C4; }
+.mgraph { max-width: 460px; margin: 8px auto; background: #fff; border: var(--line); border-radius: 14px; padding: 4px; }
+.gsvg { width: 100%; height: auto; display: block; }
+.gchoices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gchoice { flex-direction: column; align-items: stretch; padding: 8px; }
+.gchoice b { align-self: flex-start; }
+.gmini { display: block; background: #fff; border-radius: 10px; }
+.labx { background: #EEF7FF; border: var(--line); border-radius: 16px; padding: 8px; margin: 8px 0; }
+.labx svg { width: 100%; max-width: 460px; display: block; margin: 0 auto; }
+.labx .liq { fill: var(--a); transition: fill 2.4s ease; }
+.labx.ran .liq { fill: var(--b); }
+.labx .bubs { opacity: 0; }
+.labx.ran .bubs { opacity: 1; transition: opacity .6s 1s; }
+.labx .bub { fill: #fff; stroke: #5B6B8C; stroke-width: 1; animation: bubup 1.6s linear infinite; }
+@keyframes bubup { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-52px); opacity: 0; } }
+.labx .rust { opacity: 0; }
+.labx.ran .rust { opacity: 1; transition: opacity 2.6s 1s; }
+.labx .flame { animation: flick .5s ease-in-out infinite alternate; transform-origin: center bottom; transform-box: fill-box; }
+@keyframes flick { to { transform: scaleY(.8); } }
+.lablabels { display: flex; justify-content: space-around; gap: 6px; text-align: center; font-size: .8rem; font-weight: 700; margin: 2px 0 6px; }
+.lablabels span { flex: 1; }
+.labread { margin-top: 6px; font-size: .9rem; }
+.labread summary { cursor: pointer; font-weight: 800; }
+.tapwrap { position: relative; max-width: 420px; margin: 8px auto; background: #fff; border: var(--line); border-radius: 16px; }
+.tapwrap svg { width: 100%; height: auto; display: block; }
+.tapchoices { position: absolute; inset: 0; display: block; }
+.tapspot, .pin { position: absolute; transform: translate(-50%, -50%); min-height: 0; padding: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 2px 0 var(--edge); animation: tapPulse 1.8s ease-in-out infinite; }
+.tapspot b { width: 26px; height: 26px; border-radius: 50%; }
+.tapspot.wrong, .tapspot.right { animation: none; }
+@keyframes tapPulse { 50% { box-shadow: 0 0 0 7px rgba(255, 200, 0, .35); } }
+.pin { background: #FFE58A; border: var(--line); font-weight: 800; z-index: 1; }
+.pin.set { background: #B9F3C9; width: auto; min-width: 36px; padding: 0 8px; border-radius: 14px; gap: 4px; display: flex; animation: none; font-size: .78rem; white-space: nowrap; }
+.lchips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0; }
+.lchip { border: var(--line); border-radius: 12px; background: #fff; padding: 7px 12px; font-weight: 800; box-shadow: 0 3px 0 var(--edge); }
+.lchip.sel { background: #FFE58A; transform: translateY(-2px); }
+.lchip.used { opacity: .45; }
+.segq { display: grid; gap: 8px; }
+.srow { display: grid; gap: 6px; background: #fff; border: var(--line); border-radius: 14px; padding: 8px 10px; box-shadow: 0 2px 0 var(--edge); }
+.scard { font-weight: 700; }
+.f-order .scard::before { content: "🔗 "; }
+.sgs { display: flex; flex-wrap: wrap; gap: 6px; }
+.sg { border: 2px solid var(--edge); border-radius: 999px; background: #FFFBEA; padding: 5px 12px; font-weight: 800; font-size: .88rem; }
+.sg.on { background: #FFD84D; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15); }
+.sg.bad { background: #FDECEF; border-color: var(--bad); }
+.sg.ans { outline: 3px solid var(--good); }
+.trap { background: #FFF1E6; border: 2px solid #FFB37A; border-radius: 12px; padding: 8px 10px; font-size: .92rem; }
+@media (max-width: 520px) { .subj b { font-size: .85rem; } .subj .small { font-size: .7rem; } .gchoices { grid-template-columns: 1fr 1fr; gap: 6px; } }
+@media (prefers-reduced-motion: reduce) { .labx .bub, .tapspot, .pin, .labx .flame { animation: none; } }
 </style>
 </head>
 <body>
@@ -705,11 +772,11 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
   <filter id="sketch"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
 </svg>
 <header class="top">
-  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt"><span id="brandText">S3 Science Study Pals</span><br><small id="brandSub">S3 Physics · Light</small></span></button>
+  <button class="brand" id="home" aria-label="Go to the topic map"><span id="brandav"></span><span class="bt"><span id="brandText">S3 Science Study Pals</span><br><small id="brandSub">S3 Biology · Chemistry · Physics</small></span></button>
   <div class="tools" id="tools"></div>
 </header>
 <main id="app"></main>
-<footer id="footText">Study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. All characters are original.</footer>
+<footer id="footText">Study game for HK S3 Science: Ch 12 A Healthy Body · Ch 13 From Atoms to Materials · Ch 14 Light, Colours and Beyond. All characters are original.</footer>
 <div id="modal"></div>
 <div id="journal"></div>
 <div id="toast" class="toast" hidden></div>
@@ -1472,7 +1539,7 @@ const ZH_ROOMS = {
       { q: "哪一組電磁波可導致細胞受損、曬傷或基因突變？", choices: ["無線電波、微波和紅外輻射", "紫外輻射、X 射線和 伽瑪射線", "只有可見光", "所有電磁波的危害都一樣"], hint: "危險來自高能量和短波長。", explain: "紫外輻射、X 射線和 伽瑪射線是高能量、短波長的波，可損害細胞、導致曬傷（紫外輻射）或突變。所以我們要塗防曬，放射技師要用鉛屏障。" }] }
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
-const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部 7 個房間"], stars: ["星星收藏家", "每個房間都取得 3★（共 21 粒星）"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
+const ZH_TROPHIES = { week: ["一週戰士", "連續 7 天遊玩"], steady: ["堅持探險家", "在 20 個不同日子遊玩"], flame: ["永恆之火", "達到 30 天連續紀錄"], sharp: ["神射手", "連續 15 題一次答對（無提示、無錯誤）"], hunter: ["知識獵人", "合共打開 100 把鎖"], escaper: ["逃脫大師", "逃出全部房間（生物、化學和物理）"], stars: ["星星收藏家", "每個房間都取得 3★"], clock: ["分秒必爭", "5 次在限時內逃脫，而且 0 次猜測警告"], brain: ["腦力全開", "5 次不用任何提示逃脫"], practice: ["熟能生巧", "重玩已逃脫的房間 10 次"] };
 const ZH_WARDROBE = { cos_gym: "健身兄", cos_fish: "釣魚兄", cos_performative: "文青兄（Performative）", cos_finance: "金融兄", cos_sorcerer: "蒙眼術師 ♾️", hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "惡魔獵人偶像長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
 const ZH_SLOTS = { costume: "密室限定服裝", hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框", backdrop: "背景" };
@@ -2054,12 +2121,45 @@ BANK.room3.push([3,"Light enters a glass block at an angle, then leaves it into 
 
 const CORE_BLOOM = { room1: [1, 2, 2, 3, 2], room2: [1, 3, 2, 3, 3], room3: [1, 3, 2, 3, 2], room4: [1, 3, 3, 2, 4], room5: [1, 2, 3, 3, 3], room6: [3, 1, 3, 3, 4], room7: [1, 3, 3, 1, 2] };
 const BLOOM = [null, ["Remember", "記憶"], ["Understand", "理解"], ["Apply", "應用"], ["Analyse", "分析"], ["Evaluate", "評鑑"], ["Create", "創造"]];
+/* ============================================================
+   5d. Chapter 12 (Biology) and Chapter 13 (Chemistry) rooms.
+   Written once with T("English", "中文") and converted into the same shapes as the
+   physics rooms (ROOMS / ZH_ROOMS / BANK / CORE_BLOOM). `media` = multimedia questions,
+   `door` = the exit-door challenge for sort / order / label rooms.
+   ============================================================ */
+const T = (en, zh) => ({ __t: 1, en, zh });
+const tl = (v, zh) => Array.isArray(v) ? v.map(x => tl(x, zh)) : v && typeof v === "object" ? (v.__t ? (zh ? v.zh : v.en) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, tl(x, zh)]))) : v;
+const SCI_ROOMS = [];
+/*@@BIO@@*/
+/*@@CHEM@@*/
+const MEDIA = {}, DOORS = {};
+SCI_ROOMS.forEach(src => {
+  const en = tl(src, false), zh = tl(src, true), id = src.id;
+  ROOMS.push({ id, subj: src.subj, topicNo: src.topicNo, sec: src.sec, name: en.name, topic: en.topic, zh: zh.topic, mastery: src.mastery, kind: src.kind,
+    tint: src.tint, floor: src.floor, dim: src.dim, special: src.special, specialName: en.specialName, specialLine: en.specialLine,
+    code: src.code, badge: en.badge, item: en.item, intro: en.intro, notes: en.notes, rules: en.rules, puzzles: en.puzzles.map(p => { const o = Object.assign({}, p); delete o.b; return o; }) });
+  ZH_ROOMS[id] = { name: zh.name, specialName: zh.specialName, specialLine: zh.specialLine, badge: zh.badge, item: zh.item, intro: zh.intro, notes: zh.notes, rules: zh.rules, puzzles: zh.puzzles };
+  CORE_BLOOM[id] = src.puzzles.map(p => p.b);
+  BANK[id] = src.bank.map(q => [q.b, q.q.en, q.choices.map(c => c.en), q.hint.en, q.explain.en, q.q.zh, q.choices.map(c => c.zh), q.hint.zh, q.explain.zh]);
+  MEDIA[id] = src.media || []; DOORS[id] = src.door || null;
+});
+// Turn a T()-written media question into a playable question in the current language
+const ORD = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"];
+const permOf = (n, seed) => { const a = Array.from({ length: n }, (_, i) => i); let s = seed * 9301 + 49297; for (let i = n - 1; i > 0; i--) { s = (s * 9301 + 49297) % 233280; const j = Math.floor(s / 233280 * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.every((v, i) => v === i) ? a.reverse() : a; };
+function mediaQ(src, j, zh) {
+  const m = tl(src, zh), base = { id: "m" + j, b: src.b, fmt: src.fmt, q: m.q, hint: m.hint, explain: m.explain, terms: src.terms, tip: m.tip };
+  if (m.fmt === "sort") return Object.assign(base, { type: "dial", seg: true, labels: m.items.map(x => x.t), dials: m.items.map(() => m.groups), answer: m.items.map(x => x.g) });
+  if (m.fmt === "truefalse") { const tf = zh ? ["✔ 正確", "✘ 錯誤"] : ["✔ True", "✘ False"]; return Object.assign(base, { type: "dial", seg: true, labels: m.statements.map(x => x.t), dials: m.statements.map(() => tf), answer: m.statements.map(x => x.v ? 0 : 1) }); }
+  if (m.fmt === "order") { const n = m.steps.length, pm = permOf(n, j + 3), pos = Array.from({ length: n }, (_, k) => zh ? `第 ${k + 1}` : ORD[k]);
+    return Object.assign(base, { type: "dial", seg: true, labels: pm.map(k => m.steps[k]), dials: pm.map(() => pos), answer: pm.slice() }); }
+  return Object.assign(base, { type: "mc", choices: m.choices, answer: m.answer, traps: m.traps, case: m.case, table: m.table, lab: m.lab, graph: m.graph, graphs: m.graphs, tap: m.tap });
+}
 // Each room's pool = its 5 core puzzles + 35 bank questions, in the current language
 function buildPools() {
   const zh = LANG === "zh";
   ROOMS.forEach(r => {
     r.puzzles.forEach((p, i) => { p.id = "c" + i; p.b = CORE_BLOOM[r.id][i]; });
-    r.pool = r.puzzles.concat(BANK[r.id].map((q, j) => ({ id: "b" + j, b: q[0], type: "mc", q: zh ? q[5] : q[1], choices: zh ? q[6] : q[2], answer: 0, hint: zh ? q[7] : q[3], explain: zh ? q[8] : q[4] })));
+    r.pool = r.puzzles.concat(BANK[r.id].map((q, j) => ({ id: "b" + j, b: q[0], type: "mc", q: zh ? q[5] : q[1], choices: zh ? q[6] : q[2], answer: 0, hint: zh ? q[7] : q[3], explain: zh ? q[8] : q[4] }))).concat((MEDIA[r.id] || []).map((m, j) => mediaQ(m, j, zh)));
   });
 }
 const ROOM_SECONDS = 10 * 60, MAX_HEARTS = 3;
@@ -2154,8 +2254,8 @@ function roomStars(r) {
 }
 function makeCode() {
   let a = 0;
-  ROOMS.forEach((r, i) => { a += roomStars(r) * Math.pow(4, i); });
-  const ni = nextRoomIndex();
+  PHY().forEach((r, i) => { a += roomStars(r) * Math.pow(4, i); });
+  const ni = nextRoomIndex("phy");
   const lock = ni === -1 ? 0 : Math.min(5, (S.room_progress[ROOMS[ni].id] || []).length);
   const streak = Math.max(1, Math.min(79, S.current_streak));
   const shields = Math.max(0, Math.min(3, S.streak_shields));
@@ -2174,7 +2274,7 @@ function decodeCode(raw) {
   const a = n % 16384; n = Math.floor(n / 16384);
   const lock = n % 6; n = Math.floor(n / 6);
   const streak = n % 80, shields = Math.floor(n / 80);
-  const stars = ROOMS.map((_, i) => Math.floor(a / Math.pow(4, i)) % 4);
+  const stars = PHY().map((_, i) => Math.floor(a / Math.pow(4, i)) % 4);
   // Rooms unlock in order, so stars can never follow an unescaped room: this rejects most typos
   const firstZero = stars.indexOf(0);
   if (firstZero !== -1 && stars.slice(firstZero).some(v => v > 0)) return null;
@@ -2185,14 +2285,14 @@ function decodeCode(raw) {
 function stateFromCode(d, name) {
   const s = freshState();
   s.player_name = name || (S && S.player_name) || "Student";
-  ROOMS.forEach((r, i) => {
+  PHY().forEach((r, i) => {
     if (!d.stars[i]) return;
     s.completed_rooms.push(r.id); s.chiikawa_badges.push(r.badge); s.inventory.push(r.item);
     s.room_stars[r.id] = d.stars[i];
     const m = d.stars[i] === 3 ? 5 : d.stars[i] === 2 ? 3 : 0;
     for (let k = 0; k < m; k++) s.mastered_puzzles.push(`${r.id}:c${k}`);
   });
-  if (d.escaped < 7) { s.room_progress[ROOMS[d.escaped].id] = Array.from({ length: d.lock }, (_, i) => i); s.current_room = ROOMS[d.escaped].id; }
+  if (d.escaped < 7) { s.room_progress[PHY()[d.escaped].id] = Array.from({ length: d.lock }, (_, i) => i); s.current_room = PHY()[d.escaped].id; }
   s.current_streak = d.streak; s.longest_streak = d.streak; s.streak_shields = d.shields; s.last_login_date = today();
   if (S) { s.trophies = S.trophies || {}; s.stats = Object.assign(freshStats(), S.stats); s.coins = S.coins || 0; s.owned = S.owned || []; s.equip = S.equip || s.equip; s.power = S.power || s.power; s.rush = S.rush || s.rush; s.player_id = S.player_id || s.player_id; s.last_chest_date = S.last_chest_date; s.inventory = s.inventory.concat((S.inventory || []).filter(x => SNACKS.includes(x))); }
   return s;
@@ -2250,7 +2350,7 @@ function recomputeMastery() {
     tot[r.mastery] = (tot[r.mastery] || 0) + 1;
     if (S.mastered_puzzles.includes(`${r.id}:${p.id}`)) got[r.mastery] = (got[r.mastery] || 0) + 1;
   }));
-  for (const k in S.physics_mastery) S.physics_mastery[k] = tot[k] ? Math.round(100 * (got[k] || 0) / tot[k]) : 0;
+  for (const k in tot) S.physics_mastery[k] = tot[k] ? Math.round(100 * (got[k] || 0) / tot[k]) : 0;
 }
 
 /* ============================================================
@@ -2262,8 +2362,19 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const reduced = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const say = (who, text, mood = "normal", cls = "") => `<div class="say"><div class="av">${avatar(who, mood)}</div><div class="bubble ${cls}"><span class="name">${CHAR[who].name}</span>${text}</div></div>`;
 const roomIndex = id => ROOMS.findIndex(r => r.id === id);
-const isUnlocked = i => i === 0 || S.completed_rooms.includes(ROOMS[i - 1].id);
-const nextRoomIndex = () => ROOMS.findIndex(r => !S.completed_rooms.includes(r.id));
+/* Three S3 Science parts. Rooms unlock in order inside each subject. */
+const SUBJECTS = {
+  bio: { icon: "🫀", en: "Biology", zh: "生物", ch: ["Chapter 12: A Healthy Body", "第 12 章：健康的身體"] },
+  chem: { icon: "⚗️", en: "Chemistry", zh: "化學", ch: ["Chapter 13: From Atoms to Materials", "第 13 章：由原子到物料"] },
+  phy: { icon: "🔭", en: "Physics", zh: "物理", ch: ["Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色和光譜以外"] }
+};
+const subjOf = r => r.subj || "phy";
+const curSubj = () => (S && SUBJECTS[S.subj]) ? S.subj : "phy";
+const subjChapter = (s = curSubj()) => L(...SUBJECTS[s].ch);
+const subjTag = r => `${SUBJECTS[subjOf(r)].icon} ${L(SUBJECTS[subjOf(r)].en, SUBJECTS[subjOf(r)].zh)}`;
+const PHY = () => ROOMS.filter(r => subjOf(r) === "phy");
+const isUnlocked = i => { const r = ROOMS[i]; const prev = ROOMS.slice(0, i).filter(x => subjOf(x) === subjOf(r)).pop(); return !prev || S.completed_rooms.includes(prev.id); };
+const nextRoomIndex = (s = curSubj()) => ROOMS.findIndex(r => subjOf(r) === s && !S.completed_rooms.includes(r.id));
 const starStr = n => "★".repeat(n) + "☆".repeat(3 - n);
 const fmt = sec => { const a = Math.abs(sec); return `${sec < 0 ? "+" : ""}${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}`; };
 function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 2600); }
@@ -2307,8 +2418,8 @@ const TROPHIES = [
   { id: "flame", name: "Eternal Flame", rar: "legend", who: "usagi", desc: "Reach a 30-day streak", prog: () => [S.longest_streak, 30] },
   { id: "sharp", name: "Sharpshooter", rar: "gold", who: "momonga", desc: "15 first-try answers in a row (no hints, no mistakes)", prog: () => [S.stats.bestRun, 15] },
   { id: "hunter", name: "Knowledge Hunter", rar: "gold", who: "kurimanju", desc: "Open 100 locks in total", prog: () => [S.stats.correct, 100] },
-  { id: "escaper", name: "Master Escaper", rar: "gold", who: "chiikawa", desc: "Escape all 7 rooms", prog: () => [S.completed_rooms.length, 7] },
-  { id: "stars", name: "Star Collector", rar: "legend", who: "hachiware", desc: "Get 3★ in every room (21 stars)", prog: () => [ROOMS.reduce((a, r) => a + roomStars(r), 0), 21] },
+  { id: "escaper", name: "Master Escaper", rar: "gold", who: "chiikawa", desc: `Escape all ${ROOMS.length} rooms (Biology, Chemistry and Physics)`, prog: () => [S.completed_rooms.length, ROOMS.length] },
+  { id: "stars", name: "Star Collector", rar: "legend", who: "hachiware", desc: `Get 3★ in every room (${ROOMS.length * 3} stars)`, prog: () => [ROOMS.reduce((a, r) => a + roomStars(r), 0), ROOMS.length * 3] },
   { id: "clock", name: "Beat the Clock", rar: "silver", who: "usagi", desc: "5 escapes before time runs out, with 0 guess strikes", prog: () => [S.stats.cleanEscapes, 5] },
   { id: "brain", name: "Brain Power", rar: "silver", who: "momonga", desc: "5 escapes without using any hint", prog: () => [S.stats.noHintEscapes, 5] },
   { id: "practice", name: "Practice Makes Perfect", rar: "bronze", who: "kurimanju", desc: "Replay escaped rooms 10 times", prog: () => [S.stats.replays, 10] }
@@ -2403,7 +2514,7 @@ const WARDROBE = [
   { id: "face_xray", slot: "face", name: "X-ray goggles", tier: "epic", earn: () => [S.stats.fixed || 0, 30], earnDesc: ["Fix 30 mistakes in 🔁 Practice mode", "在 🔁 練習模式修正 30 題錯題"], svg: `<path d="M12 35 h40" stroke="${INK}" stroke-width="3"/><rect x="15" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><rect x="34" y="29" width="15" height="12" rx="5" fill="rgba(57,255,20,.45)" ${O2}/><path d="M19 35 h7 M38 35 h7" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 2"/>` },
   { id: "hat_wizard", slot: "hat", name: "Optics wizard hat", tier: "epic", earn: () => [S.mastered_puzzles.length, 140], earnDesc: ["Master 140 questions", "掌握 140 題"], svg: `<ellipse cx="32" cy="18" rx="20" ry="4.5" fill="#3B3A7A" ${O2}/><path d="M20 17 L35 -14 L44 17 Z" fill="#3B3A7A" ${O2}/><path d="M33 3 l1.4 2.9 3.2 .5 -2.3 2.2 .5 3.2 -2.8 -1.5 -2.8 1.5 .5 -3.2 -2.3 -2.2 3.2 -.5z" fill="#FDFFB6"/><circle cx="27" cy="11" r="1.3" fill="#FFB7C5"/><circle cx="39" cy="-4" r="1.1" fill="#A0C4FF"/>` },
   { id: "fr_galaxy", slot: "frame", name: "Galaxy frame", tier: "legend", earn: () => [S.stats.practiceRuns || 0, 20], earnDesc: ["Finish 20 🔁 Practice rounds", "完成 20 次 🔁 練習"], cls: "fr-galaxy" },
-  { id: "hat_halo", slot: "hat", name: "Rainbow halo", tier: "legend", earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.mastered_puzzles.length, 250), 271], earnDesc: ["All 21 ★ and master 250 questions", "取得全部 21★ 並掌握 250 題"], svg: `${["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF", "#B07CF0"].map((c, k) => `<ellipse cx="32" cy="${-1 + k * 0.1}" rx="${17 - k * 2.2}" ry="${5.2 - k * .7}" fill="none" stroke="${c}" stroke-width="2.2"/>`).join("")}<ellipse cx="32" cy="-1" rx="19" ry="6.4" fill="none" stroke="${INK}" stroke-width="1.4"/>` },
+  { id: "hat_halo", slot: "hat", name: "Rainbow halo", tier: "legend", earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.mastered_puzzles.length, 250), 271], earnDesc: ["Collect 21 ★ and master 250 questions", "收集 21★ 並掌握 250 題"], svg: `${["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF", "#B07CF0"].map((c, k) => `<ellipse cx="32" cy="${-1 + k * 0.1}" rx="${17 - k * 2.2}" ry="${5.2 - k * .7}" fill="none" stroke="${c}" stroke-width="2.2"/>`).join("")}<ellipse cx="32" cy="-1" rx="19" ry="6.4" fill="none" stroke="${INK}" stroke-width="1.4"/>` },
   // ---- Gen Z & Hong Kong trend items (drawn in the 100 × 100 mochi box) ----
   { id: "hair_swoop", slot: "hair", v2: true, name: "\"Baby, baby\" swoop wig", price: 110, svg: `<path d="M13 58 C9 34 26 14 50 14 C74 14 91 32 87 56 C84 46 79 40 72 37 C64 44 50 46 38 43 C30 42 22 45 18 50 C16 52 14 55 13 58 Z" fill="#8A5A3B" ${MO}/><path d="M28 27 C42 20 60 22 71 35 M38 20 C52 18 66 24 76 34 M22 38 C30 32 40 30 50 32" stroke="#B98158" stroke-width="2.4" fill="none" stroke-linecap="round"/>` },
   { id: "hair_idol", slot: "hair", v2: true, name: "K-pop idol wolf cut", price: 120, svg: `<path d="M16 76 L11 63 L15 58 C8 36 26 14 50 14 C74 14 92 36 85 58 L89 63 L84 76 L79 66 L76 72 L74 50 C70 42 64 39 58 38 L54 44 L50 37 L45 44 L41 38 C34 40 28 44 26 52 L24 72 L21 66 Z" fill="#F59BC0" ${MO}/><path d="M30 24 C40 19 56 19 66 25" stroke="#FFD0E2" stroke-width="3" fill="none" stroke-linecap="round"/>` },
@@ -2482,7 +2593,7 @@ const WARDROBE = [
     svg: `<path d="M16 46 C14 28 30 16 50 16 C70 16 86 28 84 46 C78 36 66 30 50 30 C36 30 24 36 16 46 Z" fill="#2E2426" ${MO}/><path d="M28 26 C40 20 58 20 72 26" stroke="#6B5A5E" stroke-width="2.4" fill="none"/><circle cx="14" cy="50" r="3" fill="#fff" ${MO}/><circle cx="86" cy="50" r="3" fill="#fff" ${MO}/><g transform="rotate(12 90 58)"><rect x="82" y="44" width="16" height="28" rx="3" fill="#1E1A1D" ${MO}/><rect x="84" y="47" width="12" height="21" rx="1.5" fill="#F4FFF6"/><path d="M85 64 L88 60 L90 62 L95 52" stroke="#23A45A" stroke-width="2" fill="none"/><path d="M92 52 h3 v3" stroke="#23A45A" stroke-width="1.6" fill="none"/></g>` },
   { id: "cos_sorcerer", slot: "costume", v2: true, name: "Blindfold sorcerer ♾️", tier: "legend", escape: true,
     earn: () => [Math.min(ROOMS.reduce((a, r) => a + roomStars(r), 0), 21) + Math.min(S.stats.flawless || 0, 10) + Math.min(S.stats.speedEscapes || 0, 5), 36],
-    earnDesc: ["🚪 All 21★ + 10 flawless escapes + 5 escapes with 5+ minutes left", "🚪 全部 21★ + 10 次完美逃脫 + 5 次剩 5 分鐘以上逃脫"],
+    earnDesc: ["🚪 21★ + 10 flawless escapes + 5 escapes with 5+ minutes left", "🚪 21★ + 10 次完美逃脫 + 5 次剩 5 分鐘以上逃脫"],
     back: `<circle cx="50" cy="56" r="47" fill="none" stroke="#8FD3FF" stroke-width="2" opacity=".6" stroke-dasharray="4 6"/><circle cx="50" cy="56" r="43" fill="rgba(143,211,255,.12)"/>`,
     under: `<path d="M0 56 C28 62 72 62 100 56 L100 100 L0 100 Z" fill="#1D2140"/><path d="M34 58 C38 66 62 66 66 58" stroke="#34395E" stroke-width="3" fill="none"/><path d="M50 64 V100" stroke="#34395E" stroke-width="2"/><circle cx="50" cy="72" r="2" fill="#C9A74A"/><circle cx="50" cy="82" r="2" fill="#C9A74A"/>`,
     arm: "#1D2140",
@@ -2785,7 +2896,7 @@ const ORDER_BANK = [
 ];
 function subseq(arr, n) { const idx = shuffle(arr.map((_, i) => i)).slice(0, n).sort((a, b) => a - b); return idx.map(i => arr[i]); }
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-const MC_POOL = () => ROOMS.flatMap(r => r.pool.filter(p => p.type === "mc" && !p.svg));
+const MC_POOL = () => PHY().flatMap(r => r.pool.filter(p => p.type === "mc" && !p.svg && !p.fmt));
 
 const RUSH_MAKERS = [
   { w: 2, label: "Multiple choice", make() { const p = pick(MC_POOL()); const order = shuffle(p.choices.map((_, i) => i));
@@ -2917,16 +3028,19 @@ function wireQuiz(body, p, locked, done) {
   if (p.type === "mc") {
     body.querySelectorAll(".choice").forEach(b => b.onclick = () => {
       if (locked()) return; const ok = Number(b.dataset.i) === p.answer;
-      b.classList.add(ok ? "right" : "wrong"); if (!ok) body.querySelector(`.choice[data-i="${p.answer}"]`).classList.add("right");
+      b.classList.add(ok ? "right" : "wrong"); if (!ok) { body.querySelector(`.choice[data-i="${p.answer}"]`).classList.add("right"); body.insertAdjacentHTML("beforeend", trapHtml(p, Number(b.dataset.i))); }
       body.querySelectorAll(".choice").forEach(x => (x.disabled = true)); done(ok);
     });
   } else {
-    const pos = p.dials.map(() => 0);
-    const show = (d, v) => { const f = body.querySelector("#face" + d); if (f) f.textContent = p.dials[d][v]; };
+    const pos = p.dials.map(() => p.seg ? -1 : 0);
+    const show = (d, v) => { if (p.seg) { segSet(body, d, v); body.querySelectorAll(`.sg[data-d="${d}"]`).forEach(b => b.classList.toggle("ans", Number(b.dataset.v) === v)); return; } const f = body.querySelector("#face" + d); if (f) f.textContent = p.dials[d][v]; };
+    body.querySelectorAll(".sg").forEach(b => b.onclick = () => { if (locked()) return; const d = Number(b.dataset.d); pos[d] = Number(b.dataset.v); SFX.click(); segSet(body, d, pos[d]); });
     body.querySelectorAll(".arr").forEach(b => b.onclick = () => { if (locked()) return; const d = Number(b.dataset.d), n = p.dials[d].length; pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click(); show(d, pos[d]); });
     body.querySelector("#dok").onclick = () => {
-      if (locked()) return; const ok = pos.every((x, i) => x === p.answer[i]);
-      body.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true));
+      if (locked()) return; if (pos.includes(-1)) { toast(L("Answer every card first!", "先完成每一張卡！")); return; }
+      const ok = pos.every((x, i) => x === p.answer[i]);
+      if (p.seg) p.answer.forEach((a, d) => { if (pos[d] !== a) body.querySelectorAll(`.sg[data-d="${d}"]`).forEach(b => { if (Number(b.dataset.v) === pos[d]) b.classList.add("bad"); }); });
+      body.querySelectorAll(".arr,.sg,#dok").forEach(x => (x.disabled = true));
       if (!ok) p.answer.forEach((a, d) => show(d, a));
       done(ok);
     };
@@ -2963,7 +3077,7 @@ function studyNext() {
   const p = ST.room.pool.find(x => x.id === ST.qids[ST.i]) || ST.room.puzzles[0];
   $app.innerHTML = `${studyHead(`<span class="combo">${ST.i + 1} / ${ST.qids.length}</span>`)}
     <div class="prdots" aria-hidden="true">${ST.qids.map((_, k) => `<i class="${k < ST.i ? "on" : ""}"></i>`).join("")}</div>
-    <section class="card rq"><p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}<div id="stBody">${answerUi(p)}</div>
+    <section class="card rq"><p class="q">${esc(p.q)}</p>${qMedia(p)}<div id="stBody">${answerUi(p)}</div>
       <div class="row"><button class="btn blue" id="stHint">💡 ${L("Hint", "提示")}</button><button class="btn plain" id="stNotes">📓 ${L("Notes", "筆記")}</button></div><div id="stFb"></div></section>
     <div class="row"><button class="btn plain" id="stQuit">✕ ${L("Stop studying", "停止溫習")}</button></div>`;
   document.getElementById("stHint").onclick = () => { SFX.hint(); ST.hinted = true; document.getElementById("stFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
@@ -3095,7 +3209,7 @@ function practiceShow() {
   const pid = PR.cur, p = pidQ(pid), room = pidRoom(pid);
   document.getElementById("prType").textContent = `${PR.retry ? L("🔁 Try again · ", "🔁 再試一次 · ") : ""}${topicNo(room.topicNo)} · ${tTopic(room)}`;
   document.getElementById("prQ").textContent = p.q;
-  document.getElementById("prDia").innerHTML = p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : "";
+  document.getElementById("prDia").innerHTML = qMedia(p);
   document.getElementById("prFb").innerHTML = "";
   const hb = document.getElementById("prHint"); hb.hidden = false;
   hb.onclick = () => { SFX.hint(); PR.hinted = true; document.getElementById("prFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
@@ -3190,9 +3304,9 @@ function applyLang() {
   RAR.bronze[2] = L("Bronze", "銅"); RAR.silver[2] = L("Silver", "銀"); RAR.gold[2] = L("Gold", "金"); RAR.legend[2] = L("Legendary", "傳說");
   document.title = L("S3 Science Study Pals", "中三科學學習夥伴");
   document.getElementById("brandText").textContent = L("S3 Science Study Pals", "中三科學學習夥伴");
-  document.getElementById("brandSub").textContent = L("S3 Physics · Light", "中三物理 · 光");
-  document.getElementById("footText").textContent = L("Study game for HK S3 Science, Chapter 14: Light, Colours and Beyond. All characters are original.",
-    "香港中三科學第 14 章「光、顏色和光譜以外」學習遊戲。所有角色均為原創。");
+  document.getElementById("brandSub").textContent = L("S3 Biology · Chemistry · Physics", "中三生物 · 化學 · 物理");
+  document.getElementById("footText").textContent = L("Study game for HK S3 Science: Ch 12 A Healthy Body · Ch 13 From Atoms to Materials · Ch 14 Light, Colours and Beyond. All characters are original.",
+    "香港中三科學學習遊戲：第 12 章 健康的身體 · 第 13 章 由原子到物料 · 第 14 章 光、顏色和光譜以外。所有角色均為原創。");
 }
 // Show a stored badge/item (saved in whichever language it was earned) in the current language
 function trItem(str) {
@@ -3338,9 +3452,9 @@ function openJournal(roomId, highlight = []) {
     r.puzzles.forEach(p => (p.terms || []).forEach(t => { if (!seen.has(t[0])) { seen.add(t[0]); terms.push(t); } }));
     $journal.innerHTML = `<div class="overlay top" id="jov"><div class="modal wide" role="dialog" aria-modal="true" aria-label="${L("Study Journal", "學習日誌")}">
       <button class="iconbtn x" id="jx" aria-label="${L("Close journal", "關閉日誌")}">✕</button>
-      <span class="kicker">📓 ${L("Study Journal · Chapter 14: Light, Colours and Beyond", "學習日誌 · 第 14 章：光、顏色和光譜以外")}</span>
+      <span class="kicker">📓 ${L("Study Journal", "學習日誌")} · ${SUBJECTS[subjOf(ROOMS[roomIndex(rid)])].icon} ${L(...SUBJECTS[subjOf(ROOMS[roomIndex(rid)])].ch)}</span>
       <h2>${topicNo(r.topicNo)}: ${topicHtml(r)}</h2>
-      <div class="tabs" role="tablist">${ROOMS.map(x => `<button class="tab" role="tab" aria-selected="${x.id === rid}" data-t="${x.id}">T${x.topicNo} ${x.zh}</button>`).join("")}</div>
+      <div class="tabs" role="tablist">${ROOMS.filter(x => subjOf(x) === subjOf(r)).map(x => `<button class="tab" role="tab" aria-selected="${x.id === rid}" data-t="${x.id}">${x.sec} ${x.zh}</button>`).join("")}</div>
       <section class="jsec"><h3>📖 ${L("Summary 重點", "重點")}</h3><ul>${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></section>
       <section class="jsec"><h3>🧭 ${L("Key rules 重點規則", "重點規則")}</h3>${r.rules.map(f => `<div class="formula">${esc(f)}</div>`).join("")}</section>
       <section class="jsec"><h3>🔤 ${L("Key terms 關鍵詞", "關鍵詞（中英對照）")}</h3><table class="tterms"><tbody>
@@ -3471,7 +3585,7 @@ function renderWelcome() {
         <div class="lgduo" aria-hidden="true"><div class="lgpal lgm">${avatar("chiikawa", "happy", { face: "face_prism", prop: "prop_lightstick" })}</div><div class="lgpal lgpt">${avatar("hachiware", "happy", {})}<span class="mote mo1"></span><span class="mote mo2"></span><span class="mote mo3"></span></div></div>
         <div class="lgisle"></div></div>
       <h1 class="lgtitle">${L("S3 Science Study Pals", "中三科學學習夥伴")}</h1>
-      <p class="lgsub">${L("S3 Science · Chapter 14: Light, Colours and Beyond", "中三科學 · 第 14 章：光、顏色和光譜以外")}</p>
+      <p class="lgsub">${L("S3 Science · 🫀 Biology · ⚗️ Chemistry · 🔭 Physics", "中三科學 · 🫀 生物 · ⚗️ 化學 · 🔭 物理")}</p>
       ${lgCardHtml()}
       <div class="lgteasers"><div class="lgteaser"><span class="tfl">${IC("flame")}</span><b>${L("One room a day", "每天一個密室")}</b><span>${L("10–15 minutes · keep your streak glowing", "10 至 15 分鐘 · 讓連續紀錄火焰不滅")}</span></div>
         <div class="lgteaser"><span class="tsil">${sils}</span><b>${L("Escape 7 rooms of light!", "逃出 7 個光之密室！")}</b><span>${L("With Puff, Berry & friends", "與泡芙、莓莓和朋友一起")}</span></div></div>
@@ -3583,7 +3697,7 @@ const meter = (ic, label, v, max, col) => `<div class="meter"><span>${ic} ${labe
 const act = (id, cls, ic, t, sub, extra = "") => `<button class="act ${cls}" id="${id}" ${extra}><span class="ic" aria-hidden="true">${ic}</span><b>${t}</b>${sub ? `<span class="sub">${sub}</span>` : ""}</button>`;
 function rankName() {
   const n = S.completed_rooms.length;
-  return n >= 7 ? L("Light Master", "光之大師") : n >= 5 ? L("Light Expert", "光學專家") : n >= 2 ? L("Explorer", "探險家") : L("Beginner", "新手");
+  return n >= ROOMS.length ? L("Science Master", "科學大師") : n >= 10 ? L("Science Expert", "科學專家") : n >= 5 ? L("Lab Star", "實驗室之星") : n >= 2 ? L("Explorer", "探險家") : L("Beginner", "新手");
 }
 function streakCard() {
   const n = S.current_streak, m = streakMult();
@@ -3603,7 +3717,7 @@ function homeHtml() {
     <section class="card stat">
       <div class="row" style="justify-content:space-between"><h2>${esc(S.player_name)}</h2><span class="chip">${rankName()}</span></div>
       ${meter("🚪", L("Escaped", "已逃出"), S.completed_rooms.length, ROOMS.length, "#FFB7C5")}
-      ${meter("⭐", L("Stars", "星星"), stars, 21, "#FFD84D")}
+      ${meter("⭐", L("Stars", "星星"), stars, ROOMS.length * 3, "#FFD84D")}
       ${meter("📚", L("Mastered", "已掌握"), S.mastered_puzzles.length, tot, "#A0C4FF")}
       <div class="acts">
         ${act("aStudy", "green", IC("books"), L("Study mode", "學習模式"), L("Notes + 5 questions", "筆記 + 5 題"))}
@@ -3622,7 +3736,11 @@ function homeHtml() {
 function roomsHtml() {
   const ni = nextRoomIndex(), study = S.play_mode === "study";
   const toggle = `<div class="seg big" role="radiogroup" aria-label="${L("Mode", "模式")}"><button role="radio" aria-checked="${study}" data-pmode="study">📖 ${L("Study mode", "學習模式")}</button><button role="radio" aria-checked="${!study}" data-pmode="escape">🚪 ${L("Escape mode", "密室逃脫")}</button></div>`;
+  const sj = curSubj();
+  const subjBar = `<div class="subjbar" role="tablist" aria-label="${L("Subject", "科目")}">${Object.entries(SUBJECTS).map(([k, v]) => { const rs = ROOMS.filter(r => subjOf(r) === k), d = rs.filter(r => S.completed_rooms.includes(r.id)).length;
+    return `<button class="subj s-${k}" role="tab" aria-selected="${k === sj}" data-subj="${k}"><span class="si">${v.icon}</span><b>${L(v.en, v.zh)}</b><span class="small">${L(v.ch[0].split(":")[0], v.ch[1].split("：")[0])} · 🚪 ${d}/${rs.length}</span></button>`; }).join("")}</div>`;
   const cards = ROOMS.map((r, i) => {
+    if (subjOf(r) !== sj) return "";
     const done = S.completed_rooms.includes(r.id), open = isUnlocked(i), n = (S.room_progress[r.id] || []).length, mm = masteredIn(r);
     const bar = `<span class="tbar" role="img" aria-label="${mm}/${r.pool.length}"><i style="width:${Math.round(mm / r.pool.length * 100)}%"></i></span><span class="small">📚 ${mm}/${r.pool.length} ${L("mastered", "已掌握")}</span>`;
     if (study) return `<button class="topic study" data-study="${r.id}">
@@ -3636,9 +3754,9 @@ function roomsHtml() {
   const info = study
     ? `<p class="small muted">${L("📖 Read each topic's key points, then answer 5 questions. No timer, no hearts, every topic open. Mistakes go to 🔁 Practice.", "📖 先讀每個課題的重點，再答 5 題。沒有計時、沒有心心，所有課題都開放。錯題會存入 🔁 練習。")}</p>`
     : `<div class="rules escinfo">${L("🚪 <b>Escape mode:</b> ❤️❤️❤️ 3 hearts · ⏱️ 10 minutes · every wrong answer costs a heart · 0 hearts or time up = 💀 <b>GAME OVER</b> (the locks reset). Stars = hearts left.", "🚪 <b>密室逃脫：</b>❤️❤️❤️ 3 顆心 · ⏱️ 10 分鐘 · 每答錯一次扣一顆心 · 沒有心或時間用完 = 💀 <b>GAME OVER</b>（鎖會重設）。星星 = 剩下的心。")}
-        <br>${L("🚪 Every room ends differently:", "🚪 每個房間的結局都不同：")} ${[...new Set(ROOMS.map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}
+        <br>${L("🚪 Every room ends differently:", "🚪 每個房間的結局都不同：")} ${[...new Set(ROOMS.filter(r => subjOf(r) === sj).map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}
         <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")} · 👊 ${L("Sorcerer first-year", "咒術學校一年級生")} · 🎣 ${L("Rookie hunter", "新手獵人")}</div>`;
-  return `<section class="card"><div class="row" style="justify-content:space-between"><h2>🗺️ ${L("Chapter 14: Light, Colours and Beyond", "第 14 章：光、顏色和光譜以外")}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
+  return `<section class="card">${subjBar}<div class="row" style="justify-content:space-between"><h2>${SUBJECTS[sj].icon} ${subjChapter(sj)}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
     ${toggle}${info}<div class="topics">${cards}</div></section>`;
 }
 function collectHtml() {
@@ -3733,11 +3851,11 @@ function mistakeItems() {
 function mistakesHtml() {
   const all = mistakeItems(), f = S.mfilter || "all", list = f === "all" ? all : all.filter(x => x.room.id === f);
   const chip = (k, label, n) => `<button class="tab" role="tab" aria-selected="${f === k}" data-mf="${k}">${label} <b>${n}</b></button>`;
-  const chips = chip("all", L("All", "全部"), all.length) + ROOMS.map(r => { const n = all.filter(x => x.room.id === r.id).length; return n ? chip(r.id, `T${r.topicNo}`, n) : ""; }).join("");
+  const chips = chip("all", L("All", "全部"), all.length) + ROOMS.map(r => { const n = all.filter(x => x.room.id === r.id).length; return n ? chip(r.id, `${SUBJECTS[subjOf(r)].icon} ${r.sec}`, n) : ""; }).join("");
   const card = x => { const { p, room, info } = x, c = topicNo(room.topicNo);
     return `<article class="mcard" data-pid="${esc(x.pid)}">
       <div class="row" style="justify-content:space-between"><span class="chip">${c} · ${esc(tTopic(room))}</span><span class="small muted">${L("Missed", "答錯")} ${info.n}× ${info.last ? "· " + info.last : ""}</span></div>
-      <p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
+      <p class="q">${esc(p.q)}</p>${qMedia(p)}${p.fmt === "tap" ? tapUi(p).replace(/<button/g, "<span").replace(/<\/button>/g, "</span>") : p.fmt === "pickgraph" ? `<div class="gchoices">${p.graphs.map((g, i) => `<span class="gchoice"><b>${"ABCD"[i]}</b><span class="gmini">${graphSvg(g, true)}</span></span>`).join("")}</div>` : ""}
       <details class="mans"><summary>👀 ${L("Show answer & explanation", "顯示答案和解釋")}</summary>
         <p><b>${L("Answer", "答案")}:</b> ${esc(answerText(p))}</p><p>${esc(p.explain)}</p>${p.tip ? `<p class="tip"><b>📝 ${L("Exam tip", "考試貼士")}:</b> ${esc(p.tip)}</p>` : ""}${p.terms ? termChips(p.terms) : ""}</details>
       <div class="row"><button class="btn blue" data-retry="${esc(x.pid)}">🔁 ${L("Try again", "再試一次")}</button><button class="btn plain" data-mj="${room.id}">📓 ${L("Notes", "筆記")}</button><button class="btn plain" data-mdel="${esc(x.pid)}" aria-label="${L("Remove from notebook", "從錯題本移除")}">🗑️</button></div>
@@ -3754,7 +3872,7 @@ function retryMistake(pid) {
   const p = pidQ(pid), room = pidRoom(pid); if (!p) return;
   let locked = false;
   const box = openModal(`<span class="kicker">📕 ${L("Mistake notebook", "錯題本")} · ${topicNo(room.topicNo)}</span><h2>${L("Try it again", "再試一次")}</h2>
-    <p class="q">${esc(p.q)}</p>${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}<div id="rmBody">${answerUi(p)}</div>
+    <p class="q">${esc(p.q)}</p>${qMedia(p)}<div id="rmBody">${answerUi(p)}</div>
     <div class="row"><button class="btn blue" id="rmHint">💡 ${L("Hint", "提示")}</button></div><div id="rmFb"></div>`, { wide: true, onClose: () => renderMap("mist") });
   document.getElementById("rmHint").onclick = () => { SFX.hint(); document.getElementById("rmFb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
   wireQuiz(document.getElementById("rmBody"), p, () => locked, ok => {
@@ -3791,6 +3909,7 @@ function renderMap(tab) {
   on("mRush", rushIntro); on("mPrac", practiceIntro); on("mShop", () => renderMap("dress")); on("aLab", () => renderMap("lab")); on("aRooms", () => { S.play_mode = "escape"; renderMap("rooms"); }); on("aStudy", () => { S.play_mode = "study"; renderMap("rooms"); });
   $app.querySelectorAll("[data-study]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); startStudy(b.dataset.study); });
   $app.querySelectorAll("[data-pmode]").forEach(b => b.onclick = () => { SFX.tap(); S.play_mode = b.dataset.pmode; save(); renderMap("rooms"); });
+  $app.querySelectorAll("[data-subj]").forEach(b => b.onclick = () => { SFX.tap(); S.subj = b.dataset.subj; save(); renderMap("rooms"); });
   on("mLb", openLeaderboard); on("cSave", openSaveModal); on("rJournal", () => openJournal());
   on("cFact", () => showChat("fact")); on("cCheer", () => showChat("cheer"));
   if (document.getElementById("dPane")) { wireWardrobe(document.getElementById("dPane"), refreshDress);
@@ -4109,6 +4228,16 @@ function specialSvg(kind) {
     case "crystal": return `<path d="M440 170 L474 206 L462 300 H418 L406 206 Z" fill="#C9C3F0" ${o}/><path d="M414 290 L452 250 L420 226 L458 190" fill="none" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round"/>`;
     case "lens": return `<path d="M440 300 v-24" ${o}/><path d="M440 164 Q470 220 440 276 Q410 220 440 164Z" fill="#D3E4FF" ${o}/><path d="M380 200 H440 L500 220 M380 240 H440 L500 220" stroke="#FF6B6B" stroke-width="3" fill="none"/>`;
     case "prism": return `<path d="M440 196 L486 300 H394 Z" fill="#D3E4FF" ${o}/>${["#e0473d", "#f28c28", "#f2c230", "#4caf50", "#3b7de0", "#8e44c8"].map((c, i) => `<path d="M468 256 L540 ${214 + i * 10}" stroke="${c}" stroke-width="4"/>`).join("")}`;
+    case "flask": return `<path d="M426 206 v30 l-30 52 q-4 12 10 12 h68 q14 0 10 -12 l-30 -52 v-30 Z" fill="#FFFFFFCC" ${o}/><path d="M404 270 h72 l10 18 q2 10 -10 10 h-72 q-12 0 -10 -10 Z" fill="#B9F3C9"/><path d="M420 204 h40" ${o}/><circle cx="430" cy="262" r="4" fill="#fff"/><circle cx="448" cy="250" r="3" fill="#fff"/>`;
+    case "heart": return `<path d="M440 300 C380 252 392 204 422 204 C432 204 440 214 440 222 C440 214 448 204 458 204 C488 204 500 252 440 300Z" fill="#FF8FA3" ${o}/><path d="M410 240 h14 l6 -12 l8 24 l6 -12 h16" stroke="#fff" stroke-width="3" fill="none"/>`;
+    case "apple": return `<path d="M440 220 c-22 -14 -48 0 -44 32 c4 32 26 50 44 42 c18 8 40 -10 44 -42 c4 -32 -22 -46 -44 -32Z" fill="#FF6B6B" ${o}/><path d="M440 220 q2 -14 10 -20" ${o} fill="none"/><path d="M450 206 q14 -8 22 2 q-12 8 -22 -2Z" fill="#6BD48A" ${o}/>`;
+    case "microscope": return `<path d="M400 300 h80" ${o}/><path d="M416 300 q0 -30 30 -40" ${o} fill="none"/><rect x="430" y="190" width="18" height="60" rx="5" fill="#A0C4FF" ${o} transform="rotate(-20 439 220)"/><rect x="412" y="262" width="56" height="8" rx="3" fill="#FFE27A" ${o}/><circle cx="452" cy="196" r="6" fill="#fff" ${o}/>`;
+    case "atom": return `<ellipse cx="440" cy="246" rx="50" ry="18" fill="none" ${o}/><ellipse cx="440" cy="246" rx="50" ry="18" fill="none" ${o} transform="rotate(60 440 246)"/><ellipse cx="440" cy="246" rx="50" ry="18" fill="none" ${o} transform="rotate(-60 440 246)"/><circle cx="440" cy="246" r="10" fill="#FF8FA3" ${o}/><circle cx="490" cy="246" r="5" fill="#6FA8FF"/>`;
+    case "nail": return `<rect x="396" y="236" width="88" height="64" rx="8" fill="#DCEFFF" ${o}/><path d="M424 206 h22 M435 206 v80 l-5 10" ${o} fill="none"/><circle cx="436" cy="252" r="4" fill="#B5541E"/><circle cx="434" cy="270" r="3" fill="#B5541E"/><path d="M398 256 q20 -8 42 0 t42 0" stroke="#fff" stroke-width="3" fill="none"/>`;
+    case "pyramid": return `<path d="M440 196 L494 300 H386 Z" fill="#FFE58A" ${o}/><path d="M412 248 H468 M399 274 H481 M426 222 H454" ${o}/><text x="440" y="294" font-size="18" text-anchor="middle">🍚</text><text x="440" y="268" font-size="15" text-anchor="middle">🥦</text>`;
+    case "stethoscope": return `<path d="M414 206 v40 q0 26 26 26 q26 0 26 -26 v-40" fill="none" ${o}/><path d="M440 272 v14 q0 14 18 14 q18 0 18 -18 v-10" fill="none" ${o}/><circle cx="476" cy="262" r="12" fill="#A0C4FF" ${o}/><circle cx="414" cy="204" r="5" fill="#FF8FA3" ${o}/><circle cx="466" cy="204" r="5" fill="#FF8FA3" ${o}/>`;
+    case "ptable": return `<rect x="384" y="196" width="112" height="104" rx="8" fill="#FFFDF4" ${o}/>${[0, 1, 2, 3].map(r => [0, 1, 2, 3, 4].map(c => (r === 0 && c > 0 && c < 4) ? "" : `<rect x="${392 + c * 20}" y="${204 + r * 22}" width="16" height="18" rx="3" fill="${c < 2 ? "#FFD3DD" : c === 4 ? "#E4D8FF" : "#CFE6FF"}" stroke="${INK}" stroke-width="1.6"/>`).join("")).join("")}`;
+    case "bowl": return `<path d="M392 250 h96 q-6 50 -48 50 q-42 0 -48 -50 Z" fill="#FFD3DD" ${o}/><path d="M404 250 q10 -20 36 -18 q26 -2 36 18" fill="#FFF4CC" ${o}/><path d="M462 196 L430 244 M474 200 L440 244" stroke="#C98F6B" stroke-width="4" stroke-linecap="round"/>`;
     case "telescope": return `<path d="M430 300 l12 -50 l12 50 M442 250 v50" ${o} fill="none"/><rect x="396" y="206" width="104" height="30" rx="10" fill="#A0C4FF" ${o} transform="rotate(-24 448 221)"/>`;
   }
   return "";
@@ -4176,10 +4305,13 @@ const ROOM_KINDS = {
   code: { icon: "🔐", en: "Code-lock room", zh: "密碼鎖房", piece: ["code digit", "密碼數字"], intro: ["This is a 🔐 <b>Code-lock room</b>: every item shows one digit of the 🚪 door code.", "這是 🔐 <b>密碼鎖房</b>：每件物品顯示 🚪 大門密碼的一個數字。"] },
   experiment: { icon: "🔬", en: "Experiment room", zh: "實驗房", piece: ["lab part", "實驗零件"], intro: ["This is a 🔬 <b>Experiment room</b>: every lock gives a lab part. Build the experiment at the 🚪 door and use the simulator to open it!", "這是 🔬 <b>實驗房</b>：每把鎖給你一件實驗零件。在 🚪 大門砌好實驗，用模擬器把門打開！"] },
   colour: { icon: "🎨", en: "Colour-mixing room", zh: "混色房", piece: ["colour filter", "濾色片"], intro: ["This is a 🎨 <b>Colour-mixing room</b>: every lock gives a colour filter. Mix the spotlights at the 🚪 door to match the colours!", "這是 🎨 <b>混色房</b>：每把鎖給你一塊濾色片。在 🚪 大門混合射燈，配出正確的顏色！"] },
+  sort: { icon: "🗂️", en: "Sorting room", zh: "分類房", piece: ["sorting card", "分類卡"], intro: ["This is a 🗂️ <b>Sorting room</b>: every lock gives a sorting card. Put all the cards in the right groups at the 🚪 door!", "這是 🗂️ <b>分類房</b>：每把鎖給你一張分類卡。在 🚪 大門把所有卡放進正確的組別！"] },
+  order: { icon: "🔗", en: "Chain room", zh: "連鎖房", piece: ["chain link", "連鎖環"], intro: ["This is a 🔗 <b>Chain room</b>: every lock gives a chain link. Put the links in the right order at the 🚪 door!", "這是 🔗 <b>連鎖房</b>：每把鎖給你一個連鎖環。在 🚪 大門把它們排成正確次序！"] },
+  label: { icon: "📌", en: "Labelling room", zh: "標示房", piece: ["label pin", "標示釘"], intro: ["This is a 📌 <b>Labelling room</b>: every lock gives a label. Pin every label on the diagram at the 🚪 door!", "這是 📌 <b>標示房</b>：每把鎖給你一個標籤。在 🚪 大門把標籤釘在圖上正確位置！"] },
   spectrum: { icon: "🌈", en: "Spectrum line-up room", zh: "光譜排序房", piece: ["wave card", "波段卡"], intro: ["This is a 🌈 <b>Spectrum line-up room</b>: every lock gives a wave card. Line up the electromagnetic spectrum at the 🚪 door!", "這是 🌈 <b>光譜排序房</b>：每把鎖給你一張波段卡。在 🚪 大門把電磁波譜排好次序！"] }
 };
 const ROOM_KIND = { room1: "jigsaw", room2: "diagram", room3: "code", room4: "experiment", room5: "experiment", room6: "colour", room7: "spectrum" };
-const roomKind = r => ROOM_KIND[r.id] || "code";
+const roomKind = r => r.kind || ROOM_KIND[r.id] || "code";
 const kindOf = r => ROOM_KINDS[roomKind(r)];
 const kindTag = r => `${kindOf(r).icon} ${L(kindOf(r).en, kindOf(r).zh)}`;
 const pieceName = r => L(kindOf(r).piece[0], kindOf(r).piece[1]);
@@ -4298,6 +4430,178 @@ function invHtml(newIdx = -1) {
     : `<div class="slot" aria-label="${L("Empty slot", "空格")} ${i + 1}"><span class="muted">#${i + 1}<br>?</span></div>`).join("");
 }
 
+/* ============================================================
+   7b. Multimedia questions (Biology / Chemistry): case files, tables, virtual labs,
+   graphs, tap-the-diagram, sort it, which are true?, chain reaction.
+   ============================================================ */
+const FMT = { case: ["🕵️", "Case file", "案件檔案", "Read the evidence, then decide.", "細閱證據，然後作出判斷。"],
+  table: ["📊", "Table detective", "數據表偵探", "Read the table carefully.", "細心閱讀數據表。"],
+  lab: ["🔬", "Virtual lab", "虛擬實驗", "Press ▶ to run the experiment and watch what happens.", "按 ▶ 進行實驗，觀察結果。"],
+  graph: ["📈", "Graph detective", "圖表偵探", "Study the graph's shape.", "研究圖表的形狀。"],
+  pickgraph: ["📈", "Pick the graph", "選出正確圖表", "Tap the graph that matches.", "點選正確的圖表。"],
+  tap: ["👆", "Tap it", "點一點", "Tap the right spot on the diagram.", "在圖中點選正確位置。"],
+  sort: ["🗂️", "Sort it", "分一分", "Put every card in the right group.", "把每張卡放進正確的組別。"],
+  truefalse: ["🧩", "Which are true?", "哪些正確？", "Mark every statement true or false.", "判斷每句是正確還是錯誤。"],
+  order: ["🔗", "Chain reaction", "連鎖反應", "Give every step its place in the chain.", "為每個步驟排出正確次序。"] };
+const fmtLabel = p => p.fmt && FMT[p.fmt] ? `${FMT[p.fmt][0]} ${L(FMT[p.fmt][1], FMT[p.fmt][2])}` : "";
+const fmtHow = p => p.fmt && FMT[p.fmt] ? `<p class="fmthow">${FMT[p.fmt][0]} <b>${L(FMT[p.fmt][1], FMT[p.fmt][2])}</b> · ${L(FMT[p.fmt][3], FMT[p.fmt][4])}</p>` : "";
+const cellTx = c => typeof c === "number" ? String(c) : esc(c);
+function graphSvg(g, mini) {
+  const W = 300, H = 200, l = 46, b = 40, t = 14, r = 14, pw = W - l - r, ph = H - t - b;
+  const X = x => l + pw * x / g.xmax, Y = y => t + ph - ph * y / g.ymax;
+  let out = `<rect x="${l}" y="${t}" width="${pw}" height="${ph}" fill="#FFFDF4"/>`;
+  [0, .25, .5, .75, 1].forEach(f => { out += `<path d="M${l} ${Y(g.ymax * f)} H${l + pw}" stroke="#EADFC4" stroke-width="1"/>`; });
+  out += `<path d="M${l} ${t} V${t + ph} H${l + pw}" stroke="${INK}" stroke-width="2.4" fill="none"/>`;
+  if (!mini) [0, .5, 1].forEach(f => { out += `<text x="${l - 6}" y="${Y(g.ymax * f) + 4}" font-size="11" text-anchor="end" fill="${INK}">${+(g.ymax * f).toFixed(1)}</text>`; });
+  if (g.type === "bar") {
+    const n = g.bars.length, bw = pw / n;
+    g.bars.forEach((bar, i) => { const x = l + bw * i + bw * .18, w = bw * .64;
+      out += `<rect x="${x}" y="${Y(bar.v)}" width="${w}" height="${t + ph - Y(bar.v)}" rx="4" fill="${bar.c || "#FFC94D"}" stroke="${INK}" stroke-width="1.6"/>`;
+      out += `<text x="${x + w / 2}" y="${t + ph + 14}" font-size="${mini ? 12 : 10.5}" text-anchor="middle" fill="${INK}">${esc(String(bar.l).slice(0, mini ? 8 : 12))}</text>`; });
+  } else {
+    if (!mini) [0, .5, 1].forEach(f => { out += `<text x="${X(g.xmax * f)}" y="${t + ph + 14}" font-size="11" text-anchor="middle" fill="${INK}">${+(g.xmax * f).toFixed(1)}</text>`; });
+    g.series.forEach(sr => { out += `<polyline points="${sr.pts.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(" ")}" fill="none" stroke="${sr.c}" stroke-width="${mini ? 4 : 3}" stroke-linejoin="round" stroke-linecap="round"/>`;
+      if (!mini) out += sr.pts.map(([x, y]) => `<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="3.2" fill="${sr.c}" stroke="${INK}" stroke-width="1.2"/>`).join(""); });
+    const named = g.series.filter(sr => sr.name);
+    if (named.length && !mini) out += named.map((sr, i) => `<rect x="${l + 8}" y="${t + 6 + i * 15}" width="12" height="5" fill="${sr.c}"/><text x="${l + 24}" y="${t + 12 + i * 15}" font-size="11" fill="${INK}">${esc(sr.name)}</text>`).join("");
+  }
+  out += `<text x="${l + pw / 2}" y="${H - 6}" font-size="${mini ? 13 : 12}" font-weight="700" text-anchor="middle" fill="${INK}">${esc(g.x)}</text>`;
+  out += `<text x="13" y="${t + ph / 2}" font-size="${mini ? 13 : 12}" font-weight="700" text-anchor="middle" fill="${INK}" transform="rotate(-90 13 ${t + ph / 2})">${esc(g.y)}</text>`;
+  return `<svg class="gsvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(g.y)} / ${esc(g.x)}">${out}</svg>`;
+}
+const caseHtml = c => `<div class="casefile"><div class="cfh">🕵️ ${esc(c.title)}</div><div class="cfcards">${c.cards.map(k => `<div class="cfcard"><span class="cfi" aria-hidden="true">${k.icon}</span><b>${esc(k.head)}</b><span>${esc(k.text)}</span></div>`).join("")}</div>${c.table ? tableHtml(c.table) : ""}${c.graph ? `<div class="mgraph">${graphSvg(c.graph)}</div>` : ""}</div>`;
+const tableHtml = tb => `<div class="dtwrap"><table class="dtable"><thead><tr>${tb.head.map(h => `<th>${cellTx(h)}</th>`).join("")}</tr></thead><tbody>${tb.rows.map(row => `<tr>${row.map(c => `<td>${cellTx(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+/* 🔬 Virtual lab: test tubes that change colour / fizz / rust when you press run */
+function labHtml(lab) {
+  const n = lab.tubes.length, gap = 300 / n;
+  const tubes = lab.tubes.map((tb, i) => { const cx = gap * i + gap / 2, x = cx - 17;
+    const bubbles = Array.from({ length: (tb.bub || 0) * 3 }, (_, k) => `<circle class="bub" cx="${cx - 9 + (k * 7) % 18}" cy="138" r="${2 + (k % 3)}" style="animation-delay:${(k * .37).toFixed(2)}s;animation-duration:${(2.6 - (tb.bub || 1) * .5).toFixed(2)}s"/>`).join("");
+    const solid = tb.solid ? `<rect x="${cx - 4}" y="${tb.rust ? 92 : 104}" width="8" height="${tb.rust ? 52 : 40}" rx="2.5" fill="${tb.solid}" stroke="${INK}" stroke-width="1.4"/>${tb.rust ? `<g class="rust">${[[0, 100], [-2, 112], [2, 124], [-1, 136], [1, 118]].map(([dx, y]) => `<circle cx="${cx + dx}" cy="${y}" r="3" fill="#B5541E"/>`).join("")}</g>` : ""}` : "";
+    return `<g>${tb.heat ? `<rect x="${x - 8}" y="96" width="50" height="60" rx="6" fill="#DCEFFF" stroke="${INK}" stroke-width="1.6" opacity=".9"/><path class="flame" d="M${cx} 176 q-8 -8 0 -18 q8 10 0 18Z" fill="#FF8A3D" stroke="${INK}" stroke-width="1.2"/>` : ""}
+      <path d="M${x} 30 V140 a17 17 0 0 0 34 0 V30" fill="#FFFFFFCC" stroke="${INK}" stroke-width="2.4"/>
+      <path class="liq" style="--a:${tb.from};--b:${tb.to}" d="M${x + 2} 84 V140 a15 15 0 0 0 30 0 V84 Z"/>${solid}<g class="bubs">${bubbles}</g>
+      <rect x="${x - 3}" y="26" width="40" height="6" rx="3" fill="#fff" stroke="${INK}" stroke-width="2"/>
+      <text x="${cx}" y="20" text-anchor="middle" font-size="13" font-weight="800" fill="${INK}">${"ABCDE"[i]}</text></g>`; }).join("");
+  return `<div class="labx"><svg viewBox="0 0 300 185" role="img" aria-label="${esc(L("Virtual lab", "虛擬實驗"))}">${tubes}</svg>
+    <div class="lablabels">${lab.tubes.map(tb => `<span>${esc(tb.l)}</span>`).join("")}</div>
+    <div class="row" style="justify-content:center"><button class="btn green" data-labrun>▶ ${esc(lab.run)}</button></div>
+    <details class="labread"><summary>📄 ${L("Can't watch it? Read what happens", "看不到動畫？閱讀實驗結果")}</summary><p>${esc(lab.read)}</p></details></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-labrun]"); if (!b) return;
+  const w = b.closest(".labx"); if (!w) return;
+  SFX.item(); w.classList.remove("ran"); void w.offsetWidth; w.classList.add("ran");
+  b.innerHTML = `🔁 ${L("Run it again", "再做一次")}`;
+});
+/* Drawn diagrams with tappable spots (coordinates in the SVG's own units) */
+const SCENES = {
+  gut: { w: 240, h: 300, spots: { mouth: [120, 44], salivary: [152, 52], gullet: [121, 92], liver: [92, 138], gallbladder: [110, 160], stomach: [158, 140], pancreas: [146, 168], small: [120, 210], large: [74, 200], rectum: [122, 256], anus: [122, 282] },
+    svg: () => `<path d="M120 6 c30 0 44 18 44 40 c0 18 -8 26 -14 30 l50 22 c14 6 18 18 18 34 v150 h-196 v-150 c0 -16 4 -28 18 -34 l50 -22 c-6 -4 -14 -12 -14 -30 c0 -22 14 -40 44 -40Z" fill="#FFEFE3" stroke="${INK}" stroke-width="2.4"/>
+      <path d="M108 44 q12 8 24 0" stroke="#C0392B" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="152" cy="52" rx="7" ry="5" fill="#F7C7D9" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M120 52 C120 80 122 100 124 124" stroke="#E79AA8" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M120 52 C120 80 122 100 124 124" stroke="${INK}" stroke-width="1.2" fill="none"/>
+      <path d="M60 128 q30 -22 72 -6 q8 14 -6 26 q-30 22 -66 4 q-8 -10 0 -24Z" fill="#B5654A" stroke="${INK}" stroke-width="2"/>
+      <ellipse cx="110" cy="160" rx="6" ry="8" fill="#7FB85A" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M128 122 q24 -10 44 6 q12 18 -4 34 q-20 14 -36 4 q10 -10 4 -22 q-6 -10 -8 -22Z" fill="#F4A3B5" stroke="${INK}" stroke-width="2"/>
+      <path d="M118 166 q20 -6 44 2 q4 6 -4 8 q-20 -2 -40 0 q-6 -4 0 -10Z" fill="#FFD27A" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M70 246 V184 H172 V244 H128" stroke="#D9A066" stroke-width="15" fill="none" stroke-linejoin="round"/><path d="M70 246 V184 H172 V244 H128" stroke="${INK}" stroke-width="1.2" fill="none"/>
+      <path d="M90 200 q30 -10 60 0 q10 10 -6 14 q-24 -6 -48 4 q-14 6 -6 14 q24 6 54 -2 q12 8 -2 14 q-26 6 -52 -2" stroke="#F7B6A3" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M128 244 V276" stroke="#D9A066" stroke-width="13" stroke-linecap="round"/><path d="M122 284 h12" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>` },
+  pyramid: { w: 260, h: 220, spots: { top: [130, 40], meat: [100, 92], milk: [160, 92], veg: [88, 140], fruit: [172, 140], grains: [130, 190] },
+    svg: () => { const lv = [[20, 60, "#FFB3B3"], [60, 116, "#FFD9A0"], [116, 166, "#BFE8A6"], [166, 214, "#FFE58A"]];
+      const xl = y => 130 - (y - 8) * 0.53, xr = y => 130 + (y - 8) * 0.53;
+      return lv.map(([a, b2, c]) => `<path d="M${xl(a)} ${a} H${xr(a)} L${xr(b2)} ${b2} H${xl(b2)} Z" fill="${c}" stroke="${INK}" stroke-width="2.2"/>`).join("") + `<path d="M130 8 L${xl(20)} 20 H${xr(20)} Z" fill="#FFB3B3" stroke="${INK}" stroke-width="2.2"/>
+      <path d="M130 60 V116 M130 116 V166" stroke="${INK}" stroke-width="2"/>
+      <text x="130" y="48" font-size="18" text-anchor="middle">🧂🍬</text><text x="100" y="98" font-size="18" text-anchor="middle">🐟🥚</text><text x="160" y="98" font-size="18" text-anchor="middle">🥛🧀</text>
+      <text x="88" y="148" font-size="18" text-anchor="middle">🥦🥬</text><text x="172" y="148" font-size="18" text-anchor="middle">🍎🍊</text><text x="130" y="198" font-size="18" text-anchor="middle">🍚🍞🍜</text>`; } },
+  atom: { w: 240, h: 220, spots: {}, spotsOf: (o = {}) => { const n = (o.shells || [2, 4]).length, rs = [40, 66, 90]; return { nucleus: [110, 120], proton: [196, 36], neutron: [218, 52], electron: [110, 120 - rs[n - 1]], shell1: [81.7, 148.3], shell2: [84.7, 181] }; },
+    svg: (o = {}) => { const sh = o.shells || [2, 4], cx = 110, cy = 120, rs = [40, 66, 90];
+      let s = sh.map((n, i) => `<circle cx="${cx}" cy="${cy}" r="${rs[i]}" fill="none" stroke="#8C7FB8" stroke-width="2" stroke-dasharray="${i === 2 ? "5 4" : "0"}"/>`).join("");
+      sh.forEach((n, i) => { for (let k = 0; k < n; k++) { const a = -Math.PI / 2 + (i === 0 ? Math.PI / 2 : 0) + 2 * Math.PI * k / n + (i === 0 ? 0 : 0); const ex = cx + rs[i] * Math.cos(a), ey = cy + rs[i] * Math.sin(a);
+        s += `<circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="6" fill="#6FA8FF" stroke="${INK}" stroke-width="1.5"/><text x="${ex.toFixed(1)}" y="${(ey + 4).toFixed(1)}" font-size="10" text-anchor="middle" fill="#fff" font-weight="800">−</text>`; } });
+      s += `<circle cx="${cx}" cy="${cy}" r="17" fill="#FFE3EC" stroke="${INK}" stroke-width="2"/>` + [[-6, -5, 1], [6, -5, 0], [-6, 6, 0], [6, 6, 1], [0, 0, 1]].map(([dx, dy, pr]) => `<circle cx="${cx + dx}" cy="${cy + dy}" r="5" fill="${pr ? "#FF6B6B" : "#B9B3C7"}" stroke="${INK}" stroke-width="1"/>`).join("");
+      s += `<path d="M${cx + 14} ${cy - 10} L186 64" stroke="${INK}" stroke-width="1.4" stroke-dasharray="3 3"/><circle cx="206" cy="44" r="30" fill="#FFF7FA" stroke="${INK}" stroke-width="2"/>
+        <circle cx="196" cy="36" r="9" fill="#FF6B6B" stroke="${INK}" stroke-width="1.4"/><text x="196" y="40" font-size="12" text-anchor="middle" fill="#fff" font-weight="800">+</text>
+        <circle cx="218" cy="52" r="9" fill="#B9B3C7" stroke="${INK}" stroke-width="1.4"/>${o.p ? `<text x="206" y="88" font-size="10" text-anchor="middle" fill="${INK}">${o.p}p · ${o.n || 0}n</text>` : ""}`;
+      return s; } },
+  ptable: { w: 340, h: 176, spots: {}, svg: () => {
+      const EL = [["H", 0, 0, "n"], ["He", 7, 0, "g"], ["Li", 0, 1, "m"], ["Be", 1, 1, "m"], ["B", 2, 1, "n"], ["C", 3, 1, "n"], ["N", 4, 1, "n"], ["O", 5, 1, "n"], ["F", 6, 1, "n"], ["Ne", 7, 1, "g"], ["Na", 0, 2, "m"], ["Mg", 1, 2, "m"], ["Al", 2, 2, "m"], ["Si", 3, 2, "n"], ["P", 4, 2, "n"], ["S", 5, 2, "n"], ["Cl", 6, 2, "n"], ["Ar", 7, 2, "g"], ["K", 0, 3, "m"], ["Ca", 1, 3, "m"]];
+      const col = { m: "#FFD3DD", n: "#CFE6FF", g: "#E4D8FF" };
+      return `${["I", "II", "III", "IV", "V", "VI", "VII", "0"].map((g, i) => `<text x="${14 + i * 40 + 18}" y="14" font-size="11" font-weight="800" text-anchor="middle" fill="${INK}">${g}</text>`).join("")}
+        ${EL.map(([s, c, r2, k], i) => `<rect x="${14 + c * 40}" y="${20 + r2 * 36}" width="36" height="32" rx="6" fill="${col[k]}" stroke="${INK}" stroke-width="1.6"/><text x="${14 + c * 40 + 18}" y="${20 + r2 * 36 + 13}" font-size="9" text-anchor="middle" fill="${INK}">${i + 1}</text><text x="${14 + c * 40 + 18}" y="${20 + r2 * 36 + 27}" font-size="13" font-weight="800" text-anchor="middle" fill="${INK}">${s}</text>`).join("")}
+        <rect x="120" y="134" width="12" height="10" fill="${col.m}" stroke="${INK}"/><text x="136" y="143" font-size="10" fill="${INK}">${L("metal", "金屬")}</text>
+        <rect x="190" y="134" width="12" height="10" fill="${col.n}" stroke="${INK}"/><text x="206" y="143" font-size="10" fill="${INK}">${L("non-metal", "非金屬")}</text>
+        <rect x="270" y="134" width="12" height="10" fill="${col.g}" stroke="${INK}"/><text x="286" y="143" font-size="10" fill="${INK}">${L("noble gas", "惰性氣體")}</text>`; } }
+};
+[["H", 0, 0], ["He", 7, 0], ["Li", 0, 1], ["Be", 1, 1], ["B", 2, 1], ["C", 3, 1], ["N", 4, 1], ["O", 5, 1], ["F", 6, 1], ["Ne", 7, 1], ["Na", 0, 2], ["Mg", 1, 2], ["Al", 2, 2], ["Si", 3, 2], ["P", 4, 2], ["S", 5, 2], ["Cl", 6, 2], ["Ar", 7, 2], ["K", 0, 3], ["Ca", 1, 3]].forEach(([s, c, r]) => { SCENES.ptable.spots[s] = [14 + c * 40 + 18, 20 + r * 36 + 16]; });
+const sceneSvgOf = (key, o) => { const sc = SCENES[key]; return `<svg viewBox="0 0 ${sc.w} ${sc.h}" role="img" aria-label="${esc(key)}">${sc.svg(o)}</svg>`; };
+const spotPct = (key, spot, o) => { const sc = SCENES[key], [x, y] = (sc.spotsOf ? sc.spotsOf(o) : sc.spots)[spot]; return [(x / sc.w * 100).toFixed(2), (y / sc.h * 100).toFixed(2)]; };
+function qMedia(p) {
+  if (p.svg) return `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>`;
+  if (!p.fmt) return "";
+  const how = fmtHow(p);
+  if (p.fmt === "case") return how + caseHtml(p.case);
+  if (p.fmt === "table") return how + tableHtml(p.table);
+  if (p.fmt === "lab") return how + labHtml(p.lab);
+  if (p.fmt === "graph") return how + `<div class="mgraph">${graphSvg(p.graph)}</div>`;
+  return how;
+}
+const trapHtml = (p, i) => p.traps && p.traps[i] ? `<p class="trap">🪤 <b>${L("Why that one's a trap", "為甚麼這是陷阱")}:</b> ${esc(p.traps[i])}</p>` : "";
+function tapUi(p) {
+  const sc = p.tap.scene;
+  return `<div class="tapwrap s-${sc}">${sceneSvgOf(sc, p.tap)}<div class="choices tapchoices">${p.choices.map((c, i) => { const [x, y] = spotPct(sc, p.tap.spots[i], p.tap);
+    return `<button class="choice tapspot" style="left:${x}%;top:${y}%" data-i="${i}" aria-label="${L("Spot", "位置")} ${"ABCD"[i]}"><b>${"ABCD"[i]}</b></button>`; }).join("")}</div></div>`;
+}
+function pickGraphUi(p) {
+  const order = shuffle(p.choices.map((_, i) => i));
+  return `<div class="choices gchoices">${order.map((i, n) => `<button class="choice gchoice" data-i="${i}"><b>${"ABCD"[n]}</b><span class="gmini">${graphSvg(p.graphs[i], true)}</span><span class="srt">${esc(p.choices[i])}</span></button>`).join("")}</div>`;
+}
+function segUi(p) {
+  return `<div class="segq f-${p.fmt}">${p.labels.map((lab, d) => `<div class="srow"><span class="scard">${esc(lab)}</span><div class="sgs" role="group" aria-label="${esc(lab)}">${p.dials[d].map((g, v) => `<button class="sg" data-d="${d}" data-v="${v}" aria-pressed="false">${esc(g)}</button>`).join("")}</div></div>`).join("")}</div>
+    <div class="row" style="justify-content:center"><button class="btn" id="dok">${L("Check ✔", "檢查 ✔")}</button></div>`;
+}
+const segSet = (root, d, v) => root.querySelectorAll(`.sg[data-d="${d}"]`).forEach(b => { const on = Number(b.dataset.v) === v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+/* ----- Exit doors for the Biology / Chemistry rooms ----- */
+// 🗂️ Sorting room and 🔗 Chain room: tap a group (or a position) for every card
+function openSegDoor(room, title, sub) {
+  const d = tl(DOORS[room.id], LANG === "zh"), order = room.kind === "order";
+  let p;
+  if (order) { const pm = shuffled(d.steps.map((_, i) => i)); p = { fmt: "order", labels: pm.map(k => d.steps[k]), dials: pm.map(() => d.steps.map((_, k) => L(ORD[k], `第 ${k + 1}`))), answer: pm }; }
+  else p = { fmt: "sort", labels: d.items.map(x => x.t), dials: d.items.map(() => d.groups), answer: d.items.map(x => x.g) };
+  const pos = p.labels.map(() => -1);
+  const box = openModal(`${doorHead(room, title, sub)}<p class="q">${esc(d.q)}</p>${segUi(p)}<div id="pfb"></div>`, { wide: true });
+  box.querySelectorAll(".sg").forEach(b => b.onclick = () => { const dd = +b.dataset.d, v = +b.dataset.v; pos[dd] = v; SFX.click(); segSet(box, dd, v); });
+  document.getElementById("dok").onclick = () => {
+    if (pos.includes(-1)) { toast(L("Place every card first!", "先放好每一張卡！")); return; }
+    const wrong = pos.filter((v, i) => v !== p.answer[i]).length;
+    if (order && new Set(pos).size !== pos.length) { doorWrong(L("Two cards share the same place in the chain!", "有兩張卡排在同一個位置！")); return; }
+    if (!wrong) { box.querySelectorAll(".sg,#dok").forEach(x => (x.disabled = true)); doorWin(order ? L("The chain is complete! 🔗", "連鎖完成了！🔗") : L("Everything is sorted! 🗂️", "全部分類正確！🗂️")); }
+    else doorWrong(L(`${wrong} card${wrong === 1 ? " is" : "s are"} in the wrong place.`, `有 ${wrong} 張卡放錯了。`));
+  };
+}
+// 📌 Labelling room: pick a label, then tap its pin on the diagram
+function openLabelDoor(room) {
+  const d = tl(DOORS[room.id], LANG === "zh"), n = d.spots.length, chips = shuffled(d.labels.map((_, i) => i));
+  const placed = Array(n).fill(-1); let sel = -1;
+  const box = openModal(`${doorHead(room, L("Label the diagram", "為圖表加上標示"), L("Tap a label card, then tap the numbered pin where it belongs.", "先點一張標籤卡，再點它所屬的編號釘。"))}
+    <p class="q">${esc(d.q)}</p><div class="tapwrap s-${d.scene} lbldoor">${sceneSvgOf(d.scene, d)}<div id="pins"></div></div>
+    <div class="lchips" id="lchips"></div><div class="row" style="justify-content:center"><button class="btn" id="lok">${L("Check the labels ✔", "檢查標示 ✔")}</button></div><div id="pfb"></div>`, { wide: true });
+  const draw = () => {
+    document.getElementById("pins").innerHTML = d.spots.map((sp, i) => { const [x, y] = spotPct(d.scene, sp, d);
+      return `<button class="pin ${placed[i] > -1 ? "set" : ""}" style="left:${x}%;top:${y}%" data-pin="${i}" aria-label="${L("Pin", "釘")} ${i + 1}${placed[i] > -1 ? ": " + esc(d.labels[placed[i]]) : ""}">${i + 1}${placed[i] > -1 ? `<span>${esc(d.labels[placed[i]])}</span>` : ""}</button>`; }).join("");
+    document.getElementById("lchips").innerHTML = chips.map(k => `<button class="lchip ${sel === k ? "sel" : ""} ${placed.includes(k) ? "used" : ""}" data-chip="${k}" aria-pressed="${sel === k}">${esc(d.labels[k])}</button>`).join("");
+    box.querySelectorAll("[data-chip]").forEach(b => b.onclick = () => { const k = +b.dataset.chip; sel = sel === k ? -1 : k; SFX.tap(); draw(); });
+    box.querySelectorAll("[data-pin]").forEach(b => b.onclick = () => { const i = +b.dataset.pin;
+      if (sel === -1) { if (placed[i] > -1) { placed[i] = -1; SFX.click(); draw(); } else toast(L("Pick a label card first 🏷️", "先選一張標籤卡 🏷️")); return; }
+      const was = placed.indexOf(sel); if (was > -1) placed[was] = -1; placed[i] = sel; sel = -1; SFX.beep(); draw(); });
+  };
+  draw();
+  document.getElementById("lok").onclick = () => {
+    if (placed.includes(-1)) { toast(L("Put a label on every pin first!", "先為每一口釘貼上標籤！")); return; }
+    const wrong = placed.filter((k, i) => k !== i).length;
+    if (!wrong) { box.querySelectorAll("[data-chip],[data-pin],#lok").forEach(x => (x.disabled = true)); doorWin(L("Every label is right! 📌", "全部標示正確！📌")); }
+    else { doorWrong(L(`${wrong} label${wrong === 1 ? " is" : "s are"} on the wrong pin.`, `有 ${wrong} 個標籤貼錯了。`)); }
+  };
+}
 /* ----- Puzzle modal ----- */
 function openPuzzle(i) {
   const { room } = R;
@@ -4309,13 +4613,13 @@ function openPuzzle(i) {
   SFX.click();
   R.cur = i; R.att[i] = R.att[i] || 0; R.openedAt = Date.now();
   if (R.hiddenHs === i) { R.hiddenHs = null; toast(L("🔦 Found the hidden lock!", "🔦 找到了被藏起來的鎖！")); }
-  const typeLabel = { mc: L("Multiple choice", "選擇題"), keypad: L("Keypad lock", "數字鎖"), dial: L("Combination dials", "密碼盤") }[p.type];
+  const typeLabel = fmtLabel(p) || { mc: L("Multiple choice", "選擇題"), keypad: L("Keypad lock", "數字鎖"), dial: L("Combination dials", "密碼盤") }[p.type];
   const box = openModal(`
     <span class="kicker">${typeLabel} · ${topicNo(room.topicNo)} ${room.zh}</span>
     <h2>${esc(hsName)}</h2>
     ${say("chiikawa", esc(line))}
     <p class="q">${esc(p.q)}</p>
-    ${p.svg ? `<div class="diagram-box">${DIAGRAMS[p.svg]}</div>` : ""}
+    ${qMedia(p)}
     <div id="jamBox"></div>
     <div id="ans">${answerUi(p)}</div>
     <div class="row"><button class="btn blue" id="hint">💡 ${L("Hint from Berry", "莓莓的提示")}</button><button class="btn plain" id="pj">📓 ${L("Journal", "日誌")}</button></div>
@@ -4370,7 +4674,8 @@ function usePower(k, p, i) {
   S.power[k] -= 1; SFX.item(); save(); renderPwr(p, i);
 }
 function setDial(d, v, p) {
-  R.dialPos[d] = v; const f = document.getElementById("face" + d); if (!f) return;
+  R.dialPos[d] = v; if (p.seg) { const mb = document.getElementById("mbox"); if (mb) segSet(mb, d, v); return; }
+  const f = document.getElementById("face" + d); if (!f) return;
   f.textContent = p.dials[d][v]; f.classList.remove("spin"); void f.offsetWidth; f.classList.add("spin");
 }
 function updateTimerEl() {
@@ -4407,6 +4712,9 @@ function penaltyFlash(text) {
   document.body.appendChild(d); setTimeout(() => d.remove(), 1150);
 }
 function answerUi(p) {
+  if (p.fmt === "tap") return tapUi(p);
+  if (p.fmt === "pickgraph") return pickGraphUi(p);
+  if (p.seg) return segUi(p);
   if (p.type === "mc") { const order = p.svg ? p.choices.map((_, i) => i) : shuffle(p.choices.map((_, i) => i));
     return `<div class="choices">${order.map((i, n) => `<button class="choice" data-i="${i}"><b>${"ABCD"[n]}</b><span>${esc(p.choices[i])}</span></button>`).join("")}</div>`; }
   if (p.type === "keypad") return `<div class="keypad"><div class="kdisplay" aria-live="polite"><span id="kd">_</span>${p.unit ? `<span class="u">${esc(p.unit)}</span>` : ""}</div>
@@ -4420,7 +4728,7 @@ function wireAnswer(p, box) {
   if (p.type === "mc") {
     box.querySelectorAll(".choice").forEach(b => b.onclick = () => {
       if (Number(b.dataset.i) === p.answer) { b.classList.add("right"); box.querySelectorAll(".choice").forEach(x => (x.disabled = true)); solve(); }
-      else { b.classList.add("wrong"); b.disabled = true; miss(box); }
+      else { b.classList.add("wrong"); b.disabled = true; R.pick = Number(b.dataset.i); miss(box); }
     });
   } else if (p.type === "keypad") {
     let v = "", done = false;
@@ -4436,13 +4744,14 @@ function wireAnswer(p, box) {
     document.getElementById("kok").onclick = ok;
     box.onkeydown = e => { if (R.jam[R.cur] > Date.now()) return; if (/^[0-9.]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("⌫"); else if (e.key === "Enter" && e.target.id !== "collect") { e.preventDefault(); ok(); } };
   } else {
-    const pos = p.dials.map(() => 0); R.dialPos = pos;
+    const pos = p.dials.map(() => p.seg ? -1 : 0); R.dialPos = pos;
+    box.querySelectorAll(".sg").forEach(b => b.onclick = () => { const d = Number(b.dataset.d); pos[d] = Number(b.dataset.v); SFX.click(); segSet(box, d, pos[d]); });
     box.querySelectorAll(".arr").forEach(b => b.onclick = () => {
       const d = Number(b.dataset.d), n = p.dials[d].length;
       pos[d] = (pos[d] + Number(b.dataset.dir) + n) % n; SFX.click();
       setDial(d, pos[d], p);
     });
-    document.getElementById("dok").onclick = () => { if (pos.every((x, i) => x === p.answer[i])) { box.querySelectorAll(".arr,#dok").forEach(x => (x.disabled = true)); solve(); } else miss(box); };
+    document.getElementById("dok").onclick = () => { if (pos.includes(-1)) { toast(L("Answer every card first!", "先完成每一張卡！")); return; } if (pos.every((x, i) => x === p.answer[i])) { box.querySelectorAll(".arr,.sg,#dok").forEach(x => (x.disabled = true)); solve(); } else miss(box); };
   }
 }
 function miss(box) {
@@ -4469,9 +4778,9 @@ function miss(box) {
   S.room_timer[id] -= 20; penaltyFlash(L("−20s ⏱️", "−20 秒 ⏱️")); updateTimerEl(); hit.push(L("⏱️ −20 seconds", "⏱️ −20 秒"));
   // Penalty 2: the lock reshuffles, so tapping the next option doesn't work
   if (p.type === "mc") {
-    const wrap = box.querySelector(".choices"); const kids = shuffle([...wrap.children]);
+    const wrap = box.querySelector(".choices"); const kids = p.tap ? [...wrap.children] : shuffle([...wrap.children]);
     kids.forEach((k, n) => { wrap.appendChild(k); k.querySelector("b").textContent = "ABCD"[n]; });
-    hit.push(L("🔀 answers shuffled", "🔀 答案被打亂"));
+    if (!p.tap) hit.push(L("🔀 answers shuffled", "🔀 答案被打亂"));
   } else if (p.type === "dial") {
     p.dials.forEach((opts, d) => setDial(d, Math.floor(Math.random() * opts.length), p));
     hit.push(L("🌀 dials spun", "🌀 密碼盤亂轉"));
@@ -4490,7 +4799,7 @@ function miss(box) {
   const warn = run.hearts === 1 ? L("⚠️ Last heart! One more mistake and it's GAME OVER.", "⚠️ 最後一顆心！再錯一次便 GAME OVER。") : L(`${run.hearts} hearts left.`, `剩下 ${run.hearts} 顆心。`);
   document.getElementById("pfb").innerHTML = `<div class="fb no">
     ${say("chiikawa", jam ? (fast ? L("Wah...! That was too fast! Did we guess? 😭", "哇……！太快了！我們是在亂猜嗎？😭") : L("Wah...! Wrong again... 😭", "哇……！又錯了……😭")) : L("Wah...! 😭 The lock didn't open...", "哇……！😭 鎖打不開……"), "cry")}
-    <div class="rules"><b>${L("Penalties", "懲罰")}:</b> ${hit.join(" · ")}<br><b>${warn}</b></div>
+    <div class="rules"><b>${L("Penalties", "懲罰")}:</b> ${hit.join(" · ")}<br><b>${warn}</b></div>${p.type === "mc" ? trapHtml(p, R.pick) : ""}
     ${say("hachiware", `${jam ? L("Let's slow down and read carefully.", "我們慢慢來，細心閱讀。") : L("Don't worry! We can figure this out together.", "別擔心！我們一起想辦法。")} 💡 ${esc(p.hint)}`, "normal", "hint")}</div>`;
   if (jam) startJam(i, jam, reason);
 }
@@ -4537,6 +4846,9 @@ function openDoor() {
   if (solved.length < 5) { SFX.wrong(); setMood("cry", 2000); setLine("chiikawa", roomKind(room) === "code" ? L(`The door needs a 5-digit code... We have ${solved.length}/5 digits. Let's open more locks! 🔍`, `大門需要 5 位數密碼……我們只有 ${solved.length}/5 個數字。再開多些鎖吧！🔍`) : L(`The door needs all 5 ${pieceName(room)}s... We have ${solved.length}/5. Let's open more locks! 🔍`, `大門需要全部 5 張${pieceName(room)}……我們只有 ${solved.length}/5。再開多些鎖吧！🔍`), "cry"); return; }
   SFX.click();
   const kind = roomKind(room);
+  if (kind === "sort") return openSegDoor(room, L("Sort the cards", "把卡分類"), L("Tap the right group for every card, then check.", "為每張卡點選正確組別，然後檢查。"));
+  if (kind === "order") return openSegDoor(room, L("Build the chain", "砌出連鎖"), L("Give every card its place in the chain (1st, 2nd, 3rd...), then check.", "為每張卡排好在連鎖中的位置（第 1、第 2、第 3……），然後檢查。"));
+  if (kind === "label") return openLabelDoor(room);
   if (kind !== "code") return ({ jigsaw: openJigsaw, diagram: openDiagram, experiment: openExperiment, colour: openColour, spectrum: openSpectrum })[kind](room);
   const box = openModal(`
     <span class="kicker">${L("Exit door · Keypad", "出口大門 · 數字鎖")}</span>

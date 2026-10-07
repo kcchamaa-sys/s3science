@@ -1,13 +1,19 @@
 # ☀️ S3 Science Study Pals
 
-A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Light, Colours and Beyond**. Concept-only: there are **no calculations** anywhere in the game.
+A bite-sized, Chiikawa-themed escape room game for **S3 Science**, covering all three parts of the Hong Kong junior secondary science curriculum (CDC S1–3 Science, units 12–14):
+
+- 🫀 **Biology: Ch 12 A Healthy Body** (5 rooms: keeping healthy, food substances, digestion and absorption, balanced diet, health and disease)
+- ⚗️ **Chemistry: Ch 13 From Atoms to Materials** (5 rooms: elements and compounds, atoms, the periodic table, metals and reactivity, materials and their uses)
+- 🔭 **Physics: Ch 14 Light, Colours and Beyond** (7 rooms, below)
+
+Concept-only: there are **no calculations** anywhere in the game.
 
 🌐 **English / 繁體中文:** switch language with the 🌐 button (or on the welcome screen). Everything is translated using HK junior science terms; key-term chips stay bilingual.
 
 - **Play:** open `index.html` in any browser. No install, no build step.
 - **Session length:** one room ≈ 10–15 minutes. One room a day is the whole goal.
 
-## Rooms (Chapter 14 topics)
+## Physics rooms (Chapter 14 topics)
 
 | # | Room | Topic |
 |---|------|-------|
@@ -20,6 +26,27 @@ A bite-sized, Chiikawa-themed escape room game for **S3 Science, Chapter 14: Lig
 | 7 | The Wave Observatory | Electromagnetic spectrum (order, uses, hazards) |
 
 Puzzles are multiple choice or combination dials. 🎵 Soft background music is generated in the browser (music-box tune on the map, calmer mysterious tune in rooms) and can be turned off with the 🎵 button.
+
+## 🧪 Subjects and multimedia questions
+
+- **Subject tabs** on the 🚪 Rooms page switch between Biology, Chemistry and Physics. Each subject has its own unlock chain (escape room 1 to open room 2, and so on).
+- **Biology and Chemistry rooms** mix normal multiple-choice questions with **multimedia formats** (the same styles as the biology game):
+
+  | Format | What students do |
+  |---|---|
+  | 📁 Case file | Read clue cards from a story (patient, detective case) and pick the conclusion |
+  | 📊 Data table | Read a results table and pick the best conclusion |
+  | 🧪 Virtual lab | Tap ▶ Run to watch test tubes change colour, bubble or rust, then explain the result (a text version is under the lab) |
+  | 📈 Read the graph | Read a line or bar graph |
+  | 📉 Pick the graph | Choose which of four mini graphs matches a description |
+  | 👆 Tap the diagram | Tap the right spot on a drawing (digestive system, food pyramid, atom, periodic table) |
+  | 🗂️ Sort it | Put each card into the right group |
+  | ✅ True or false | Judge each statement |
+  | 🔗 Put in order | Number the steps in the right order |
+
+  Wrong multiple-choice answers show a **"trap" note** explaining the misconception behind that choice.
+- **New exit doors:** 🗂️ Sort (drop 5 cards into groups), 🔗 Order (put 5 steps in order) and 📌 Label (place 5 labels on the digestive system or an atom). Biology and Chemistry room types are set by the `kind` field of each room in `SCI_ROOMS`.
+- Room data for Biology and Chemistry is written once with `T(english, chinese)` in `SCI_ROOMS`; a small converter builds the normal room, question bank and Chinese text from it.
 
 ## Question bank and incidents
 
@@ -47,6 +74,10 @@ Puzzles are multiple choice or combination dials. 🎵 Soft background music is 
   A wrong door answer costs 20 seconds (no heart). Room types are set in `ROOM_KIND` in `index.html`.
 - 15-minute countdown per room. When it runs out the room keeps going in overtime, with no penalty.
 - **📓 Study Journal** (top bar): summary, formulas and bilingual key terms for each topic.
+
+## 🚀 Automatic deployment
+
+`.github/workflows/deploy-pages.yml` copies the game into the `gh-pages` branch on every push to `main` (or the working branch), so https://kcchamaa-sys.github.io/s3science/ updates by itself about a minute later. Keep **Settings → Pages → Source** set to *Deploy from a branch: `gh-pages` / root*. It can also be run by hand from the **Actions** tab (*Deploy to GitHub Pages → Run workflow*).
 
 ## Saving progress
 
