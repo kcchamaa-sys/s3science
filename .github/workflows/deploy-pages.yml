@@ -9,6 +9,8 @@ on:
       - main
       - master
       - copilot/copy-asethetic-component-login-system
+      - claude/chiikawa-physics-escape-room-b2477o
+      - copilot/update-game-content
   workflow_dispatch:
 
 permissions:
