@@ -1,7 +1,7 @@
 // Run: node tests/layout.test.js   (needs Playwright: npm i -g playwright, with Chromium installed)
 // Sweeps every hub tab, every dress-up category and both languages at phone, iPad and desktop widths.
 // Fails on: script errors, sideways page scroll, content sticking out of its card, "undefined" text,
-// trophy cards with no room for their picture.
+// trophy cards with no room for their picture, stretched shop tier pills, uneven shop buttons.
 const { chromium } = require(require("child_process").execSync("npm root -g").toString().trim() + "/playwright");
 const path = require("path"), url = "file://" + (process.env.INDEX_HTML || path.join(__dirname, "..", "index.html"));
 const WIDTHS = [[360, 740], [390, 844], [820, 1180], [1280, 800], [1600, 900]];
@@ -25,6 +25,8 @@ const bad = (w, lang, where, what) => problems.push(`${w}px ${lang} · ${where}:
         const t = document.getElementById("app").innerText; if (/undefined|NaN|\[object/.test(t)) out.push("shows undefined/NaN text");
         document.querySelectorAll(".tcard .tw").forEach(e => { if (e.getBoundingClientRect().height < 70) out.push("trophy card picture too small"); });
         document.querySelectorAll(".nest").forEach(n => { const nr = n.getBoundingClientRect(); n.querySelectorAll("*").forEach(e => { const r = e.getBoundingClientRect(); if (r.width && r.right > nr.right + 1 && getComputedStyle(e).position !== "absolute") out.push("dress/home preview card clips: " + e.className); }); });
+        document.querySelectorAll(".sitem .tierp").forEach(e => { if (e.getBoundingClientRect().height > 30) out.push("shop tier pill stretched"); });
+        const bh = new Set([...document.querySelectorAll(".shopgrid .sitem > .btn")].map(e => Math.round(e.getBoundingClientRect().height)).filter(Boolean)); if (bh.size > 1) out.push("shop buttons differ in height: " + [...bh].join("/"));
         return [...new Set(out)].slice(0, 4);
       });
       r.forEach(x => bad(w, lang, where, x));
