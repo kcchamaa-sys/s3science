@@ -402,6 +402,13 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .dinfo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 16px 16px; justify-items: start; }
 .slotbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
 .slotbar .tab { white-space: nowrap; flex: 0 0 auto; }
+.dinfo, .dinfo > *, .dinfo .btn, .sitem, .sitem * { box-sizing: border-box; }
+.dinfo { overflow-wrap: anywhere; max-width: 100%; }
+.sitem b, .sitem .small, .sitem .req { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
+.shopgrid .sitem { content-visibility: auto; contain-intrinsic-size: 180px 220px; }
+.shopgrid .sitem .pv, .shopgrid .sitem .pv * { animation: none !important; }
+.shopgrid .sitem .pv svg { will-change: auto; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
 @media (max-width: 560px) { .scene { height: 230px; } .acts { gap: 8px; } .act { min-height: 78px; } .meter { font-size: .85rem; gap: 8px; } }
 @media (max-width: 560px) { .tools .pill.saved { display: none; } .tools { gap: 5px; } .tools .iconbtn { min-width: 38px; min-height: 40px; padding: 2px 6px; } .tools .pill { padding: 2px 7px; } }
 @media (max-width: 440px) { header.top { gap: 6px; } .brand svg { width: 30px; height: 30px; } }
@@ -4786,7 +4793,7 @@ function wardrobeHtml(slot) {
          <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
          <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🪙 ${u.price}</button></div>`).join("")}</div>`
     : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
-        const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
+        const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, slot === "costume" ? {} : { costume: null }, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
         return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr && achOnly(w) ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
           <b class="small">${esc(w.name)}</b>${w.escape ? `<span class="req"><b>🚪 ${L("Escape mode only", "密室限定")}</b></span>` : ""}
           ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
