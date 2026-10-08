@@ -391,6 +391,13 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .twocol { display: grid; gap: 14px; } @media (min-width: 760px) { .twocol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
 .dressgrid { display: grid; gap: 14px; } @media (min-width: 820px) { .dressgrid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; } .dressgrid .nest { position: sticky; top: 84px; } }
 .dressgrid > *, .homegrid > *, #dPane, .twocol > * { min-width: 0; }
+.dinfo { justify-items: stretch; }
+.dinfo > * { min-width: 0; max-width: 100%; overflow-wrap: anywhere; white-space: normal; line-height: 1.5; }
+.dinfo > .pill { justify-self: start; }
+.dinfo .btn { width: 100%; white-space: normal; justify-content: center; text-align: center; }
+.sitem { min-width: 0; overflow-wrap: anywhere; } .sitem .btn { white-space: normal; max-width: 100%; }
+.sitem .req { line-height: 1.35; }
+.hs.lockdown { filter: grayscale(1); outline: 3px dashed #E0567E; }
 .dinfo { display: grid; gap: 8px; padding: 12px 16px 16px; justify-items: start; }
 .slotbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
 .slotbar .tab { white-space: nowrap; flex: 0 0 auto; }
@@ -3005,6 +3012,83 @@ const shareBase = () => (window.top !== window.self ? ARTIFACT_URL : location.hr
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayNum = s => { const [y, m, d] = s.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
 
+/* ============================================================
+   9a. Room mechanics (pure logic, no DOM): seeded RNG, gate assignment, chaos table, events, hints, badges.
+   tests/mechanics.test.js runs this block in Node, so keep it free of document / S / R.
+   ============================================================ */
+/* @@MECH-START */
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const newSeed = () => (Math.random() * 4294967295) >>> 0;
+// Teacher dial: how chaotic a session is. 0 = exactly the classic room.
+const CHAOS = [
+  { id: 0, qShare: 1, events: 0, branching: false, hints: 0, maxEvents: 3, en: "Predictable", zh: "穩定", d: ["Classic rooms: questions only, no new events.", "經典房間：只有問題，沒有新事件。"] },
+  { id: 1, qShare: .6, events: 0, branching: false, hints: 6, maxEvents: 3, en: "Light", zh: "輕度", d: ["Some puzzle gates, 6 hints per room.", "有些謎題關卡，每房 6 個提示。"] },
+  { id: 2, qShare: .4, events: 2, branching: true, hints: 4, maxEvents: 4, en: "Lively", zh: "活潑", d: ["More gates, new events, Safe / Shortcut choices, 4 hints.", "更多關卡、新事件、安全／捷徑選擇、4 個提示。"] },
+  { id: 3, qShare: .25, events: 3, branching: true, hints: 3, maxEvents: 5, en: "Wild", zh: "瘋狂", d: ["Many gates, all events incl. secret room, 3 hints.", "大量關卡、所有事件（含秘密房間）、3 個提示。"] }
+];
+const chaosCfg = lvl => CHAOS[Math.max(0, Math.min(3, Math.floor(Number(lvl)) || 0))];
+const GATE_IDS = ["hunt", "pattern", "cipher"];
+// Which gate guards each question of each lock. The middle question is never gated, and `question` means "no gate".
+function assignGates(seed, level, locks, steps) {
+  const rng = mulberry32((seed ^ 0x9e3779b9) >>> 0), c = chaosCfg(level);
+  return Array.from({ length: locks }, () => Array.from({ length: steps }, (_, k) => {
+    const a = rng(), b = rng();
+    return c.qShare >= 1 || k === 1 || a < c.qShare ? "question" : GATE_IDS[Math.floor(b * GATE_IDS.length)];
+  }));
+}
+// Hotspot positions move a little each run (stay inside the scene)
+function jitterPos(seed, i, x, y, amp) {
+  const rng = mulberry32((seed + 101 * (i + 1)) >>> 0), a = amp == null ? 3 : amp;
+  const c = v => Math.max(6, Math.min(94, v));
+  return [+c(x + (rng() * 2 - 1) * a).toFixed(1), +c(y + (rng() * 2 - 1) * a).toFixed(1)];
+}
+const CIPHER_WORDS = ["ATOM", "CELL", "LENS", "RAY", "ACID", "GENE", "WAVE", "BEAM", "IRON", "SALT", "HEART", "LIGHT", "ENZYME", "PRISM", "METAL"];
+const caesar = (w, k) => w.replace(/[A-Z]/g, ch => String.fromCharCode((ch.charCodeAt(0) - 65 + k + 26) % 26 + 65));
+function cipherPuzzle(seed, key) {
+  const rng = mulberry32((seed + 7919 * (key + 1)) >>> 0), word = CIPHER_WORDS[Math.floor(rng() * CIPHER_WORDS.length)], shift = 1 + Math.floor(rng() * 5);
+  return { word, shift, text: caesar(word, shift) };
+}
+const huntPuzzle = (seed, key) => { const rng = mulberry32((seed + 104729 * (key + 1)) >>> 0); return { n: 12, target: Math.floor(rng() * 12), tries: 4 }; };
+const patternPuzzle = (seed, key) => { const rng = mulberry32((seed + 1299709 * (key + 1)) >>> 0); return Array.from({ length: 4 }, () => Math.floor(rng() * 4)); };
+// Random events: a list of { id, w, min (lowest chaos level), cond(ctx) }
+function eventEligible(ev, ctx, level) {
+  const c = chaosCfg(level);
+  if (ctx.used.includes(ev.id) || ctx.incidents >= c.maxEvents) return false;
+  if ((ev.min || 0) > 0 && c.events < ev.min) return false;
+  return !ev.cond || !!ev.cond(ctx);
+}
+function pickEvent(list, ctx, level, rng) {
+  const opts = list.filter(e => eventEligible(e, ctx, level));
+  if (!opts.length) return null;
+  const bag = opts.flatMap(e => Array(e.w || 1).fill(e));
+  return bag[Math.floor((rng || Math.random)() * bag.length)];
+}
+// Hints and mistakes cost resources (chaos 0 = unlimited hints and no extra cost)
+const hintBudget = lvl => chaosCfg(lvl).hints;
+function spendHint(run, lvl) {
+  if (!hintBudget(lvl)) return true;
+  if (run.hintsLeft == null) run.hintsLeft = hintBudget(lvl);
+  if (run.hintsLeft <= 0) return false;
+  run.hintsLeft -= 1; return true;
+}
+function wrongCost(run, lvl) {
+  if (!hintBudget(lvl)) return null;
+  if (run.hintsLeft == null) run.hintsLeft = hintBudget(lvl);
+  if (run.hintsLeft > 0) { run.hintsLeft -= 1; return "hint"; }
+  return "time";
+}
+const needOf = (run, i, perLock) => (run && run.need && run.need[i]) || perLock;
+// Badges carry across sessions (S.meta); each pays coins once
+const BADGES = [
+  { id: "hopper", icon: "🎲", coins: 20, en: "Gate hopper", zh: "關卡達人", d: ["Pass every type of puzzle gate", "通過每一種謎題關卡"], ok: m => GATE_IDS.every(g => (m.gates || {})[g] > 0) },
+  { id: "secret", icon: "🌟", coins: 20, en: "Secret finder", zh: "秘密發現者", d: ["Find a secret room", "發現秘密房間"], ok: m => (m.secrets || 0) > 0 },
+  { id: "risk", icon: "⚡", coins: 15, en: "Risk taker", zh: "冒險家", d: ["Open a lock with a Shortcut", "用捷徑打開一把鎖"], ok: m => (m.shortcuts || 0) > 0 },
+  { id: "regular", icon: "🔁", coins: 25, en: "Regular", zh: "常客", d: ["Play 5 escape runs", "玩 5 次密室逃脫"], ok: m => (m.runs || 0) >= 5 },
+  { id: "lab", icon: "🧪", coins: 30, en: "Lab expert", zh: "實驗專家", d: ["Score 12/15+ on all 3 lab challenges", "三個實驗挑戰都取得 12/15 或以上"], ok: (m, lab) => ["lens", "mirror", "tir"].every(k => ((lab || {})[k] || {}).best >= 12) }
+];
+function newBadges(meta, lab) { return BADGES.filter(b => !(meta.badges || {})[b.id] && b.ok(meta, lab)).map(b => b.id); }
+/* @@MECH-END */
+
 function freshStats() { return { days: 0, correct: 0, run: 0, bestRun: 0, replays: 0, cleanEscapes: 0, noHintEscapes: 0, rushRounds: 0, practiceRuns: 0, fixed: 0, flawless: 0, speedEscapes: 0, gameOvers: 0 }; }
 function freshRun() { return { firsts: [], strikes: 0, hints: false, qids: null, hearts: MAX_HEARTS, steps: Array(LOCKS).fill(0) }; }
 const stepOf = (run, i) => Math.min(Q_PER_LOCK, (run && run.steps && run.steps[i]) || 0);
@@ -3019,13 +3103,14 @@ function freshState() {
     room_progress: {}, mastered_puzzles: [], room_stars: {}, room_timer: {}, last_chest_date: null, seen: {}, last_revise_day: null,
     room_run: {}, trophies: {}, stats: freshStats(),
     coins: 0, owned: [], equip: { hair: null, hat: null, face: null, ribbon: null, outfit: null, prop: null, frame: null, backdrop: null, costume: null }, power: { torch: 1, crystal: 1, guard: 1 },
-    rush: { best: 0, lastDay: null }, mistakes: [], minfo: {}, mfilter: "all", practice: { best: 0, lastDay: null }, lab_done: [], tracks: ["classic"], track: "classic", play_mode: null, study: {}, player_id: newId(), lb_last: 0
+    rush: { best: 0, lastDay: null }, mistakes: [], minfo: {}, mfilter: "all", practice: { best: 0, lastDay: null }, lab_done: [], lab_ch: {}, cfg: { chaos: 1 }, meta: { badges: {}, gates: {}, secrets: 0, shortcuts: 0, runs: 0 }, tracks: ["classic"], track: "classic", play_mode: null, study: {}, player_id: newId(), lb_last: 0
   };
 }
 function normalise(obj) {
   const s = Object.assign(freshState(), obj || {});
   s.physics_mastery = Object.assign(freshState().physics_mastery, (obj && obj.physics_mastery) || {});
   s.stats = Object.assign(freshStats(), (obj && obj.stats) || {});
+  s.cfg = Object.assign({ chaos: 1 }, s.cfg); s.meta = Object.assign({ badges: {}, gates: {}, secrets: 0, shortcuts: 0, runs: 0 }, s.meta); s.meta.badges = Object.assign({}, s.meta.badges); s.meta.gates = Object.assign({}, s.meta.gates); s.lab_ch = Object.assign({}, s.lab_ch);
   s.trophies = Object.assign({}, s.trophies); s.room_run = Object.assign({}, s.room_run); s.seen = Object.assign({}, s.seen);
   // older saves used roomX-N for the 5 core puzzles
   s.mastered_puzzles = [...new Set((s.mastered_puzzles || []).map(m => /^room\d-\d$/.test(m) ? m.replace("-", ":c") : m))];
@@ -3591,6 +3676,11 @@ WARDROBE.push(...ADVENTURE_WARDROBE);
 WARDROBE.forEach(w => { if (!w.tier) w.tier = w.price <= 60 ? "common" : w.price <= 130 ? "rare" : "epic"; });
 const TIERS = { common: ["Common", "普通"], rare: ["✦ Rare", "✦ 稀有"], epic: ["💎 Epic", "💎 史詩"], legend: ["👑 Legendary", "👑 傳說"] };
 const tierPill = t => `<span class="tierp ${t}">${L(...TIERS[t])}</span>`;
+const TIER_PRICE = { rare: 150, epic: 300, legend: 600 };
+WARDROBE.push({ id: "hat_detective", slot: "hat", name: "Detective hat", tier: "epic", ach: true, earn: () => [Object.keys((S.meta && S.meta.badges) || {}).length, 3], earnDesc: ["Earn 3 🎖️ room badges", "取得 3 個 🎖️ 密室徽章"], svg: `<ellipse cx="32" cy="17" rx="19" ry="4.5" fill="#8B6B4A" ${O2}/><path d="M18 16 Q20 -2 32 -2 Q44 -2 46 16 Z" fill="#A98B6B" ${O2}/><path d="M18 12 H46" stroke="#5B4632" stroke-width="3"/><circle cx="32" cy="4" r="2" fill="#FDFFB6"/>` });
+// Escape costumes and flagged items stay achievement-only; other earned items can also be bought
+const achOnly = w => !!w.earn && (w.ach || w.slot === "costume");
+WARDROBE.forEach(w => { if (w.earn && !achOnly(w) && !w.price) w.price = TIER_PRICE[w.tier] || 150; });
 let itemQueue = [];
 function checkItems() {
   WARDROBE.forEach(w => { if (!w.earn || S.owned.includes(w.id)) return; const [c, g] = w.earn(); if (c >= g) { S.owned.push(w.id); trophyQueue.push({ item: w }); } });
@@ -4641,12 +4731,13 @@ function roomsHtml() {
     : `<div class="rules escinfo">${L("🚪 <b>Escape mode:</b> 📝 15 questions (5 locks × 3) · ❤️ 5 hearts · ⏱️ 20 minutes · every wrong answer costs a heart · 0 hearts or time up = 💀 <b>GAME OVER</b> (the locks reset). Stars: 4–5 ❤️ left = ★★★, 2–3 = ★★, 1 = ★.", "🚪 <b>密室逃脫：</b>📝 15 題（5 把鎖 × 3 題）· ❤️ 5 顆心 · ⏱️ 20 分鐘 · 每答錯一次扣一顆心 · 沒有心或時間用完 = 💀 <b>GAME OVER</b>（鎖會重設）。星星：剩 4–5 顆心 = ★★★，2–3 顆 = ★★，1 顆 = ★。")}
         <br>${L("🚪 Every room ends differently:", "🚪 每個房間的結局都不同：")} ${[...new Set(ROOMS.filter(r => subjOf(r) === sj).map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}
         <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")} · 👊 ${L("Sorcerer first-year", "術師學校一年級生")} · 🎣 ${L("Rookie hunter", "新手獵人")}</div>`;
-  return `<section class="card">${subjBar}<div class="row" style="justify-content:space-between"><h2>${SUBJECTS[sj].icon} ${subjChapter(sj)}</h2><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div>
+  return `<section class="card">${subjBar}<div class="row" style="justify-content:space-between"><h2>${SUBJECTS[sj].icon} ${subjChapter(sj)}</h2><div class="row"><button class="btn plain" id="rCfg">🎲 ${L("Session settings", "課堂設定")}</button><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div></div>
     ${toggle}${info}<div class="topics">${cards}</div></section>`;
 }
 function collectHtml() {
   const own = WARDROBE.filter(w => S.owned.includes(w.id)).length;
   return `<section class="card cream cabinet" id="cabinet">${cabinetHtml()}</section>
+  ${badgesHtml()}
   <div class="twocol">
     <section class="card"><h2>🎒 ${L("Backpack", "背包")}</h2>
       <div class="bag">${S.chiikawa_badges.concat(S.inventory).map(b => `<span class="tag">${esc(trItem(b))}</span>`).join("") || `<span class="muted small">${L("Empty. Escape a room or open the daily chest!", "空空如也。逃出房間或打開每日寶箱吧！")}</span>`}</div>
@@ -4675,17 +4766,17 @@ function wardrobeHtml(slot) {
          <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🪙 ${u.price}</button></div>`).join("")}</div>`
     : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
         const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
-        return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
+        return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr && achOnly(w) ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
           <b class="small">${esc(w.name)}</b>${w.escape ? `<span class="req"><b>🚪 ${L("Escape mode only", "密室限定")}</b></span>` : ""}
           ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-wear="${w.id}">${on ? L("Take off", "脫下") : L("Wear", "穿上")}</button>`
-                : pr ? `<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
+                : pr ? `${achOnly(w) ? "" : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🪙 ${w.price}</button>`}<span class="req">🔒 ${esc(L(...w.earnDesc))}</span><div class="bar" role="img" aria-label="${Math.min(pr[0], pr[1])} / ${pr[1]}"><i style="width:${Math.min(100, Math.round(pr[0] / pr[1] * 100))}%"></i></div><span class="req">${Math.min(pr[0], pr[1])} / ${pr[1]}</span>`
                 : `<button class="btn yellow" data-buy="${w.id}" ${S.coins < w.price ? "disabled" : ""}>🪙 ${w.price}</button>`}</div>`; }).join("")}</div>`;
   return `<div class="slotbar" role="tablist">${tabs.map(k => `<button class="tab" role="tab" aria-selected="${k === slot}" data-slot="${k}">${SLOT_ICON[k]} ${k === "power" ? L("Power-ups", "道具") : k === "music" ? L("Music", "音樂") : SLOT_NAMES[k]}</button>`).join("")}</div>${grid}`;
 }
 function wireWardrobe(root, redraw) {
   root.querySelectorAll("[data-slot]").forEach(b => b.onclick = () => { SFX.tap(); DRESS_SLOT = b.dataset.slot; redraw(); });
   root.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
-    const w = itemById(b.dataset.buy); if (w.earn || S.coins < w.price) return;
+    const w = itemById(b.dataset.buy); if (achOnly(w) || S.coins < w.price) return;
     S.coins -= w.price; S.owned.push(w.id); S.equip[w.slot] = w.id; save(true); SFX.fanfare(); confetti(50); yaha(L("Cute!", "好可愛！")); redraw(); refreshPlayer();
   });
   root.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => {
@@ -4708,7 +4799,7 @@ function dressTabHtml() {
     <section class="card nest">${sceneHtml("happy")}
       <div class="dinfo"><span class="pill coinpill" id="dCoins">🪙 ${S.coins}</span><span id="dColl">${collectLine()}</span>
         <button class="btn plain" id="dOff">🧺 ${L("Take everything off", "全部脫下")}</button>
-        <span class="small muted">${L("Earn 🪙 in rooms, ⚡ Light Rush and 🔁 Practice. Items with 🔒 are earned by steady effort, not bought.", "在密室、⚡ 光速挑戰和 🔁 練習賺取 🪙。有 🔒 的物品要靠持續努力贏取，不能購買。")}</span></div></section>
+        <span class="small muted">${L("Earn 🪙 in rooms, ⚡ Light Rush and 🔁 Practice. 🔒 items can be earned by effort or bought with 🪙. 🚪 Escape costumes can only be earned.", "在密室、⚡ 光速挑戰和 🔁 練習賺取 🪙。有 🔒 的物品可靠努力贏取，或用 🪙 購買。🚪 密室服飾只能靠成就贏取。")}</span></div></section>
     <section class="card"><h2>👗 ${L("Dress up Puff", "為泡芙打扮")}</h2><div id="dPane">${wardrobeHtml(DRESS_SLOT)}</div></section>
   </div>`;
 }
@@ -4795,7 +4886,7 @@ function renderMap(tab) {
   $app.querySelectorAll("[data-study]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); startStudy(b.dataset.study); });
   $app.querySelectorAll("[data-pmode]").forEach(b => b.onclick = () => { SFX.tap(); S.play_mode = b.dataset.pmode; save(); renderMap("rooms"); });
   $app.querySelectorAll("[data-subj]").forEach(b => b.onclick = () => { SFX.tap(); S.subj = b.dataset.subj; save(); renderMap("rooms"); });
-  on("mLb", openLeaderboard); on("cSave", openSaveModal); on("rJournal", () => openJournal());
+  on("mLb", openLeaderboard); on("cSave", openSaveModal); on("rJournal", () => openJournal()); on("rCfg", openSettings);
   on("cFact", () => showChat("fact")); on("cCheer", () => showChat("cheer"));
   if (document.getElementById("dPane")) { wireWardrobe(document.getElementById("dPane"), refreshDress);
     on("dOff", () => { Object.keys(S.equip).forEach(k => S.equip[k] = null); save(true); refreshDress(); refreshPlayer(); }); }
@@ -4843,6 +4934,123 @@ const LAB_MISSIONS = [
   { id: "tir2", tab: "tir", en: "Make <b>total internal reflection</b> happen in a <b>diamond</b>.", zh: "令<b>鑽石</b>中發生<b>全內反射</b>。", ok: s => s.mat === "diamond" && s.state === "tir" },
   { id: "tir3", tab: "tir", en: "In <b>glass</b>, make the light <b>refract out</b> into the air.", zh: "在<b>玻璃</b>中令光<b>折射</b>進入空氣。", ok: s => s.mat === "glass" && s.state === "ref" && s.i > 5 }
 ];
+/* ---------- Lab challenge: 15 questions per simulation, each asking students to use the simulator on purpose ---------- */
+// need = [en, zh, test()] : the student must put the simulator in this state before the choices unlock
+// ch[0] is the right answer (order is shuffled on screen); snap = LAB values drawn as a picture in the question
+const CVX = () => LAB.kind === "convex", CCV = () => LAB.kind === "concave";
+const LAB_CHALLENGE = {
+  lens: [
+    { need: ["Use the <b>convex</b> lens and put the object <b>beyond 2F'</b> (u &gt; 2).", "用<b>凸透鏡</b>，把物體放在 <b>2F' 以外</b>（u &gt; 2）。", () => CVX() && LAB.u > 2.1], q: ["What kind of image do you see?", "你看到怎樣的像？"], ch: [["Real, inverted, diminished", "實像、倒立、縮小"], ["Virtual, erect, magnified", "虛像、正立、放大"], ["Real, erect, same size", "實像、正立、相同大小"], ["No image forms", "沒有像"]], why: ["Beyond 2F' the image is real, inverted and smaller, between F and 2F. A camera works like this.", "物體在 2F' 以外，像是實像、倒立、縮小，位於 F 和 2F 之間。相機就是這樣。"] },
+    { need: ["Drag the object to <b>exactly 2F'</b> (u = 2).", "把物體拖到<b>剛好 2F'</b>（u = 2）。", () => CVX() && Math.abs(LAB.u - 2) < 0.04], q: ["Compare the image with the object.", "比較像和物體。"], ch: [["Real, inverted, same size", "實像、倒立、相同大小"], ["Real, inverted, magnified", "實像、倒立、放大"], ["Virtual, erect, diminished", "虛像、正立、縮小"], ["Virtual, erect, same size", "虛像、正立、相同大小"]], why: ["At 2F' the image is at 2F: real, inverted and the same size.", "物體在 2F' 時，像在 2F：實像、倒立、相同大小。"] },
+    { need: ["Move the object <b>between F' and 2F'</b> (1.2 ≤ u ≤ 1.8).", "把物體移到 <b>F' 和 2F' 之間</b>（1.2 ≤ u ≤ 1.8）。", () => CVX() && LAB.u >= 1.2 && LAB.u <= 1.8], q: ["Which description fits the image?", "哪個描述符合這個像？"], ch: [["Real, inverted, magnified, beyond 2F", "實像、倒立、放大、在 2F 以外"], ["Real, inverted, diminished, between F and 2F", "實像、倒立、縮小、在 F 和 2F 之間"], ["Virtual, erect, magnified", "虛像、正立、放大"], ["No image", "沒有像"]], why: ["Between F' and 2F' the image is real, inverted and bigger, beyond 2F. A projector works like this.", "物體在 F' 和 2F' 之間，像是實像、倒立、放大，位於 2F 以外。投影機就是這樣。"] },
+    { need: ["Put the object <b>exactly at F'</b> (u = 1).", "把物體放在<b>剛好 F'</b>（u = 1）。", () => CVX() && Math.abs(LAB.u - 1) < 0.04], q: ["What happens to the light after the lens?", "光線通過透鏡後怎樣？"], ch: [["It leaves as a parallel beam, so no clear image forms", "光線平行射出，所以沒有清晰的像"], ["It meets at a bright point", "光線匯聚成一個亮點"], ["It spreads out wildly", "光線四散"], ["It is all absorbed", "光線全被吸收"]], why: ["At F' the rays come out parallel and never meet. Torches use this to make a beam.", "物體在 F' 時，光線平行射出，不會相交。電筒就是用這個原理產生光束。"] },
+    { need: ["Move the object <b>inside F'</b> (u &lt; 0.9).", "把物體移到 <b>F' 以內</b>（u &lt; 0.9）。", () => CVX() && LAB.u < 0.9], q: ["What is the image, and which device is it?", "像是怎樣的？像哪種儀器？"], ch: [["Virtual, erect, magnified: a magnifying glass", "虛像、正立、放大：放大鏡"], ["Real, inverted, magnified: a projector", "實像、倒立、放大：投影機"], ["Real, inverted, diminished: a camera", "實像、倒立、縮小：相機"], ["No image: a torch", "沒有像：電筒"]], why: ["Inside F' the rays diverge, so the eye traces them back to a virtual, erect, magnified image.", "物體在 F' 以內，光線仍然發散，眼睛向後追溯就看到虛像、正立、放大的像。"] },
+    { snap: { kind: "convex", u: 3, rays: [true, true, true] }, q: ["Look at the picture. Which colour ray passes through the optical centre without bending?", "看圖。哪一種顏色的光線穿過光心而不偏折？"], ch: [["Blue (Rule 3)", "藍色（規則 3）"], ["Orange (Rule 1)", "橙色（規則 1）"], ["Green (Rule 2)", "綠色（規則 2）"], ["None of them", "全部都不是"]], why: ["A ray through the optical centre C goes straight on: Rule 3, drawn in blue.", "穿過光心 C 的光線方向不變：規則 3，用藍色畫出。"] },
+    { need: ["Switch to the <b>concave</b> lens, then move the object around.", "轉用<b>凹透鏡</b>，然後移動物體。", () => CCV()], q: ["What image does a concave lens form?", "凹透鏡形成怎樣的像？"], ch: [["Virtual, erect, diminished", "虛像、正立、縮小"], ["Real, inverted, diminished", "實像、倒立、縮小"], ["Virtual, erect, magnified", "虛像、正立、放大"], ["Real, inverted, magnified", "實像、倒立、放大"]], why: ["A concave lens spreads light out, so the image is always virtual, erect and smaller.", "凹透鏡令光線發散，所以像總是虛像、正立、縮小。"] },
+    { need: ["With the concave lens, bring the object <b>very close</b> to it (u &lt; 1).", "用凹透鏡，把物體移得<b>很近</b>（u &lt; 1）。", () => CCV() && LAB.u < 1], q: ["Can the image ever be bigger than the object?", "像可以比物體大嗎？"], ch: [["No: it is always smaller", "不可以：總是比物體小"], ["Yes, when the object is very close", "可以，物體很近時"], ["Yes, when the object is far", "可以，物體很遠時"], ["Only with the pencil", "只有鉛筆才可以"]], why: ["Wherever the object is, a concave lens gives a smaller image on the same side as the object.", "不論物體在哪裏，凹透鏡都在物體同一側形成較小的像。"] },
+    { need: ["Use the convex lens and slide the object from far away to <b>just outside F'</b> (1.05 &lt; u &lt; 1.45).", "用凸透鏡，把物體由遠處移到<b>剛好在 F' 以外</b>（1.05 &lt; u &lt; 1.45）。", () => CVX() && LAB.u > 1.05 && LAB.u < 1.45], q: ["As the object moves closer to F', what happens to the image?", "物體愈來愈接近 F'，像會怎樣？"], ch: [["It moves farther from the lens and gets bigger", "像遠離透鏡，並變大"], ["It moves closer and gets smaller", "像靠近透鏡，並變小"], ["It stays the same", "像不變"], ["It turns upright", "像變成正立"]], why: ["The closer the object is to F', the farther away and bigger the real image becomes.", "物體愈接近 F'，實像愈遠、愈大。"] },
+    { need: ["Tick <b>only Rule 3</b> (untick Rules 1 and 2) with the convex lens and u &gt; 1.2.", "凸透鏡、u &gt; 1.2，只剔選<b>規則 3</b>（取消規則 1 和 2）。", () => CVX() && LAB.u > 1.2 && !LAB.rays[0] && !LAB.rays[1] && LAB.rays[2]], q: ["How many rays do you need to find where the image of a point is?", "要找出一點的像的位置，至少需要幾條光線？"], ch: [["Two rays that cross", "兩條相交的光線"], ["One ray is enough", "一條光線已足夠"], ["Always all three", "一定要三條"], ["No rays needed", "不需要光線"]], why: ["One ray cannot show a position. Two rays crossing give the image point; the third is a check.", "一條光線不能確定位置。兩條光線相交就是像點，第三條用來核對。"] },
+    { snap: { kind: "convex", u: 1.5, rays: [true, true, true] }, q: ["The object is between F' and 2F'. Which device works like this?", "物體在 F' 和 2F' 之間。哪種儀器是這樣運作？"], ch: [["A projector", "投影機"], ["A camera", "相機"], ["A magnifying glass", "放大鏡"], ["A peephole", "防盜眼"]], why: ["A projector puts the slide between F' and 2F' to get a big, real, inverted image on the screen.", "投影機把影片放在 F' 和 2F' 之間，在螢幕上得到放大、倒立的實像。"] },
+    { snap: { kind: "concave", u: 2, rays: [true, true, true] }, q: ["Which use matches this lens?", "哪個用途配合這種透鏡？"], ch: [["Glasses for short-sightedness (myopia)", "近視眼鏡"], ["A magnifying glass", "放大鏡"], ["A projector", "投影機"], ["Reading glasses for long sight", "遠視老花眼鏡"]], why: ["Concave lenses spread light out, which corrects short sight. They are also used in door peepholes.", "凹透鏡令光線發散，可矯正近視，也用在大門防盜眼。"] },
+    { need: ["Pick the <b>✏️ pencil</b>, use the convex lens and put it <b>beyond 2F'</b>.", "選 <b>✏️ 鉛筆</b>，用凸透鏡，放在 <b>2F' 以外</b>。", () => CVX() && LAB.obj === "pencil" && LAB.u > 2.1], q: ["How does the pencil's image look?", "鉛筆的像看起來怎樣？"], ch: [["Upside down and smaller", "倒轉、縮小"], ["Upright and bigger", "正立、放大"], ["Upside down and bigger", "倒轉、放大"], ["Upright and smaller", "正立、縮小"]], why: ["A real image from a convex lens is inverted; beyond 2F' it is also smaller.", "凸透鏡的實像是倒立的；物體在 2F' 以外時，像也比較小。"] },
+    { need: ["Pick the <b>🎤 pop-star doll</b>, use the convex lens and put it <b>between F' and 2F'</b>.", "選 <b>🎤 歌星公仔</b>，用凸透鏡，放在 <b>F' 和 2F' 之間</b>。", () => CVX() && LAB.obj === "doll" && LAB.u >= 1.2 && LAB.u <= 1.8], q: ["Compared with the real doll, the image is...", "與真正的公仔比較，像是……"], ch: [["Upside down and larger", "倒轉、較大"], ["Upright and larger", "正立、較大"], ["Upside down and smaller", "倒轉、較小"], ["The same as the doll", "與公仔一樣"]], why: ["Between F' and 2F' the real image is inverted and magnified.", "物體在 F' 和 2F' 之間，實像倒立而且放大。"] },
+    { snap: { kind: "convex", u: 0.6, rays: [true, true, true] }, q: ["The dashed lines are virtual rays. Can this image be caught on a screen?", "虛線是虛擬光線。這個像可以映在屏幕上嗎？"], ch: [["No: a virtual image cannot be projected", "不可以：虛像不能映在屏幕上"], ["Yes: put a screen at the dashed lines", "可以：把屏幕放在虛線位置"], ["Yes, but only in a dark room", "可以，但要在暗室"], ["Only if the lens is concave", "只有凹透鏡才可以"]], why: ["Virtual rays only seem to come from the image; no light is really there, so a screen stays blank.", "虛擬光線只是看似來自像，那裏沒有真正的光，屏幕上甚麼也看不到。"] }
+  ],
+  mirror: [
+    { need: ["Put the object <b>2 squares</b> from the mirror.", "把物體放在離鏡子 <b>2 格</b>。", () => Math.abs(LAB.d - 2) < 0.05], q: ["How far behind the mirror is the image?", "像在鏡後多遠？"], ch: [["2 squares", "2 格"], ["1 square", "1 格"], ["4 squares", "4 格"], ["On the mirror", "在鏡面上"]], why: ["The image is as far behind the mirror as the object is in front.", "像在鏡後的距離等於物體在鏡前的距離。"] },
+    { need: ["Put the object <b>1 square</b> from the mirror.", "把物體放在離鏡子 <b>1 格</b>。", () => Math.abs(LAB.d - 1) < 0.05], q: ["What is the distance from the object to its image?", "物體與像之間的距離是多少？"], ch: [["2 squares", "2 格"], ["1 square", "1 格"], ["0 squares", "0 格"], ["4 squares", "4 格"]], why: ["1 in front + 1 behind = 2 squares.", "鏡前 1 + 鏡後 1 = 2 格。"] },
+    { need: ["Put the object <b>4 squares</b> from the mirror.", "把物體放在離鏡子 <b>4 格</b>。", () => Math.abs(LAB.d - 4) < 0.05], q: ["What is the distance from the object to its image?", "物體與像之間的距離是多少？"], ch: [["8 squares", "8 格"], ["4 squares", "4 格"], ["2 squares", "2 格"], ["16 squares", "16 格"]], why: ["4 in front + 4 behind = 8 squares.", "鏡前 4 + 鏡後 4 = 8 格。"] },
+    { need: ["Pick the <b>✏️ pencil</b> and look at its image.", "選 <b>✏️ 鉛筆</b>，觀察它的像。", () => LAB.obj === "pencil"], q: ["Which change does the mirror make?", "鏡子令像產生甚麼改變？"], ch: [["Left and right are swapped (lateral inversion)", "左右互換（橫向倒置）"], ["It turns upside down", "上下倒轉"], ["It becomes smaller", "變小"], ["It becomes bigger", "變大"]], why: ["A plane mirror swaps left and right but keeps up and down.", "平面鏡令左右互換，上下不變。"] },
+    { need: ["Pick the <b>🎤 doll</b> and compare it with its image.", "選 <b>🎤 公仔</b>，與它的像比較。", () => LAB.obj === "doll"], q: ["Which pair of words describes the image?", "哪一組詞語形容這個像？"], ch: [["Erect and laterally inverted", "正立、橫向倒置"], ["Inverted and diminished", "倒立、縮小"], ["Erect and magnified", "正立、放大"], ["Inverted and real", "倒立、實像"]], why: ["The image stands upright (erect) and left-right swapped.", "像是正立的，而且左右互換。"] },
+    { snap: { d: 3, obj: "arrow" }, q: ["Compare the size of the image with the object.", "比較像和物體的大小。"], ch: [["The same size", "大小相同"], ["Smaller", "較小"], ["Bigger", "較大"], ["It depends on the distance", "視乎距離"]], why: ["A plane mirror always makes an image the same size as the object.", "平面鏡的像總是與物體大小相同。"] },
+    { need: ["Drag the object <b>far from the mirror</b> (5 squares or more).", "把物體拖到<b>離鏡子很遠</b>（5 格或以上）。", () => LAB.d >= 5], q: ["What happens to the size of the image?", "像的大小有何變化？"], ch: [["It stays the same size", "大小不變"], ["It gets smaller", "變小"], ["It gets bigger", "變大"], ["It disappears", "消失"]], why: ["Distance changes where the image is, not how big it is.", "距離只改變像的位置，不改變像的大小。"] },
+    { need: ["Move the <b>eye</b> up or down by a lot (at least 40 from the start).", "把<b>眼睛</b>大幅上下移動（離開起點至少 40）。", () => Math.abs(LAB.eye - 200) >= 40], q: ["Does the position of the image change when the eye moves?", "眼睛移動時，像的位置會改變嗎？"], ch: [["No: only the rays reaching the eye change", "不會：只是進入眼睛的光線改變"], ["Yes: it follows the eye", "會：像跟着眼睛移動"], ["Yes: it moves away from the mirror", "會：像遠離鏡子"], ["Yes: it flips over", "會：像翻轉"]], why: ["The image stays at the same place behind the mirror; the eye just sees it along different rays.", "像仍在鏡後同一位置，眼睛只是沿不同的光線看它。"] },
+    { need: ["Move the object <b>close to the mirror</b> (1.2 squares or less).", "把物體移到<b>很接近鏡子</b>（1.2 格或以內）。", () => LAB.d <= 1.2], q: ["Where is the image now?", "現在像在哪裏？"], ch: [["Just behind the mirror, equally close", "就在鏡後，同樣靠近"], ["Far behind the mirror", "遠遠在鏡後"], ["In front of the mirror", "在鏡前"], ["On the object", "在物體上"]], why: ["Image distance equals object distance, so a close object has a close image.", "像距等於物距，所以物體靠近，像也靠近。"] },
+    { snap: { d: 2, obj: "arrow" }, q: ["Is the image real or virtual? Why?", "像是實像還是虛像？為甚麼？"], ch: [["Virtual: the rays only seem to come from behind the mirror", "虛像：光線只是看似來自鏡後"], ["Real: light really meets behind the mirror", "實像：光線真的在鏡後相交"], ["Real: it can be put on a screen", "實像：可以映在屏幕上"], ["Neither", "兩者都不是"]], why: ["The dashed lines behind the mirror are only extensions: the image is virtual.", "鏡後的虛線只是延長線：所以是虛像。"] },
+    { need: ["Move the <b>eye to the top</b> (eye slider at 100 or less).", "把<b>眼睛移到最上方</b>（眼睛滑桿 100 或以下）。", () => LAB.eye <= 100], q: ["Where do the dashed (extended) reflected rays meet?", "虛線（反射線的延長線）在哪裏相交？"], ch: [["At the image, behind the mirror", "在像的位置，鏡後"], ["On the mirror", "在鏡面上"], ["At the object", "在物體處"], ["At the eye", "在眼睛處"]], why: ["Trace the reflected rays back: they meet at the virtual image behind the mirror.", "把反射線向後延長，它們在鏡後的虛像處相交。"] },
+    { snap: { d: 3, obj: "doll" }, q: ["Which list describes a plane-mirror image correctly?", "哪一項正確描述平面鏡的像？"], ch: [["Virtual, erect, same size, laterally inverted", "虛像、正立、大小相同、橫向倒置"], ["Real, inverted, same size", "實像、倒立、大小相同"], ["Virtual, inverted, magnified", "虛像、倒立、放大"], ["Real, erect, diminished", "實像、正立、縮小"]], why: ["That is the full description of a plane-mirror image.", "這就是平面鏡的像的完整描述。"] },
+    { need: ["Put the object <b>3 squares</b> from the mirror (you stand 3 m away).", "把物體放在離鏡子 <b>3 格</b>（你站在 3 米外）。", () => Math.abs(LAB.d - 3) < 0.05], q: ["How far are you from your own image?", "你與自己的像相距多遠？"], ch: [["6 m", "6 米"], ["3 m", "3 米"], ["1.5 m", "1.5 米"], ["9 m", "9 米"]], why: ["3 m in front + 3 m behind = 6 m.", "鏡前 3 米 + 鏡後 3 米 = 6 米。"] },
+    { need: ["Put the object <b>almost touching</b> the mirror (0.5 squares).", "把物體放得<b>幾乎貼着</b>鏡子（0.5 格）。", () => LAB.d <= 0.6], q: ["What can you say about the image?", "關於像，下列哪項正確？"], ch: [["It is just behind the mirror and the same size", "它在鏡後貼近鏡面，大小相同"], ["It is huge", "它非常大"], ["It vanishes", "它消失了"], ["It is in front of the mirror", "它在鏡前"]], why: ["Even at 0.5 squares the rules hold: same size, 0.5 squares behind.", "即使距離只有 0.5 格，規律不變：大小相同，在鏡後 0.5 格。"] },
+    { snap: { d: 1, obj: "doll" }, q: ["Why is 'AMBULANCE' written back to front on the front of an ambulance?", "為甚麼救護車前面的 “AMBULANCE” 寫成左右相反？"], ch: [["So drivers read it correctly in their rear-view mirror (lateral inversion)", "令司機在倒後鏡中讀到正確的字（橫向倒置）"], ["To save paint", "為了節省油漆"], ["Because the letters are upside down", "因為字母上下顛倒"], ["No reason", "沒有原因"]], why: ["A mirror swaps left and right, so writing it reversed makes it readable in the mirror.", "鏡子令左右互換，先反寫就能在鏡中讀到正確的字。"] }
+  ],
+  tir: [
+    { need: ["Choose <b>water</b> and set a small angle (5° to 40°).", "選<b>水</b>，把入射角設為較小（5° 至 40°）。", () => LAB.mat === "water" && LAB.ang >= 5 && LAB.ang <= 40], q: ["Light goes from water into air. The refracted ray bends...", "光由水進入空氣。折射線會……"], ch: [["Away from the normal", "遠離法線"], ["Towards the normal", "靠近法線"], ["It does not bend", "不偏折"], ["It disappears", "消失"]], why: ["Going from a higher to a lower refractive index, light bends away from the normal.", "光由較高折射率進入較低折射率，會遠離法線。"] },
+    { need: ["Choose <b>glass</b> and set an angle between 5° and 38°.", "選<b>玻璃</b>，把入射角設為 5° 至 38°。", () => LAB.mat === "glass" && LAB.ang >= 5 && LAB.ang <= 38], q: ["Compare the angle in air (r) with the angle in glass (i).", "比較空氣中的角 (r) 和玻璃中的角 (i)。"], ch: [["r is larger than i", "r 大於 i"], ["r is smaller than i", "r 小於 i"], ["r equals i", "r 等於 i"], ["r is always 90°", "r 一定是 90°"]], why: ["Light bends away from the normal in air, so the angle in air is bigger.", "光在空氣中遠離法線，所以空氣中的角較大。"] },
+    { need: ["Choose <b>water</b> and find the <b>critical angle</b> (the refracted ray skims the surface).", "選<b>水</b>，找出<b>臨界角</b>（折射線剛好沿水面前進）。", () => LAB.mat === "water" && tirSolve().state === "crit"], q: ["What is the angle of refraction at the critical angle?", "在臨界角時，折射角是多少？"], ch: [["90°", "90°"], ["0°", "0°"], ["45°", "45°"], ["Equal to i", "等於 i"]], why: ["At the critical angle the refracted ray travels along the boundary: r = 90°. For water, about 48.8°.", "在臨界角，折射線沿交界面前進：r = 90°。水的臨界角約 48.8°。"] },
+    { need: ["Choose <b>diamond</b> and make <b>total internal reflection</b> happen.", "選<b>鑽石</b>，令<b>全內反射</b>發生。", () => LAB.mat === "diamond" && tirSolve().state === "tir"], q: ["What happens to the light?", "光線怎樣？"], ch: [["All of it is reflected back inside", "全部反射回鑽石內"], ["Half goes out", "一半射出"], ["All of it goes out", "全部射出"], ["It stops", "停止"]], why: ["Beyond the critical angle there is no refracted ray; all the light is reflected.", "超過臨界角後沒有折射線，所有光都被反射。"] },
+    { need: ["Choose <b>glass</b> and make total internal reflection happen (angle above 42°).", "選<b>玻璃</b>，令全內反射發生（入射角大於 42°）。", () => LAB.mat === "glass" && tirSolve().state === "tir"], q: ["How does the reflected angle compare with the angle of incidence?", "反射角與入射角比較如何？"], ch: [["They are equal", "相等"], ["Reflected is bigger", "反射角較大"], ["Reflected is smaller", "反射角較小"], ["Reflected is 90°", "反射角是 90°"]], why: ["Total internal reflection still obeys the law of reflection: r = i.", "全內反射仍然遵守反射定律：r = i。"] },
+    { need: ["Choose <b>diamond</b> and set an angle between 27° and 40°.", "選<b>鑽石</b>，把入射角設為 27° 至 40°。", () => LAB.mat === "diamond" && LAB.ang >= 27 && LAB.ang <= 40], q: ["At this angle, which material would give total internal reflection?", "在這個角度，哪種物質會發生全內反射？"], ch: [["Only diamond (its critical angle is 24.4°)", "只有鑽石（臨界角 24.4°）"], ["Glass and diamond", "玻璃和鑽石"], ["Water only", "只有水"], ["None of them", "全都不會"]], why: ["Glass needs more than 41.8° and water more than 48.8°, so at 27°–40° only diamond reflects totally.", "玻璃需要大於 41.8°、水需要大於 48.8°，所以 27°–40° 只有鑽石發生全反射。"] },
+    { snap: { mat: "water", ang: 70 }, q: ["Look at the picture. What is happening?", "看圖。發生了甚麼？"], ch: [["Total internal reflection", "全內反射"], ["Refraction into the air", "折射進入空氣"], ["Light is absorbed", "光被吸收"], ["The light goes straight", "光線直行"]], why: ["70° is bigger than water's 48.8° critical angle, so the light is totally reflected.", "70° 大於水的臨界角 48.8°，所以光線全部被反射。"] },
+    { need: ["Set the angle of incidence to <b>0°</b>.", "把入射角設為 <b>0°</b>。", () => LAB.ang === 0], q: ["What happens to light travelling along the normal?", "沿法線行進的光會怎樣？"], ch: [["It goes straight through without bending", "直線穿過，不偏折"], ["It bends 90°", "偏折 90°"], ["It reflects back", "反射回來"], ["It spreads out", "散開"]], why: ["Light along the normal meets the boundary at 0° and does not bend.", "沿法線的光與交界面成 0° 角，不會偏折。"] },
+    { need: ["Choose <b>water</b> and set the angle to 35°–46° (just below the critical angle).", "選<b>水</b>，把入射角設為 35°–46°（剛好小於臨界角）。", () => LAB.mat === "water" && LAB.ang >= 35 && LAB.ang <= 46], q: ["As i increases (below the critical angle), what does r do?", "i 增加（未到臨界角）時，r 怎樣？"], ch: [["r increases too, and is always bigger than i", "r 也增加，而且總是大於 i"], ["r decreases", "r 減小"], ["r stays the same", "r 不變"], ["r becomes smaller than i", "r 變得小於 i"]], why: ["r grows faster than i and reaches 90° at the critical angle.", "r 比 i 增加得更快，到臨界角時達到 90°。"] },
+    { snap: { mat: "diamond", ang: 30 }, q: ["Which of water, glass and diamond has the smallest critical angle?", "水、玻璃和鑽石中，哪個臨界角最小？"], ch: [["Diamond (24.4°)", "鑽石（24.4°）"], ["Glass (41.8°)", "玻璃（41.8°）"], ["Water (48.8°)", "水（48.8°）"], ["They are equal", "全部相同"]], why: ["The higher the refractive index, the smaller the critical angle. Diamond's is 2.42.", "折射率愈高，臨界角愈小。鑽石的折射率是 2.42。"] },
+    { need: ["Choose <b>glass</b> and set an angle of <b>60° or more</b>.", "選<b>玻璃</b>，把入射角設為 <b>60° 或以上</b>。", () => LAB.mat === "glass" && LAB.ang >= 60], q: ["Is there any refracted ray into the air?", "有沒有折射進入空氣的光線？"], ch: [["No: all the light is reflected", "沒有：所有光都被反射"], ["Yes, a bright one", "有，而且很亮"], ["Yes, a faint one", "有，但很暗"], ["Only for diamond", "只有鑽石才有"]], why: ["Beyond the critical angle there is no refracted ray at all.", "超過臨界角，完全沒有折射線。"] },
+    { need: ["Choose <b>glass</b> and make the light <b>refract out</b> (angle 5° to 38°).", "選<b>玻璃</b>，令光線<b>折射射出</b>（5° 至 38°）。", () => LAB.mat === "glass" && tirSolve().state === "ref" && LAB.ang > 5], q: ["Light bends away from the normal because it goes from...", "光線遠離法線，因為它由……"], ch: [["Higher to lower refractive index (glass to air)", "較高折射率到較低折射率（玻璃到空氣）"], ["Lower to higher refractive index", "較低折射率到較高折射率"], ["Air to glass", "空氣到玻璃"], ["Same index to same index", "相同折射率到相同折射率"]], why: ["Glass (1.5) to air (1.0) is high to low, so the ray bends away from the normal.", "玻璃（1.5）到空氣（1.0）是高到低，所以光線遠離法線。"] },
+    { snap: { mat: "glass", ang: 60 }, q: ["Which real device guides light by repeated total internal reflection?", "哪種實物利用反覆全內反射來傳導光？"], ch: [["An optical fibre", "光纖"], ["A plane mirror", "平面鏡"], ["A magnifying glass", "放大鏡"], ["A torch bulb", "電筒燈泡"]], why: ["Light in an optical fibre keeps hitting the wall beyond the critical angle, so it stays inside.", "光纖中的光每次射向管壁都大於臨界角，所以一直留在光纖內。"] },
+    { need: ["Choose <b>diamond</b> and find its <b>critical angle</b>.", "選<b>鑽石</b>，找出它的<b>臨界角</b>。", () => LAB.mat === "diamond" && tirSolve().state === "crit"], q: ["About what is the critical angle of diamond?", "鑽石的臨界角約是多少？"], ch: [["24°", "24°"], ["42°", "42°"], ["49°", "49°"], ["90°", "90°"]], why: ["sin C = 1/2.42 gives C ≈ 24.4°. This small angle makes diamonds sparkle: lots of total internal reflection.", "sin C = 1/2.42，C ≈ 24.4°。這個小角度令鑽石有大量全內反射，所以閃閃發亮。"] },
+    { snap: { mat: "water", ang: 30 }, q: ["Which two conditions are needed for total internal reflection?", "全內反射需要哪兩個條件？"], ch: [["Light goes from a higher to a lower refractive index, and i is greater than the critical angle", "光由較高折射率進入較低折射率，而且 i 大於臨界角"], ["Light goes from air to glass, and i is 0°", "光由空氣進入玻璃，而且 i 是 0°"], ["Light goes from lower to higher index, and i is small", "光由較低折射率進入較高折射率，而且 i 很小"], ["Any material, any angle", "任何物質、任何角度"]], why: ["Both conditions are needed. In the picture i = 30° is below water's 48.8°, so it does not happen yet.", "兩個條件缺一不可。圖中 i = 30° 小於水的 48.8°，所以還未發生。"] }
+  ]
+};
+const LCH = { runs: {} };
+const labStateNow = tab => tab === "lens" ? labSolve() : tab === "mirror" ? mirSolve() : tirSolve();
+function labSnap(tab, patch) {
+  const keep = JSON.parse(JSON.stringify(LAB)); Object.assign(LAB, JSON.parse(JSON.stringify(patch)));
+  try { return (tab === "lens" ? labSvg() : tab === "mirror" ? mirSvg() : tirSvg()); } finally { Object.assign(LAB, keep); }
+}
+const LCH_NAME = { lens: ["Lenses", "透鏡"], mirror: ["Plane mirror", "平面鏡"], tir: ["Total internal reflection", "全內反射"] };
+function lchHtml() {
+  const tab = LAB.tab, qs = LAB_CHALLENGE[tab], run = LCH.runs[tab], rec = S.lab_ch[tab] || {};
+  const head = `<h3>🧪 ${L("Lab challenge", "實驗挑戰")}: ${L(...LCH_NAME[tab])}</h3>`;
+  if (!run) return `<section class="lch card" aria-live="polite">${head}
+    <p class="small">${L(`${qs.length} questions. Most ask you to <b>set up the simulator yourself</b> and observe, so try it on purpose. Some show a picture instead.`, `共 ${qs.length} 題。大部分題目要你<b>親手設定模擬器</b>再觀察，請有目的地操作。有些題目會附圖。`)}</p>
+    <div class="row"><button class="btn big" id="lchGo">▶ ${rec.best != null ? L("Try again", "再試一次") : L("Start the challenge", "開始挑戰")}</button>${rec.best != null ? `<span class="pill">🏅 ${L("Best", "最佳")} ${rec.best}/${qs.length}</span>` : ""}<span class="small muted">${L("12+ right on first try = +30 🪙 (first time)", "首次一次答對 12 題或以上 = +30 🪙")}</span></div></section>`;
+  if (run.i >= qs.length) return `<section class="lch card">${head}<h2>${run.right >= 12 ? "🎉" : "💪"} ${run.right} / ${qs.length}</h2>
+    <p>${run.right >= 12 ? L("Excellent! You really used the simulator.", "太好了！你確實有善用模擬器。") : L("Good try. Go back to the simulator and test each idea, then try again for 12+.", "不錯。回到模擬器逐一測試，再試一次爭取 12 題或以上。")}</p>
+    ${run.coins ? `<p><span class="pill coinpill">+${run.coins} 🪙</span></p>` : ""}<div class="row"><button class="btn big" id="lchGo">🔁 ${L("Try again", "再試一次")}</button></div></section>`;
+  const q = qs[run.i];
+  const dots = qs.map((_, k) => `<i style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 2px;background:${k < run.i ? "#6BD48A" : k === run.i ? "#FFD84D" : "#E4DED6"}"></i>`).join("");
+  return `<section class="lch card" aria-live="polite">${head}<div class="row" style="justify-content:space-between"><b>${L("Question", "第")} ${run.i + 1} / ${qs.length}${LANG === "zh" ? " 題" : ""}</b><span class="small">✅ ${run.right}</span></div><div>${dots}</div>
+    ${q.need ? `<div class="rules" id="lchNeed"><b>🎯 ${L("Try it in the simulator:", "在模擬器中試試：")}</b> ${L(q.need[0], q.need[1])} <span id="lchTick">⬜</span></div>` : `<div class="lchsnap" style="max-width:520px">${labSnap(tab, q.snap)}</div>`}
+    <p class="q">${L(...q.q)}</p>
+    <div class="choices" id="lchCh">${run.order.map((k, n) => `<button class="choice ${run.dead.includes(k) ? "wrong" : ""}" data-k="${k}" ${run.dead.includes(k) ? "disabled" : ""}><b>${"ABCD"[n]}</b><span>${L(...q.ch[k])}</span></button>`).join("")}</div>
+    <div id="lchFb" aria-live="polite">${run.answered ? lchFb(q) : ""}</div></section>`;
+}
+const lchFb = q => `<div class="fb ok"><p><b>✅ ${L("Correct!", "答對了！")}</b> ${L(...q.why)}</p><div class="row"><button class="btn big" id="lchNext">${L("Next ➜", "下一題 ➜")}</button></div></div>`;
+function lchSync() {
+  const tab = LAB.tab, run = LCH.runs[tab]; if (!run || run.i >= LAB_CHALLENGE[tab].length) return;
+  const q = LAB_CHALLENGE[tab][run.i], root = document.getElementById("lchCh"); if (!root) return;
+  const ok = !q.need || q.need[2]();
+  const tick = document.getElementById("lchTick"); if (tick) tick.textContent = ok ? "✅" : "⬜";
+  const nd = document.getElementById("lchNeed"); if (nd) nd.classList.toggle("done", ok);
+  root.querySelectorAll(".choice").forEach(b => { b.disabled = run.answered || run.dead.includes(+b.dataset.k) || !ok; b.title = ok ? "" : L("Do the 🎯 step first", "請先完成 🎯 步驟"); });
+}
+function lchStartQ(run) { run.order = shuffle(LAB_CHALLENGE[LAB.tab][run.i].ch.map((_, k) => k)); run.dead = []; run.answered = false; run.tried = false; }
+function lchRender() { const el = document.getElementById("lch"); if (!el) return; el.innerHTML = lchHtml(); lchWire(); }
+function lchWire() {
+  const tab = LAB.tab, qs = LAB_CHALLENGE[tab], go = document.getElementById("lchGo");
+  if (go) go.onclick = () => { SFX.tap(); const run = LCH.runs[tab] = { i: 0, right: 0, coins: 0 }; lchStartQ(run); lchRender(); };
+  const run = LCH.runs[tab]; if (!run || run.i >= qs.length) return;
+  document.querySelectorAll("#lchCh .choice").forEach(b => b.onclick = () => {
+    const k = +b.dataset.k, q = qs[run.i];
+    if (k === 0) { run.answered = true; if (!run.tried) run.right++; SFX.right(); lchRender(); lchSync(); return; }
+    run.tried = true; run.dead.push(k); SFX.wrong(); b.disabled = true; b.classList.add("wrong");
+    const fb = document.getElementById("lchFb"); if (fb) fb.innerHTML = `<div class="fb no"><b>${L("Not quite. Look at the simulator again and try another answer.", "不太對。再看看模擬器，試另一個答案。")}</b></div>`;
+  });
+  const nx = document.getElementById("lchNext");
+  if (nx) nx.onclick = () => {
+    SFX.tap(); run.i++;
+    if (run.i >= qs.length) lchFinish(tab, run); else lchStartQ(run);
+    lchRender(); lchSync();
+  };
+  lchSync();
+}
+function lchFinish(tab, run) {
+  const rec = S.lab_ch[tab] = Object.assign({ best: null, paid: false }, S.lab_ch[tab]);
+  rec.best = Math.max(rec.best || 0, run.right);
+  if (run.right >= 12 && !rec.paid) { rec.paid = true; run.coins = 30; S.coins += 30; confetti(70); SFX.fanfare(); renderTools(); }
+  save(true); awardBadges(); checkTrophies();
+}
+
 /* ---------- Lenses ---------- */
 function labSolve() {
   const u = LAB.u, f = 1, cv = LAB.kind === "convex", eps = 0.03;
@@ -5057,6 +5265,7 @@ function lensLabHtml() {
   return `<section class="card lab">
     <div class="row" style="justify-content:space-between"><h2>🔭 ${L("Light Lab", "光學實驗室")}</h2><span class="small muted">${L("Missions", "任務")}: ${done.length}/${LAB_MISSIONS.length} · +5 🪙 ${L("each", "每個")}</span></div>
     <div class="slotbar" role="tablist">${tabs.map(([k, i, en, zh, sec]) => `<button class="tab" role="tab" aria-selected="${LAB.tab === k}" data-labtab="${k}">${i} ${L(en, zh)} <span class="small muted">${sec}</span></button>`).join("")}</div>
+    <div id="lch">${lchHtml()}</div>
     ${{ lens: lensSection, mirror: mirrorSection, tir: tirSection }[LAB.tab]()}
     <div class="missions"><h3>🎯 ${L("Lab missions", "實驗任務")}</h3>
       ${mine.map(m => `<div class="mission ${done.includes(m.id) ? "done" : ""}" data-m="${m.id}">${done.includes(m.id) ? "✅" : "⬜"} ${L(m.en, m.zh)}</div>`).join("")}</div>
@@ -5066,7 +5275,7 @@ function labUpdate() {
   const t = LAB.tab;
   document.getElementById("labSvg").innerHTML = t === "lens" ? labSvg() : t === "mirror" ? mirSvg() : tirSvg();
   document.getElementById("labInfo").innerHTML = t === "lens" ? labInfo() : t === "mirror" ? mirInfo() : tirInfo();
-  wireLabDrag();
+  wireLabDrag(); lchSync();
   const s = t === "lens" ? labSolve() : t === "mirror" ? mirSolve() : tirSolve(); S.lab_done = S.lab_done || [];
   LAB_MISSIONS.forEach(m => {
     if (S.lab_done.includes(m.id) || m.tab !== t || (m.kind && m.kind !== LAB.kind) || !m.ok(s)) return;
@@ -5100,7 +5309,7 @@ function wireLensLab() {
   root.querySelectorAll("[data-u]").forEach(b => b.onclick = () => { SFX.tap(); LAB.u = +b.dataset.u; document.getElementById("labU").value = LAB.u; labUpdate(); });
   const inp = (id, fn) => { const el = document.getElementById(id); if (el) el.oninput = e => { fn(+e.target.value); labUpdate(); }; };
   inp("labU", v => LAB.u = +v.toFixed(2)); inp("labD", v => LAB.d = +v.toFixed(1)); inp("labEye", v => LAB.eye = v); inp("labAng", v => LAB.ang = v);
-  wireLabDrag();
+  wireLabDrag(); lchWire();
 }
 
 /* ----- Room scene (SVG) ----- */
@@ -5216,13 +5425,14 @@ function enterRoom(id) {
   const run0 = S.room_run[room.id];
   if (!run0.qids) run0.qids = pickRun(room);
   if (!Array.isArray(run0.steps)) run0.steps = Array(LOCKS).fill(0);
+  ensureRunMech(run0);
   (S.room_progress[room.id] || []).forEach(i => { run0.steps[i] = Q_PER_LOCK; });
   if (replay) { S.room_progress[room.id] = []; S.room_timer[room.id] = ROOM_SECONDS; }
   const tt = S.room_timer[room.id]; if (tt == null || tt <= 0 || tt > ROOM_SECONDS) S.room_timer[room.id] = ROOM_SECONDS;
   S.current_room = room.id; save(); MUSIC.setMode("room");
   if (R) clearTimeout(R.introT);
   if (R) clearTimeout(R.incT);
-  R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0, qs: runQs(room), incidents: 0, used: [], stolen: null, hiddenHs: null };
+  R = { room, replay, mood: "normal", att: {}, hinted: {}, jam: {}, lastWrongAt: 0, qs: runQs(room), incidents: 0, used: [], stolen: null, hiddenHs: null, gateDone: {}, branchAsked: {}, firstStreak: 0, bonusUsed: 0, nonce: 0, lockdown: null };
   const me = R; R.incT = setTimeout(() => tryIncident(me), (replay ? 25 : 40) * 1000 + Math.random() * 40000);
   closeModal(); renderRoom();
   window.scrollTo({ top: 0 });
@@ -5292,7 +5502,8 @@ function renderRoom() {
         ${HOTSPOTS.map((h, i) => {
           const nm = i === 2 ? room.specialName : h.name, done = solved.includes(i), st = stepOf(S.room_run[room.id], i);
           if (R.hiddenHs === i && !done) return "";
-          return `<button class="hs ${done ? "done" : ""} ${!done && st ? "part" : ""}" data-hs="${i}" style="left:${h.x}%;top:${h.y}%" aria-label="${esc(nm)}${done ? L(" (solved)", "（已解開）") : st ? ` (${st}/${Q_PER_LOCK})` : ""}">${done ? "✓" : st ? `${st}/${Q_PER_LOCK}` : "?"}<span class="lbl">${esc(nm)}</span></button>`;
+          const [hx, hy] = hsPos(i, h), lk = R.lockdown && R.lockdown.i === i && R.lockdown.until > Date.now();
+          return `<button class="hs ${done ? "done" : ""} ${!done && st ? "part" : ""} ${lk ? "lockdown" : ""}" data-hs="${i}" style="left:${hx}%;top:${hy}%" aria-label="${esc(nm)}${done ? L(" (solved)", "（已解開）") : st ? ` (${st}/${Q_PER_LOCK})` : ""}">${done ? "✓" : st ? `${st}/${Q_PER_LOCK}` : "?"}<span class="lbl">${esc(nm)}</span></button>`;
         }).join("")}
         ${R.stolen !== null ? `<button class="hs wolv" data-wolf="1" style="left:${R.wolfX}%;top:${R.wolfY}%" aria-label="${L("Catch the wolverine", "捉住狼獾")}">🐾<span class="lbl">${L("Wolverine!", "狼獾！")}</span></button>` : ""}
         <button class="hs door" data-hs="door" style="left:${DOOR.x}%;top:${DOOR.y}%" aria-label="${L("Exit door", "出口大門")}">🚪<span class="lbl">${L("Exit door", "出口大門")}</span></button>
@@ -5499,7 +5710,7 @@ function openLabelDoor(room) {
   };
 }
 /* ----- Puzzle modal ----- */
-function openPuzzle(i) {
+function openQuestion(i) {
   const { room } = R;
   const solved = S.room_progress[room.id] || [];
   const step = Math.min(Q_PER_LOCK - 1, stepOf(S.room_run[room.id], i)), qi = i * Q_PER_LOCK + step;
@@ -5524,7 +5735,9 @@ function openPuzzle(i) {
     <div class="pwr" id="pwr"></div>
     <div id="pfb"></div>`, { wide: true });
   renderPwr(p, i);
-  document.getElementById("hint").onclick = () => { SFX.hint(); markHint(qi); document.getElementById("pfb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
+  const hintBtn = document.getElementById("hint"), hRun = S.room_run[room.id];
+  if (hintsOn() && !R.hinted[qi]) hintBtn.textContent = `💡 ${L("Hint from Berry", "莓莓的提示")} (${hRun.hintsLeft == null ? hintBudget(cfgLevel()) : hRun.hintsLeft})`;
+  hintBtn.onclick = () => { if (!R.hinted[qi] && !spendHint(hRun, cfgLevel())) { toast(L("No hints left in this room!", "這個房間沒有提示了！")); return; } SFX.hint(); markHint(qi); document.getElementById("pfb").innerHTML = say("hachiware", `💡 ${esc(p.hint)}`, "normal", "hint"); };
   document.getElementById("pj").onclick = () => { SFX.tap(); openJournal(room.id, (p.terms || []).map(t => t[0])); };
   wireAnswer(p, box);
   if (R.jam[i] > Date.now()) startJam(i, 0);
@@ -5674,6 +5887,10 @@ function miss(box) {
   if (run.hearts === 1) document.getElementById("scene")?.classList.add("danger");
   // Penalty 1: time
   S.room_timer[id] -= 20; penaltyFlash(L("−20s ⏱️", "−20 秒 ⏱️")); updateTimerEl(); hit.push(L("⏱️ −20 seconds", "⏱️ −20 秒"));
+  if (run.need && run.need[i] === 1) { run.need[i] = Q_PER_LOCK; hit.push(L("⚡ shortcut lost: 3 questions now", "⚡ 捷徑失效：改為 3 題")); }
+  const wc = wrongCost(run, cfgLevel());
+  if (wc === "hint") hit.push(L("💡 −1 hint", "💡 −1 提示"));
+  else if (wc === "time") { S.room_timer[id] -= 10; updateTimerEl(); hit.push(L("⏱️ −10 s (no hints left)", "⏱️ −10 秒（沒有提示了）")); }
   // Penalty 2: the lock reshuffles, so tapping the next option doesn't work
   if (p.type === "mc") {
     const wrap = box.querySelector(".choices"); const kids = p.tap ? [...wrap.children] : shuffle([...wrap.children]);
@@ -5703,10 +5920,10 @@ function miss(box) {
 }
 // Progress dots for the 3 questions behind one lock
 function qStepHtml(i, step) {
-  const run = S.room_run[R.room.id], done = Array.from({ length: LOCKS }, (_, k) => stepOf(run, k)).reduce((x, y) => x + y, 0);
-  return `<div class="qstep" aria-label="${L(`Question ${step + 1} of ${Q_PER_LOCK} for this lock`, `這把鎖的第 ${step + 1} / ${Q_PER_LOCK} 題`)}">
-    <span class="qdots">${Array.from({ length: Q_PER_LOCK }, (_, k) => `<i class="${k < step ? "on" : k === step ? "cur" : ""}"></i>`).join("")}</span>
-    <b>🔑 ${L(`Question ${step + 1} / ${Q_PER_LOCK}`, `第 ${step + 1} / ${Q_PER_LOCK} 題`)}</b>
+  const run = S.room_run[R.room.id], NQ = needOf(run, i, Q_PER_LOCK), done = Array.from({ length: LOCKS }, (_, k) => stepOf(run, k)).reduce((x, y) => x + y, 0);
+  return `<div class="qstep" aria-label="${L(`Question ${step + 1} of ${NQ} for this lock`, `這把鎖的第 ${step + 1} / ${NQ} 題`)}">
+    <span class="qdots">${Array.from({ length: NQ }, (_, k) => `<i class="${k < step ? "on" : k === step ? "cur" : ""}"></i>`).join("")}</span>
+    <b>🔑 ${L(`Question ${step + 1} / ${NQ}`, `第 ${step + 1} / ${NQ} 題`)}</b>
     <span class="small muted">${L(`Room task: ${done} / ${RUN_QS} questions done`, `房間任務：已完成 ${done} / ${RUN_QS} 題`)}</span></div>`;
 }
 function solve() {
@@ -5719,11 +5936,14 @@ function solve() {
   S.stats.run = firstTry ? S.stats.run + 1 : 0; S.stats.bestRun = Math.max(S.stats.bestRun, S.stats.run);
   if (!Array.isArray(run.steps)) run.steps = Array(LOCKS).fill(0);
   run.steps[i] = stepOf(run, i) + 1;
-  const lockDone = run.steps[i] >= Q_PER_LOCK, left = Q_PER_LOCK - run.steps[i];
+  const need = needOf(run, i, Q_PER_LOCK), lockDone = run.steps[i] >= need, left = need - run.steps[i];
+  R.firstStreak = firstTry ? (R.firstStreak || 0) + 1 : 0;
+  if (lockDone && need < Q_PER_LOCK) { run.steps[i] = Q_PER_LOCK; S.room_timer[room.id] += 20; updateTimerEl(); metaOf().shortcuts++; toast(L("⚡ Shortcut! +20 s", "⚡ 捷徑成功！+20 秒")); }
+  else if (lockDone && run.need && run.need[i] === Q_PER_LOCK && hintsOn()) { run.hintsLeft = (run.hintsLeft || 0) + 1; toast(L("🛡️ Safe path: +1 hint", "🛡️ 安全路線：+1 個提示")); }
   const solved = S.room_progress[room.id] || [];
   if (lockDone) { if (!solved.includes(i)) solved.push(i); S.stats.locks = (S.stats.locks || 0) + 1; }
   S.room_progress[room.id] = solved;
-  recomputeMastery(); save(true);
+  recomputeMastery(); save(true); awardBadges();
   SFX.right(); setTimeout(() => yaha(), 150); setMood("happy", 4000);
   setTimeout(checkTrophies, 1400);
   if (firstTry) confetti(lockDone ? 40 : 20);
@@ -5757,7 +5977,7 @@ function collect(i) {
   SFX.item(); closeModal(); renderRoom();
   document.getElementById("inv").innerHTML = invHtml(i); wireSlots();
   const n = (S.room_progress[R.room.id] || []).length;
-  if (n < 5 && R.incidents < 3 && Math.random() < (R.replay ? 0.55 : 0.4)) { const me = R; setTimeout(() => tryIncident(me), 1500); }
+  if (n < 5 && R.incidents < chaosCfg(cfgLevel()).maxEvents && Math.random() < (R.replay ? 0.55 : 0.4)) { const me = R; setTimeout(() => tryIncident(me), 1500); }
   if (n === 5) setLine("hachiware", roomKind(R.room) === "code" ? L("All 5 code digits found! Tap the 🚪 <b>exit door</b> and enter the code!", "5 個密碼數字都找到了！點擊 🚪 <b>出口大門</b>輸入密碼！") : L(`All 5 ${pieceName(R.room)}s found! Tap the 🚪 <b>exit door</b> for the ${kindTag(R.room)} challenge!`, `5 張${pieceName(R.room)}都找到了！點擊 🚪 <b>出口大門</b>挑戰${kindTag(R.room)}！`));
   else setLine("chiikawa", L(`Ya...! ${5 - n} more lock${5 - n === 1 ? "" : "s"} to go! 🔍`, `呀……！還有 ${5 - n} 把鎖！🔍`), "happy");
 }
@@ -6035,7 +6255,7 @@ function escapeRoom() {
   S.room_stars[room.id] = Math.max(S.room_stars[room.id] || 0, stars);
   if (!first) S.stats.replays += 1;
   const revise = !first && S.last_revise_day !== today(); if (revise) S.last_revise_day = today();
-  const earned = boost(first ? 40 : revise ? 30 : 10); S.coins = (S.coins || 0) + earned; R.done = true; clearTimeout(R.incT);
+  metaOf().runs++; const earned = boost(first ? 40 : revise ? 30 : 10); S.coins = (S.coins || 0) + earned; R.done = true; clearTimeout(R.incT);
   if (tLeft >= 0 && run.strikes === 0) S.stats.cleanEscapes += 1;
   if (!run.hints) S.stats.noHintEscapes += 1;
   S.room_run[room.id] = freshRun();
@@ -6097,11 +6317,10 @@ const INCIDENTS = [
     run() { R.freezeUntil = Date.now() + 30000; } }
 ];
 function tryIncident(me) {
-  if (!R || R !== me || R.done || R.incidents >= 3) return;
+  if (!R || R !== me || R.done || R.incidents >= chaosCfg(cfgLevel()).maxEvents) return;
   if ($modal.innerHTML || $journal.innerHTML || document.hidden) { R.incT = setTimeout(() => tryIncident(me), 8000); return; }
-  const opts = INCIDENTS.filter(x => !R.used.includes(x.id) && (!x.cond || x.cond()));
-  if (!opts.length) return;
-  const inc = pick(opts.flatMap(x => Array(x.w).fill(x)));
+  const inc = pickEvent(INCIDENTS, { used: R.used, incidents: R.incidents, firstStreak: R.firstStreak || 0, bonusUsed: R.bonusUsed || 0, unsolved: LOCKS - (S.room_progress[R.room.id] || []).length }, cfgLevel());
+  if (!inc) return;
   R.used.push(inc.id); R.incidents++;
   if (inc.good) SFX.hint(); else SFX.creepy();
   openModal(`<span class="kicker">👻 ${L("Incident!", "突發事件！")}</span>
@@ -6144,6 +6363,165 @@ function owlQuiz() {
   sideQuiz({ kicker: `🦉 ${L("Owl's bonus riddle", "貓頭鷹的獎勵謎題")}`, title: L("Hoo... can you answer this?", "咕……你答得到嗎？"), art: "owl", p: sideQuestion(6),
     onRight: () => { const run = S.room_run[R.room.id]; S.room_timer[R.room.id] += 45; S.coins += 5; const extra = heartsOf(run) < MAX_HEARTS; if (extra) run.hearts = heartsOf(run) + 1; save(true); renderRoom(); toast(L(`🦉 Wise! +45 s, +5 🪙${extra ? " and +1 ❤️" : ""}`, `🦉 聰明！+45 秒、+5 🪙${extra ? " 和 +1 ❤️" : ""}`)); },
     onWrong: () => { toast(L("🦉 Hoo... not quite. No reward this time.", "🦉 咕……不太對。這次沒有獎勵。")); } });
+}
+
+/* ============================================================
+   9c. Room mechanics (DOM side): puzzle gates, branching, new events, badges, session settings
+   ============================================================ */
+const cfgLevel = () => { const q = new URLSearchParams(location.search).get("chaos"); return q != null && /^[0-3]$/.test(q) ? +q : (S && S.cfg && S.cfg.chaos != null ? S.cfg.chaos : 1); };
+const hintsOn = () => hintBudget(cfgLevel()) > 0;
+function ensureRunMech(run) {
+  const lvl = cfgLevel();
+  if (run.seed == null) run.seed = newSeed();
+  if (!Array.isArray(run.gates) || run.gates.length !== LOCKS) run.gates = assignGates(run.seed, lvl, LOCKS, Q_PER_LOCK);
+  if (!Array.isArray(run.need)) run.need = Array(LOCKS).fill(0);
+  if (run.hintsLeft == null && hintsOn()) run.hintsLeft = hintBudget(lvl);
+}
+function hsPos(i, h) { const run = S.room_run[R.room.id]; return run && run.seed != null && cfgLevel() > 0 ? jitterPos(run.seed, i, h.x, h.y, 3) : [h.x, h.y]; }
+function metaOf() { S.meta = Object.assign({ badges: {}, gates: {}, secrets: 0, shortcuts: 0, runs: 0 }, S.meta || {}); return S.meta; }
+function awardBadges() {
+  const m = metaOf(), ids = newBadges(m, S.lab_ch);
+  ids.forEach(id => { const b = BADGES.find(x => x.id === id); m.badges[id] = today(); S.coins += b.coins; toast(`${b.icon} ${L("Badge", "徽章")}: ${L(b.en, b.zh)} +${b.coins} 🪙`); SFX.fanfare(); });
+  if (ids.length) { save(true); renderTools(); checkTrophies(); }
+}
+function badgesHtml() {
+  const m = metaOf();
+  return `<section class="card"><h2>🎖️ ${L("Room badges", "密室徽章")} <span class="small muted">${Object.keys(m.badges).length}/${BADGES.length}</span></h2>
+    <div class="bag">${BADGES.map(b => `<span class="tag" style="${m.badges[b.id] ? "" : "opacity:.5"}" title="${esc(L(...b.d))}">${m.badges[b.id] ? b.icon : "🔒"} ${esc(L(b.en, b.zh))}<span class="small muted"> · ${esc(L(...b.d))}</span></span>`).join("")}</div></section>`;
+}
+/* ----- Puzzle gates: a mini-puzzle before a question ----- */
+const GATE_COL = ["#FF6B6B", "#FFD84D", "#6BD48A", "#6FA8FF"], HUNT_DECOY = ["🧪", "📘", "🔬", "🧲", "💡", "🪞", "🔭", "🧫", "⚗️", "🔋", "🧬", "📏"];
+const LOCK_GATES = {
+  hunt: { icon: "🔎", en: "Find the spark", zh: "尋找火花", help: ["Tap the tiles to find the hidden ✨ spark. You have 4 tries.", "點擊方塊，找出隱藏的 ✨ 火花。你有 4 次機會。"],
+    run(body, seed, pass, fail) {
+      const p = huntPuzzle(seed, 0); let tries = p.tries;
+      body.innerHTML = `<div class="gtiles" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:340px;margin:0 auto">${Array.from({ length: p.n }, (_, k) => `<button class="btn plain" data-t="${k}" style="font-size:1.6rem;min-height:56px" aria-label="${L("Tile", "方塊")} ${k + 1}">❓</button>`).join("")}</div><p class="small" id="gst" style="text-align:center">${L("Tries left", "剩餘機會")}: ${tries}</p>`;
+      body.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+        const k = +b.dataset.t; b.disabled = true;
+        if (k === p.target) { b.textContent = "✨"; SFX.right(); setTimeout(pass, 500); return; }
+        b.textContent = HUNT_DECOY[k % HUNT_DECOY.length]; SFX.wrong(); tries--; body.querySelector("#gst").textContent = `${L("Tries left", "剩餘機會")}: ${tries}`;
+        if (tries <= 0) { body.querySelectorAll("[data-t]").forEach(x => x.disabled = true); fail(10); }
+      });
+    } },
+  pattern: { icon: "🎨", en: "Pattern lock", zh: "圖案鎖", help: ["Watch the colour pattern, then tap it back in the same order.", "看清顏色順序，然後按相同次序點回去。"],
+    run(body, seed, pass, fail) {
+      const seq = patternPuzzle(seed, 0); let at = 0;
+      body.innerHTML = `<div class="row" style="justify-content:center;gap:10px">${GATE_COL.map((c, k) => `<button class="btn" data-c="${k}" disabled style="background:${c};min-width:64px;min-height:64px;opacity:.55" aria-label="${L("Colour", "顏色")} ${k + 1}"></button>`).join("")}</div><p class="small" id="gst" style="text-align:center">${L("Watch...", "請留意……")}</p>`;
+      const btn = k => body.querySelector(`[data-c="${k}"]`);
+      seq.forEach((k, n) => { setTimeout(() => { const b = btn(k); if (!b) return; b.style.opacity = 1; b.style.transform = "scale(1.18)"; SFX.click(); setTimeout(() => { b.style.opacity = .55; b.style.transform = ""; }, 450); }, 600 + n * 800); });
+      setTimeout(() => { const st = body.querySelector("#gst"); if (!st) return; st.textContent = L("Your turn!", "輪到你！"); body.querySelectorAll("[data-c]").forEach(b => { b.disabled = false; b.style.opacity = 1; }); }, 600 + seq.length * 800);
+      body.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
+        if (+b.dataset.c !== seq[at]) { SFX.wrong(); body.querySelectorAll("[data-c]").forEach(x => x.disabled = true); fail(10); return; }
+        at++; SFX.click(); if (at >= seq.length) { SFX.right(); body.querySelectorAll("[data-c]").forEach(x => x.disabled = true); setTimeout(pass, 400); }
+      });
+    } },
+  cipher: { icon: "🔐", en: "Cipher lock", zh: "密碼解碼", help: ["Every letter was moved forward in the alphabet. Move each one back to read the science word.", "每個字母都在字母表向前移了幾格。把它們移回去，讀出科學詞語。"],
+    run(body, seed, pass, fail) {
+      const c = cipherPuzzle(seed, 0); let tries = 3;
+      body.innerHTML = `<p style="text-align:center;font-size:2rem;letter-spacing:.3em;font-weight:900;font-family:monospace">${c.text}</p>
+        <p class="small" style="text-align:center">${L(`Shift: each letter moved <b>+${c.shift}</b> (so A → ${caesar("A", c.shift)}). Go back <b>${c.shift}</b>.`, `移位：每個字母向前 <b>+${c.shift}</b>（A → ${caesar("A", c.shift)}）。請向後退 <b>${c.shift}</b> 格。`)}</p>
+        <p class="small muted" style="text-align:center;font-family:monospace;overflow-wrap:anywhere">ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
+        <div class="row" style="justify-content:center"><input id="gIn" type="text" maxlength="${c.word.length + 2}" autocomplete="off" autocapitalize="characters" style="font-size:1.3rem;text-transform:uppercase;padding:6px 10px;border:var(--line);border-radius:10px;max-width:180px" aria-label="${L("Your answer", "你的答案")}"><button class="btn" id="gGo">${L("Unlock", "解鎖")}</button></div><p class="small" id="gst" style="text-align:center"></p>`;
+      const go = () => { const v = body.querySelector("#gIn").value.trim().toUpperCase(); if (v === c.word) { SFX.right(); setTimeout(pass, 300); return; } SFX.wrong(); tries--; const st = body.querySelector("#gst"); st.textContent = tries > 0 ? `${L("Not quite. Tries left", "不對。剩餘機會")}: ${tries}` : ""; if (tries <= 0) { body.querySelector("#gGo").disabled = true; fail(10); } };
+      body.querySelector("#gGo").onclick = go; body.querySelector("#gIn").onkeydown = e => { if (e.key === "Enter") go(); };
+    } }
+};
+function runGate(kind, i, step) {
+  const g = LOCK_GATES[kind], run = S.room_run[R.room.id], key = `${i}:${step}`, me = R;
+  const seed = ((run.seed || 1) + (R.nonce || 0) * 7777 + i * 31 + step) >>> 0;
+  const box = openModal(`<span class="kicker">${g.icon} ${L("Puzzle gate", "謎題關卡")}</span><h2>${L(g.en, g.zh)}</h2>
+    <p class="small">${L(...g.help)}</p><div id="gbody"></div><div id="gmsg"></div>
+    <div class="row"><button class="btn plain" id="gSkip">⏭️ ${L("Skip (−20 s)", "跳過（−20 秒）")}</button></div>`);
+  const done = credit => { if (R !== me) return; R.gateDone[key] = true; if (credit) { const m = metaOf(); m.gates[kind] = (m.gates[kind] || 0) + 1; } save(); closeModal(); awardBadges(); openQuestion(i); };
+  const fail = secs => {
+    S.room_timer[R.room.id] -= secs; updateTimerEl(); penaltyFlash(L(`−${secs}s ⏱️`, `−${secs} 秒 ⏱️`));
+    const m = box.querySelector("#gmsg"); if (m) m.innerHTML = `<div class="fb no"><b>${L(`Missed! −${secs} s. A new puzzle is coming...`, `失敗！−${secs} 秒。新謎題即將出現……`)}</b></div>`;
+    setTimeout(() => { if (R === me && document.getElementById("gbody")) { R.nonce = (R.nonce || 0) + 1; runGate(kind, i, step); } }, 1300);
+  };
+  box.querySelector("#gSkip").onclick = () => { SFX.tap(); S.room_timer[R.room.id] -= 20; updateTimerEl(); penaltyFlash(L("−20s ⏱️", "−20 秒 ⏱️")); done(false); };
+  g.run(box.querySelector("#gbody"), seed, () => done(true), fail);
+}
+function openPuzzle(i) {
+  const { room } = R, run = S.room_run[room.id], solved = S.room_progress[room.id] || [];
+  ensureRunMech(run);
+  if (solved.includes(i)) return openQuestion(i);
+  if (R.lockdown && R.lockdown.i === i && R.lockdown.until > Date.now()) return lockdownRiddle(i);
+  const step = Math.min(Q_PER_LOCK - 1, stepOf(run, i));
+  if (chaosCfg(cfgLevel()).branching && step === 0 && !run.need[i] && !R.branchAsked[i]) return branchChoice(i);
+  const g = (run.gates[i] || [])[step] || "question";
+  if (g !== "question" && LOCK_GATES[g] && !R.gateDone[`${i}:${step}`]) return runGate(g, i, step);
+  openQuestion(i);
+}
+/* ----- Branching: safe (3 questions) or shortcut (1 hard question) ----- */
+function branchChoice(i) {
+  const name = i === 2 ? R.room.specialName : HOTSPOTS[i].name;
+  const box = openModal(`<span class="kicker">🔀 ${L("Choose your path", "選擇路線")}</span><h2>${esc(name)}</h2>
+    <div class="choices"><button class="choice" data-b="safe"><b>🛡️</b><span><b>${L("Safe path", "安全路線")}</b><br>${L("3 questions. Earn +1 hint when the lock opens.", "3 題。鎖打開後 +1 個提示。")}</span></button>
+    <button class="choice" data-b="short"><b>⚡</b><span><b>${L("Shortcut", "捷徑")}</b><br>${L("1 hard question. +20 s if right. One miss costs a heart and ends the shortcut.", "1 條較難的題。答對 +20 秒。答錯扣一心，捷徑結束。")}</span></button></div>`);
+  box.querySelectorAll("[data-b]").forEach(b => b.onclick = () => { SFX.tap(); chooseBranch(i, b.dataset.b); });
+}
+function chooseBranch(i, kind) {
+  const run = S.room_run[R.room.id]; R.branchAsked[i] = true;
+  if (kind === "short") {
+    run.need[i] = 1;
+    const base = i * Q_PER_LOCK, hard = [0, 1, 2].sort((a, b) => (R.qs[base + b].b || 0) - (R.qs[base + a].b || 0))[0];
+    if (hard) { [R.qs[base], R.qs[base + hard]] = [R.qs[base + hard], R.qs[base]]; [run.qids[base], run.qids[base + hard]] = [run.qids[base + hard], run.qids[base]]; }
+  } else run.need[i] = Q_PER_LOCK;
+  save(); closeModal(); openPuzzle(i);
+}
+/* ----- New events ----- */
+function lockdownRiddle(i) {
+  sideQuiz({ kicker: `🚧 ${L("Lockdown!", "封鎖！")}`, title: L("Answer to open this lock early", "答對謎題，提早解鎖"), art: "shadow", p: sideQuestion(4),
+    onRight: () => { R.lockdown = null; toast(L("🚧 Lock reopened!", "🚧 鎖已重開！")); },
+    onWrong: () => toast(L("Still sealed. Wait for the lockdown to end or try another lock.", "仍然封鎖中。等封鎖結束，或試試其他鎖。")) });
+}
+function traderModal() {
+  if (!R) return; const run = S.room_run[R.room.id], can = (run.hintsLeft || 0) > 0;
+  const box = openModal(`<span class="kicker">🤝 ${L("Chestnut's trade", "栗子伯的交易")}</span><h2>${L("Want a deal?", "要不要交易？")}</h2>
+    <p class="small">${L(`You have ${run.hintsLeft || 0} hint(s) left.`, `你還有 ${run.hintsLeft || 0} 個提示。`)}</p>
+    <div class="choices"><button class="choice" data-d="pay" ${can ? "" : "disabled"}><b>💡</b><span>${L("Give 1 hint, get +30 seconds", "交出 1 個提示，換 +30 秒")}</span></button>
+    <button class="choice" data-d="riddle"><b>🦉</b><span>${L("Answer a riddle: if right, +1 hint", "答一條謎題：答對 +1 個提示")}</span></button>
+    <button class="choice" data-d="no"><b>👋</b><span>${L("No thanks", "不用了")}</span></button></div>`, { closable: false });
+  box.querySelectorAll("[data-d]").forEach(b => b.onclick = () => {
+    SFX.tap(); const d = b.dataset.d;
+    if (d === "pay") { run.hintsLeft -= 1; S.room_timer[R.room.id] += 30; save(); closeModal(); updateTimerEl(); toast(L("🤝 Deal! −1 hint, +30 s", "🤝 成交！−1 提示，+30 秒")); }
+    else if (d === "riddle") sideQuiz({ kicker: `🤝 ${L("Chestnut's riddle", "栗子伯的謎題")}`, title: L("Get it right for a hint", "答對可得提示"), art: "owl", p: sideQuestion(5),
+      onRight: () => { run.hintsLeft = (run.hintsLeft || 0) + 1; save(); toast(L("💡 +1 hint!", "💡 +1 個提示！")); }, onWrong: () => toast(L("No hint this time.", "這次沒有提示。")) });
+    else closeModal();
+  });
+}
+function bonusChallenge() {
+  if (!R) return; R.bonusUsed = (R.bonusUsed || 0) + 1;
+  sideQuiz({ kicker: `⏱️ ${L("Bonus challenge", "額外挑戰")}`, title: L("Optional: answer for +30 seconds", "選答：答對 +30 秒"), art: "owl", p: sideQuestion(5),
+    onRight: () => { S.room_timer[R.room.id] += 30; save(); updateTimerEl(); toast(L("⏱️ +30 s!", "⏱️ +30 秒！")); }, onWrong: () => toast(L("No bonus this time.", "這次沒有獎勵。")) });
+}
+function secretRoom() {
+  if (!R) return;
+  sideQuiz({ kicker: `🌟 ${L("Secret room", "秘密房間")}`, title: L("You found a hidden room! One hard riddle guards the treasure.", "你發現了秘密房間！一條難題守護着寶藏。"), art: "owl", p: sideQuestion(6),
+    onRight: () => { const m = metaOf(); m.secrets++; S.coins += 10; save(true); renderTools(); toast(L("🌟 Treasure! +10 🪙", "🌟 寶藏！+10 🪙")); awardBadges(); },
+    onWrong: () => toast(L("The secret room closes...", "秘密房間關上了……")) });
+}
+INCIDENTS.push(
+  { id: "lockdown", w: 3, min: 2, art: "shadow", cond: c => c.unsolved >= 1, title: ["Lockdown!", "封鎖！"], text: ["An alarm sounds and one lock is sealed for 30 seconds. Answer its riddle to open it early.", "警報響起，一把鎖被封鎖 30 秒。答對謎題可提早解鎖。"], effect: ["🚧 One lock is blocked for 30 s.", "🚧 一把鎖被封鎖 30 秒。"],
+    run() { const un = HOTSPOTS.map((_, i) => i).filter(i => !(S.room_progress[R.room.id] || []).includes(i)), me = R; R.lockdown = { i: pick(un), until: Date.now() + 30000 }; setTimeout(() => { if (R === me) { R.lockdown = null; const el = document.querySelector(".hs.lockdown"); if (el) el.classList.remove("lockdown"); } }, 30000); } },
+  { id: "trader", w: 2, min: 2, good: true, art: null, title: ["Chestnut the trader", "栗子伯的交易"], text: ["Chestnut appears with a little cart and a mysterious smile. \"Care for a trade?\"", "栗子伯推着小車出現，神秘地微笑：「要不要交易？」"], effect: ["🤝 Trade a hint for time, or win a hint.", "🤝 用提示換時間，或贏取提示。"],
+    run() { setTimeout(traderModal, 300); } },
+  { id: "bonus", w: 2, min: 2, good: true, art: "owl", cond: c => c.bonusUsed < 2, title: ["Bonus challenge", "額外挑戰"], text: ["A glowing card slides under the door: an optional riddle for extra time.", "一張發光的卡從門縫滑進來：一條選答謎題，可贏取額外時間。"], effect: ["⏱️ Right answer = +30 s.", "⏱️ 答對 = +30 秒。"],
+    run() { setTimeout(bonusChallenge, 300); } },
+  { id: "secret", w: 6, min: 3, good: true, art: "owl", cond: c => c.firstStreak >= 3, title: ["A secret room appears!", "秘密房間出現了！"], text: ["Three first-try answers in a row! A bookcase swings open to reveal a hidden room.", "連續三次一次答對！書架轉開，露出一間秘密房間。"], effect: ["🌟 Answer one hard riddle for treasure.", "🌟 答對一條難題可得寶藏。"],
+    run() { setTimeout(secretRoom, 300); } }
+);
+/* ----- Session settings (teacher) ----- */
+function openSettings() {
+  const draw = () => {
+    const cur = cfgLevel(), url = new URLSearchParams(location.search).get("chaos") != null;
+    const box = openModal(`<span class="kicker">🎲 ${L("Session settings", "課堂設定")}</span><h2>${L("How chaotic should rooms be?", "房間要多混亂？")}</h2>
+      <div class="choices">${CHAOS.map(c => `<button class="choice ${c.id === cur ? "right" : ""}" data-lv="${c.id}"><b>${c.id}</b><span><b>${L(c.en, c.zh)}</b><br>${L(...c.d)}</span></button>`).join("")}</div>
+      ${url ? `<p class="small muted">${L("The link sets chaos with ?chaos=. Remove it to use this choice.", "連結用 ?chaos= 指定了混亂度，移除後才會使用這裏的選擇。")}</p>` : ""}
+      <p class="small muted">${L("Applies to rooms you start next. A run in progress keeps its puzzle gates.", "套用於之後開始的房間。進行中的房間保留原有關卡。")}</p>`);
+    box.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { SFX.tap(); S.cfg = Object.assign({}, S.cfg, { chaos: +b.dataset.lv }); save(true); draw(); });
+  };
+  draw();
 }
 
 /* ============================================================
