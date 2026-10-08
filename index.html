@@ -4705,6 +4705,9 @@ function homeHtml() {
     </section>
     <section class="card chatc"><div class="chat" id="chat" aria-live="polite">${chatHtml("cheer", true)}</div>
       <div class="row"><button class="btn plain" id="cFact">💡 ${L("Fun fact", "趣味知識")}</button><button class="btn plain" id="cCheer">💪 ${L("Cheer me on", "為我打氣")}</button></div></section>
+    <section class="card cream"><h2>🚪 ${L("How escape rooms work", "密室逃脫玩法")}</h2>
+      <div class="rules escinfo">${L("📝 <b>15 questions</b> (5 locks × 3) · ❤️ <b>5 hearts</b> · ⏱️ <b>20 minutes</b>. A wrong answer costs a heart and 20 seconds. 0 hearts or time up = 💀 GAME OVER (locks reset). Keep 4+ hearts for ★★★.", "📝 <b>15 題</b>（5 把鎖 × 3）· ❤️ <b>5 顆心</b> · ⏱️ <b>20 分鐘</b>。答錯扣一顆心和 20 秒。失去所有心或時間用完 = 💀 GAME OVER（鎖會重設）。保留 4 顆心以上可得 ★★★。")}
+        <br>${L("🔎 Find 5 hidden items, then beat the exit-door challenge:", "🔎 找出 5 件隱藏物品，再完成出口大門挑戰：")} ${[...new Set(ROOMS.map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}</div></section>
     ${streakCard()}
   </div>`;
 }
