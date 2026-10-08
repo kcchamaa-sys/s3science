@@ -8,11 +8,8 @@ on:
     branches:
       - main
       - master
-      - copilot/copy-asethetic-component-login-system
-      - claude/chiikawa-physics-escape-room-b2477o
-      - copilot/update-game-content
-      - copilot/expand-game-mechanics
-      - copilot/improve-room-escape-game-mechanics
+      - 'copilot/**'
+      - 'claude/**'
   workflow_dispatch:
 
 permissions:
