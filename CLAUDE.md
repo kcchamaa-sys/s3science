@@ -12,3 +12,6 @@ Siblings: `kcchamaa-sys/biology` (hub), `kcchamaa-sys/s1science`, `kcchamaa-sys/
 - When you build or change something reusable, add a line to the cross-project log in the hub's `docs/SHARED_KNOWLEDGE.md`.
 - Never commit student names or other personal data.
 - No official logos, artwork or music from existing franchises.
+
+## Tests
+`node tests/mechanics.test.js`, `tests/lab_challenge.test.js` and `tests/server.test.js` need nothing installed. `tests/layout.test.js` (all tabs × 5 widths × 2 languages: overflow, clipped cards, "undefined" names) and `tests/flow.test.js` (study, escape, game over, notebook, practice, rush, shop) need Playwright + Chromium. Run them before pushing.

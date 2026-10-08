@@ -333,6 +333,31 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .mode.rush .muted { color: #D8CFE8; }
 .mode h3 { font-size: 1.15rem; }
 @media (max-width: 380px) { .bnav { padding-left: 2px; padding-right: 2px; gap: 0; } .bnav button { font-size: 11px; letter-spacing: -.2px; padding: 4px 0; } .bnav button .i { padding: 3px 6px; } .bnav button .i .ic { width: 25px; height: 25px; } }
+.btn.sm { min-height: 40px; padding: 4px 12px; font-size: .9rem; }
+@media (max-width: 560px) { .btn.sm .bl { display: none; } .btn.sm { min-width: 44px; padding: 4px 10px; } }
+.act .sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.bnav.t7 button { font-size: .62rem; } .bnav.t7 { padding-left: 2px; padding-right: 2px; gap: 0; }
+.ttiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.ttile { border: 2px solid var(--edge, #D8D3EE); border-radius: 16px; background: #fff; padding: 8px; display: grid; gap: 0; justify-items: center; text-align: center; } .ttile b { font-size: 1.5rem; line-height: 1.2; } .ttile .ti { font-size: 1.3rem; }
+.tsec { display: grid; gap: 8px; align-content: start; min-width: 0; } .tsec h3 { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.tbrow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) 44px; gap: 4px 8px; align-items: center; } .tbrow .tbl { font-size: .85rem; font-weight: 700; overflow-wrap: anywhere; } .tbrow .small { grid-column: 1 / -1; margin-top: -4px; }
+.tbb { height: 12px; border-radius: 999px; background: #EEEAF8; overflow: hidden; display: block; } .tbb i { display: block; height: 100%; }
+.tbars { display: grid; gap: 8px; } .tchart { width: 100%; height: auto; max-width: 420px; }
+.tattn { display: flex; flex-wrap: wrap; gap: 6px; } .tsel { font: inherit; border: 2px solid var(--edge, #D8D3EE); border-radius: 10px; padding: 6px 8px; min-height: 40px; background: #fff; }
+.twrap { overflow-x: auto; border: 2px solid var(--edge, #D8D3EE); border-radius: 14px; max-width: 100%; }
+.ttable { border-collapse: collapse; width: 100%; font-size: .86rem; min-width: 640px; } .ttable th, .ttable td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #ECE8F8; white-space: nowrap; } .ttable td:last-child { max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
+.ttable thead th { background: #F4F1FF; position: sticky; top: 0; } .thb { background: none; border: 0; font: inherit; font-weight: 800; padding: 4px 0; min-height: 36px; cursor: pointer; color: inherit; }
+.ttable tr.tidle td { background: #FFF6F0; color: #8C6A60; }
+.rchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rchip { display: inline-flex; align-items: center; gap: 5px; border: 2px solid var(--edge, #D8D3EE); border-radius: 999px; padding: 3px 11px 3px 6px; font-weight: 800; font-size: .86rem; background: #fff; line-height: 1.2; }
+.rchip .ci { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--cream-2, #FFF6DA); font-size: .95rem; }
+.rchip.bad { background: #FFF0F0; border-color: #F2B3B3; } .rchip.good { background: #EFFFF3; border-color: #9BDDAE; }
+.how { border-radius: 14px; background: rgba(255,255,255,.7); border: 2px dashed var(--edge, #D8D3EE); padding: 2px 10px; }
+.how summary { cursor: pointer; font-weight: 800; min-height: 40px; display: flex; align-items: center; gap: 6px; list-style: none; }
+.how summary::-webkit-details-marker { display: none; } .how summary::before { content: "ℹ️"; } .notes-fold summary::before { content: "📖"; } .how summary::after { content: "▾"; margin-left: auto; transition: transform .2s; }
+.how[open] summary::after { transform: rotate(180deg); }
+.howbody { padding: 2px 0 10px; display: grid; gap: 6px; font-size: .92rem; } .howbody ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.mode2 .rchips { margin-top: 4px; } .mode2.escape .rchip { color: var(--ink); }
 .nbadge { position: absolute; top: 4px; right: calc(50% - 26px); min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: var(--bad); color: #fff; font-size: .68rem; line-height: 18px; text-align: center; border: 2px solid #fff; }
 .bnav button { position: relative; }
 .mlist { display: grid; gap: 12px; }
@@ -353,7 +378,8 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .homegrid { display: grid; gap: 14px; grid-template-areas: "nest" "stat" "streak" "chat"; }
 .homegrid .nest { grid-area: nest; } .homegrid .stat { grid-area: stat; } .homegrid .chatc { grid-area: chat; } .homegrid .streakc { grid-area: streak; }
 @media (min-width: 820px) { .homegrid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-areas: "nest stat" "chat streak"; align-items: start; } }
-.nest { padding: 0; overflow: hidden; }
+.nest { padding: 0; overflow: hidden; grid-template-columns: minmax(0, 1fr); }
+.card { grid-template-columns: minmax(0, 1fr); }
 .scene { position: relative; height: clamp(230px, 46vw, 360px); background: radial-gradient(circle, #F2DFCB 2.2px, transparent 2.8px) 0 0 / 24px 24px, #FFF8EE; }
 .scene .bgart { position: absolute; inset: 0; width: 100%; height: 100%; }
 .sitem .pv.bgpv { width: 110px; height: 80px; position: relative; border-radius: 12px; overflow: hidden; border: 2px solid var(--edge); }
@@ -398,9 +424,10 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .sitem { min-width: 0; overflow-wrap: anywhere; } .sitem .btn { white-space: normal; max-width: 100%; }
 .sitem .req { line-height: 1.35; }
 .hs.lockdown { filter: grayscale(1); outline: 3px dashed #E0567E; }
-.dinfo { display: grid; gap: 8px; padding: 12px 16px 16px; justify-items: start; }
+.dinfo { display: grid; gap: 8px; padding: 12px 16px 16px; grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
 .slotbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
 .slotbar .tab { white-space: nowrap; flex: 0 0 auto; }
+@media (min-width: 820px) { .slotbar { flex-wrap: wrap; overflow: visible; } }
 @media (max-width: 560px) { .scene { height: 230px; } .acts { gap: 8px; } .act { min-height: 78px; } .meter { font-size: .85rem; gap: 8px; } }
 @media (max-width: 560px) { .tools .pill.saved { display: none; } .tools { gap: 5px; } .tools .iconbtn { min-width: 38px; min-height: 40px; padding: 2px 6px; } .tools .pill { padding: 2px 7px; } }
 @media (max-width: 440px) { header.top { gap: 6px; } .brand svg { width: 30px; height: 30px; } }
@@ -781,11 +808,11 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
 .hs.part { background: #D9F3FF; font-size: .8rem; animation: none; box-shadow: 0 0 0 3px rgba(111,168,255,.55), var(--shadow-sm); }
 
 /* ----- Trophy cards (card style follows the s1 trophy cards) ----- */
-.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-top: 8px; }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 14px; margin-top: 8px; }
 .tcleg { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; border-radius: 999px; padding: 2px 9px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.35); }
 .tcleg .ic { width: 16px; height: 16px; }
 .tcleg.tr1 { background: #B06C30; } .tcleg.tr2 { background: #7D8DA3; } .tcleg.tr3 { background: #D9A200; } .tcleg.tr4 { background: linear-gradient(90deg, #FF7FB0, #B07CFF, #4FB4F0); }
-.tcard { position: relative; display: flex; flex-direction: column; aspect-ratio: 63 / 88; border-radius: 14px; padding: 7px; text-align: left; overflow: hidden; width: 100%; color: var(--ink); box-shadow: 0 4px 0 rgba(60,40,20,.22), 0 10px 18px rgba(60,40,20,.12); animation: tcin .45s var(--d, 0s) ease-out both; }
+.tcard { position: relative; display: flex; flex-direction: column; aspect-ratio: 63 / 88; min-height: 232px; border-radius: 14px; padding: 7px; text-align: left; overflow: hidden; width: 100%; color: var(--ink); box-shadow: 0 4px 0 rgba(60,40,20,.22), 0 10px 18px rgba(60,40,20,.12); animation: tcin .45s var(--d, 0s) ease-out both; }
 .tcard.tr1 { background: linear-gradient(150deg, #E2A878, #A8642F 45%, #7E4A22 70%, #C98A55); box-shadow: 0 0 0 1.5px #5E3517, 0 4px 0 rgba(60,30,10,.3); }
 .tcard.tr2 { background: linear-gradient(135deg, #FFFFFF, #C9D3DF 30%, #8E9AAB 50%, #E9EEF4 70%, #A9B4C3); box-shadow: 0 0 0 1.5px #6B7686, 0 4px 0 rgba(40,50,70,.25); }
 .tcard.tr2::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.75) 47%, transparent 58%); background-size: 260% 100%; background-position: 100% 0; animation: tcsheen 4.5s ease-in-out infinite; }
@@ -798,9 +825,9 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
 .tcard .th b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tcard .th i { font-style: normal; font-weight: 900; flex: none; }
 .tr1 .th i { color: #8A4B1E; } .tr2 .th i { color: #5C6C82; } .tr3 .th i { color: #C98E00; } .tr4 .th i { color: #B05BD6; }
-.tcard .tw { position: relative; margin: 6px 0; flex: 1 1 auto; border-radius: 9px; border: 2px solid rgba(255,255,255,.9); background: #0B1020; overflow: hidden; min-height: 0; display: grid; place-items: center; }
+.tcard .tw { position: relative; margin: 6px 0; flex: 1 1 auto; min-height: 96px; border-radius: 9px; border: 2px solid rgba(255,255,255,.9); background: #0B1020; overflow: hidden; min-height: 0; display: grid; place-items: center; }
 .tcard .tw > svg.tscene { position: absolute; inset: 0; width: 100%; height: 100%; }
-.tcard .tdesc { background: rgba(255,255,255,.93); border-radius: 8px; padding: 4px 7px; font-size: 11.5px; line-height: 1.3; position: relative; z-index: 3; }
+.tcard .tdesc { background: rgba(255,255,255,.93); border-radius: 8px; padding: 0 7px; border-top: 4px solid rgba(255,255,255,.93); border-bottom: 4px solid rgba(255,255,255,.93); background-clip: padding-box; font-size: 11.5px; line-height: 1.3; position: relative; z-index: 3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: none; }
 .tcard .tfoot { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; gap: 5px; position: relative; z-index: 3; }
 .tcard .hp { font-weight: 900; font-size: 12px; background: #fff; border-radius: 999px; padding: 1px 7px 1px 3px; display: inline-flex; align-items: center; gap: 2px; flex: none; }
 .tcard .hp .ic { width: 16px; height: 16px; }
@@ -1675,7 +1702,7 @@ const ZH_ROOMS = {
 };
 const ZH_HOTSPOTS = [["書架", "密碼卡", "書架上有一本書在發光……裏面有一道問題！"], ["掛牆鐘", "時鐘指針", "時鐘停了，鐘面寫着一道謎題。"], ["", "", ""], ["上鎖的盒子", "小鎖匙", "一個可愛的上鎖盒子！"], ["保險箱", "光之寶石", "一個沉重的上鎖保險箱。嗯……"]];
 const ZH_TROPHIES = {}; // filled in section 6b, next to the trophy list
-const ZH_WARDROBE = { cos_gym: "健身兄", cos_fish: "釣魚兄", cos_performative: "文青兄（Performative）", cos_finance: "金融兄", cos_sorcerer: "蒙眼術師 ♾️", hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "偶像戰士長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
+const ZH_WARDROBE = { hat_detective: "偵探帽", cos_gym: "健身兄", cos_fish: "釣魚兄", cos_performative: "文青兄（Performative）", cos_finance: "金融兄", cos_sorcerer: "蒙眼術師 ♾️", hair_blond: "金色大浪頭假髮", hair_purple: "紫色偶像髮型（borahae 💜）", hair_curtain: "金色八字瀏海天后假髮", hair_pony: "沖天高馬尾", hair_roots: "螢光髮根黑髮", hair_einstein: "瘋狂科學家爆炸頭", hair_braid: "偶像戰士長辮", hat_witch: "翡翠女巫帽", hat_alien: "藍色外星人耳朵", hat_chicken: "雞騎士（Chicken jockey）", face_spider: "蜘蛛俠風面罩", face_iron: "鋼鐵戰甲頭盔", face_merc: "紅色傭兵面罩", face_panther: "黑豹之王面罩", out_tour: "閃亮巡演連身衣", out_giant: "綠色巨人肌肉", out_cape: "披風英雄戰衣", out_boat: "Aura farming 賽龍舟服", prop_hammer: "雷神之鎚", prop_shield: "星星盾牌", prop_claws: "金屬爪", prop_bracelets: "友誼手繩", prop_dubai: "杜拜朱古力", prop_charm: "尖牙小怪獸吊飾", prop_lightstick: "K-pop 應援棒", bg_brat: "Brat 螢光綠牆", bg_mongkok: "旺角霓虹街", bg_harbour: "維港夜景", bg_blocky: "像素方塊世界", bg_stage: "體育館演唱會舞台", bg_space: "外太空", bg_herocity: "黃昏英雄城市", bg_emerald: "翡翠城之路", hair_swoop: "「Baby, baby」瀏海假髮", hair_idol: "韓星狼尾頭", hair_afro: "迪斯可爆炸頭", hair_mullet: "派對鯔魚頭", hair_braids: "暗黑雙辮子", hat_moon: "月球漫步紳士帽", hat_bucket: "Gen Z 漁夫帽", hat_headset: "貓耳電競耳機", face_deal: "Deal-with-it 像素墨鏡", face_nerd: "「其實呢……」書呆子眼鏡", out_thriller: "80 年代天王紅外套", out_67: "「six-seven」球衣", out_rwb: "紅白藍斗篷", out_apron: "茶餐廳圍裙", out_chain: "Rizz 金鏈", prop_67: "「6-7」手勢", prop_glove: "閃亮單手套", prop_boba: "珍珠奶茶", prop_waffle: "雞蛋仔", prop_aura: "+1000 Aura 牌", prop_selfie: "自拍手機", hat_pbun: "菠蘿包帽", rib_eggtart: "蛋撻髮夾", fr_neon: "霓虹招牌相框", rib_lens: "放大鏡髮夾", face_xray: "X 光護目鏡", hat_wizard: "光學魔法帽", fr_galaxy: "銀河相框", hat_halo: "彩虹光環", hat_party: "派對帽", hat_beret: "粉紅貝雷帽", hat_ears: "兔耳髮箍", hat_grad: "畢業帽", hat_crown: "小皇冠", face_round: "圓框眼鏡", face_sun: "型格太陽眼鏡", face_prism: "稜鏡眼鏡", rib_bow: "紅色蝴蝶結", rib_flower: "櫻花", rib_star: "星星髮夾", fr_sakura: "櫻花相框", fr_laser: "激光相框", fr_rainbow: "彩虹相框" };
 const ZH_POWER = { torch: ["電筒", "移除一個錯誤答案，或把一個密碼盤轉到正確位置。（算作使用提示。）"], crystal: ["時間水晶", "房間計時器加 60 秒。"], guard: ["守護符", "抵擋你下一次答錯的所有懲罰。"] };
 const ZH_SLOTS = { costume: "密室限定服裝", hair: "假髮", hat: "帽子", face: "眼鏡", ribbon: "髮夾", outfit: "服裝", prop: "手持小物", frame: "相框", backdrop: "背景" };
 const ZH_CHAR = { chiikawa: "泡芙", hachiware: "莓莓", usagi: "芒芒", momonga: "芋圓", kurimanju: "栗子伯" };
@@ -3411,7 +3438,7 @@ function tcScene(t, st) {
 function trophyCard(t, i = 0) {
   const st = tcState(t), vis = st.vis, rim = TC_RIM[t.tier];
   const title = vis === "secret" && t.tier >= 3 ? L("Secret card", "神秘卡") : t.name;
-  const desc = vis === "secret" && t.tier >= 3 ? L("A secret card. Keep going to reveal the scene!", "神秘卡，繼續努力就能看到畫面！") + `<br><span class="small">${esc(t.desc)}</span>` : esc(t.desc);
+  const desc = vis === "secret" && t.tier >= 3 ? `❓ ${esc(t.desc)}` : esc(t.desc);
   const win = tcScene(t, st) + (vis === "open" || vis === "near" ? "" : `<span class="frost"></span>`) + (vis === "secret" || vis === "mid" ? `<span class="tlock">${IC(t.tier >= 3 ? "lockgold" : "lock")}</span>` : "");
   const ribbon = vis === "near" ? `<span class="tribbon hot">✨ ${L(`Almost! ${st.rem} more`, `就快到了！還差 ${st.rem}`)}</span>` : vis === "glass" || vis === "mid" ? `<span class="tribbon">🔒 ${L(`${st.rem} more to unlock`, `還差 ${st.rem} 就解鎖`)}</span>` : "";
   const foot = st.has ? `<span class="stamp">✔ ${esc(S.trophies[t.id])}</span>` : `<span class="tprog"><i style="width:${Math.round(st.p * 100)}%"></i><em>${st.cur}/${st.goal}</em></span>`;
@@ -3914,15 +3941,9 @@ function rushIntro() {
   const bonus = S.rush.lastDay !== today();
   openModal(`<span class="kicker">⚡ ${L("Light Rush", "光速挑戰")}</span><h2>${L("60-second question rush!", "60 秒極速問答！")}</h2>
     ${say("usagi", L("Wahoo! Answer as many as you can before time runs out! 🐰", "嘩呼！在時間用完前盡量答多些！🐰"), "happy")}
-    <div class="rules">${L(`<ul><li>Mixed questions: multiple choice, true/false, matching, ordering, odd one out, fill the gap, colour mixing.</li>
-      <li>Correct = +10 points. 3 in a row = <b>×2 combo</b>, 6 in a row = <b>×3</b>.</li>
-      <li>Wrong = <b>−3 seconds</b> and the combo resets.</li>
-      <li>Every 10 points = 1 🪙 coin. ${bonus ? "<b>Today's first round pays double!</b>" : ""}</li></ul>`,
-      `<ul><li>混合題型：選擇題、是非題、配對、排序、找不同、填充、調色。</li>
-      <li>答對 = +10 分。連續答對 3 題 = <b>×2 連擊</b>，6 題 = <b>×3</b>。</li>
-      <li>答錯 = <b>扣 3 秒</b>，連擊重設。</li>
-      <li>每 10 分 = 1 個 🪙 金幣。${bonus ? "<b>今天第一局雙倍獎勵！</b>" : ""}</li></ul>`)}</div>
-    <p class="small muted">${L("Best score", "最高分")}: ${S.rush.best}</p>
+    ${chipRow([["⏱️", L("60 seconds", "60 秒")], ["✅", L("+10 each", "每題 +10")], ["🔥", L("3 in a row = ×2", "連對 3 題 = ×2")], ["❌", L("Wrong = −3s", "答錯 −3 秒"), "bad"], ["🪙", bonus ? L("First round ×2!", "首局雙倍！") : L("10 pts = 1 coin", "10 分 = 1 金幣"), bonus ? "good" : ""]])}
+    ${howFold(L("Question types", "題型"), L("Multiple choice · true/false · matching · ordering · odd one out · fill the gap · colour mixing", "選擇題 · 是非題 · 配對 · 排序 · 找不同 · 填充 · 調色"))}
+    <p class="small muted">🏆 ${L("Best score", "最高分")}: <b>${S.rush.best}</b></p>
     <div class="row"><button class="btn big" id="rushGo">⚡ ${L("Start!", "開始！")}</button><button class="btn plain" id="rushShop">👗 ${L("Shop", "商店")}</button></div>`);
   document.getElementById("rushGo").onclick = () => { SFX.init(); startRush(); };
   document.getElementById("rushShop").onclick = () => { SFX.tap(); openShop(); };
@@ -4040,10 +4061,10 @@ function studyNotes() {
   const r = ST.room, seen = new Set(), terms = [];
   r.puzzles.forEach(p => (p.terms || []).forEach(t => { if (!seen.has(t[0])) { seen.add(t[0]); terms.push(t); } }));
   $app.innerHTML = `${studyHead()}
-    <section class="card"><h2>📖 ${L("Key points", "重點")}</h2><ul class="notes">${r.notes.map(n => `<li>${n}</li>`).join("")}</ul>
-      <h3>🧭 ${L("Key rules", "重點規則")}</h3><div class="krules">${r.rules.map(x => `<div class="krule">${x}</div>`).join("")}</div>
-      <h3>🔤 ${L("Key terms", "關鍵詞")}</h3>${termChips(terms)}
-      <div class="row"><button class="btn big" id="stGo">✏️ ${L(`Check my understanding (${RUN_QS} questions)`, `檢查理解（${RUN_QS} 題）`)}</button><button class="btn plain" id="stHome">🏠 ${L("Home", "小窩")}</button></div></section>`;
+    <section class="card"><h2>🧠 ${L("Remember these", "必記重點")}</h2><div class="krules">${r.rules.map(x => `<div class="krule">${x}</div>`).join("")}</div>
+      <h3>🔤 ${L("Key words", "關鍵詞")} <span class="small muted">${L("tap 🔊 to hear", "按 🔊 聽發音")}</span></h3>${termChips(terms)}
+      <details class="how notes-fold"><summary>${L(`Full notes (${r.notes.length})`, `完整筆記（${r.notes.length}）`)}</summary><div class="howbody"><ul class="notes">${r.notes.map(n => `<li>${n}</li>`).join("")}</ul></div></details>
+      <div class="row"><button class="btn big" id="stGo">✏️ ${L(`Start quiz · ${RUN_QS}`, `開始小測 · ${RUN_QS}`)}</button><button class="btn plain" id="stHome" aria-label="${L("Home", "小窩")}">🏠</button></div></section>`;
   document.getElementById("stGo").onclick = () => { SFX.tap(); studyNext(); };
   document.getElementById("stHome").onclick = () => { SFX.tap(); renderMap(); };
 }
@@ -4097,9 +4118,9 @@ function studyDone() {
 function modeChooser() {
   openModal(`<span class="kicker">🎮 ${L("How do you want to play?", "你想怎樣玩？")}</span><h2>${L("Choose your mode", "選擇模式")}</h2>
     <div class="modes2">
-      <button class="mode2 study" id="mcStudy"><span class="ic">📖</span><b>${L("Study mode", "學習模式")}</b><span class="small">${L("Read the notes, then answer 15 questions. No timer, no hearts, every topic open. Calm and steady.", "先讀筆記，再答 15 題。沒有計時、沒有心心，所有課題都開放。輕鬆穩陣。")}</span></button>
-      <button class="mode2 escape" id="mcEscape"><span class="ic">🚪</span><b>${L("Escape mode", "密室逃脫模式")}</b><span class="small">${L("📝 15 questions · ❤️ 5 hearts · ⏱️ 20 minutes · 💀 you CAN lose! Earn stars and unlock exclusive costumes.", "📝 15 題 · ❤️ 5 顆心 · ⏱️ 20 分鐘 · 💀 真的會輸！贏取星星和獨家服裝。")}</span></button>
-    </div><p class="small muted">${L("You can switch any time on the 🗺️ Rooms tab.", "你可隨時在 🗺️ 密室分頁切換。")}</p>`);
+      <button class="mode2 study" id="mcStudy"><span class="ic">📖</span><b>${L("Study mode", "學習模式")}</b><span class="small">${L("Learn at your own pace", "按自己步伐學習")}</span>${chipRow([["📝", L(`${RUN_QS} Qs`, `${RUN_QS} 題`)], ["😌", L("No timer", "無計時")], ["🔓", L("All open", "全開放")]])}</button>
+      <button class="mode2 escape" id="mcEscape"><span class="ic">🚪</span><b>${L("Escape mode", "密室逃脫模式")}</b><span class="small">${L("Beat the clock. You can lose!", "同時間賽跑，真的會輸！")}</span>${chipRow([["❤️", L("5 hearts", "5 心")], ["⏱️", L("20 min", "20 分鐘")], ["👕", L("Costumes", "限定服裝")]])}</button>
+    </div><p class="small muted">${L("Switch any time in 🗺️ Rooms", "可隨時在 🗺️ 密室切換")}</p>`);
   document.getElementById("mcStudy").onclick = () => { SFX.tap(); S.play_mode = "study"; save(); closeModal(); renderMap("rooms"); };
   document.getElementById("mcEscape").onclick = () => { SFX.tap(); S.play_mode = "escape"; save(); closeModal(); enterRoom(ROOMS[Math.max(0, nextRoomIndex())].id); };
 }
@@ -4126,15 +4147,8 @@ function practiceIntro() {
   const n = mistakeCount(), bonus = S.practice.lastDay !== today();
   openModal(`<span class="kicker">🔁 ${L("Practice mode", "練習模式")}</span><h2>${L(`Get ${PRACTICE_GOAL} right in a row!`, `連續答對 ${PRACTICE_GOAL} 題！`)}</h2>
     ${say("hachiware", n ? L(`You have <b>${n}</b> question${n === 1 ? "" : "s"} to fix. Let's turn mistakes into mastery! 🌱`, `你有 <b>${n}</b> 題要修正。一起把錯誤變成實力吧！🌱`) : L("No mistakes saved yet, so I'll pick questions from the rooms you've opened. 🌱", "暫時未有錯題，我會從你已開啟的房間抽題目。🌱"), "normal", "hint")}
-    <div class="rules">${L(`<ul><li>Questions you got wrong come first. If there aren't enough, random questions fill the gap.</li>
-      <li>Get one wrong? It <b>comes back</b> a few questions later, and your streak restarts.</li>
-      <li>No timer and no penalties. Take your time and read carefully.</li>
-      <li>Finish = +10 🪙. ${bonus ? "<b>Today's first finish pays double!</b>" : ""}</li></ul>`,
-      `<ul><li>先練習你答錯過的題目；不夠的話會隨機補上題目。</li>
-      <li>答錯了？那題會在幾題之後<b>再出現</b>，連續紀錄重新計算。</li>
-      <li>沒有計時，沒有懲罰。慢慢來，細心閱讀。</li>
-      <li>完成 = +10 🪙。${bonus ? "<b>今天第一次完成雙倍獎勵！</b>" : ""}</li></ul>`)}</div>
-    <p class="small muted">${L("Finished", "已完成")}: ${S.stats.practiceRuns} · ${L("Best streak", "最佳連續")}: ${S.practice.best}</p>
+    ${chipRow([["📕", L("Your mistakes first", "先練錯題")], ["🔁", L("Miss one = it comes back", "答錯會再出現")], ["😌", L("No timer", "無計時")], ["🪙", bonus ? L("First finish ×2!", "首次完成雙倍！") : L("+10 coins", "+10 金幣"), bonus ? "good" : ""]])}
+    <p class="small muted">✅ ${L("Finished", "已完成")}: <b>${S.stats.practiceRuns}</b> · 🔥 ${L("Best streak", "最佳連續")}: <b>${S.practice.best}</b></p>
     <div class="row"><button class="btn big" id="prGo">🔁 ${L("Start practice", "開始練習")}</button><button class="btn plain" id="prBook">📕 ${L("Mistake notebook", "錯題本")}</button></div>`);
   document.getElementById("prBook").onclick = () => { SFX.tap(); closeModal(); renderMap("mist"); };
   document.getElementById("prGo").onclick = () => { SFX.init(); SFX.tap(); startPractice(); };
@@ -4695,11 +4709,11 @@ function homeHtml() {
       ${meter("⭐", L("Stars", "星星"), stars, ROOMS.length * 3, "#FFD84D")}
       ${meter("📚", L("Mastered", "已掌握"), S.mastered_puzzles.length, tot, "#A0C4FF")}
       <div class="acts">
-        ${act("aStudy", "green", IC("books"), L("Study mode", "學習模式"), L("Notes + 15 questions", "筆記 + 15 題"))}
-        ${allDone ? act("aRooms", "pink", IC("lockgold"), L("Escape mode", "密室逃脫"), L("Replay for ⭐", "重玩賺星")) : act("aGo", "pink", IC("lockgold"), L("Escape mode", "密室逃脫"), `📝 15 · ❤️×5 · ${esc(ROOMS[ni].name)}`, `data-room="${ROOMS[ni].id}"`)}
+        ${act("aStudy", "green", IC("books"), L("Study mode", "學習模式"), L("Learn + quiz", "學習 + 小測"))}
+        ${allDone ? act("aRooms", "pink", IC("lockgold"), L("Escape mode", "密室逃脫"), L("Replay for ⭐", "重玩賺星")) : act("aGo", "pink", IC("lockgold"), L("Escape mode", "密室逃脫"), `❤️×5 · ⏱️ 20′`, `data-room="${ROOMS[ni].id}"`)}
         ${act("mRush", "purple", IC("bolt"), L("Light Rush", "光速挑戰"), S.rush.lastDay !== today() ? L("×2 today!", "今天雙倍！") : `${L("Best", "最高")} ${S.rush.best}`)}
         ${act("mPrac", "yellow", IC("pencil"), L("Practice", "練習"), mk ? L(`${mk} to fix`, `${mk} 題待修正`) : L(`${PRACTICE_GOAL} in a row`, `連對 ${PRACTICE_GOAL} 題`))}
-        ${act("aLab", "blue", IC("prism"), L("Light Lab", "光學實驗室"), L("Lenses · mirror · TIR", "透鏡 · 鏡 · 全內反射"))}
+        ${act("aLab", "blue", IC("prism"), L("Light Lab", "光學實驗室"), L("Try it!", "動手試！"))}
         ${act("mShop", "white", IC("shirt"), L("Dress up", "換裝"), `🪙 ${S.coins}`)}
       </div>
     </section>
@@ -4708,6 +4722,9 @@ function homeHtml() {
     ${streakCard()}
   </div>`;
 }
+/* Icon chips + a fold: short and scannable instead of paragraphs */
+const chipRow = items => `<div class="rchips">${items.map(([ic, t, cls]) => `<span class="rchip ${cls || ""}"><span class="ci">${ic}</span>${t}</span>`).join("")}</div>`;
+const howFold = (title, html) => `<details class="how"><summary>${title}</summary><div class="howbody">${html}</div></details>`;
 function roomsHtml() {
   const ni = nextRoomIndex(), study = S.play_mode === "study";
   const toggle = `<div class="seg big" role="radiogroup" aria-label="${L("Mode", "模式")}"><button role="radio" aria-checked="${study}" data-pmode="study">📖 ${L("Study mode", "學習模式")}</button><button role="radio" aria-checked="${!study}" data-pmode="escape">🚪 ${L("Escape mode", "密室逃脫")}</button></div>`;
@@ -4724,14 +4741,14 @@ function roomsHtml() {
     return `<button class="topic ${done ? "done" : ""} ${i === ni ? "next" : ""}" data-room="${r.id}" ${open ? "" : "disabled"}>
         <span class="tnum">${topicNo(r.topicNo)} · ${r.sec}</span><span class="tname">${topicHtml(r)}</span>
         <span class="small">${open ? "🚪" : "🔒"} ${esc(r.name)}</span><span class="kindtag">${kindTag(r)}</span>${open ? bar : ""}
-        <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `📝 ${roomQsDone(r)}/${RUN_QS} · 🔑 ${n}/5 · ${heartsHtml(heartsOf(S.room_run[r.id]))}` : L("Escape the room before", "先逃出上一個房間")}</span>
+        <span class="rstars" aria-label="${done ? roomStars(r) + " / 3 ★" : ""}">${done ? starStr(roomStars(r)) : open ? `📝 ${roomQsDone(r)}/${RUN_QS} · 🔑 ${n}/5 · ${heartsHtml(heartsOf(S.room_run[r.id]))}` : ("🔒 " + L("Locked", "未解鎖"))}</span>
       </button>`; }).join("");
   const info = study
-    ? `<p class="small muted">${L("📖 Read each topic's key points, then answer 15 questions. No timer, no hearts, every topic open. Mistakes go to 🔁 Practice.", "📖 先讀每個課題的重點，再答 15 題。沒有計時、沒有心心，所有課題都開放。錯題會存入 🔁 練習。")}</p>`
-    : `<div class="rules escinfo">${L("🚪 <b>Escape mode:</b> 📝 15 questions (5 locks × 3) · ❤️ 5 hearts · ⏱️ 20 minutes · every wrong answer costs a heart · 0 hearts or time up = 💀 <b>GAME OVER</b> (the locks reset). Stars: 4–5 ❤️ left = ★★★, 2–3 = ★★, 1 = ★.", "🚪 <b>密室逃脫：</b>📝 15 題（5 把鎖 × 3 題）· ❤️ 5 顆心 · ⏱️ 20 分鐘 · 每答錯一次扣一顆心 · 沒有心或時間用完 = 💀 <b>GAME OVER</b>（鎖會重設）。星星：剩 4–5 顆心 = ★★★，2–3 顆 = ★★，1 顆 = ★。")}
-        <br>${L("🚪 Every room ends differently:", "🚪 每個房間的結局都不同：")} ${[...new Set(ROOMS.filter(r => subjOf(r) === sj).map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}
-        <br>${L("🔒 Escape-only costumes:", "🔒 密室限定服裝：")} 💪 ${L("Gym bro", "健身兄")} · 🎣 ${L("Fish bro", "釣魚兄")} · 🍵 ${L("Performative bro", "文青兄")} · 💼 ${L("Finance bro", "金融兄")} · ♾️ ${L("Blindfold sorcerer", "蒙眼術師")} · 👊 ${L("Sorcerer first-year", "術師學校一年級生")} · 🎣 ${L("Rookie hunter", "新手獵人")}</div>`;
-  return `<section class="card">${subjBar}<div class="row" style="justify-content:space-between"><h2>${SUBJECTS[sj].icon} ${subjChapter(sj)}</h2><div class="row"><button class="btn plain" id="rCfg">🎲 ${L("Session settings", "課堂設定")}</button><button class="btn plain" id="rJournal">📓 ${L("Study Journal", "學習日誌")}</button></div></div>
+    ? `${chipRow([["📖", L("Notes first", "先讀筆記")], ["📝", L(`${RUN_QS} questions`, `${RUN_QS} 題`)], ["😌", L("No timer", "無計時")], ["🔓", L("All topics open", "全部開放")]])}`
+    : `${chipRow([["📝", L(`${RUN_QS} questions`, `${RUN_QS} 題`)], ["❤️", L("5 hearts", "5 顆心")], ["⏱️", L("20 min", "20 分鐘")], ["💀", L("0 hearts = Game over", "沒有心 = 完場"), "bad"]])}
+      ${howFold(L("How it works", "玩法"), `<ul><li>${L("Every wrong answer costs ❤️ and time.", "每答錯一次扣 ❤️ 和時間。")}</li><li>${L("Stars: 4–5 ❤️ left = ★★★ · 2–3 = ★★ · 1 = ★", "星星：剩 4–5 ❤️ = ★★★ · 2–3 = ★★ · 1 = ★")}</li><li>${L("Game over resets the locks.", "完場後鎖會重設。")}</li><li>${L("Each room ends differently:", "每個房間結局不同：")} ${[...new Set(ROOMS.filter(r => subjOf(r) === sj).map(roomKind))].map(k => `${ROOM_KINDS[k].icon} ${L(ROOM_KINDS[k].en, ROOM_KINDS[k].zh)}`).join(" · ")}</li></ul>
+        <div class="small"><b>${L("🔒 Escape-only costumes", "🔒 密室限定服裝")}</b> 💪 🎣 🍵 💼 ♾️ 👊 — ${L("see 👗 Dress", "見 👗 換裝")}</div>`)}`;
+  return `<section class="card">${subjBar}<div class="row" style="justify-content:space-between"><h2>${SUBJECTS[sj].icon} ${subjChapter(sj)}</h2><div class="row"><button class="btn plain sm" id="rCfg" aria-label="${L("Session settings", "課堂設定")}">🎲<span class="bl"> ${L("Settings", "設定")}</span></button><button class="btn plain sm" id="rJournal" aria-label="${L("Study Journal", "學習日誌")}">📓<span class="bl"> ${L("Journal", "日誌")}</span></button></div></div>
     ${toggle}${info}<div class="topics">${cards}</div></section>`;
 }
 function collectHtml() {
@@ -4874,9 +4891,9 @@ function renderMap(tab) {
   stopStudy(); document.body.classList.remove("lgmode"); setLook(curSubj());
   const moved = tab && tab !== HUB_TAB; if (tab) HUB_TAB = tab;
   stopRush(); stopPractice(); MUSIC.setMode("map"); MUSIC.setTrack(S.track); stopTimer(); lbSubmit(); if (R) clearTimeout(R.introT); R = null; recomputeMastery(); save(); renderTools();
-  const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, mist: mistakesHtml, dress: dressTabHtml, collect: collectHtml }[HUB_TAB]();
+  const body = { home: homeHtml, rooms: roomsHtml, lab: lensLabHtml, mist: mistakesHtml, dress: dressTabHtml, collect: collectHtml, teach: teacherHtml }[HUB_TAB]();
   $app.innerHTML = `<div class="hub">${body}</div>
-    <nav class="bnav" aria-label="${L("Main sections", "主要部分")}">${HUB_TABS.map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${IC(i)}</span>${L(en, zh)}${k === "mist" && mistakeCount() ? `<span class="nbadge">${mistakeCount()}</span>` : ""}</button>`).join("")}</nav>`;
+    <nav class="bnav${isTeacher() ? " t7" : ""}" aria-label="${L("Main sections", "主要部分")}">${hubTabs().map(([k, i, en, zh]) => `<button data-tab="${k}" ${k === HUB_TAB ? `aria-current="page"` : ""}><span class="i" aria-hidden="true">${IC(i)}</span>${L(en, zh)}${k === "mist" && mistakeCount() ? `<span class="nbadge">${mistakeCount()}</span>` : ""}</button>`).join("")}</nav>`;
   if (moved) window.scrollTo(0, 0);
   const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = () => { SFX.init(); SFX.tap(); fn(); }; };
   $app.querySelectorAll(".bnav [data-tab]").forEach(b => b.onclick = () => { SFX.init(); SFX.tap(); renderMap(b.dataset.tab); });
@@ -4892,6 +4909,7 @@ function renderMap(tab) {
     on("dOff", () => { Object.keys(S.equip).forEach(k => S.equip[k] = null); save(true); refreshDress(); refreshPlayer(); }); }
   if (HUB_TAB === "lab") wireLensLab();
   if (HUB_TAB === "mist") wireMistakes();
+  if (HUB_TAB === "teach") wireTeacher();
   clearInterval(chatT);
   if (document.getElementById("chat")) chatT = setInterval(() => { if (!document.getElementById("chat")) { clearInterval(chatT); return; } if (!$modal.innerHTML) showChat(Math.random() < .5 ? "fact" : "cheer"); }, 20000);
   if (streakPop && !$modal.innerHTML) setTimeout(() => { if (!$modal.innerHTML && streakPop && document.getElementById("chat")) showStreakPop(); }, 500);
@@ -6693,6 +6711,100 @@ window.addEventListener("pagehide", () => {
     const a = getQ(); if (a.length) navigator.sendBeacon(CFGX.API_URL, JSON.stringify({ action: "record", token: AUTH.token, records: a }));
   } catch (e) {}
 });
+
+/* ============================================================
+   Teacher dashboard (only for signed-in teachers). Data comes from the class server's "stats" action.
+   ============================================================ */
+const TEACH = { days: 30, cls: "all", sort: "attn", dir: 1, data: null, loading: false, err: null };
+const isTeacher = () => !!(AUTH.user && AUTH.user.teacher && AUTH.mode === "google");
+const hubTabs = () => isTeacher() ? HUB_TABS.concat([["teach", "chart", "Teacher", "老師"]]) : HUB_TABS;
+const stuName = x => (LANG === "en" ? (x.en || x.zh) : (x.zh || x.en)) || "?";
+const stuAcc = x => x.ans ? Math.round(x.cor / x.ans * 100) : null;
+const daysSince = d => d ? Math.max(0, dayNum(today()) - dayNum(d)) : 999;
+const roomLabel = id => { const r = ROOMS.find(x => x.id === id); return r ? `${SUBJECTS[subjOf(r)].icon} ${r.sec} ${tTopic(r)}` : id; };
+function teachLoad(fresh) {
+  if (TEACH.loading) return; TEACH.loading = true; TEACH.err = null;
+  api("stats", { days: TEACH.days, fresh: fresh ? 1 : 0 }).then(j => {
+    TEACH.loading = false;
+    if (j.ok) TEACH.data = j; else TEACH.err = j.error === "not_teacher" ? L("This account is not marked as a teacher.", "此帳戶不是老師。") : j.error === "unknown_action" ? errText("unknown_action") : errText(j.error);
+    if (HUB_TAB === "teach" && document.getElementById("teachBody")) {
+      document.getElementById("teachBody").innerHTML = teachBody();
+      const sel = document.getElementById("tCls");   // the class list only exists once the data has arrived
+      if (sel && TEACH.data) sel.innerHTML = `<option value="all">${L("All classes", "全部班別")}</option>` + [...new Set(TEACH.data.students.map(x => x.cls).filter(Boolean))].sort().map(c => `<option value="${esc(c)}" ${TEACH.cls === c ? "selected" : ""}>${esc(c)}</option>`).join("");
+    }
+    wireTeacher();
+  });
+}
+function teachRows() {
+  const d = TEACH.data; if (!d) return [];
+  let rows = d.students.filter(x => TEACH.cls === "all" || x.cls === TEACH.cls);
+  const key = {
+    attn: x => { const a = stuAcc(x), idle = daysSince(x.lastDay || x.lastActive); return -(idle >= 7 ? 100 + Math.min(idle, 60) : 0) - (a != null && a < 50 && x.ans >= 10 ? 50 : 0) + (a == null ? 0 : a) / 10; },
+    name: x => x.cls + String(x.no).padStart(3, "0"), acc: x => stuAcc(x) == null ? (TEACH.dir > 0 ? 999 : -1) : stuAcc(x), ans: x => x.ans, streak: x => x.streak, rooms: x => x.roomsDone,
+    stars: x => x.stars, mist: x => x.mistakes, last: x => -daysSince(x.lastDay || x.lastActive)
+  }[TEACH.sort] || (x => 0);
+  return rows.slice().sort((a, b) => { const A = key(a), B = key(b); return (A < B ? -1 : A > B ? 1 : 0) * TEACH.dir; });
+}
+function teachBody() {
+  if (TEACH.err) return `<div class="rules">${esc(TEACH.err)}</div>`;
+  const d = TEACH.data;
+  if (!d) return `<p class="muted">⏳ ${L("Loading class statistics…", "載入班級統計中……")}</p>`;
+  const all = d.students.filter(x => TEACH.cls === "all" || x.cls === TEACH.cls), rows = teachRows();
+  const active = all.filter(x => x.sessions > 0).length, ans = all.reduce((n, x) => n + x.ans, 0), cor = all.reduce((n, x) => n + x.cor, 0);
+  const avg = (f) => all.length ? Math.round(all.reduce((n, x) => n + f(x), 0) / all.length * 10) / 10 : 0;
+  const idle = all.filter(x => daysSince(x.lastDay || x.lastActive) >= 7), low = all.filter(x => x.ans >= 10 && stuAcc(x) < 50);
+  const tile = (ic, v, l, cls) => `<div class="ttile ${cls || ""}"><span class="ti">${ic}</span><b>${v}</b><span class="small">${l}</span></div>`;
+  const tiles = `<div class="ttiles">${tile("👥", `${all.length}`, L("students", "學生"))}${tile("✅", `${active}`, L(`active · ${all.length ? Math.round(active / all.length * 100) : 0}%`, `活躍 · ${all.length ? Math.round(active / all.length * 100) : 0}%`))}
+    ${tile("🎯", ans ? Math.round(cor / ans * 100) + "%" : "–", L("accuracy", "準確率"))}${tile("🚪", all.reduce((n, x) => n + x.roomsDone, 0), L("rooms escaped", "逃出房間"))}
+    ${tile("🔥", avg(x => x.streak), L("avg streak", "平均連續日"))}${tile("📕", avg(x => x.mistakes), L("avg mistakes", "平均錯題"))}</div>`;
+  // topics
+  const trows = Object.entries(d.topics).map(([id, t]) => ({ id, ...t, acc: t.ans ? Math.round(t.cor / t.ans * 100) : null })).filter(t => t.ans).sort((a, b) => a.acc - b.acc);
+  const col = a => a >= 75 ? "#58CC02" : a >= 55 ? "#FFC800" : "#FF6B6B";
+  const topics = trows.length ? `<div class="tbars">${trows.map(t => `<div class="tbrow"><span class="tbl">${esc(roomLabel(t.id))}</span><span class="tbb"><i style="width:${t.acc}%;background:${col(t.acc)}"></i></span><b>${t.acc}%</b><span class="small muted">${t.students} ${L("students", "人")}${t.gameovers ? ` · 💀${t.gameovers}` : ""}</span></div>`).join("")}</div>
+    <p class="small muted">${L("Weakest topics first: good candidates for re-teaching.", "最弱的課題排在最前：適合重溫。")}</p>` : `<p class="muted small">${L("No room records in this period yet.", "此期間未有房間紀錄。")}</p>`;
+  // activity: last 14 days
+  const dayList = Array.from({ length: 14 }, (_, i) => { const t = new Date(); t.setDate(t.getDate() - 13 + i); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`; });
+  const vals = dayList.map(k => d.daily[k] || 0), mx = Math.max(1, ...vals);
+  const chart = `<svg class="tchart" viewBox="0 0 280 90" role="img" aria-label="${L("Questions answered per day, last 14 days", "過去 14 天每日答題數")}">${vals.map((v, i) => `<rect x="${i * 20 + 2}" y="${74 - v / mx * 64}" width="15" height="${Math.max(1, v / mx * 64)}" rx="3" fill="${v ? "#7C6CF0" : "#E4E1F2"}"><title>${dayList[i]}: ${v}</title></rect><text x="${i * 20 + 9.5}" y="86" text-anchor="middle" font-size="7" fill="#8A84A8">${dayList[i].slice(8)}</text>`).join("")}</svg>`;
+  // attention list
+  const attn = [...new Set([...idle, ...low])].slice(0, 12);
+  const attnHtml = attn.length ? `<div class="tattn">${attn.map(x => `<span class="tag">${idle.includes(x) ? "😴" : "⚠️"} ${esc(x.cls)}${x.no ? "-" + esc(x.no) : ""} ${esc(stuName(x))}</span>`).join("")}</div><p class="small muted">😴 ${L("no play for 7+ days", "7 日或以上沒有遊玩")} · ⚠️ ${L("accuracy below 50%", "準確率低於 50%")}</p>` : `<p class="small">🎉 ${L("Everyone is on track.", "全班都在進度內。")}</p>`;
+  const th = (k, t) => `<th><button class="thb" data-tsort="${k}" aria-label="${L("Sort by", "排序：")} ${t}">${t}${TEACH.sort === k ? (TEACH.dir > 0 ? " ▲" : " ▼") : ""}</button></th>`;
+  const table = `<div class="twrap"><table class="ttable"><thead><tr>${th("name", L("Class", "班別"))}<th>${L("Name", "姓名")}</th>${th("last", L("Last play", "最後遊玩"))}${th("streak", "🔥")}${th("rooms", "🚪")}${th("stars", "⭐")}${th("acc", "🎯%")}${th("ans", L("Answered", "答題"))}${th("mist", "📕")}<th>${L("Weakest topic", "最弱課題")}</th></tr></thead>
+    <tbody>${rows.map(x => { const a = stuAcc(x), idl = daysSince(x.lastDay || x.lastActive);
+      return `<tr class="${idl >= 7 ? "tidle" : ""}"><td>${esc(x.cls)}${x.no ? "-" + esc(x.no) : ""}</td><td>${esc(stuName(x))}</td><td>${x.lastDay || x.lastActive ? esc(x.lastDay || x.lastActive) : "–"}</td><td>${x.streak}</td><td>${x.roomsDone}</td><td>${x.stars}</td>
+      <td>${a == null ? "–" : `<b style="color:${col(a)}">${a}</b>`}</td><td>${x.ans}</td><td>${x.mistakes}</td><td>${x.weak ? `${esc(roomLabel(x.weak.room))} (${x.weak.acc}%)` : "–"}</td></tr>`; }).join("")}</tbody></table></div>`;
+  return `${tiles}
+    <div class="twocol"><section class="tsec"><h3>📉 ${L("Topics needing help", "需要加強的課題")}</h3>${topics}</section><section class="tsec"><h3>📆 ${L("Questions answered (14 days)", "每日答題（14 天）")}</h3>${chart}<h3>🚨 ${L("Needs attention", "需要關注")}</h3>${attnHtml}</section></div>
+    <section class="tsec"><h3>🧑‍🎓 ${L("Students", "學生")} <span class="small muted">${rows.length}/${d.listed} · ${L("tap a heading to sort", "按標題排序")}</span></h3>${table}</section>
+    <p class="small muted">${L("Updated", "更新於")} ${new Date(d.generated).toLocaleString()} · ${L("Only students who signed in with Google are counted. Guests are not recorded.", "只計算以 Google 登入的學生，訪客不會被記錄。")}</p>`;
+}
+function teacherHtml() {
+  if (!isTeacher()) return `<section class="card"><h2>📊 ${L("Teacher", "老師")}</h2><p class="muted">${L("Sign in with a teacher account to see class statistics.", "請用老師帳戶登入查看班級統計。")}</p></section>`;
+  if (!TEACH.data && !TEACH.loading && !TEACH.err) setTimeout(() => teachLoad(false), 0);
+  const classes = TEACH.data ? [...new Set(TEACH.data.students.map(x => x.cls).filter(Boolean))].sort() : [];
+  return `<section class="card"><div class="row" style="justify-content:space-between"><h2>📊 ${L("Class statistics", "班級統計")}</h2>
+      <div class="row"><button class="btn plain sm" id="tRefresh" aria-label="${L("Refresh", "重新整理")}">🔄<span class="bl"> ${L("Refresh", "重新整理")}</span></button><button class="btn plain sm" id="tCsv" aria-label="CSV">📥<span class="bl"> CSV</span></button></div></div>
+    <div class="row"><div class="seg" role="radiogroup" aria-label="${L("Period", "期間")}">${[[7, L("7 days", "7 日")], [30, L("30 days", "30 日")], [0, L("All time", "全部")]].map(([d, t]) => `<button role="radio" aria-checked="${TEACH.days === d}" data-tdays="${d}">${t}</button>`).join("")}</div>
+      <label class="small"><span class="muted">${L("Class", "班別")}</span> <select id="tCls" class="tsel"><option value="all">${L("All classes", "全部班別")}</option>${classes.map(c => `<option value="${esc(c)}" ${TEACH.cls === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label></div>
+    <div id="teachBody">${teachBody()}</div></section>`;
+}
+function teachCsv() {
+  const rows = teachRows(), q = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const head = ["Class", "No", "Chinese name", "English name", "Last play", "Streak", "Rooms escaped", "Stars", "Answered", "Correct", "Accuracy %", "Mistakes", "Game overs", "Weakest topic", "Weakest accuracy %"];
+  const lines = [head.map(q).join(",")].concat(rows.map(x => [x.cls, x.no, x.zh, x.en, x.lastDay || x.lastActive, x.streak, x.roomsDone, x.stars, x.ans, x.cor, stuAcc(x) == null ? "" : stuAcc(x), x.mistakes, x.gameovers, x.weak ? roomLabel(x.weak.room) : "", x.weak ? x.weak.acc : ""].map(q).join(",")));
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `class-stats-${today()}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function wireTeacher() {
+  const root = document.getElementById("teachBody"); if (!root) return;
+  const redraw = () => { root.innerHTML = teachBody(); wireTeacher(); };
+  root.querySelectorAll("[data-tsort]").forEach(b => b.onclick = () => { SFX.tap(); const k = b.dataset.tsort; TEACH.dir = TEACH.sort === k ? -TEACH.dir : (k === "name" ? 1 : -1); TEACH.sort = k; redraw(); });
+  const rf = document.getElementById("tRefresh"); if (rf) rf.onclick = () => { SFX.tap(); teachLoad(true); };
+  const cv = document.getElementById("tCsv"); if (cv) cv.onclick = () => { SFX.tap(); if (TEACH.data) teachCsv(); else toast(L("Nothing to export yet", "暫時沒有資料")); };
+  const cl = document.getElementById("tCls"); if (cl) cl.onchange = () => { TEACH.cls = cl.value; redraw(); };
+  document.querySelectorAll("[data-tdays]").forEach(b => b.onclick = () => { SFX.tap(); TEACH.days = +b.dataset.tdays; TEACH.data = null; renderMap("teach"); });
+}
 
 /* ---- account sheet (tap your name in the top bar) ---- */
 function openAccount() {

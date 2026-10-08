@@ -42,6 +42,7 @@ function doPost(e) {
       case 'login': return out({ ok: true, user: user, progress: getProgress(user.email) });
       case 'save': return out(saveResp(user, body));
       case 'record': return out({ ok: true, saved: appendRecords(user, body.records || []) });
+      case 'stats': return out(statsReport(user, body));
       default: return out({ ok: false, error: 'unknown_action' });
     }
   } catch (err) {
@@ -82,6 +83,65 @@ function verifyToken(token) {
   if (left <= 0) return { ok: false, error: 'expired' };
   var res = { ok: true, email: String(p.email).trim().toLowerCase() };
   cache.put(key, JSON.stringify(res), Math.max(1, Math.min(left, 3000)));
+  return res;
+}
+
+/* ---------------- Teacher statistics (teachers only) ---------------- */
+var STAT_ROWS = 6000; // newest record rows that are read
+function ymd(d) { return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd'); }
+function statsReport(user, body) {
+  if (!user.teacher) return { ok: false, error: 'not_teacher' };
+  var days = Math.max(0, Math.min(Number(body.days) || 0, 365));
+  var cache = CacheService.getScriptCache(), ck = 'stats_' + days, hit = cache.get(ck);
+  if (hit && !body.fresh) return JSON.parse(hit);
+  var ss = book();
+  // 1) the class list: students only (staff rows are skipped)
+  var ush = ss.getSheetByName(PROPS.getProperty('USERS_SHEET') || USERS_DEFAULT), uv = ush ? ush.getDataRange().getValues() : [], list = {}, order = [];
+  for (var i = 1; i < uv.length; i++) {
+    var em = String(uv[i][0]).trim().toLowerCase();
+    if (!em || isStaffRole(String(uv[i][1] || ''))) continue;
+    list[em] = { zh: String(uv[i][2] || ''), en: String(uv[i][3] || ''), cls: String(uv[i][4] || ''), no: uv[i][5] === '' || uv[i][5] == null ? '' : String(uv[i][5]) };
+    order.push(em);
+  }
+  // 2) saved progress summary (columns A-L)
+  var psh = ss.getSheetByName(PROG), pmap = {};
+  if (psh && psh.getLastRow() > 1) {
+    var pv = psh.getRange(2, 1, psh.getLastRow() - 1, DATA_COL - 1).getValues();
+    pv.forEach(function (r) { pmap[String(r[0]).toLowerCase()] = { streak: num(r[2]), best: num(r[3]), stars: num(r[4]), rooms: num(r[5]), coins: num(r[6]), mistakes: num(r[7]), trophies: num(r[8]), days: num(r[9]), lastDay: String(r[10] || ''), score: num(r[11]) }; });
+  }
+  // 3) records in the chosen period
+  var rsh = ss.getSheetByName(REC), agg = {}, topics = {}, daily = {}, cutoff = days ? new Date(Date.now() - days * 86400000) : null;
+  if (rsh && rsh.getLastRow() > 1) {
+    var last = rsh.getLastRow(), n = Math.min(STAT_ROWS, last - 1);
+    var rv = rsh.getRange(last - n + 1, 1, n, REC_HEAD.length).getValues();
+    rv.forEach(function (r) {
+      var ts = r[0] instanceof Date ? r[0] : new Date(r[0]);
+      if (cutoff && ts < cutoff) return;
+      var em = String(r[2]).toLowerCase(); if (!list[em]) return;
+      var mode = String(r[8]), room = String(r[9] || ''), ans = num(r[10]), cor = num(r[11]);
+      var a = agg[em] || (agg[em] = { ans: 0, cor: 0, sessions: 0, escapes: 0, gameovers: 0, studies: 0, last: 0, rooms: {} });
+      a.ans += ans; a.cor += cor; a.sessions++; if (ts.getTime() > a.last) a.last = ts.getTime();
+      if (/Escape/i.test(mode)) { if (/Game over/i.test(String(r[16]))) a.gameovers++; else a.escapes++; }
+      if (/Study/i.test(mode)) a.studies++;
+      if (room) {
+        var x = a.rooms[room] || (a.rooms[room] = { ans: 0, cor: 0 }); x.ans += ans; x.cor += cor;
+        var t = topics[room] || (topics[room] = { sessions: 0, ans: 0, cor: 0, gameovers: 0, who: {} });
+        t.sessions++; t.ans += ans; t.cor += cor; t.who[em] = 1; if (/Game over/i.test(String(r[16]))) t.gameovers++;
+      }
+      var d = ymd(ts); daily[d] = (daily[d] || 0) + ans;
+    });
+  }
+  var students = order.map(function (em) {
+    var p = pmap[em] || {}, a = agg[em] || { ans: 0, cor: 0, sessions: 0, escapes: 0, gameovers: 0, studies: 0, last: 0, rooms: {} }, weak = null;
+    Object.keys(a.rooms).forEach(function (k) { var x = a.rooms[k]; if (x.ans >= 10) { var acc = Math.round(x.cor / x.ans * 100); if (!weak || acc < weak.acc) weak = { room: k, acc: acc, ans: x.ans }; } });
+    return { zh: list[em].zh, en: list[em].en, cls: list[em].cls, no: list[em].no, signedIn: !!pmap[em],
+      streak: p.streak || 0, best: p.best || 0, stars: p.stars || 0, roomsDone: p.rooms || 0, coins: p.coins || 0, mistakes: p.mistakes || 0, trophies: p.trophies || 0,
+      daysPlayed: p.days || 0, lastDay: p.lastDay || '', score: p.score || 0,
+      ans: a.ans, cor: a.cor, sessions: a.sessions, escapes: a.escapes, gameovers: a.gameovers, studies: a.studies, lastActive: a.last ? ymd(new Date(a.last)) : '', weak: weak };
+  });
+  var tout = {}; Object.keys(topics).forEach(function (k) { var t = topics[k]; tout[k] = { sessions: t.sessions, ans: t.ans, cor: t.cor, students: Object.keys(t.who).length, gameovers: t.gameovers }; });
+  var res = { ok: true, generated: new Date().toISOString(), days: days, listed: order.length, students: students, topics: tout, daily: daily };
+  try { var js = JSON.stringify(res); if (js.length < 95000) cache.put(ck, js, 90); } catch (e) {}
   return res;
 }
 

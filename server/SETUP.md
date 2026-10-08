@@ -53,6 +53,16 @@ window.S3_CONFIG = { GOOGLE_CLIENT_ID: "…apps.googleusercontent.com", API_URL:
 
 ---
 
+## Step 7 · Teacher statistics (📊 Teacher tab)
+- A signed-in **teacher** gets an extra **📊 Teacher** tab. Students never see it, and the server refuses the request for anyone who is not a teacher.
+- Who is a teacher: every user whose **Role** is `教職員`, or only the emails in the `TEACHER_EMAILS` script property if you set it.
+- The tab shows: class summary, **topics needing help** (weakest first), questions answered per day (14 days), students who need attention (no play for 7+ days, or accuracy under 50%), a sortable **student table** (class, last play, streak, rooms, stars, accuracy, mistakes, weakest topic), a class filter, a 7 / 30 days / all-time switch and a **CSV export** for Excel.
+- Only students who **signed in with Google** are counted. Guests are not recorded.
+- Names stay in your private Sheet and appear only on the teacher's screen after sign-in. The server never sends email addresses to the browser.
+- If you set up the server **before** this feature existed, update it: paste the new `Code.gs`, then **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
+
+---
+
 ### Good to know
 - **Adding students later:** add rows to `使用者 Users`. Changes apply within 5 minutes.
 - **"Access blocked" for students:** your school's Google Workspace may block new apps. Ask IT to mark the Client ID as **Trusted** in Admin console → Security → API controls.
