@@ -390,7 +390,8 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .topics .tbar { height: 10px; border: 0; border-radius: 999px; background: #EFE7DF; box-shadow: inset 0 2px 0 rgba(0,0,0,.05); overflow: hidden; } .topics .tbar i { display: block; height: 100%; border-radius: 999px; background: var(--pinkfill); }
 .twocol { display: grid; gap: 14px; } @media (min-width: 760px) { .twocol { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
 .dressgrid { display: grid; gap: 14px; } @media (min-width: 820px) { .dressgrid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; } .dressgrid .nest { position: sticky; top: 84px; } }
-.dressgrid > *, .homegrid > *, #dPane, .twocol > * { min-width: 0; }
+.dressgrid > *, .dressgrid .nest, .homegrid > *, #dPane, .twocol > * { min-width: 0; }
+.coinic .ic { width: 1.15em; height: 1.15em; vertical-align: -.25em; }
 .dinfo { justify-items: stretch; }
 .dinfo > * { min-width: 0; max-width: 100%; overflow-wrap: anywhere; white-space: normal; line-height: 1.5; }
 .dinfo > .pill { justify-self: start; }
@@ -398,7 +399,7 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .sitem { min-width: 0; overflow-wrap: anywhere; } .sitem .btn { white-space: normal; max-width: 100%; }
 .sitem .req { line-height: 1.35; }
 .hs.lockdown { filter: grayscale(1); outline: 3px dashed #E0567E; }
-.dinfo { display: grid; gap: 8px; padding: 12px 16px 16px; justify-items: start; }
+.dinfo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 16px 16px; justify-items: start; }
 .slotbar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
 .slotbar .tab { white-space: nowrap; flex: 0 0 auto; }
 @media (max-width: 560px) { .scene { height: 230px; } .acts { gap: 8px; } .act { min-height: 78px; } .meter { font-size: .85rem; gap: 8px; } }
@@ -4361,6 +4362,26 @@ var UI_ICONS={
  pen:'<g transform="rotate(40 12 12)"><rect x="9.6" y="2.4" width="4.8" height="14" rx="1.2" fill="#FF86D0"/><rect x="12.6" y="2.4" width="1.8" height="14" fill="#E060AE"/><path d="M9.6 16.4h4.8L12 21.4Z" fill="#FFE2B0"/><path d="M11.3 19.8h1.4L12 21.4Z" fill="#4B4B4B"/></g>'
 };
 function IC(n,c){var d=UI_ICONS[n];if(!d)return '';return '<svg class="ic'+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+d+'</svg>';}
+
+/* Show every 🪙 as the gold vector coin (the emoji renders silver on Apple devices) */
+(function () {
+  const sk = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, TITLE: 1 };
+  function fix(root) {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.includes("🪙") && !sk[n.parentNode.nodeName] ? 1 : 2 }), list = [];
+    while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(n => {
+      const f = document.createDocumentFragment();
+      n.nodeValue.split("🪙").forEach((part, i) => {
+        if (i) { const s = document.createElement("span"); s.className = "coinic"; s.innerHTML = IC("coin"); f.appendChild(s); }
+        if (part) f.appendChild(document.createTextNode(part));
+      });
+      n.parentNode.replaceChild(f, n);
+    });
+  }
+  const mo = new MutationObserver(() => { mo.disconnect(); try { fix(document.body); } finally { mo.observe(document.body, { childList: true, subtree: true, characterData: true }); } });
+  function start() { fix(document.body); mo.observe(document.body, { childList: true, subtree: true, characterData: true }); }
+  if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+})();
 
 /* ============================================================
    7. Top bar
