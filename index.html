@@ -458,6 +458,43 @@ body:has(.bnav) footer { padding-bottom: calc(96px + env(safe-area-inset-bottom,
 .labrules { display: grid; gap: 6px; align-content: start; font-size: .92rem; }
 .missions { display: grid; gap: 6px; } .mission { border: 2px dashed var(--edge-2); border-radius: 12px; padding: 6px 10px; font-size: .92rem; background: #fff; }
 .mission.done { border-style: solid; background: var(--green); }
+/* Lab challenge: 🎯 step → simulator → question in one view (side by side on wide screens) */
+.lch.intro { background: linear-gradient(135deg, #FFF6CF, #FFE9F0); border-color: #F2C94C; }
+.lchwrap { display: flex; flex-direction: column; gap: 12px; }
+.lchside { display: contents; }
+.lchtop { order: 1; display: grid; gap: 10px; } .lchsim { order: 2; display: grid; gap: 10px; } .lchask { order: 3; display: grid; gap: 10px; }
+.lchwrap.snap .lchsim { display: none; }
+.lchhead { justify-content: space-between; align-items: center; gap: 8px; flex-wrap: nowrap; }
+.lchdots { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; justify-content: center; min-width: 0; }
+.lchdots i { width: 8px; height: 8px; border-radius: 50%; background: #E4DED6; } .lchdots i.on { background: #6BD48A; } .lchdots i.cur { background: #FFD84D; box-shadow: 0 0 0 2px #E0A800; }
+.lchneed { border: 3px dashed #E0A800; background: #FFF6CF; border-radius: 18px; padding: 10px 12px; display: grid; gap: 8px; animation: needpulse 1.6s ease-in-out infinite; }
+.lchneed.done { border-style: solid; border-color: #23A45A; background: #E6F7EC; animation: none; }
+.lchneed.snap { border-style: solid; border-color: #A98BE8; background: #F4EFFF; animation: none; }
+@keyframes needpulse { 50% { box-shadow: 0 0 0 6px rgba(224,168,0,.2); } }
+.lchtask { display: flex; gap: 10px; align-items: flex-start; } .lchbig { font-size: 1.9rem; line-height: 1; }
+.lchstep { display: block; font-size: .8rem; letter-spacing: .02em; color: #8C6A00; } .lchneed.done .lchstep { color: #1D7A43; } .lchneed.snap .lchstep { color: #6B3FC0; }
+.lchsteps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: .9rem; }
+.lchsteps li { background: #fff; border: 2px solid var(--edge); border-radius: 10px; padding: 4px 8px; } .lchsteps li.ok { background: #F0FAF3; border-color: #9ED9B0; }
+.lchsteps .now { color: var(--ink-soft); font-size: .82rem; } .lchsteps .dir { display: block; font-weight: 800; color: #B35C00; }
+.lchnow[hidden], .lchlock[hidden] { display: none; }
+.lchsim #labSvg { order: -3; } .lchsim .labslide, .lchsim .presets { order: -2; }
+.lchnow { color: #1D7A43; display: grid; gap: 2px; animation: popin .3s; }
+.lchsnap svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+.lchask .q { margin: 0; font-size: 1.08rem; }
+.lchlock { text-align: center; font-weight: 800; color: #8C6A00; background: #FFF9E0; border: 2px dashed #F2C94C; border-radius: 12px; padding: 6px; }
+.choices.locked .choice { opacity: .45; filter: grayscale(.5); }
+.choices.unlocked .choice:not(:disabled) { animation: popin .35s; }
+.lab .zone .lt { font-size: 30px; }
+@media (min-width: 900px) {
+  .lchwrap { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr); align-items: start; gap: 16px; }
+  .lchside { display: grid; gap: 12px; position: sticky; top: 72px; max-height: calc(100vh - 170px); overflow-y: auto; overscroll-behavior: contain; padding: 2px 4px 2px 0; }
+}
+/* Answer feedback sticks to the bottom of the screen, so the question and answers stay in view and Next is always reachable */
+#stFb, #prFb, #lchFb, .modal #pfb { position: sticky; bottom: 0; z-index: 6; }
+.lab #lchFb { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 900px) { .lab #lchFb { bottom: 0; } }
+#stFb > .fb, #prFb > .fb, #lchFb > .fb, .modal #pfb > .fb { max-height: min(40vh, 400px); overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 -8px 22px rgba(91,75,73,.18); border: 2px solid rgba(91,75,73,.12); }
+#stFb > .fb > .row:last-child, #prFb > .fb > .row:last-child, #lchFb > .fb > .row:last-child, .modal #pfb > .fb > .row:last-child { position: sticky; bottom: -12px; margin: 0 -14px -12px; padding: 8px 14px 12px; background: inherit; border-radius: 0 0 16px 16px; }
 .seg.big button { min-height: 48px; font-size: 1rem; padding: 8px 18px; }
 .topic.study { background: #F2FFF5; }
 .escinfo { background: #FFF0F0; }
@@ -5133,7 +5170,7 @@ function renderMap(tab) {
 /* ============================================================
    Lens Lab: drag the object and watch the three textbook rays form the image
    ============================================================ */
-const LAB = { tab: "lens", kind: "convex", u: 3, rays: [true, true, true], obj: "arrow", d: 3, eye: 200, mat: "glass", ang: 30 };
+const LAB = { tab: "mirror", kind: "convex", u: 3, rays: [true, true, true], obj: "arrow", d: 3, eye: 200, mat: "glass", ang: 30 };
 const LX = 400, AY = 215, FPX = 80, OBJ_H = 60, LH = 400;   // lens position, principal axis, focal length (px), object height (px)
 const OBJ_KINDS = [["arrow", "➡️", "Arrow", "箭號"], ["pencil", "✏️", "Pencil", "鉛筆"], ["doll", "🎤", "Pop-star doll", "歌星公仔"]];
 // Objects are drawn standing on y = 0 and reaching up to y = −60, so they can be scaled or flipped into images
@@ -5221,53 +5258,179 @@ const LAB_CHALLENGE = {
 const LCH = { runs: {} };
 const labStateNow = tab => tab === "lens" ? labSolve() : tab === "mirror" ? mirSolve() : tirSolve();
 function labSnap(tab, patch) {
-  const keep = JSON.parse(JSON.stringify(LAB)); Object.assign(LAB, JSON.parse(JSON.stringify(patch)));
-  try { return (tab === "lens" ? labSvg() : tab === "mirror" ? mirSvg() : tirSvg()); } finally { Object.assign(LAB, keep); }
+  const keep = JSON.parse(JSON.stringify(LAB)); Object.assign(LAB, JSON.parse(JSON.stringify(patch))); LCH.snapping = true;
+  try { return (tab === "lens" ? labSvg() : tab === "mirror" ? mirSvg() : tirSvg()); } finally { Object.assign(LAB, keep); LCH.snapping = false; }
 }
 const LCH_NAME = { lens: ["Lenses", "透鏡"], mirror: ["Plane mirror", "平面鏡"], tir: ["Total internal reflection", "全內反射"] };
-function lchHtml() {
+/* ---------- Challenge cues: work out what each 🎯 step wants by trying every simulator setting ---------- */
+const nums = (a, b, st) => Array.from({ length: Math.round((b - a) / st) + 1 }, (_, k) => +(a + k * st).toFixed(2));
+const RAY_SETS = [7, 4, 1, 2, 3, 5, 6, 0].map(n => [!!(n & 1), !!(n & 2), !!(n & 4)]);
+const LCH_DIMS = {
+  lens: [["kind", ["convex", "concave"]], ["obj", ["arrow", "pencil", "doll"]], ["rays", RAY_SETS], ["u", nums(0.3, 4, 0.05)]],
+  mirror: [["obj", ["arrow", "pencil", "doll"]], ["d", nums(0.5, 7, 0.1)], ["eye", nums(60, 320, 4)]],
+  tir: [["mat", ["water", "glass", "diamond"]], ["ang", nums(0, 85, 0.5)]]
+};
+const NUM_DIMS = ["u", "d", "eye", "ang"], HOME = { u: 3, d: 3, eye: 200, ang: 30 };
+const sameV = (a, b) => a === b || (Array.isArray(a) && String(a) === String(b));
+const setLab = st => Object.keys(st).forEach(k => { LAB[k] = Array.isArray(st[k]) ? st[k].slice() : st[k]; });
+function lchPass(tab, q) {   // every simulator setting that completes the step (worked out once per question)
+  if (q._pass) return q._pass;
+  const dims = LCH_DIMS[tab], keep = JSON.parse(JSON.stringify(LAB)), pass = [], cur = {};
+  const walk = k => { if (k === dims.length) { setLab(cur); let ok = false; try { ok = q.need[2](); } catch (e) {} if (ok) pass.push(Object.assign({}, cur)); return; }
+    for (const v of dims[k][1]) { cur[dims[k][0]] = v; walk(k + 1); } };
+  try { walk(0); } finally { Object.assign(LAB, keep); }
+  return (q._pass = pass);
+}
+function lchSteps(tab, q) {   // the parts of the step: done or not, with the target and which way to move
+  const pass = lchPass(tab, q), dims = LCH_DIMS[tab], steps = [], pick = {};
+  if (!pass.length) return steps;
+  dims.forEach(([k, all]) => { if (NUM_DIMS.includes(k)) return;
+    const ok = all.filter(v => pass.some(p => sameV(p[k], v)));
+    pick[k] = ok.some(v => sameV(v, LAB[k])) ? LAB[k] : ok[0];
+    if (ok.length < all.length) steps.push({ k, ok, done: ok.some(v => sameV(v, LAB[k])) }); });
+  dims.forEach(([k, all]) => { if (!NUM_DIMS.includes(k)) return;
+    let rows = pass.filter(p => Object.keys(pick).every(c => sameV(p[c], pick[c])));
+    dims.forEach(([o]) => { if (o !== k && NUM_DIMS.includes(o)) { const near = rows.filter(p => Math.abs(p[o] - LAB[o]) < 1e-6); if (near.length) rows = near; } });
+    const vals = [...new Set(rows.map(p => p[k]))].sort((x, y) => x - y), st = all[1] - all[0];
+    if (!vals.length || vals.length === all.length) return;
+    const ranges = []; vals.forEach(v => { const r = ranges[ranges.length - 1]; if (r && v - r[1] <= st * 1.01) r[1] = v; else ranges.push([v, v]); });
+    const v = LAB[k], inR = ranges.some(([x, y]) => v >= x - 1e-6 && v <= y + 1e-6);
+    const dir = inR ? 0 : ranges.reduce((m, [x, y]) => { const d = v < x ? x - v : v - y; return d < m[0] ? [d, v < x ? 1 : -1] : m; }, [1e9, 0])[1];
+    steps.push({ k, ranges, lo: all[0], hi: all[all.length - 1], st, done: inR, dir });
+  });
+  return steps;
+}
+function lchUnset(tab, q) {   // a new question starts with the step NOT done yet, so students really use the simulator
+  if (!q.need || !q.need[2]()) return;
+  const dims = LCH_DIMS[tab], fails = () => { try { return !q.need[2](); } catch (e) { return false; } };
+  for (const [k, all] of dims) { if (!NUM_DIMS.includes(k)) continue;
+    const keep = LAB[k], good = all.filter(v => { LAB[k] = v; return !fails(); }), gap = (all[all.length - 1] - all[0]) * .2;
+    const order = all.filter(v => !good.includes(v)).sort((x, y) => Math.abs(x - HOME[k]) - Math.abs(y - HOME[k]));
+    const v = order.find(x => good.every(g => Math.abs(g - x) >= gap)) ?? order[0];
+    if (v !== undefined) { LAB[k] = v; return; } LAB[k] = keep; }
+  for (const [k, all] of dims) { if (NUM_DIMS.includes(k)) continue;
+    const keep = Array.isArray(LAB[k]) ? LAB[k].slice() : LAB[k];
+    for (const v of all) { LAB[k] = Array.isArray(v) ? v.slice() : v; if (fails()) return; } LAB[k] = keep; }
+}
+const NUM_TXT = { u: () => L("Object distance u", "物距 u"), d: () => L("Object distance", "物距"), eye: () => L("Eye slider", "眼睛滑桿"), ang: () => L("Angle of incidence i", "入射角 i") };
+const fmtN = (k, v) => k === "ang" ? `${+v.toFixed(1)}°` : k === "d" ? `${v.toFixed(1)} ${L("sq", "格")}` : k === "eye" ? `${Math.round(v)}` : `${+v.toFixed(2)}`;
+const DIR_TXT = {
+  u: () => [L("⬅ drag the object away from the lens", "⬅ 把物體拉離透鏡"), L("➡ drag the object closer to the lens", "➡ 把物體移近透鏡")],
+  d: () => [L("⬅ move the object away from the mirror", "⬅ 把物體移離鏡子"), L("➡ move the object closer to the mirror", "➡ 把物體移近鏡子")],
+  eye: () => [L("⬇ move the eye down", "⬇ 把眼睛向下移"), L("⬆ move the eye up", "⬆ 把眼睛向上移")],
+  ang: () => [L("↗ make the angle bigger", "↗ 把角度調大"), L("↘ make the angle smaller", "↘ 把角度調細")]
+};
+const CAT_TXT = {
+  kind: v => `${L("Lens", "透鏡")}: <b>${v === "convex" ? L("convex", "凸透鏡") : L("concave", "凹透鏡")}</b>`,
+  obj: v => { const o = OBJ_KINDS.find(x => x[0] === v); return `${L("Object", "物體")}: <b>${o[1]} ${L(o[2], o[3])}</b>`; },
+  mat: v => `${L("Material", "物質")}: <b>${L(TIR_MATS[v][1], TIR_MATS[v][2])}</b>`,
+  rays: v => `${L("Rays", "光線")}: <b>${v.some(Boolean) ? v.map((x, i) => x ? L(`Rule ${i + 1}`, `規則 ${i + 1}`) : "").filter(Boolean).join(" + ") + L(" only", "（只選這些）") : L("none", "全部不選")}</b>`
+};
+function rangeTxt(s) {
+  return s.ranges.map(([a, b]) => b - a < s.st * 2.5 ? `≈ ${fmtN(s.k, (a + b) / 2)}` : b >= s.hi - 1e-6 ? `≥ ${fmtN(s.k, a)}` : a <= s.lo + 1e-6 ? `≤ ${fmtN(s.k, b)}` : `${fmtN(s.k, a)} – ${fmtN(s.k, b)}`).join(L(" or ", " 或 "));
+}
+function lchStepsHtml(tab, q) {
+  return lchSteps(tab, q).map(s => `<li class="${s.done ? "ok" : ""}">${s.done ? "✅" : "👉"} ${s.ranges
+    ? `${NUM_TXT[s.k]()}: <b>${rangeTxt(s)}</b> <span class="now">(${L("now", "現在")} ${fmtN(s.k, LAB[s.k])})</span>${s.done ? "" : `<span class="dir">${DIR_TXT[s.k]()[s.dir > 0 ? 0 : 1]}</span>`}`
+    : CAT_TXT[s.k](s.ok[0])}</li>`).join("");
+}
+function lchZone() {   // green 🎯 target zone drawn on the live simulator
+  const tab = LAB.tab, run = LCH.runs[tab];
+  if (LCH.snapping || !run || run.answered || run.i >= LAB_CHALLENGE[tab].length) return "";
+  const q = LAB_CHALLENGE[tab][run.i]; if (!q.need) return "";
+  const ok = q.need[2](), G = ok ? "#1D8A4A" : "#2E9E5B", fill = ok ? "rgba(35,164,90,.24)" : "rgba(52,199,89,.13)";
+  const box = (x1, x2, y1, y2, tx, ty) => `<g class="zone" pointer-events="none"><rect x="${Math.min(x1, x2).toFixed(1)}" y="${y1.toFixed(1)}" width="${Math.max(14, Math.abs(x2 - x1)).toFixed(1)}" height="${(y2 - y1).toFixed(1)}" rx="10" fill="${fill}" stroke="${G}" stroke-width="3" stroke-dasharray="${ok ? "0" : "9 6"}"/><text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" class="lt" fill="${G}">${ok ? "✅" : "🎯"}</text></g>`;
+  const guide = (x, x1, x2, y) => {   // dashed arrow from the object to the nearest edge of the zone
+    if (ok || (x >= Math.min(x1, x2) && x <= Math.max(x1, x2))) return "";
+    const to = x < Math.min(x1, x2) ? Math.min(x1, x2) : Math.max(x1, x2), d = to > x ? 1 : -1;
+    return `<g class="zone" pointer-events="none"><line x1="${x.toFixed(1)}" y1="${y}" x2="${(to - d * 14).toFixed(1)}" y2="${y}" stroke="${G}" stroke-width="5" stroke-dasharray="10 7" stroke-linecap="round"/><path d="M${to.toFixed(1)} ${y} l${-d * 18} -11 v22 Z" fill="${G}"/></g>`;
+  };
+  let out = "";
+  lchSteps(tab, q).filter(s => s.ranges).forEach(s => s.ranges.forEach(([a, b]) => {
+    if (s.k === "u") { const x1 = LX - b * FPX - 7, x2 = LX - a * FPX + 7; out += box(x1, x2, AY - OBJ_H - 36, AY + 22, (x1 + x2) / 2, AY - OBJ_H - 44) + guide(LX - LAB.u * FPX, x1, x2, AY + 44); }
+    if (s.k === "d") { const x1 = MX - b * UNIT - 9, x2 = MX - a * UNIT + 9; out += box(x1, x2, FY - 60 * MS - 30, FY + 10, (x1 + x2) / 2, FY - 60 * MS - 38) + guide(MX - LAB.d * UNIT, x1, x2, FY - 60 * MS - 70); }
+    if (s.k === "eye") out += box(32, 92, a - 16, b + 16, 120, (a + b) / 2 + 8);
+    if (s.k === "ang") {
+      const r = RAD + 22, w = b - a < 2 ? 1.2 : 0, a1 = a - w, a2 = b + w, rad = d => d * Math.PI / 180, pt = (d, rr) => [OX - rr * Math.sin(rad(d)), OY + rr * Math.cos(rad(d))];
+      const [x1, y1] = pt(a1, r), [x2, y2] = pt(a2, r), [tx, ty] = pt((a1 + a2) / 2, r + 34);
+      out += `<g class="zone" pointer-events="none"><path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${G}" stroke-opacity="${ok ? .8 : .5}" stroke-width="18" stroke-linecap="round"/><text x="${tx.toFixed(1)}" y="${(ty + 8).toFixed(1)}" text-anchor="middle" class="lt" fill="${G}">${ok ? "✅" : "🎯"}</text></g>`;
+    }
+  }));
+  return out;
+}
+const LOOK = {
+  lens: () => L("Look at the purple image: upright or upside down? Bigger or smaller? Which side of the lens?", "看紫色的像：正立還是倒立？放大還是縮小？在透鏡哪一邊？"),
+  mirror: () => L("Compare the object with the purple image: size, distance, left and right.", "比較物體和紫色的像：大小、距離、左右。"),
+  tir: () => L("Follow the red ray: does it leave the block or bounce back inside?", "跟着紅色光線：它離開玻璃塊，還是反射回去？")
+};
+function lchHtml() {   // before and after a challenge run
   const tab = LAB.tab, qs = LAB_CHALLENGE[tab], run = LCH.runs[tab], rec = S.lab_ch[tab] || {};
   const head = `<h3>🧪 ${L("Lab challenge", "實驗挑戰")}: ${L(...LCH_NAME[tab])}</h3>`;
-  if (!run) return `<section class="lch card" aria-live="polite">${head}
-    <p class="small">${L(`${qs.length} questions. Most ask you to <b>set up the simulator yourself</b> and observe, so try it on purpose. Some show a picture instead.`, `共 ${qs.length} 題。大部分題目要你<b>親手設定模擬器</b>再觀察，請有目的地操作。有些題目會附圖。`)}</p>
-    <div class="row"><button class="btn big" id="lchGo">▶ ${rec.best != null ? L("Try again", "再試一次") : L("Start the challenge", "開始挑戰")}</button>${rec.best != null ? `<span class="pill">🏅 ${L("Best", "最佳")} ${rec.best}/${qs.length}</span>` : ""}<span class="small muted">${L("12+ right on first try = +30 🪙 (first time)", "首次一次答對 12 題或以上 = +30 🪙")}</span></div></section>`;
-  if (run.i >= qs.length) return `<section class="lch card">${head}<h2>${run.right >= 12 ? "🎉" : "💪"} ${run.right} / ${qs.length}</h2>
-    <p>${run.right >= 12 ? L("Excellent! You really used the simulator.", "太好了！你確實有善用模擬器。") : L("Good try. Go back to the simulator and test each idea, then try again for 12+.", "不錯。回到模擬器逐一測試，再試一次爭取 12 題或以上。")}</p>
-    ${run.coins ? `<p><span class="pill coinpill">+${run.coins} 🪙</span></p>` : ""}<div class="row"><button class="btn big" id="lchGo">🔁 ${L("Try again", "再試一次")}</button></div></section>`;
-  const q = qs[run.i];
-  const dots = qs.map((_, k) => `<i style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 2px;background:${k < run.i ? "#6BD48A" : k === run.i ? "#FFD84D" : "#E4DED6"}"></i>`).join("");
-  return `<section class="lch card" aria-live="polite">${head}<div class="row" style="justify-content:space-between"><b>${L("Question", "第")} ${run.i + 1} / ${qs.length}${LANG === "zh" ? " 題" : ""}</b><span class="small">✅ ${run.right}</span></div><div>${dots}</div>
-    ${q.need ? `<div class="rules" id="lchNeed"><b>🎯 ${L("Try it in the simulator:", "在模擬器中試試：")}</b> ${L(q.need[0], q.need[1])} <span id="lchTick">⬜</span></div>` : `<div class="lchsnap" style="max-width:520px">${labSnap(tab, q.snap)}</div>`}
-    <p class="q">${L(...q.q)}</p>
-    <div class="choices" id="lchCh">${run.order.map((k, n) => `<button class="choice ${run.dead.includes(k) ? "wrong" : ""}" data-k="${k}" ${run.dead.includes(k) ? "disabled" : ""}><b>${"ABCD"[n]}</b><span>${L(...q.ch[k])}</span></button>`).join("")}</div>
-    <div id="lchFb" aria-live="polite">${run.answered ? lchFb(q) : ""}</div></section>`;
+  if (!run) return `<section class="lch card intro" aria-live="polite">${head}
+    ${chipRow([["📝", L(`${qs.length} questions`, `${qs.length} 題`)], ["🎯", L("Set up the sim", "設定模擬器")], ["👀", L("Look", "觀察")], ["✅", L("Answer", "作答")]])}
+    <div class="row"><button class="btn big yellow" id="lchGo">▶ ${rec.best != null ? L("Try again", "再試一次") : L("Start the challenge", "開始挑戰")}</button>${rec.best != null ? `<span class="pill">🏅 ${L("Best", "最佳")} ${rec.best}/${qs.length}</span>` : ""}<span class="small muted">${L("12+ first try = +30 🪙", "首次答對 12 題或以上 = +30 🪙")}</span></div></section>`;
+  return `<section class="lch card intro">${head}<h2>${run.right >= 12 ? "🎉" : "💪"} ${run.right} / ${qs.length}</h2>
+    <p>${run.right >= 12 ? L("Excellent! You really used the simulator.", "太好了！你確實有善用模擬器。") : L("Good try. Test each idea in the simulator, then go for 12+.", "不錯。在模擬器逐一測試，再爭取 12 題或以上。")}</p>
+    ${run.coins ? `<p><span class="pill coinpill">+${run.coins} 🪙</span></p>` : ""}<div class="row"><button class="btn big yellow" id="lchGo">🔁 ${L("Try again", "再試一次")}</button><button class="btn plain" id="lchQuit">✕ ${L("Close", "關閉")}</button></div></section>`;
+}
+function lchTopHtml() {
+  const tab = LAB.tab, qs = LAB_CHALLENGE[tab], run = LCH.runs[tab], q = qs[run.i];
+  const dots = qs.map((_, k) => `<i class="${k < run.i ? "on" : k === run.i ? "cur" : ""}"></i>`).join("");
+  const ok = q.need && q.need[2]();
+  return `<div class="row lchhead"><b>🧪 ${LANG === "zh" ? `第 ${run.i + 1} / ${qs.length} 題` : `Q ${run.i + 1} / ${qs.length}`}</b><span class="lchdots" aria-hidden="true">${dots}</span><span class="small">✅ ${run.right}</span><button class="btn plain sm" id="lchQuit" aria-label="${L("Stop the challenge", "停止挑戰")}">✕</button></div>
+    ${q.need ? `<div class="lchneed ${ok ? "done" : ""}" id="lchNeed"><div class="lchtask"><span class="lchbig">🎯</span><div><b class="lchstep">${L("Step 1 · Set up the simulator", "第 1 步 · 設定模擬器")}</b><div>${L(q.need[0], q.need[1])}</div></div></div>
+        <ul class="lchsteps" id="lchSteps">${lchStepsHtml(tab, q)}</ul>
+        <div class="lchnow" id="lchNow" ${ok ? "" : "hidden"}><b>✅ ${L("Done! Step 2 · Look, then answer 👇", "完成！第 2 步 · 觀察，然後作答 👇")}</b><span class="small">👀 ${LOOK[tab]()}</span></div></div>`
+      : `<div class="lchneed snap"><div class="lchtask"><span class="lchbig">👀</span><div><b class="lchstep">${L("Look at the picture", "看看這幅圖")}</b><div class="small">${LOOK[tab]()}</div></div></div><div class="lchsnap">${labSnap(tab, q.snap)}</div></div>`}`;
+}
+function lchAskHtml() {
+  const tab = LAB.tab, run = LCH.runs[tab], q = LAB_CHALLENGE[tab][run.i], locked = q.need && !q.need[2]() && !run.answered;
+  return `<p class="q">${L(...q.q)}</p>
+    <div class="lchlock" id="lchLock" ${locked ? "" : "hidden"}>🔒 ${L("Finish the 🎯 step to unlock the answers", "先完成 🎯 步驟，才可作答")}</div>
+    <div class="choices ${locked ? "locked" : ""}" id="lchCh">${run.order.map((k, n) => `<button class="choice ${run.dead.includes(k) ? "wrong" : ""} ${run.answered && k === 0 ? "right" : ""}" data-k="${k}" ${run.dead.includes(k) || run.answered || locked ? "disabled" : ""}><b>${"ABCD"[n]}</b><span>${L(...q.ch[k])}</span></button>`).join("")}</div>
+    <div id="lchFb" aria-live="polite">${run.answered ? lchFb(q) : ""}</div>`;
 }
 const lchFb = q => `<div class="fb ok"><p><b>✅ ${L("Correct!", "答對了！")}</b> ${L(...q.why)}</p><div class="row"><button class="btn big" id="lchNext">${L("Next ➜", "下一題 ➜")}</button></div></div>`;
 function lchSync() {
   const tab = LAB.tab, run = LCH.runs[tab]; if (!run || run.i >= LAB_CHALLENGE[tab].length) return;
   const q = LAB_CHALLENGE[tab][run.i], root = document.getElementById("lchCh"); if (!root) return;
-  const ok = !q.need || q.need[2]();
-  const tick = document.getElementById("lchTick"); if (tick) tick.textContent = ok ? "✅" : "⬜";
-  const nd = document.getElementById("lchNeed"); if (nd) nd.classList.toggle("done", ok);
+  const ok = !q.need || q.need[2](), nd = document.getElementById("lchNeed");
+  if (nd) {
+    const was = nd.classList.contains("done"); nd.classList.toggle("done", ok);
+    const st = document.getElementById("lchSteps"); if (st) st.innerHTML = lchStepsHtml(tab, q);
+    const now = document.getElementById("lchNow"); if (now) now.hidden = !ok;
+    if (ok && !was && !run.answered) {
+      SFX.click(); root.classList.add("unlocked"); clearTimeout(LCH.goT);
+      const go = () => { if (LAB.drag) { LCH.goT = setTimeout(go, 400); return; } const a = document.getElementById("lchAsk"); if (a && q.need[2]() && a.getBoundingClientRect().top > innerHeight - 160) a.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "center" }); };
+      LCH.goT = setTimeout(go, 700);
+    }
+  }
+  root.classList.toggle("locked", !ok && !run.answered);
+  const lk = document.getElementById("lchLock"); if (lk) lk.hidden = ok || run.answered;
   root.querySelectorAll(".choice").forEach(b => { b.disabled = run.answered || run.dead.includes(+b.dataset.k) || !ok; b.title = ok ? "" : L("Do the 🎯 step first", "請先完成 🎯 步驟"); });
 }
-function lchStartQ(run) { run.order = shuffle(LAB_CHALLENGE[LAB.tab][run.i].ch.map((_, k) => k)); run.dead = []; run.answered = false; run.tried = false; }
-function lchRender() { const el = document.getElementById("lch"); if (!el) return; el.innerHTML = lchHtml(); lchWire(); }
+function lchStartQ(run) { const q = LAB_CHALLENGE[LAB.tab][run.i]; run.order = shuffle(q.ch.map((_, k) => k)); run.dead = []; run.answered = false; run.tried = false; lchUnset(LAB.tab, q); }
+function lchRender(toTop) {
+  const y = scrollY; renderMap("lab"); labUpdate(); scrollTo(0, y);
+  const w = document.querySelector(".lchwrap") || document.getElementById("lch");
+  if (toTop && w) scrollTo({ top: Math.max(0, w.getBoundingClientRect().top + scrollY - 76), behavior: reduced() ? "auto" : "smooth" });
+}
 function lchWire() {
   const tab = LAB.tab, qs = LAB_CHALLENGE[tab], go = document.getElementById("lchGo");
-  if (go) go.onclick = () => { SFX.tap(); const run = LCH.runs[tab] = { i: 0, right: 0, coins: 0 }; lchStartQ(run); lchRender(); };
+  if (go) go.onclick = () => { SFX.tap(); const run = LCH.runs[tab] = { i: 0, right: 0, coins: 0 }; lchStartQ(run); lchRender(true); };
+  const quit = document.getElementById("lchQuit"); if (quit) quit.onclick = () => { SFX.tap(); delete LCH.runs[tab]; lchRender(true); };
   const run = LCH.runs[tab]; if (!run || run.i >= qs.length) return;
   document.querySelectorAll("#lchCh .choice").forEach(b => b.onclick = () => {
-    const k = +b.dataset.k, q = qs[run.i];
-    if (k === 0) { run.answered = true; if (!run.tried) run.right++; SFX.right(); lchRender(); lchSync(); return; }
+    const k = +b.dataset.k;
+    if (k === 0) { run.answered = true; if (!run.tried) run.right++; SFX.right(); lchRender(); return; }
     run.tried = true; run.dead.push(k); SFX.wrong(); b.disabled = true; b.classList.add("wrong");
-    const fb = document.getElementById("lchFb"); if (fb) fb.innerHTML = `<div class="fb no"><b>${L("Not quite. Look at the simulator again and try another answer.", "不太對。再看看模擬器，試另一個答案。")}</b></div>`;
+    const fb = document.getElementById("lchFb"); if (fb) fb.innerHTML = `<div class="fb no"><b>${L("Not quite. Look again and try another answer.", "不太對。再看清楚，試另一個答案。")}</b><span class="small">👀 ${LOOK[tab]()}</span></div>`;
   });
   const nx = document.getElementById("lchNext");
   if (nx) nx.onclick = () => {
     SFX.tap(); run.i++;
     if (run.i >= qs.length) lchFinish(tab, run); else lchStartQ(run);
-    lchRender(); lchSync();
+    lchRender(true);
   };
   lchSync();
 }
@@ -5332,7 +5495,7 @@ function labSvg() {
   const dimV = !s.inf && onScreen ? `<line x1="${LX}" y1="${LH - 8}" x2="${ix}" y2="${LH - 8}" stroke="${IMG}" stroke-width="3"/><text x="${(ix + LX) / 2}" y="${LH - 13}" text-anchor="middle" class="lt sm" fill="${IMG}">v</text>` : "";
   const sy = s.inf ? 0 : (iy - AY) / -OBJ_H;   // image scale: negative = inverted
   return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Ray diagram", "光線圖")}">
-    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>${lchZone()}
     <line x1="0" y1="${AY}" x2="800" y2="${AY}" stroke="${MINK}" stroke-width="2" stroke-dasharray="3 5"/>
     <text x="16" y="${AY - 10}" class="lt sm ax">${L("principal axis", "主軸")}</text>
     ${lens}${mark(LX - FPX, "F'")}${mark(LX - 2 * FPX, "2F'")}${mark(LX + FPX, "F")}${mark(LX + 2 * FPX, "2F")}
@@ -5399,7 +5562,7 @@ function mirSvg() {
   const hatch = Array.from({ length: 14 }, (_, k) => `<line x1="${MX + 4}" y1="${70 + k * 19}" x2="${MX + 16}" y2="${58 + k * 19}" stroke="${MINK}" stroke-width="2"/>`).join("");
   const eye = `<g transform="translate(${s.ex} ${s.ey})"><path d="M-18 0 Q0 -14 18 0 Q0 14 -18 0 Z" fill="#fff" stroke="${MINK}" stroke-width="3"/><circle cx="7" cy="0" r="5.5" fill="${MINK}"/></g>`;
   return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Plane mirror ray diagram", "平面鏡光線圖")}">
-    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#FFFDF6"/>${lchZone()}
     <rect x="${MX}" y="0" width="280" height="${LH}" fill="#EEF3FF" opacity=".6"/>
     ${Array.from({ length: 13 }, (_, k) => `<line x1="${MX - k * UNIT}" y1="${FY}" x2="${MX - k * UNIT}" y2="${FY + 8}" stroke="#C9BFB2" stroke-width="2"/>`).join("")}
     <line x1="0" y1="${FY}" x2="800" y2="${FY}" stroke="${MINK}" stroke-width="2"/>
@@ -5452,7 +5615,7 @@ function tirSvg() {
   const arc = (a1, a2, r, c) => { const p = a => [OX + r * Math.sin(rad(a)), OY + r * Math.cos(rad(a))]; const [x1, y1] = p(a1), [x2, y2] = p(a2); return `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 0 ${a1 > a2 ? 1 : 0} ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${c}" stroke-width="2.5"/>`; };
   const laser = `<g transform="translate(${sx.toFixed(1)} ${sy.toFixed(1)}) rotate(${(s.i - 90).toFixed(1)})"><rect x="-34" y="-11" width="40" height="22" rx="5" fill="#3B3B4F" stroke="${MINK}" stroke-width="2"/><rect x="2" y="-5" width="8" height="10" fill="#E0567E"/></g>`;
   return `<svg class="labsvg" viewBox="0 0 800 ${LH}" role="img" aria-label="${L("Semicircular block ray diagram", "半圓形玻璃塊光線圖")}">
-    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#F4FAFF"/>
+    <rect x="0" y="0" width="800" height="${LH}" rx="16" fill="#F4FAFF"/>${lchZone()}
     <text x="24" y="44" class="lt sm">${L("air (lower refractive index)", "空氣（折射率較低）")}</text>
     <path d="M${OX - RAD} ${OY} A${RAD} ${RAD} 0 0 0 ${OX + RAD} ${OY} Z" fill="${LAB.mat === "diamond" ? "rgba(214,236,255,.9)" : LAB.mat === "water" ? "rgba(120,180,255,.35)" : "rgba(160,196,255,.55)"}" stroke="${MINK}" stroke-width="3"/>
     <text x="24" y="${LH - 20}" class="lt sm">${L(TIR_MATS[LAB.mat][1], TIR_MATS[LAB.mat][2])} (n = ${s.n})</text>
@@ -5486,14 +5649,24 @@ function tirSection() {
       <p>${L("The higher the refractive index, the smaller the critical angle: water 48.8°, glass 41.8°, diamond 24.4°.", "折射率愈高，臨界角愈小：水 48.8°、玻璃 41.8°、鑽石 24.4°。")}</p></div></div>`;
 }
 /* ---------- Lab shell ---------- */
+// While a challenge question is live: 🎯 step, then the simulator, then the question and answers, all in one view
+function labBody() {
+  const tab = LAB.tab, run = LCH.runs[tab], live = run && run.i < LAB_CHALLENGE[tab].length;
+  const sim = { lens: lensSection, mirror: mirrorSection, tir: tirSection }[tab](), cut = sim.indexOf('<div class="labgrid">');
+  if (!live) return `<div id="lch">${lchHtml()}</div>${sim}`;
+  const q = LAB_CHALLENGE[tab][run.i];
+  return `<div class="lchwrap ${q.need ? "" : "snap"}"><div class="lchsim">${sim.slice(0, cut)}</div>
+      <div class="lchside"><div class="lchtop" id="lchTop">${lchTopHtml()}</div><div class="lchask" id="lchAsk">${lchAskHtml()}</div></div></div>
+    ${sim.slice(cut)}`;
+}
 function lensLabHtml() {
   const done = S.lab_done || [], mine = LAB_MISSIONS.filter(m => m.tab === LAB.tab);
-  const tabs = [["lens", "🔍", "Lenses", "透鏡", "14.5–14.6"], ["mirror", "🪞", "Plane mirror", "平面鏡", "14.2"], ["tir", "💎", "Total internal reflection", "全內反射", "14.4"]];
+  // in textbook order: 14.2 plane mirror → 14.4 total internal reflection → 14.5–14.6 lenses
+  const tabs = [["mirror", "🪞", "Plane mirror", "平面鏡", "14.2"], ["tir", "💎", "Total internal reflection", "全內反射", "14.4"], ["lens", "🔍", "Lenses", "透鏡", "14.5–14.6"]];
   return `<section class="card lab">
     <div class="row" style="justify-content:space-between"><h2>🔭 ${L("Light Lab", "光學實驗室")}</h2><span class="small muted">${L("Missions", "任務")}: ${done.length}/${LAB_MISSIONS.length} · +5 🪙 ${L("each", "每個")}</span></div>
     <div class="slotbar" role="tablist">${tabs.map(([k, i, en, zh, sec]) => `<button class="tab" role="tab" aria-selected="${LAB.tab === k}" data-labtab="${k}">${i} ${L(en, zh)} <span class="small muted">${sec}</span></button>`).join("")}</div>
-    <div id="lch">${lchHtml()}</div>
-    ${{ lens: lensSection, mirror: mirrorSection, tir: tirSection }[LAB.tab]()}
+    ${labBody()}
     <div class="missions"><h3>🎯 ${L("Lab missions", "實驗任務")}</h3>
       ${mine.map(m => `<div class="mission ${done.includes(m.id) ? "done" : ""}" data-m="${m.id}">${done.includes(m.id) ? "✅" : "⬜"} ${L(m.en, m.zh)}</div>`).join("")}</div>
   </section>`;
@@ -5506,9 +5679,10 @@ function labUpdate() {
   const s = t === "lens" ? labSolve() : t === "mirror" ? mirSolve() : tirSolve(); S.lab_done = S.lab_done || [];
   LAB_MISSIONS.forEach(m => {
     if (S.lab_done.includes(m.id) || m.tab !== t || (m.kind && m.kind !== LAB.kind) || !m.ok(s)) return;
-    S.lab_done.push(m.id); S.coins += 5; save(true); checkTrophies(); SFX.right(); yaha(L("Mission done!", "任務完成！")); confetti(60);
+    S.lab_done.push(m.id); S.coins += 5; save(true); checkTrophies();
+    if (!document.querySelector(".lchwrap")) { SFX.right(); yaha(L("Mission done!", "任務完成！")); confetti(60); }   // stay quiet while a challenge question is on screen
     const el = document.querySelector(`.mission[data-m="${m.id}"]`); if (el) { el.classList.add("done"); el.innerHTML = `✅ ${L(m.en, m.zh)}`; }
-    toast(L("🎯 Mission complete! +5 🪙", "🎯 任務完成！+5 🪙"));
+    if (!document.querySelector(".lchwrap")) toast(L("🎯 Mission complete! +5 🪙", "🎯 任務完成！+5 🪙"));
   });
 }
 function wireLabDrag() {

@@ -14,4 +14,4 @@ Siblings: `kcchamaa-sys/biology` (hub), `kcchamaa-sys/s1science`, `kcchamaa-sys/
 - No official logos, artwork or music from existing franchises.
 
 ## Tests
-`node tests/mechanics.test.js`, `tests/lab_challenge.test.js` and `tests/server.test.js` need nothing installed. `tests/layout.test.js` (all tabs × 5 widths × 2 languages: overflow, clipped cards, "undefined" names) and `tests/flow.test.js` (study, escape, game over, notebook, practice, rush, shop) need Playwright + Chromium. Run them before pushing.
+`node tests/mechanics.test.js`, `tests/lab_challenge.test.js` and `tests/server.test.js` need nothing installed. `tests/layout.test.js` (all tabs × 5 widths × 2 languages: overflow, clipped cards, "undefined" names) and `tests/flow.test.js` (study, escape, game over, notebook, practice, rush, shop) and `tests/lab_ui.test.js` (all 45 Light Lab challenge questions: 🎯 step doable, starts undone, answers locked until done, zone shown, Next on screen) need Playwright + Chromium. Run them before pushing.
