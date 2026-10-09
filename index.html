@@ -354,7 +354,7 @@ footer { text-align: center; font-size: .78rem; color: var(--ink-soft); padding:
 .rchip.bad { background: #FFF0F0; border-color: #F2B3B3; } .rchip.good { background: #EFFFF3; border-color: #9BDDAE; }
 .how { border-radius: 14px; background: rgba(255,255,255,.7); border: 2px dashed var(--edge, #D8D3EE); padding: 2px 10px; }
 .how summary { cursor: pointer; font-weight: 800; min-height: 40px; display: flex; align-items: center; gap: 6px; list-style: none; }
-.how summary::-webkit-details-marker { display: none; } .how summary::before { content: "ℹ️"; } .notes-fold summary::before { content: "📖"; } .how summary::after { content: "▾"; margin-left: auto; transition: transform .2s; }
+.how summary::-webkit-details-marker { display: none; }  .how summary::after { content: "▾"; margin-left: auto; transition: transform .2s; }
 .how[open] summary::after { transform: rotate(180deg); }
 .howbody { padding: 2px 0 10px; display: grid; gap: 6px; font-size: .92rem; } .howbody ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
 .mode2 .rchips { margin-top: 4px; } .mode2.escape .rchip { color: var(--ink); }
@@ -839,7 +839,7 @@ header.top { background: rgba(255,248,214,.92); border-bottom-color: #F5DC9C; }
 .segq { display: grid; gap: 8px; }
 .srow { display: grid; gap: 6px; background: #fff; border: var(--line); border-radius: 14px; padding: 8px 10px; box-shadow: 0 2px 0 var(--edge); }
 .scard { font-weight: 700; }
-.f-order .scard::before { content: "🔗 "; }
+
 .sgs { display: flex; flex-wrap: wrap; gap: 6px; }
 .sg { border: 2px solid var(--edge); border-radius: 999px; background: #FFFBEA; padding: 5px 12px; font-weight: 800; font-size: .88rem; }
 .sg.on { background: #FFD84D; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15); }
@@ -3540,7 +3540,7 @@ function confetti(amount = 140) {
   (function frame(now) {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     ps.forEach(p => { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c;
-      if (p.s) { ctx.font = `${p.r * 4}px sans-serif`; ctx.fillText("✦", 0, 0); } else ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); });
+      if (p.s) { const q = p.r * 2; ctx.beginPath(); ctx.moveTo(0, -q); ctx.quadraticCurveTo(0, 0, q, 0); ctx.quadraticCurveTo(0, 0, 0, q); ctx.quadraticCurveTo(0, 0, -q, 0); ctx.quadraticCurveTo(0, 0, 0, -q); ctx.fill(); } else ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); });
     if (now - start < 2600) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; }
   })(start);
 }
@@ -4600,26 +4600,282 @@ var UI_ICONS={
  flask:'<path d="M9.4 2.6h5.2" stroke="#8F8F8F" stroke-width="2" stroke-linecap="round"/>'+icSh('M10 3h4v5.4l5.6 9.8A2 2 0 0 1 17.8 21H6.2a2 2 0 0 1-1.8-2.8L10 8.4Z','#E8F7FF','#B9DCEB')+'<path d="M7.2 14h9.6l2.8 4.2A2 2 0 0 1 17.8 21H6.2a2 2 0 0 1-1.8-2.8Z" fill="#58CC02"/><circle cx="10.4" cy="17.4" r="1.2" fill="#C2F09B"/><circle cx="13.6" cy="15.6" r=".9" fill="#C2F09B"/>',
  pen:'<g transform="rotate(40 12 12)"><rect x="9.6" y="2.4" width="4.8" height="14" rx="1.2" fill="#FF86D0"/><rect x="12.6" y="2.4" width="1.8" height="14" fill="#E060AE"/><path d="M9.6 16.4h4.8L12 21.4Z" fill="#FFE2B0"/><path d="M11.3 19.8h1.4L12 21.4Z" fill="#4B4B4B"/></g>'
 };
+/* ---- Extra interface icons (same two-tone Duolingo-style set). Every emoji in the game maps to one of these. ---- */
+(function () {
+  var cp = function (x, y, r) { return 'M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0Z'; };
+  var ep = function (x, y, rx, ry) { return 'M' + (x - rx) + ' ' + y + 'a' + rx + ' ' + ry + ' 0 1 0 ' + (2 * rx) + ' 0a' + rx + ' ' + ry + ' 0 1 0 ' + (-2 * rx) + ' 0Z'; };
+  var rp = function (x, y, w, h, r) { r = r == null ? 2 : r; return 'M' + (x + r) + ' ' + y + 'h' + (w - 2 * r) + 'a' + r + ' ' + r + ' 0 0 1 ' + r + ' ' + r + 'v' + (h - 2 * r) + 'a' + r + ' ' + r + ' 0 0 1 ' + (-r) + ' ' + r + 'h' + (2 * r - w) + 'a' + r + ' ' + r + ' 0 0 1 ' + (-r) + ' ' + (-r) + 'v' + (2 * r - h) + 'a' + r + ' ' + r + ' 0 0 1 ' + r + ' ' + (-r) + 'Z'; };
+  var ln = function (d, c, w) { return '<path d="' + d + '" stroke="' + c + '" stroke-width="' + (w || 2) + '" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'; };
+  var fl = function (d, c) { return '<path d="' + d + '" fill="' + c + '"/>'; };
+  var dt = function (x, y, r, c) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + c + '"/>'; };
+  var S = function (d, b, k) { return icSh(d, b, k); };
+  var SL = function (d, b, k) { return icSh(d, b, k, ' stroke="' + k + '" stroke-width="1.3" stroke-linejoin="round"'); };
+  var R_ = function (d, b, k) { return icSh(d, b, k, IC_RND); };
+  var G = '#58CC02', Gd = '#46A302', B = '#1CB0F6', Bd = '#1490CC', R = '#FF4B4B', Rd = '#D93636', O = '#FF9600', Od = '#D96F00',
+    Y = '#FFC800', Yd = '#E5A000', P = '#CE82FF', Pd = '#A560E8', K = '#FF86D0', Kd = '#E060AE', Gy = '#AFAFAF', Gyd = '#8F8F8F',
+    W = '#fff', Wd = '#C4CDD6', I = '#4B4B4B', Br = '#B8794A', Brd = '#8E5A34', Sk = '#FFC98A', Skd = '#E8A864', LB = '#BDEBFF', LBd = '#8ED8FF';
+  var HEART = 'M12 21C5.5 16.6 2.6 13 2.6 9.2 2.6 6.2 4.9 4 7.6 4c1.9 0 3.4 1 4.4 2.6C13 5 14.5 4 16.4 4c2.7 0 5 2.2 5 5.2 0 3.8-2.9 7.4-9.4 11.8Z';
+  var STAR = 'M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.2l-5.9 3.2 1.2-6.5L2.5 9.3l6.6-.9Z';
+  var CLOUD = 'M7 19a5 5 0 0 1-.6-10A6.4 6.4 0 0 1 18.6 10.6 4.2 4.2 0 0 1 18 19Z';
+  var ARROW = 'M3 9.6h9.6V4.4L21.6 12l-9 7.6v-5.2H3Z';
+  var rot = function (a, inner) { return '<g transform="rotate(' + a + ' 12 12)">' + inner + '</g>'; };
+  var spokes = function (n, r1, r2, c, w, off) { var o = ''; for (var i = 0; i < n; i++) { var a = (i * 360 / n + (off || 0)) * Math.PI / 180; o += '<path d="M' + (12 + r1 * Math.cos(a)).toFixed(2) + ' ' + (12 + r1 * Math.sin(a)).toFixed(2) + 'L' + (12 + r2 * Math.cos(a)).toFixed(2) + ' ' + (12 + r2 * Math.sin(a)).toFixed(2) + '" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round"/>'; } return o; };
+  var face = function (base, dark, feat) { return S(cp(12, 12, 10), base, dark) + '<path d="M6 7.6c1.4-1.6 3-2.4 4.8-2.6" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".55"/>' + feat; };
+  var eyes2 = function (y, r, c) { return dt(8.6, y, r, c || I) + dt(15.4, y, r, c || I); };
+  var wedge = function (a) { var p = function (deg, r) { var t = deg * Math.PI / 180; return (12 + r * Math.cos(t)).toFixed(2) + ' ' + (12 + r * Math.sin(t)).toFixed(2); }; return '<path d="M' + p(a - 28, 3) + 'L' + p(a - 28, 8) + 'A8 8 0 0 1 ' + p(a + 28, 8) + 'L' + p(a + 28, 3) + 'A3 3 0 0 0 ' + p(a - 28, 3) + 'Z" fill="' + I + '"/>'; };
+
+  Object.assign(UI_ICONS, {
+    door: S(rp(5, 2, 14, 20, 2), O, Od) + fl(rp(7.4, 4.4, 9.2, 15.2, 1), '#FFB84D') + dt(14.2, 12.6, 1.3, Yd) + ln('M9.2 8h5.6M9.2 11h2', '#fff', 1.2),
+    hourglass: S(rp(5, 2, 14, 2.6, 1.2), Bd, Bd) + S(rp(5, 19.4, 14, 2.6, 1.2), Bd, Bd) + S('M7 4.6h10c0 4-3 5.6-5 7.4 2 1.8 5 3.4 5 7.4H7c0-4 3-5.6 5-7.4C10 10.2 7 8.6 7 4.6Z', LB, LBd) + fl('M9.2 19.4c.6-2 2-3 2.8-3.6.8.6 2.2 1.6 2.8 3.6Z', Y) + fl('M10.4 6.6h3.2c-.2 1-.9 1.6-1.6 2.2-.7-.6-1.4-1.2-1.6-2.2Z', Y),
+    timer: fl(rp(9.6, 1.6, 4.8, 2.6, 1), Gyd) + S(cp(12, 13.6, 8.6), B, Bd) + fl(cp(12, 13.6, 6.2), W) + ln('M12 13.6V9.4M12 13.6l2.8 1.8', I, 2) + ln('M18 5.2l1.6-1.6', Gyd, 2),
+    target: S(cp(12, 12, 10), R, Rd) + fl(cp(12, 12, 7.4), W) + fl(cp(12, 12, 5), R) + fl(cp(12, 12, 2.6), W) + dt(12, 12, 1.2, R),
+    star: R_(STAR, Y, Yd) + '<path d="M9.4 8.4l1.2-1.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>',
+    starempty: R_(STAR, '#E5E5E5', '#CFCFCF'),
+    tada: S('M3 21 7.6 8.8l7.6 7.6Z', Y, Yd) + ln('M5.4 15.4l4.6 4.6M7 11.6l5.6 5.6', Od, 1.4) + ln('M13 4v3M19.6 11h-3M17.8 5.4l-2 2', B, 1.8) + dt(17, 15, 1.4, R) + dt(19, 6.4, 1.3, G) + dt(10.6, 3.6, 1.2, P) + ln('M15 11q2-1 1.6-3.4', K, 1.6),
+    telescope: rot(-28, S(rp(13, 8, 8, 8, 1.4), Bd, Bd) + S(rp(2.4, 9.4, 11.6, 5.2, 1.4), B, Bd) + fl(rp(11.6, 9.4, 1.6, 5.2, .5), W)) + ln('M10.6 15.4l-3.4 6M10.6 15.4l3.4 6', Gyd, 2),
+    key: S(cp(7.4, 12, 5), Y, Yd) + fl(cp(7.4, 12, 1.9), W) + S(rp(11, 10.6, 10.4, 2.8, 1.2), Y, Yd) + S(rp(16.2, 13, 2, 3.6, .8), Y, Yd) + S(rp(19.4, 13, 2, 2.6, .8), Y, Yd),
+    unlock: ln('M8 10.4V7.6a4 4 0 0 1 7.8-1.4', Gyd, 2.4) + S(IC_LOCKB, Gy, Gyd) + dt(12, 14.4, 1.7, W) + fl(rp(11.2, 15, 1.6, 3, .8), W),
+    search: ln('M15.6 15.6 21 21', Br, 3.2) + S(cp(10, 10, 7), LB, LBd) + '<circle cx="10" cy="10" r="7" stroke="' + B + '" stroke-width="2.4" fill="none"/>' + ln('M6.6 8.6q1-2 3-2.4', W, 1.6),
+    paw: S('M12 12.2c3 0 5.6 2.6 5.6 5 0 1.8-1.6 2.6-3 2.2-1-.3-1.6-.5-2.6-.5s-1.6.2-2.6.5c-1.4.4-3-.4-3-2.2 0-2.4 2.6-5 5.6-5Z', O, Od) + S(cp(5.4, 10.2, 2), O, Od) + S(cp(9.4, 6, 2.2), O, Od) + S(cp(14.6, 6, 2.2), O, Od) + S(cp(18.6, 10.2, 2), O, Od),
+    flashlight: S('M6.8 2.6h10.4L15.6 9H8.4Z', Y, Yd) + S(rp(8.4, 9, 7.2, 12.4, 2), Gy, Gyd) + fl(rp(10.8, 12, 2.4, 3.6, 1.2), I) + ln('M3.4 2.8l1.8 1.4M20.6 2.8l-1.8 1.4M12 .8v1.2', Y, 1.6),
+    eye: SL('M2 12c2.6-4.6 6-7 10-7s7.4 2.4 10 7c-2.6 4.6-6 7-10 7S4.6 16.6 2 12Z', W, Wd) + fl(cp(12, 12, 4.8), B) + fl(cp(12, 12, 2.4), I) + dt(13.4, 10.6, 1, W),
+    eyes: SL(ep(7.2, 12, 5, 6.4), W, Wd) + SL(ep(16.8, 12, 5, 6.4), W, Wd) + dt(8.2, 12.8, 2.6, I) + dt(15.8, 12.8, 2.6, I) + dt(9, 11.8, .9, W) + dt(16.6, 11.8, .9, W),
+    muscle: S('M2.6 15.4c2.6-1.4 5-1 6.6 1l3.2-1.8c1-3.4 1.6-8 5.8-9 3.2-.8 4.8 2.4 3 4.8-1.4 1.8-1 3-3 5-2.6 2.6-7 4.4-11 3.8-3-.4-5.2-1.4-4.6-3.8Z', '#FFB84D', '#E8963A') + ln('M13.6 8.6c1.2.4 2 1.4 2.2 2.8', Od, 1.6),
+    rabbit: SL(ep(8.4, 6.6, 2.6, 5.8), W, Wd) + SL(ep(15.6, 6.6, 2.6, 5.8), W, Wd) + fl(ep(8.4, 7, 1.1, 3.6), K) + fl(ep(15.6, 7, 1.1, 3.6), K) + SL(ep(12, 15, 7.6, 6.6), W, Wd) + eyes2(14, 1.2) + fl('M10.8 16.2h2.4l-1.2 1.4Z', K) + ln('M10 18q2 1.6 4 0', I, 1.2),
+    microscope: S(rp(4, 19.4, 15, 2.6, 1.2), Gy, Gyd) + ln('M16.4 19.4a6.6 6.6 0 0 0-1-13.2', Bd, 2.6) + rot(-22, S(rp(8.2, 2, 4.4, 11, 1.4), B, Bd) + fl(rp(8.8, 12.8, 3.2, 2, 0), Gyd)) + S(rp(5.6, 16, 8, 2, 1), Gy, Gyd),
+    link: '<g transform="rotate(-45 12 12)"><rect x="2.4" y="8.6" width="11" height="6.8" rx="3.4" stroke="' + Bd + '" stroke-width="2.6" fill="none"/><rect x="10.6" y="8.6" width="11" height="6.8" rx="3.4" stroke="' + B + '" stroke-width="2.6" fill="none"/></g>',
+    mic: S(rp(8.4, 2, 7.2, 12.4, 3.6), Gy, Gyd) + fl(rp(9.6, 5, 4.8, 1, .5), W) + fl(rp(9.6, 7.6, 4.8, 1, .5), W) + ln('M5.6 11a6.4 6.4 0 0 0 12.8 0M12 17.6V21M8.6 21h6.8', B, 2.2),
+    owl: S('M6 4.6 8.6 7h6.8L18 4.6V10c1 1 1.6 2.6 1.6 4.4 0 3.8-3.4 6.6-7.6 6.6S4.4 18.2 4.4 14.4C4.4 12.6 5 11 6 10Z', Br, Brd) + fl(ep(12, 16, 4.6, 3.8), '#E8C9A0') + S(cp(8.6, 11, 3.2), W, Wd) + S(cp(15.4, 11, 3.2), W, Wd) + dt(8.8, 11.2, 1.4, I) + dt(15.2, 11.2, 1.4, I) + fl('M10.8 12.8h2.4L12 15Z', O),
+    tea: ln('M17 11.4c3-.4 4 1.4 3.4 3.2-.6 1.8-2.4 2.4-4.4 2.4', Gyd, 2) + SL('M3.6 9h13.6v4.4a6.8 6.8 0 0 1-13.6 0Z', '#F5F5F5', Wd) + fl(ep(10.4, 9.4, 6.8, 1.9), G) + ln('M7.6 6.6c-.8-1 .8-1.6 0-2.8M11.6 6.6c-.8-1 .8-1.6 0-2.8', Gy, 1.4),
+    folder: S('M3 6.4A1.6 1.6 0 0 1 4.6 4.8h4.6l2 2.4h8.2A1.6 1.6 0 0 1 21 8.8v9.8a1.6 1.6 0 0 1-1.6 1.6H4.6A1.6 1.6 0 0 1 3 18.6Z', '#FFB84D', '#E8963A') + fl('M3 10.4h18v8.2a1.6 1.6 0 0 1-1.6 1.6H4.6A1.6 1.6 0 0 1 3 18.6Z', Y),
+    play: S('M7 4.6v14.8a1.2 1.2 0 0 0 1.8 1l11.8-7.4a1.2 1.2 0 0 0 0-2L8.8 3.6A1.2 1.2 0 0 0 7 4.6Z', B, Bd),
+    mirror: S(rp(10, 19, 4, 2.6, 1), Y, Yd) + S(ep(12, 10.8, 7.6, 9), Y, Yd) + fl(ep(12, 10.8, 5.6, 7), LB) + ln('M8.6 8.4q.8-2.2 3-2.8', W, 1.8),
+    heartpurple: S(HEART, P, Pd) + '<circle cx="7.6" cy="8.4" r="1.7" fill="#fff" opacity=".85"/>',
+    heartbreak: S(HEART, R, Rd) + ln('M12 5.6l-2 4 3 2-2 4.2', W, 1.6),
+    blackheart: S(HEART, '#5A5A5A', '#2B2B2B') + '<circle cx="7.6" cy="8.4" r="1.6" fill="#fff" opacity=".5"/>',
+    organ: ln('M9.4 5V2.2M14.4 5.6 16.6 2.6', B, 2.4) + S('M12 21.4C6 17.4 3.2 14 3.2 10.4c0-3 2.2-5.2 5-5.2 1.6 0 2.8.8 3.8 2 1-1.2 2.2-2 3.8-2 2.8 0 5 2.2 5 5.2 0 3.6-2.8 7-8.8 11Z', '#E8384B', '#B8263A') + ln('M8 9.4q1.6-1.4 3 0', '#FF9AA6', 1.4),
+    bookred: S(rp(5, 2.6, 14, 18.8, 2), R, Rd) + fl(rp(6.8, 4.4, 10.4, 5, 1), W) + fl(rp(5, 17.6, 14, 3.8, 1.6), '#FFD9D9') + ln('M8.6 6.8h5', R, 1.4),
+    bookblue: S(rp(5, 2.6, 14, 18.8, 2), B, Bd) + fl(rp(6.8, 4.4, 10.4, 5, 1), W) + fl(rp(5, 17.6, 14, 3.8, 1.6), '#D8F1FF') + ln('M8.6 6.8h5', B, 1.4),
+    tag: S('M3 12.4V4.8A1.8 1.8 0 0 1 4.8 3h7.6l8.6 8.6a1.8 1.8 0 0 1 0 2.6l-6.8 6.8a1.8 1.8 0 0 1-2.6 0Z', Y, Yd) + dt(7.6, 7.6, 1.8, W),
+    pin: rot(40, S('M9.4 2.6h5.2l-.8 6 2.8 3.4H7.4l2.8-3.4Z', R, Rd) + ln('M12 12v9', Gyd, 2)),
+    handshake: S(rp(1.8, 8.6, 5, 9, 1.6), B, Bd) + S(rp(17.2, 8.6, 5, 9, 1.6), O, Od) + S('M6.8 9.4l4-1.8 3.2 1.6 3.2-1.6v8.6l-4.6 2.6-2.6-1.6-3.2 1.6Z', Sk, Skd) + ln('M10 12.4l2.4 1.4M12.4 11.2l2.6 1.6', Skd, 1.4),
+    dish: S('M3.4 7.6a12 12 0 0 0 12.8 12.8Z', Gy, Gyd) + ln('M10.4 13.6l5.2-5.2', Gyd, 1.8) + dt(16, 8, 1.8, R) + S(rp(14, 19.6, 6, 2.2, 1), Gyd, Gyd) + ln('M16.6 3.8a5 5 0 0 1 3.6 3.6M16.2 .8a8 8 0 0 1 7 7', B, 1.6),
+    puzzle: S('M4 7h4.2a2.2 2.2 0 1 1 4.4 0H17v4.2a2.2 2.2 0 1 1 0 4.4V20H4Z', G, Gd) + '<path d="M6.4 9.4h3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".6"/>',
+    palette: S('M12 3C6.4 3 2.4 7 2.4 12s4 9 9 9c1.8 0 2.4-1.2 1.8-2.4-.6-1.2-.2-2.6 1.4-2.6H18c2.2 0 3.6-1.4 3.6-3.6C21.6 7 17.4 3 12 3Z', '#FFD9A0', '#E8B27E') + dt(7.4, 11, 1.8, R) + dt(11, 7, 1.8, Y) + dt(16, 8, 1.8, G) + dt(17.6, 12.6, 1.6, B),
+    construction: S('M2 8h20v6H2Z', Y, Yd) + fl('M5 8h3l-3 6H2ZM11 8h3l-3 6H8ZM17 8h3l-3 6h-3Z', I) + S(rp(4, 14, 2.4, 7, 1), Gy, Gyd) + S(rp(17.6, 14, 2.4, 7, 1), Gy, Gyd),
+    egg: SL('M12 2.8c3.8 0 6.4 5.4 6.4 10 0 3.8-2.8 6.6-6.4 6.6s-6.4-2.8-6.4-6.6c0-4.6 2.6-10 6.4-10Z', '#FFF3DC', '#E8CFA0') + ln('M9 8.6q.8-2 2.4-2.8', W, 1.6),
+    salt: SL(rp(7, 8.6, 10, 12.8, 2), '#F0F4F8', '#C9D7E3') + SL('M8 8.6c0-3.2 1.6-5.8 4-5.8s4 2.6 4 5.8Z', Gy, Gyd) + dt(10.6, 5.8, .7, I) + dt(13.4, 5.8, .7, I) + dt(12, 4.4, .7, I) + fl(rp(8.4, 12.4, 7.2, 3.6, 1), B),
+    map: S('M3 6l6-2.4v14.8L3 20.8Z', '#7ED957', Gd) + S('M9 3.6l6 2.4v14.8l-6-2.4Z', Y, Yd) + S('M15 6l6-2.4v14.8l-6 2.4Z', B, Bd) + ln('M6 15q2-3 5 0t4-4', R, 1.4),
+    clipboard: S(rp(4.6, 3.8, 14.8, 17.8, 2), Br, Brd) + fl(rp(6.6, 7, 10.8, 12.8, 1), W) + S(rp(8.6, 2, 6.8, 4, 1.4), Gy, Gyd) + ln('M8.6 11h6.8M8.6 14h6.8M8.6 17h4', LBd, 1.4),
+    moon: S('M19.8 15A8.6 8.6 0 0 1 9 4.2a8.6 8.6 0 1 0 10.8 10.8Z', Y, Yd) + dt(11, 14.6, 1.1, Yd) + dt(14.6, 17, .8, Yd),
+    darkmoon: S(cp(12, 12, 9.6), '#5A5A5A', '#2B2B2B') + dt(9, 9.4, 1.8, '#4B4B4B') + dt(15, 14.4, 2.2, '#4B4B4B') + ln('M6.8 8q1.2-2 3.2-2.6', '#fff', 1.2),
+    droplet: S('M12 2.4c3.6 4.4 6.4 7.8 6.4 11.2a6.4 6.4 0 0 1-12.8 0C5.6 10.2 8.4 6.8 12 2.4Z', B, Bd) + ln('M8.6 14q.2 2.4 2.4 3', W, 1.6),
+    blood: S('M12 2.4c3.6 4.4 6.4 7.8 6.4 11.2a6.4 6.4 0 0 1-12.8 0C5.6 10.2 8.4 6.8 12 2.4Z', R, Rd) + ln('M8.6 14q.2 2.4 2.4 3', W, 1.6),
+    infinity: ln('M12 12c-2-3-3.6-4-5.4-4a4 4 0 0 0 0 8c1.8 0 3.4-1 5.4-4s3.6-4 5.4-4a4 4 0 0 1 0 8c-1.8 0-3.4-1-5.4-4Z', Pd, 3) + ln('M12 12c-2-3-3.6-4-5.4-4', P, 1.4),
+    apple: ln('M12 7.4c0-2 .6-3.4 2-4.4', Brd, 1.8) + S('M12 7.8c-2-1.6-7-1.4-7 4.4 0 4.6 3 8.8 5.4 8.8.8 0 1.2-.4 1.6-.4s.8.4 1.6.4C16 21 19 16.8 19 12.2c0-5.8-5-6-7-4.4Z', R, Rd) + S('M13.4 5.4c1.6-2 3.6-2 4.6-1.6-.2 1.8-1.8 3.2-4.6 1.6Z', G, Gd),
+    rice: SL('M4.2 11.6c0-4.2 3.4-7 7.8-7s7.8 2.8 7.8 7Z', W, Wd) + SL('M3 11h18a9 8.4 0 0 1-18 0Z', B, Bd) + ln('M8.4 8q1-1.4 2.6-1.8', Wd, 1.4),
+    orange: S(cp(12, 13.4, 8), O, Od) + S('M12 5.6c.4-2 2-3 4-3 0 2-1.6 3.4-4 3Z', G, Gd) + ln('M7.4 11.6q.8-2 2.6-2.8', '#FFD08A', 1.8),
+    spiral: ln('M12 12a1.4 1.4 0 1 1 1.4 1.4 3.2 3.2 0 1 1-3.2-3.2 5 5 0 1 1 5 5 6.8 6.8 0 1 1-6.8-6.8 8.6 8.6 0 1 1 8.6 8.6', B, 2.4),
+    nut: S('M12 2.8l7.6 4.4v8.8L12 20.4 4.4 16V7.2Z', Gy, Gyd) + fl(cp(12, 11.6, 3.6), Gyd) + fl(cp(12, 11.6, 2.6), '#E5E5E5'),
+    dice: SL(rp(3.4, 3.4, 17.2, 17.2, 3.6), W, Wd) + dt(8, 8, 1.6, R) + dt(16, 8, 1.6, I) + dt(12, 12, 1.6, I) + dt(8, 16, 1.6, I) + dt(16, 16, 1.6, R),
+    wave: S('M6 11.4V6.2a1.5 1.5 0 0 1 3 0V10M9 10V4.4a1.5 1.5 0 0 1 3 0V10M12 10V5a1.5 1.5 0 0 1 3 0v5M15 10V7a1.5 1.5 0 0 1 3 0v6.4c0 4-2.4 7.6-6.4 7.6S6 18 5 14.6L3.8 11.4c-.4-1.2 1.2-1.8 2-.8L6 11.4', '#FFB84D', '#E8963A') + ln('M20 3.6a6 6 0 0 1 2 4M3.6 3.6a6 6 0 0 0-2 4', B, 1.6),
+    skull: SL('M12 2.6c-4.6 0-8 3.2-8 7.6 0 2.6 1.2 4.4 3 5.6v2.6a1.6 1.6 0 0 0 1.6 1.6h6.8a1.6 1.6 0 0 0 1.6-1.6v-2.6c1.8-1.2 3-3 3-5.6 0-4.4-3.4-7.6-8-7.6Z', '#F5F5F5', '#C9C9C9') + fl(ep(8.6, 10.8, 2.2, 2.6), I) + fl(ep(15.4, 10.8, 2.2, 2.6), I) + fl('M11 14.4h2L12 16Z', I) + ln('M9.8 18v2M12 18v2M14.2 18v2', Gyd, 1.2),
+    shuffle: ln('M3 7h3.4c4.6 0 5.6 10 10.6 10h3', B, 2.6) + ln('M3 17h3.4c1.8 0 3.2-1.4 4.2-3M13.2 8.6C14.2 7.6 15.4 7 17 7h3', B, 2.6) + ln('M17.4 4l3 3-3 3M17.4 14l3 3-3 3', B, 2.6),
+    radioactive: S(cp(12, 12, 10), Y, Yd) + wedge(-90) + wedge(30) + wedge(150) + dt(12, 12, 2, I),
+    lantern: ln('M12 1.6v3', Yd, 1.6) + S(rp(8, 3.6, 8, 2.8, 1.2), Y, Yd) + S(ep(12, 12.6, 7.8, 6.6), R, Rd) + S(rp(8, 18.2, 8, 2.8, 1.2), Y, Yd) + ln('M9.6 7.4q-2.6 5 0 10M14.4 7.4q2.6 5 0 10M12 6.2v12', '#FF8F8F', 1.2) + ln('M12 21.2v1.8', Yd, 1.6),
+    bubbles: fl(cp(9, 14.4, 5.8), '#E4F6FF') + '<circle cx="9" cy="14.4" r="5.8" stroke="' + B + '" stroke-width="2" fill="none"/>' + fl(cp(17, 8, 3.6), '#E4F6FF') + '<circle cx="17" cy="8" r="3.6" stroke="' + B + '" stroke-width="2" fill="none"/>' + '<circle cx="17.4" cy="17.4" r="2.4" stroke="' + B + '" stroke-width="1.8" fill="#E4F6FF"/>' + ln('M6.4 12.4q.6-1.4 2-1.8', W, 1.6),
+    thread: S(rp(6, 2.6, 12, 4, 1.6), Br, Brd) + S(rp(6, 17.4, 12, 4, 1.6), Br, Brd) + S(rp(7.4, 6.6, 9.2, 10.8, 0), P, Pd) + ln('M7.4 9.4l9.2 1.4M7.4 12.6l9.2 1.4', '#E6C2FF', 1.4) + ln('M16.6 14c2.4.4 4 1.6 4 3.6', Pd, 1.6),
+    dizzy: S('M12 3l1.8 3.8 4.2.6-3 3 .7 4.2L12 12.6 8.3 14.6l.7-4.2-3-3 4.2-.6Z', Y, Yd) + ln('M3.6 17.4q4 3.4 9 2.2M19 20.4q2.4-2 2.4-5', P, 1.8),
+    redtri: R_('M12 3.4 22 20.4H2Z', R, Rd),
+    stethoscope: ln('M6 3v6a4.8 4.8 0 0 0 9.6 0V3', Gyd, 2.2) + ln('M10.8 14v1.8a4.4 4.4 0 0 0 8.8 0V14', Gyd, 2.2) + S(cp(19.6, 12.2, 2.4), B, Bd) + dt(6, 3, 1.2, Gyd) + dt(15.6, 3, 1.2, Gyd),
+    soap: S(rp(3.4, 9.2, 17.2, 10.6, 3.6), LBd, '#4FB8EE') + fl(rp(5, 10.4, 14, 3, 1.4), LB) + '<circle cx="9" cy="5.6" r="2.4" stroke="' + B + '" stroke-width="1.6" fill="#E4F6FF"/><circle cx="14.6" cy="4.6" r="1.7" stroke="' + B + '" stroke-width="1.4" fill="#E4F6FF"/>',
+    page: SL('M6 2.6h8l5 5v12.4a1.6 1.6 0 0 1-1.6 1.6H6a1.6 1.6 0 0 1-1.6-1.6V4.2A1.6 1.6 0 0 1 6 2.6Z', W, Wd) + fl('M14 2.6v4a1.2 1.2 0 0 0 1.2 1.2H19Z', LBd) + ln('M8 11.4h8M8 14.4h8M8 17.4h5', Gy, 1.6),
+    chopsticks: ln('M4 20.6 17.6 3.4', Br, 2.4) + ln('M8.4 21.4 21.4 6.2', Brd, 2.4),
+    ruler: rot(-45, S(rp(1.4, 8.4, 21.2, 7.2, 1.6), Y, Yd) + ln('M5 8.8v3M8.6 8.8v2M12.2 8.8v3M15.8 8.8v2M19.4 8.8v3', I, 1.2)),
+    salad: S('M3 12h18a9 8.6 0 0 1-18 0Z', W, Wd) + S(ep(8.4, 10.4, 4.4, 3.4), '#7ED957', Gd) + S(ep(14.6, 9.4, 4.8, 3.8), G, Gd) + dt(17.6, 11, 1.8, R) + dt(10, 11.6, 1.2, O),
+    lettuce: S('M12 21c-5-1-9-5-9-11 0-3 2-5 5-5 2 0 3 1 4 2 1-1 2-2 4-2 3 0 5 2 5 5 0 6-4 10-9 11Z', '#7ED957', Gd) + ln('M12 20V9M12 14l-3-3M12 12l3-3', '#E4FAD0', 1.6),
+    cup: ln('M13.4 5.4 15.6 1.4', R, 2) + SL('M6 7.6h12l-1.6 13.4A1.4 1.4 0 0 1 15 22.2H9a1.4 1.4 0 0 1-1.4-1.2Z', W, Wd) + fl('M6.6 11.6h10.8l-.5 4.4H7.1Z', R) + SL(rp(5, 5.4, 14, 2.6, 1.2), Gy, Gyd),
+    microbe: spokes(8, 5.8, 9.2, Gd, 2) + dt(12, 2.6, 1.5, Gd) + dt(12, 21.4, 1.5, Gd) + dt(2.6, 12, 1.5, Gd) + dt(21.4, 12, 1.5, Gd) + S(cp(12, 12, 6.6), G, Gd) + dt(9.6, 10.4, 1.4, '#E4FAD0') + dt(14.4, 13.4, 1.8, '#E4FAD0') + dt(12, 8.6, .9, '#E4FAD0'),
+    atom: '<g stroke="' + B + '" stroke-width="1.8" fill="none"><ellipse cx="12" cy="12" rx="9.6" ry="3.8"/><ellipse cx="12" cy="12" rx="9.6" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.6" ry="3.8" transform="rotate(120 12 12)"/></g>' + S(cp(12, 12, 2.8), Y, Yd),
+    bluecirc: S(cp(12, 12, 9.6), B, Bd) + ln('M7.4 8.6q1.2-2 3.4-2.6', W, 1.6),
+    whitecirc: SL(cp(12, 12, 9.6), W, '#CFCFCF'),
+    whitesq: SL(rp(3.4, 3.4, 17.2, 17.2, 3.6), W, '#CFCFCF'),
+    rain: S(CLOUD, '#C9D5E0', '#9BAABA') + ln('M8 21l1-2.4M12.4 21.4l1-2.4M16.6 21l1-2.4', B, 2),
+    fog: S('M7 15a4.2 4.2 0 0 1-.4-8.4A5.6 5.6 0 0 1 17.2 8a3.6 3.6 0 0 1-.4 7Z', '#E5E5E5', '#C9C9C9') + ln('M4 18.4h12M8 21.4h12', '#AFAFAF', 2),
+    recycle: (function () { var o = '', r = 7.6, p = function (t, rr) { t = t * Math.PI / 180; return (12 + rr * Math.cos(t)).toFixed(2) + ' ' + (12 + rr * Math.sin(t)).toFixed(2); };
+      for (var i = 0; i < 3; i++) { var a = -90 + i * 120 + 12, e = a + 82, t = e + 90, ex = 12 + r * Math.cos(e * Math.PI / 180), ey = 12 + r * Math.sin(e * Math.PI / 180), tx = Math.cos(t * Math.PI / 180), ty = Math.sin(t * Math.PI / 180), nx = Math.cos(e * Math.PI / 180), ny = Math.sin(e * Math.PI / 180);
+        o += '<path d="M' + p(a, r) + 'A' + r + ' ' + r + ' 0 0 1 ' + p(e, r) + '" stroke="' + G + '" stroke-width="3" fill="none" stroke-linecap="round"/>' + '<path d="M' + (ex + tx * 4.4).toFixed(2) + ' ' + (ey + ty * 4.4).toFixed(2) + 'L' + (ex + nx * 3.6).toFixed(2) + ' ' + (ey + ny * 3.6).toFixed(2) + 'L' + (ex - nx * 3.6).toFixed(2) + ' ' + (ey - ny * 3.6).toFixed(2) + 'Z" fill="' + Gd + '"/>'; } return o; })(),
+    soup: ln('M8 5.4c-.8-1 .8-1.6 0-2.8M12 5.4c-.8-1 .8-1.6 0-2.8M16 5.4c-.8-1 .8-1.6 0-2.8', Gy, 1.5) + S('M3 9.6h18a9 9 0 0 1-18 0Z', K, Kd) + fl(ep(12, 9.6, 9, 2), O),
+    boba: ln('M14 2.4 12.6 9', K, 2.4) + S('M5.8 8h12.4l-1.6 12.4a1.6 1.6 0 0 1-1.6 1.4H9a1.6 1.6 0 0 1-1.6-1.4Z', '#F5DEC4', '#D9B994') + S(rp(5, 6, 14, 2.6, 1.2), W, Wd) + dt(9.4, 18.4, 1.3, I) + dt(12.4, 19.2, 1.3, I) + dt(14.8, 17.8, 1.3, I) + dt(11, 16, 1.3, I),
+    question: S(cp(12, 12, 10), P, Pd) + ln('M9 9.4a3 3 0 1 1 4.6 2.4c-1.2.8-1.6 1.2-1.6 2.6', W, 2.4) + dt(12, 17.6, 1.4, W),
+    brain: S('M12 5.6C12 4 10.4 3 8.8 3.4 7 3.8 6.2 5.2 6.4 6.4 4.6 6.8 3.6 8.4 4 10c-1.4 1-1.6 3-.4 4.4C3.4 16 4.6 17.4 6 17.6c.4 1.6 1.8 2.6 3.4 2.4.8 0 1.8-.4 2.6-1.2Z', K, Kd) + '<g transform="translate(24 0) scale(-1 1)">' + S('M12 5.6C12 4 10.4 3 8.8 3.4 7 3.8 6.2 5.2 6.4 6.4 4.6 6.8 3.6 8.4 4 10c-1.4 1-1.6 3-.4 4.4C3.4 16 4.6 17.4 6 17.6c.4 1.6 1.8 2.6 3.4 2.4.8 0 1.8-.4 2.6-1.2Z', K, Kd) + '</g>' + ln('M7.6 9.4q1.6-.6 2.4.6M8 14q1.8.4 2.2-1M16.4 9.4q-1.6-.6-2.4.6M16 14q-1.8.4-2.2-1', Kd, 1.3),
+    abc: S(rp(2.4, 3.6, 19.2, 16.8, 3.4), B, Bd) + ln('M6 15.6l3-8.4 3 8.4M7.2 13h3.6', W, 2) + ln('M14.2 7v8.6M14.2 12.6c0-1.6 1-2.4 2.2-2.4s2.2.8 2.2 2.8-1 3-2.2 3-2.2-1-2.2-2.4', W, 2),
+    tshirt: S('M8.6 3.4 3 6.6l2.2 4.2 2-1v10.8h9.6V9.8l2 1L21 6.6l-5.6-3.2c-.6 1.6-1.9 2.6-3.4 2.6S9.2 5 8.6 3.4Z', B, Bd),
+    sun: spokes(8, 7.8, 10.6, Y, 2.2, 0) + S(cp(12, 12, 5.8), Y, Yd) + ln('M9 10q.6-1.4 2-1.8', '#FFF1B0', 1.6),
+    turtle: S('M3.4 16c0-5 3.6-8 8.2-8s8.2 3 8.2 8Z', G, Gd) + ln('M8 16l1.6-5.4M13.6 16l-1.2-5.4M16.6 16l1-3.6', Gd, 1.4) + S(rp(5, 16, 4, 3.6, 1.4), '#7ED957', Gd) + S(rp(14.6, 16, 4, 3.6, 1.4), '#7ED957', Gd) + S(cp(21, 13.4, 2.4), '#7ED957', Gd) + dt(21.6, 12.8, .6, I),
+    chicken: SL(cp(11.6, 14, 7.6), W, Wd) + SL('M5.2 12.4c-2.4.2-3 3-1.4 4.8 1.4 1.6 3.4.6 3.4-1.8Z', W, Wd) + fl('M9.6 6.4c0-1.8 1-3 2.4-3s2.4 1.2 2.4 3Z', R) + fl('M18.6 12.6 22 14l-3.4 1.4Z', O) + dt(16.4, 11.8, 1.1, I) + fl('M17.6 16.4q.2 1.8-1.4 2.2', R),
+    coffee: SL('M3 9.4h14v4.6a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6Z', W, Wd) + ln('M17 10.8c3-.2 4.4 1.4 3.8 3.2-.6 1.8-2.4 2.2-4.6 2.2', Gyd, 2) + fl(ep(10, 9.6, 7, 1.7), Brd) + S(rp(2, 21, 16, 1.6, .8), Gy, Gyd) + ln('M7 6.4c-.8-1 .8-1.6 0-2.8M11 6.4c-.8-1 .8-1.6 0-2.8', Gy, 1.4),
+    shark: S('M2 14c4-6 9-8 13-5.6 2 1.2 4 3.4 7 3.6-1.4 1.6-3 2.4-4.6 2.4.8 2 2.2 3.4 3.8 4.4-3.2 0-5.4-1-7-2.6-4 .6-8.2.2-12.2-2.2Z', '#8FB8DA', '#6C95B8') + fl('M9 8.4 11.4 3.4 13.6 8.6Z', '#6C95B8') + dt(16.6, 11.2, 1, I) + ln('M17.6 14q-1 .8-2.2.4', W, 1.4),
+    runner: dt(15, 4.6, 2.6, B) + ln('M14 8.6l-3.4 5.2 4 2.4 1.2 5.2M10.6 13.8 7 12.6M13 9.4l4 2.2 3-1.2M10.6 13.8l-3 6', Bd, 2.8),
+    dumpling: SL('M2.6 16c0-5 4-9 9.4-9s9.4 4 9.4 9c0 1.4-.8 2.4-2 2.4H4.6c-1.2 0-2-1-2-2.4Z', '#FFF3DC', '#E8CFA0') + ln('M6.6 9.4q.4 2 .2 4.6M10 7.6q.6 2.4.4 6M13.8 7.6q-.2 3.6-.6 6M17.2 9.4q-.4 2.6-.8 4.4', '#E8CFA0', 1.4),
+    spoon: rot(40, ln('M12 9v13', Gyd, 2.4) + S(ep(12, 5.2, 3.2, 4.2), Gy, Gyd)),
+    plus: S('M9.6 4h4.8v5.6H20v4.8h-5.6V20H9.6v-5.6H4V9.6h5.6Z', G, Gd),
+    minus: S(rp(4, 9.4, 16, 5.2, 2.6), R, Rd),
+    station: S(rp(5, 2.6, 14, 15.6, 3.4), B, Bd) + fl(rp(7, 5, 10, 5.4, 1.4), W) + dt(8.6, 14.2, 1.4, Y) + dt(15.4, 14.2, 1.4, Y) + ln('M7 21l1.8-3M17 21l-1.8-3', Gyd, 2.2),
+    balloon: ln('M12 17.2c-1.4 1.4 1.4 2.4 0 4.4', Gyd, 1.4) + S('M12 2.4c4.2 0 6.6 3.2 6.6 7 0 3.8-3 6.8-6.6 6.8s-6.6-3-6.6-6.8c0-3.8 2.4-7 6.6-7Z', R, Rd) + fl('M10.8 16.2h2.4L12 18Z', Rd) + ln('M8.4 8q.8-2.4 3-3', '#FF9A9A', 1.8),
+    rock: S('M3.4 17.6 4.6 10l4.6-4.8h6.2l4 4.8 1.2 7.6Z', Gy, Gyd) + ln('M9.2 5.2l1.4 5 4-.8 1.4-4.2M10.6 10.2 9 17.6', Gyd, 1.2),
+    toolbox: ln('M9 8V5.4h6V8', Gyd, 2.2) + S(rp(2.6, 8, 18.8, 12.6, 2.4), R, Rd) + fl('M2.6 13h18.8', Rd) + S(rp(10, 11.6, 4, 4.4, 1), Y, Yd),
+    window: S(rp(3.4, 2.6, 17.2, 18.8, 2.4), B, Bd) + fl(rp(6, 5.2, 5.2, 6.4, 1), LB) + fl(rp(12.8, 5.2, 5.2, 6.4, 1), LB) + fl(rp(6, 12.8, 5.2, 5.4, 1), LB) + fl(rp(12.8, 12.8, 5.2, 5.4, 1), LB),
+    dango: ln('M12 1.6v20.8', Br, 2) + S(cp(12, 5.8, 3.8), K, Kd) + S(cp(12, 12.4, 3.8), W, Wd) + S(cp(12, 19, 3.2), G, Gd),
+    senbei: S(cp(12, 12, 9), '#FFB84D', '#E8963A') + fl(rp(9.6, 3.2, 4.8, 17.6, 0), I) + ln('M6.4 8.6q.6-1.4 1.8-2', '#FFE2B0', 1.6),
+    pudding: S('M4.6 20.6h14.8l-1.4-11H6Z', '#FFD66B', '#E8B53A') + S('M5.6 9.6h12.8l.4 2.4a7 4 0 0 1-14 0Z', Br, Brd) + ln('M8.4 14.4v3', '#FFF1B0', 1.6) + dt(12, 7, 1.8, R),
+    onigiri: SL('M12 3.4c1.6 0 2.6 1.2 3.6 3l5 9.4a2.6 2.6 0 0 1-2.2 3.8H5.6a2.6 2.6 0 0 1-2.2-3.8l5-9.4c1-1.8 2-3 3.6-3Z', W, Wd) + fl('M6.6 15.4h10.8l1.4 2.6a1 1 0 0 1-.9 1.5H6.1a1 1 0 0 1-.9-1.5Z', I),
+    waffle: S(rp(3.6, 3.6, 16.8, 16.8, 3.4), '#FFC96B', Od) + ln('M9.2 3.6v16.8M14.8 3.6v16.8M3.6 9.2h16.8M3.6 14.8h16.8', Od, 1.6) + dt(6.4, 6.4, .8, '#FFE2B0'),
+    pineapple: S('M12 6c-1-2.4-3.4-3.4-5.2-3 1.4 .6 2 1.6 2 3Z M12 6c1-2.4 3.4-3.4 5.2-3-1.4.6-2 1.6-2 3Z M12 5.6c-.6-2-.2-3.4 0-4 .2.6.6 2 0 4Z', G, Gd) + S(ep(12, 14.4, 5.8, 7.4), O, Od) + ln('M8.4 10.4l7 8M15.6 10.4l-7 8M7.4 14.8l5 5.6M16.6 14.8l-5 5.6', Od, 1.2),
+    gamepad: S(rp(1.8, 6.6, 20.4, 11.6, 5.4), P, Pd) + ln('M7.2 9.6v5.2M4.6 12.2h5.2', W, 2) + dt(15.4, 10.6, 1.3, Y) + dt(18, 13.4, 1.3, R) + dt(14.4, 14, 1.3, B),
+    compass: S(cp(12, 12, 10), B, Bd) + fl(cp(12, 12, 7.4), W) + fl('M12 5.8l2.2 6.2-2.2 6.2L9.8 12Z', R) + fl('M12 18.2 9.8 12h4.4Z', Gy) + dt(12, 12, 1.2, W),
+    fishing: ln('M5 21.4 17 3.8', Br, 2.4) + ln('M17 3.8c3 3 3.4 8 .4 11', Gyd, 1.2) + ln('M17.4 14.8c-.4 2 1.8 2.4 2.4 1', B, 2),
+    briefcase: ln('M8.6 8.4V5.6a1.6 1.6 0 0 1 1.6-1.6h3.6a1.6 1.6 0 0 1 1.6 1.6v2.8', Brd, 2.2) + S(rp(2.6, 8.4, 18.8, 12.6, 2.6), Br, Brd) + fl('M2.6 13.4h18.8', Brd) + S(rp(10.2, 11.8, 3.6, 3.4, 1), Y, Yd),
+    fist: S('M5.4 9.4a2.2 2.2 0 0 1 2.2-2.2h8.4a3.4 3.4 0 0 1 3.4 3.4v5.2a5 5 0 0 1-5 5H9.4a4 4 0 0 1-4-4Z', '#FFB84D', '#E8963A') + ln('M9.6 7.4v5M13 7.2v5M16.2 8v4.6', '#E8963A', 1.4) + S(rp(3, 11.6, 4, 6, 2), '#FFB84D', '#E8963A'),
+    haircut: ln('M7.6 14.4 20 4.4M7.6 9.6 20 19.6', Gyd, 2.4) + '<circle cx="6" cy="16.4" r="2.8" stroke="' + R + '" stroke-width="2.2" fill="none"/><circle cx="6" cy="7.6" r="2.8" stroke="' + R + '" stroke-width="2.2" fill="none"/>' + dt(11.4, 12, 1.2, Gyd),
+    tophat: S(rp(7, 3.6, 10, 12.4, 1.6), '#5A5A5A', '#2B2B2B') + S(rp(2.8, 15.4, 18.4, 3.8, 1.9), '#5A5A5A', '#2B2B2B') + fl(rp(7, 12, 10, 2.8, 0), R),
+    ribbon: S('M12 12 3.6 6v12Z', K, Kd) + S('M12 12l8.4-6v12Z', K, Kd) + S(cp(12, 12, 2.8), '#FF5FB8', Kd),
+    frame: S(rp(2.4, 3.4, 19.2, 17.2, 2.4), Y, Yd) + fl(rp(5, 6, 14, 12, 1), LB) + fl('M5 18l4.6-6 3 3.4 2.4-2.6 4 5.2Z', G) + dt(15.6, 9.4, 1.6, Y),
+    landscape: S(rp(2.4, 3.4, 19.2, 17.2, 3), LB, LBd) + dt(16.6, 8.4, 2.4, Y) + fl('M2.4 17.4c3-5.6 6-5.6 9-1 2-3 4.6-3.6 9.6.4v3.8a3 3 0 0 1-3 3H5.4a3 3 0 0 1-3-3Z', G) + ln('M5 19.8q4-1.6 8 0t6 0', B, 1.4),
+    basket: ln('M6.6 10.4C6.6 5 17.4 5 17.4 10.4', Brd, 2.4) + S('M2.6 10.4h18.8l-2 9.6a1.6 1.6 0 0 1-1.6 1.4H6.2A1.6 1.6 0 0 1 4.6 20Z', '#D69A5A', Brd) + ln('M8 10.4l.6 11M12 10.4v11M16 10.4l-.6 11M3.4 14.6h17.2M3.8 18h16.4', Brd, 1.2),
+    trash: S(rp(9.4, 2, 5.2, 3, 1), Gyd, Gyd) + S(rp(3.8, 4.4, 16.4, 2.8, 1.4), Gy, Gyd) + S('M5.6 7.6h12.8l-1 12.8a1.6 1.6 0 0 1-1.6 1.4H8.2a1.6 1.6 0 0 1-1.6-1.4Z', '#C9D5E0', '#9BAABA') + ln('M9.4 10.6v7.2M12 10.6v7.2M14.6 10.6v7.2', W, 1.5),
+    arrowr: R_(ARROW, B, Bd),
+    arrowl: rot(180, R_(ARROW, B, Bd)),
+    arrowu: rot(-90, R_(ARROW, B, Bd)),
+    arrowd: rot(90, R_(ARROW, B, Bd)),
+    candy: S('M7 12 1.8 8v8Z', P, Pd) + S('M17 12l5.2-4v8Z', P, Pd) + S(cp(12, 12, 5.6), K, Kd) + ln('M8.6 10.6q2 2 4.4 0t3 .8', W, 1.6),
+    fish: S('M2.6 12c3-5 8-6 11-3.8l.6.6L20.6 6v12l-6-2.8-.6.6C10.6 18 5.6 17 2.6 12Z', B, Bd) + dt(7.6, 11, 1.2, W) + dt(7.8, 11, .6, I) + ln('M11 9.6q1.4 2.4 0 4.8', Bd, 1.4),
+    milk: SL('M6.6 4h10.8l-1.4 16.6a1.4 1.4 0 0 1-1.4 1.3H9.4a1.4 1.4 0 0 1-1.4-1.3Z', '#E8F7FF', '#B9DCEB') + fl('M7.2 9h9.6l-.8 11.4H8Z', W) + ln('M9.6 12v5', LBd, 1.4),
+    cheese: S('M2.6 11.4 21.4 8.2V18H2.6Z', Y, Yd) + S('M2.6 11.4 8 6l13.4 2.2Z', '#FFE27A', Yd) + dt(8, 14.4, 1.5, Yd) + dt(14, 12.8, 1.2, Yd) + dt(16.6, 15.6, 1.6, Yd),
+    bread: S('M4 10.4C2.4 8 4 4.4 8 4.4h8c4 0 5.6 3.6 4 6v8.6a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19Z', '#E8A24A', '#C47A2A') + fl(rp(6.4, 9.4, 11.2, 8.4, 1.4), '#FFE2B0'),
+    mousetrap: S(rp(2.6, 10, 18.8, 10.4, 1.8), Br, Brd) + ln('M5.6 10V6.2h9' , Gyd, 2) + ln('M14.6 6.2v6', Gyd, 2) + S('M15 14.4 20 18v-3.4Z', Y, Yd) + dt(7.6, 15, 1.4, Gy),
+    radio: ln('M15 7 19.6 2.4', Gyd, 1.8) + S(rp(2.4, 7.6, 19.2, 13, 2.6), Gy, Gyd) + fl(cp(8.4, 14, 3.8), W) + ln('M6.4 12.6h4M6.4 14h4M6.4 15.4h4', Gy, 1) + dt(16.4, 11.8, 1.6, R) + ln('M14.4 16.6h4.4', I, 1.6),
+    bone: rot(-45, S(rp(5, 10.2, 14, 3.6, 1.2) + cp(4.6, 9.8, 2.6) + cp(4.6, 14.2, 2.6) + cp(19.4, 9.8, 2.6) + cp(19.4, 14.2, 2.6), '#FFF3DC', '#D9C8A8')),
+    undo: ln('M4.8 11.4h9.6a5.4 5.4 0 0 1 0 10.8H8', B, 2.6) + ln('M8.6 6.4 4.4 11.4l4.2 5', B, 2.6),
+    magnet: S('M5 3.6h4.4v8.8a2.6 2.6 0 0 0 5.2 0V3.6H19v8.8a7 7 0 0 1-14 0Z', R, Rd) + fl('M5 3.6h4.4v3.8H5ZM14.6 3.6H19v3.8h-4.4Z', '#E5E5E5'),
+    petri: SL('M3.4 11.4h17.2v3.4a5 5 0 0 1-5 5H8.4a5 5 0 0 1-5-5Z', '#E8F7FF', '#B9DCEB') + fl(ep(12, 14.2, 6.8, 3), '#7ED957') + dt(10, 14, 1, Gd) + dt(13.6, 15, 1.2, Gd) + SL(rp(2.6, 8.4, 18.8, 3.4, 1.6), '#F5FBFF', '#C9E4F2'),
+    battery: S(rp(2.6, 6.6, 17, 10.8, 2.4), G, Gd) + S(rp(19.6, 10, 2, 4, 1), Gy, Gyd) + fl('M11.8 8.4 8.8 12.6h2.8l-.6 3.2 3.4-4.4h-2.8Z', W),
+    dna: ln('M7.4 2.6c0 5 9.2 5.4 9.2 9.4s-9.2 4.4-9.2 9.4', B, 2.4) + ln('M16.6 2.6c0 5-9.2 5.4-9.2 9.4s9.2 4.4 9.2 9.4', G, 2.4) + ln('M8.6 5.8h6.8M9.6 12h4.8M8.6 18.2h6.8', Y, 1.8),
+    ff: S('M2.6 5.6v12.8a.8.8 0 0 0 1.2.7l8.4-6.4a.8.8 0 0 0 0-1.3L3.8 4.9a.8.8 0 0 0-1.2.7Z', B, Bd) + S('M11.6 5.6v12.8a.8.8 0 0 0 1.2.7l8.4-6.4a.8.8 0 0 0 0-1.3l-8.4-6.5a.8.8 0 0 0-1.2.7Z', B, Bd),
+    skipnext: S('M4.6 5.6v12.8a.8.8 0 0 0 1.2.7l9-6.4a.8.8 0 0 0 0-1.3l-9-6.5a.8.8 0 0 0-1.2.7Z', B, Bd) + S(rp(16.6, 4.6, 3.6, 14.8, 1.4), B, Bd),
+    people: S(cp(16, 8, 3.2), Gy, Gyd) + S('M10.4 19.4c.4-3.4 2.6-5.2 5.6-5.2s5.2 1.8 5.6 5.2Z', Gy, Gyd) + S(cp(8.6, 8.4, 3.6), '#C9C9C9', Gyd) + S('M2 20c.4-3.8 3-5.8 6.6-5.8s6.2 2 6.6 5.8Z', '#C9C9C9', Gyd),
+    chartdown: S('M4 6h4v14.4H4Z', R, Rd) + S('M10 10h4v10.4h-4Z', O, Od) + S('M16 15h4v5.4h-4Z', Y, Yd),
+    chartup: S('M4 15h4v5.4H4Z', B, Bd) + S('M10 10h4v10.4h-4Z', G, Gd) + S('M16 5h4v15.4h-4Z', O, Od),
+    calendar: S(rp(3.4, 4.2, 17.2, 17, 2.6), W, Wd) + fl('M3.4 7a2.8 2.8 0 0 1 2.8-2.8h11.6A2.8 2.8 0 0 1 20.6 7v2.4H3.4Z', R) + ln('M8 2.6v3.4M16 2.6v3.4', Rd, 2.2) + dt(8, 13, 1.1, Gy) + dt(12, 13, 1.1, Gy) + dt(16, 13, 1.1, Gy) + dt(8, 17, 1.1, Gy) + dt(12, 17, 1.1, B),
+    siren: S('M6.4 17V11a5.6 5.6 0 0 1 11.2 0v6Z', R, Rd) + S(rp(4, 17, 16, 3.8, 1.6), Gy, Gyd) + ln('M12 1.8v2.2M4.6 4.8 6.2 6.4M19.4 4.8 17.8 6.4', Y, 1.8) + ln('M9.4 11.6q.4-1.8 2-2.2', '#FF9A9A', 1.6),
+    student: S('M4.6 21c.4-3.8 3.2-5.8 7.4-5.8s7 2 7.4 5.8Z', B, Bd) + S(cp(12, 12, 4.4), Sk, Skd) + S('M2 8.2 12 4l10 4.2-10 4.2Z', I, '#2B2B2B') + ln('M20 9.4v4.4', Y, 1.6) + dt(20, 14.4, 1.1, Y),
+    refresh: ln('M19.6 9.6A8 8 0 0 0 5.2 8.2M4.4 14.4a8 8 0 0 0 14.4 1.4', B, 2.6) + ln('M19.8 3.8v5.8h-5.8M4.2 20.2v-5.8h5.8', B, 2.6),
+    inbox: S('M3 13l3-8h12l3 8v6a1.6 1.6 0 0 1-1.6 1.6H4.6A1.6 1.6 0 0 1 3 19Z', B, Bd) + fl('M3 13h5.4a3.6 3.6 0 0 0 7.2 0H21v1.6H3Z', Bd) + ln('M12 5.6v7M8.8 9.6l3.2 3.2 3.2-3.2', W, 2),
+    ghost: SL('M5 21V11a7 7 0 0 1 14 0v10l-2.4-2-2.3 2-2.3-2-2.3 2-2.3-2Z', W, '#CFCFCF') + dt(9.4, 11, 1.4, I) + dt(14.6, 11, 1.4, I) + ln('M10.4 14.4q1.6 1.4 3.2 0', I, 1.4),
+    spy: S('M3.4 21c.4-3.6 3.6-5.6 8.6-5.6s8.2 2 8.6 5.6Z', Gy, Gyd) + S(cp(12, 13.6, 4.6), Sk, Skd) + S('M5 9.6c0-2.4 2-3.8 3.4-3.8h7.2c1.4 0 3.4 1.4 3.4 3.8Z', I, '#2B2B2B') + fl(rp(2.6, 9, 18.8, 2.2, 1.1), I) + '<circle cx="9.6" cy="13.4" r="1.8" stroke="' + I + '" stroke-width="1.4" fill="none"/><circle cx="14.4" cy="13.4" r="1.8" stroke="' + I + '" stroke-width="1.4" fill="none"/>',
+    glasses: S(rp(2.6, 8, 8.6, 8, 3), '#5A5A5A', '#2B2B2B') + S(rp(12.8, 8, 8.6, 8, 3), '#5A5A5A', '#2B2B2B') + ln('M11 11h2M2.6 10l-1 -1.4M21.4 10l1-1.4', I, 1.6) + ln('M4.6 10q1-1 2.4-1', '#fff', 1.2),
+    cry: face(Y, Yd, ln('M6.6 10.6q1.8-1.6 3.4 0M14 10.6q1.8-1.6 3.4 0', I, 1.8) + fl('M8.8 17.4q3.2-4 6.4 0Z', I) + ln('M7.8 12.6v5.6M16.2 12.6v5.6', B, 2.2)),
+    sleepy: face(Y, Yd, ln('M6.6 11.4q1.8 1.6 3.4 0M14 11.4q1.8 1.6 3.4 0', I, 1.8) + dt(12, 16.4, 1.3, I) + ln('M17 2.6h3.6l-3.6 4h3.6', B, 1.5)),
+    tired: face(Y, Yd, ln('M6.8 8.8 10 11l-3.2 2.2M17.2 8.8 14 11l3.2 2.2', I, 1.8) + ln('M8 17q1.8-1.8 4 0t4 0', I, 1.8)),
+    relieved: face(Y, Yd, ln('M6.6 10.6q1.8 1.8 3.4 0M14 10.6q1.8 1.8 3.4 0', I, 1.8) + ln('M8.6 15.6q3.4 3 6.8 0', I, 1.8)),
+    shy: face(Y, Yd, fl(cp(8.6, 10.4, 2.4), W) + fl(cp(15.4, 10.4, 2.4), W) + dt(9, 10.8, 1.2, I) + dt(15, 10.8, 1.2, I) + fl(ep(6, 14.6, 1.8, 1.1), K) + fl(ep(18, 14.6, 1.8, 1.1), K) + ln('M10.4 16.8h3.2', I, 1.6)),
+    smile: face(Y, Yd, eyes2(10.4, 1.4) + ln('M7.8 14.6q4.2 4.4 8.4 0', I, 1.8)),
+    love: face(Y, Yd, ln('M6.6 10.8q1.8-2 3.4 0M14 10.8q1.8-2 3.4 0', I, 1.8) + ln('M8 15q4 4.4 8 0', I, 1.8) + fl(ep(5.8, 15, 1.6, 1), K) + fl(ep(18.2, 15, 1.6, 1), K)),
+    pleading: face(Y, Yd, fl(ep(8.4, 11, 2.8, 3.2), I) + fl(ep(15.6, 11, 2.8, 3.2), I) + dt(9.2, 9.8, 1, W) + dt(16.4, 9.8, 1, W) + dt(7.6, 12, .6, LB) + ln('M9.8 17.4q2.2-1.4 4.4 0', I, 1.6)),
+    nausea: face('#9BD65A', '#6FAE36', eyes2(10.4, 1.4) + ln('M7.6 16q1.4-1.8 2.8 0t2.8 0 2.8 0', I, 1.8) + fl(ep(18.4, 17.6, 1.4, 2), G)),
+    xmark: S('M6.4 3.8 12 9.4l5.6-5.6 2.6 2.6L14.6 12l5.6 5.6-2.6 2.6L12 14.6l-5.6 5.6-2.6-2.6L9.4 12 3.8 6.4Z', R, Rd),
+    broccoli: ln('M12 22v-6', '#7ED957', 3.4) + S('M12 2.8c1.8-1 4-.4 4.6 1.4 2.2-.2 4 1.6 3.4 3.8 1 1.8 0 4-2 4.4-.6 1.8-2.4 2.6-4 1.8-1.6.8-3.4 0-4-1.8-2-.4-3-2.6-2-4.4-.6-2.2 1.2-4 3.4-3.8C8 2.4 10.2 1.8 12 2.8Z', G, Gd) + ln('M8.6 7.6q1-1 2-.6M13.4 9.4q1.2-.8 2.2.2', '#9BE060', 1.4),
+    info: S(cp(12, 12, 10), B, Bd) + dt(12, 7, 1.5, W) + ln('M12 10.8v6', W, 2.6),
+    zz: ''
+  });
+  delete UI_ICONS.zz;
+  UI_ICONS.medalsilver = UI_ICONS.medal.replace(/#FFC800/g, '#C9D5E0').replace(/#C98A00/g, '#8FA0B2');
+  UI_ICONS.medalbronze = UI_ICONS.medal.replace(/#FFC800/g, '#E39A5A').replace(/#C98A00/g, '#A8662C');
+})();
+
 function IC(n,c){var d=UI_ICONS[n];if(!d)return '';return '<svg class="ic'+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+d+'</svg>';}
 
-/* Show every 🪙 as the gold vector coin (the emoji renders silver on Apple devices) */
+/* Every emoji becomes one of the vector icons above (text, SVG text, tooltips and pseudo-elements) */
 (function () {
-  const sk = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, TITLE: 1 };
-  function fix(root) {
-    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.nodeValue.includes("🪙") && !sk[n.parentNode.nodeName] ? 1 : 2 }), list = [];
-    while (w.nextNode()) list.push(w.currentNode);
-    list.forEach(n => {
-      const f = document.createDocumentFragment();
-      n.nodeValue.split("🪙").forEach((part, i) => {
-        if (i) { const s = document.createElement("span"); s.className = "coinic"; s.innerHTML = IC("coin"); f.appendChild(s); }
-        if (part) f.appendChild(document.createTextNode(part));
-      });
-      n.parentNode.replaceChild(f, n);
-    });
+  const MAP = {
+    "🚪": "door", "🪙": "coin", "★": "star", "⭐": "star", "🌟": "star", "☆": "starempty", "🛡": "shield", "🔁": "refresh", "🔄": "refresh", "💡": "bulb", "⏱": "timer", "⏳": "hourglass",
+    "🌱": "leaf", "📖": "book", "✨": "sparkle", "💫": "dizzy", "✅": "check", "❤": "heart", "💔": "heartbreak", "💜": "heartpurple", "🖤": "blackheart", "⚡": "bolt", "🎯": "target", "🔥": "flame",
+    "⚠": "warn", "🔒": "lock", "🔐": "lockgold", "🔓": "unlock", "🎉": "tada", "🎊": "tada", "🔭": "telescope", "🔑": "key", "🔍": "search", "🔎": "search", "🌈": "rainbow",
+    "▶": "play", "⏩": "ff", "⏭": "skipnext", "🐾": "paw", "🔦": "flashlight", "👀": "eyes", "👁": "eye", "💪": "muscle", "🐰": "rabbit", "✏": "pencil", "📝": "pen",
+    "🧪": "flask", "⚗": "flask", "👗": "shirt", "👕": "tshirt", "🔗": "link", "🔊": "sound", "🎤": "mic", "📓": "notebook", "🎁": "gift", "🎒": "bag", "🦉": "owl", "💎": "gem", "🔷": "diamond",
+    "🏆": "trophy", "🍵": "tea", "🔬": "microscope", "🗂": "folder", "🪞": "mirror", "🫀": "organ", "📈": "chartup", "📉": "chartdown", "📊": "chart", "📕": "bookred", "📘": "bookblue", "📚": "books",
+    "🏷": "tag", "📌": "pin", "🤝": "handshake", "☁": "cloud", "🌧": "rain", "🌫": "fog", "🎵": "music", "🎼": "music", "📡": "dish", "🛰": "dish", "🍜": "bowl", "🥣": "soup", "🧩": "puzzle",
+    "🎨": "palette", "🚧": "construction", "👑": "crown", "🥚": "egg", "🧂": "salt", "🏅": "medal", "🎖": "medal", "🥇": "medal", "🥈": "medalsilver", "🥉": "medalbronze", "❌": "xmark", "✘": "xmark", "✕": "xmark", "✔": "check", "✓": "check", "➜": "arrowr", "✦": "sparkle",
+    "🗺": "map", "📋": "clipboard", "🌑": "darkmoon", "🌙": "moon", "💧": "droplet", "🩸": "blood", "♾": "infinity", "🍎": "apple", "🍚": "rice", "🍊": "orange", "🌀": "spiral", "🔩": "nut",
+    "🎲": "dice", "🏠": "home", "👋": "wave", "💀": "skull", "🔀": "shuffle", "☢": "radioactive", "🏮": "lantern", "🫧": "bubbles", "🧵": "thread", "🔺": "redtri", "🩺": "stethoscope",
+    "🧼": "soap", "📄": "page", "🥢": "chopsticks", "📏": "ruler", "🥗": "salad", "🥬": "lettuce", "🥦": "broccoli", "🥤": "cup", "🦠": "microbe", "⚛": "atom", "🔵": "bluecirc", "⚪": "whitecirc",
+    "⬜": "whitesq", "♻": "recycle", "🧋": "boba", "❓": "question", "🧠": "brain", "🔤": "abc", "☀": "sun", "🐢": "turtle", "🐔": "chicken", "☕": "coffee", "🦈": "shark", "🏃": "runner",
+    "🥟": "dumpling", "🥄": "spoon", "➕": "plus", "➖": "minus", "🚉": "station", "🎈": "balloon", "🪨": "rock", "🧰": "toolbox", "🪟": "window", "🍡": "dango", "🍘": "senbei", "🍮": "pudding",
+    "🍙": "onigiri", "🧇": "waffle", "🍍": "pineapple", "🎮": "gamepad", "🧭": "compass", "🎣": "fishing", "💼": "briefcase", "👊": "fist", "💇": "haircut", "🎩": "tophat", "🎀": "ribbon",
+    "🖼": "frame", "🏞": "landscape", "🧺": "basket", "🗑": "trash", "➡": "arrowr", "👉": "arrowr", "⬅": "arrowl", "⬆": "arrowu", "👆": "arrowu", "⬇": "arrowd", "👇": "arrowd", "🍬": "candy",
+    "🐟": "fish", "🥛": "milk", "🧀": "cheese", "🍞": "bread", "🪤": "mousetrap", "📻": "radio", "🦴": "bone", "↩": "undo", "🧲": "magnet", "🧫": "petri", "🔋": "battery", "🧬": "dna",
+    "👥": "people", "📆": "calendar", "🚨": "siren", "🧑‍🎓": "student", "📥": "inbox", "🕵": "spy", "👻": "ghost", "🕶": "glasses", "ℹ": "info",
+    "😭": "cry", "😴": "sleepy", "😖": "tired", "😌": "relieved", "😳": "shy", "☺": "smile", "🙂": "smile", "🥰": "love", "🥹": "pleading", "🤢": "nausea"
+  };
+  const keys = Object.keys(MAP).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\uFE0F?");
+  const RE = new RegExp(keys.join("|"), "g"), TEST = new RegExp(keys.join("|"));
+  const lookup = m => MAP[m.replace(/️/g, "")];
+  const SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, TITLE: 1, NOSCRIPT: 1 };
+  const NS = "http://www.w3.org/2000/svg";
+  const iconEl = name => { const t = document.createElement("template"); t.innerHTML = IC(name).replace('class="ic"', 'class="emo"'); return t.content.firstChild; };
+  function textToNodes(str) {
+    const f = document.createDocumentFragment(); let last = 0, m; RE.lastIndex = 0;
+    while ((m = RE.exec(str))) {
+      if (m.index > last) f.appendChild(document.createTextNode(str.slice(last, m.index)));
+      const name = lookup(m[0]), el = iconEl(name);
+      if (name === "coin") { const s = document.createElement("span"); s.className = "coinic"; s.appendChild(el); f.appendChild(s); } else f.appendChild(el);
+      last = m.index + m[0].length;
+    }
+    if (last < str.length) f.appendChild(document.createTextNode(str.slice(last)));
+    return f;
   }
-  const mo = new MutationObserver(() => { mo.disconnect(); try { fix(document.body); } finally { mo.observe(document.body, { childList: true, subtree: true, characterData: true }); } });
-  function start() { fix(document.body); mo.observe(document.body, { childList: true, subtree: true, characterData: true }); }
+  function svgText(tx) {
+    const raw = tx.textContent, names = (raw.match(RE) || []).map(lookup);
+    if (!names.length) return;
+    if (raw.replace(RE, "").trim()) { tx.textContent = raw.replace(RE, "").replace(/\s{2,}/g, " ").trim(); return; }
+    const size = parseFloat(tx.getAttribute("font-size")) || 14, w = size * 1.2, x = parseFloat(tx.getAttribute("x")) || 0, y = parseFloat(tx.getAttribute("y")) || 0, anchor = tx.getAttribute("text-anchor");
+    const g = document.createElementNS(NS, "g"); if (tx.getAttribute("class")) g.setAttribute("class", tx.getAttribute("class"));
+    let sx = anchor === "middle" ? x - names.length * w / 2 : anchor === "end" ? x - names.length * w : x;
+    names.forEach((n, i) => { const h = document.createElementNS(NS, "g"); h.innerHTML = IC(n).replace(' class="ic"', ""); const s = h.firstChild; s.setAttribute("x", (sx + i * w).toFixed(1)); s.setAttribute("y", (y - size * .9).toFixed(1)); s.setAttribute("width", (size * 1.15).toFixed(1)); s.setAttribute("height", (size * 1.15).toFixed(1)); g.appendChild(s); });
+    tx.parentNode.replaceChild(g, tx);
+  }
+  function fixText(n) {
+    const p = n.parentNode; if (!p || SKIP[p.nodeName] || !TEST.test(n.nodeValue)) return;
+    if (p.nodeName === "option") { n.nodeValue = n.nodeValue.replace(RE, "").trim(); return; }
+    if (p.namespaceURI === NS) { if (p.localName === "text") svgText(p); else if (p.localName !== "title") n.nodeValue = n.nodeValue.replace(RE, ""); return; }
+    p.replaceChild(textToNodes(n.nodeValue), n);
+  }
+  const ATTR = ["title", "aria-label", "placeholder", "alt"];
+  function fixAttrs(el) { ATTR.forEach(a => { const v = el.getAttribute && el.getAttribute(a); if (v && TEST.test(v)) el.setAttribute(a, v.replace(RE, "").replace(/\s{2,}/g, " ").trim()); }); }
+  function fixNode(root) {
+    if (root.nodeType === 3) { fixText(root); return; }
+    if (root.nodeType !== 1 || SKIP[root.nodeName]) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => TEST.test(n.nodeValue) && !SKIP[n.parentNode.nodeName] ? 1 : 2 }), list = [];
+    while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(fixText);
+    fixAttrs(root); root.querySelectorAll("[title],[aria-label],[placeholder],[alt]").forEach(fixAttrs);
+  }
+  const OPTS = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTR };
+  const mo = new MutationObserver(recs => {
+    mo.disconnect();
+    try { recs.forEach(r => { if (r.type === "childList") r.addedNodes.forEach(fixNode); else if (r.type === "characterData") fixNode(r.target); else fixAttrs(r.target); }); }
+    finally { mo.observe(document.body, OPTS); }
+  });
+  function start() { fixNode(document.body); mo.observe(document.body, OPTS); }
   if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+  /* CSS pseudo-elements cannot hold SVG, so they get the icon as a background image */
+  const uri = n => 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' + UI_ICONS[n] + "</svg>") + '")';
+  const st = document.createElement("style");
+  st.textContent = `.emo{width:1.25em;height:1.25em;display:inline-block;vertical-align:-.28em;flex:none;overflow:visible}.rchip .ci .emo{width:16px;height:16px;vertical-align:0}
+.how summary::before,.notes-fold summary::before,.f-order .scard::before{content:"";display:inline-block;width:1.25em;height:1.25em;vertical-align:-.28em;margin-right:.3em;background:center/contain no-repeat}
+.how summary::before{background-image:${uri("info")}} .notes-fold summary::before{background-image:${uri("book")}} .f-order .scard::before{background-image:${uri("link")}}`;
+  document.head.appendChild(st);
+  window.EMOJI_MAP = MAP; window.iconifyNow = fixNode;
 })();
 
 /* ============================================================
@@ -5013,11 +5269,14 @@ function collectHtml() {
 /* ----- Dress-up ----- */
 let DRESS_SLOT = "hair";
 const SLOT_ICON = { costume: "🚪", hair: "💇", hat: "🎩", face: "🕶️", ribbon: "🎀", outfit: "👕", prop: "🧋", frame: "🖼️", backdrop: "🏞️", power: "🎒", music: "🎵" };
+const TIER_ORDER = { common: 0, rare: 1, epic: 2, legend: 3 };
+/* Shop order: common → rare → epic → legend, cheapest first inside each tier (stable, so ties keep their original order). */
+const byTier = (x, y) => (TIER_ORDER[x.tier] || 0) - (TIER_ORDER[y.tier] || 0) || (x.price || 0) - (y.price || 0);
 function wardrobeHtml(slot) {
   const eq = S.equip, tabs = Object.keys(SLOT_NAMES).concat("power", "music");
   const grid = slot === "music"
     ? `<p class="small muted">${L("Unlock background music for your home. Every tune is an original melody made in the style of songs you know. Tap ▶ to hear 15 seconds.", "為小窩解鎖背景音樂。每首都是原創旋律，只是模仿大家熟悉的歌曲風格。按 ▶ 試聽 15 秒。")}</p>
-       <div class="shopgrid">${TRACKS.map(t => { const own = S.tracks.includes(t.id), on = (S.track || "classic") === t.id, tier = t.price >= 100 ? "rare" : "common";
+       <div class="shopgrid">${TRACKS.map(t => Object.assign({}, t, { tier: t.price >= 100 ? "rare" : "common" })).sort(byTier).map(t => { const own = S.tracks.includes(t.id), on = (S.track || "classic") === t.id, tier = t.price >= 100 ? "rare" : "common";
          return `<div class="sitem ${tier} ${on ? "on" : ""}">${tierPill(tier)}<div style="font-size:2.2rem">${t.icon}</div><b class="small">${L(t.en, t.zh)}</b><span class="small muted">${L(t.ven, t.vzh)}</span>
            <button class="btn plain" data-prev="${t.id}">▶ ${L("Preview", "試聽")}</button>
            ${own ? `<button class="btn ${on ? "plain" : "blue"}" data-track="${t.id}" ${on ? "disabled" : ""}>${on ? L("🎵 Playing", "🎵 播放中") : L("Play at home", "在小窩播放")}</button>`
@@ -5027,7 +5286,7 @@ function wardrobeHtml(slot) {
        <div class="shopgrid">${POWERUPS.map(u => `<div class="sitem"><div style="font-size:2.2rem">${u.icon}</div><b>${esc(u.name)}</b><span class="small muted">${esc(u.desc)}</span>
          <span class="small"><b>${L("You have", "持有")} ${S.power[u.id] || 0}</b></span>
          <button class="btn yellow" data-pbuy="${u.id}" ${S.coins < u.price || (S.power[u.id] || 0) >= MAX_POWER ? "disabled" : ""}>🪙 ${u.price}</button></div>`).join("")}</div>`
-    : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).map(w => {
+    : `<div class="shopgrid">${WARDROBE.filter(w => w.slot === slot).sort(byTier).map(w => {
         const own = S.owned.includes(w.id), on = eq[slot] === w.id, prevEq = Object.assign({}, eq, slot === "costume" ? {} : { costume: null }, { [slot]: w.id }), pr = w.earn && !own ? w.earn() : null;
         return `<div class="sitem ${w.tier} ${on ? "on" : ""} ${pr && achOnly(w) ? "locked" : ""}">${tierPill(w.tier)}${w.bg ? `<div class="pv bgpv">${bgSvg(w)}${avatar("chiikawa", "happy", prevEq)}</div>` : `<div class="pv"><span class="${frameCls(prevEq)}" style="display:inline-flex;border-radius:50%">${avatar("chiikawa", "happy", prevEq)}</span></div>`}
           <b class="small">${esc(w.name)}</b>${w.escape ? `<span class="req"><b>🚪 ${L("Escape mode only", "密室限定")}</b></span>` : ""}
